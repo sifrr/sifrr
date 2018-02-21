@@ -5,11 +5,13 @@
     }
   </style>
   <span>#{bind.text}</span>
+  <input value="#{bind.input}">
   <random-el></random-el>
   <content></content>
 </template>
 <script>
   let defaultBind = {
-    "text": "I'm a shadow-element using Shadow DOM!"
+    "text": "I'm a shadow-element using Shadow DOM!",
+    "input": "whatever"
   }
 </script>
