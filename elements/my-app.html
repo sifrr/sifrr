@@ -19,10 +19,11 @@
   SF.attributeChangedCallback["my-app"] = function(e) {
     e.shadowRoot.querySelector("input").addEventListener("click", myAppClick);
   }
-  SF.createdCallback["my-app"] = function(e) {
+  SF.bindDataChangedCallback["my-app"] = function(e, data) {
+    console.log(data);
     var randomEl = document.createElement('random-el');
     e.shadowRoot.appendChild(randomEl);
-    SF.setDataBind(randomEl, SF.defaultBind["my-app"]["randomElement"]);
+    SF.setBindData(randomEl, data["randomElement"]);
   }
 
   function myAppClick() {
