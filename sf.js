@@ -52,7 +52,8 @@ var SF = {
     }
   },
   loadCustomElement: function(elements) {
-    forEach(elements, function(element){
+    forEach(elements, function(el){loadElement(el)});
+    function loadElement(element){
       let link = document.createElement('link');
       link.rel = 'import';
       link.href = './elements/' + element + '.html';
@@ -96,7 +97,7 @@ var SF = {
         console.log(e);
       };
       document.head.appendChild(link);
-    });
+    };
   },
   replaceBindData: function(target, data){
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
@@ -140,13 +141,15 @@ function forEach(array, callback) {
         callback.call(array[i], array[key], key);
       }
     }
-  } else if(array) {
+  } else if(Array.isArray(array)) {
     if (array.length < 1) {
       return false;
     }
     for (var i = 0; i < array.length; i++) {
       callback.call(array[i], array[i], i);
     }
+  } else {
+    callback.call(array, array, 0);
   }
 };
 function stringify(data){
