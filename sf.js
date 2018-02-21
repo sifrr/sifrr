@@ -67,14 +67,14 @@ var SF = {
           let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
           let html = this.shadowRoot.innerHTML;
           this.dataset.originalHtml = html;
-          SF.replaceBindData(this, defaultBind);
+          SF.replaceBindData(this, defaultBind, element);
           if (typeof SF.createdCallback[element] === "function") {
             SF.createdCallback[element](this);
           }
         };
         proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
           if (attrName == "data-bind") {
-            let html = SF.replaceBindData(this, {});
+            let html = SF.replaceBindData(this, {}, element);
           }
           if (typeof SF.attributeChangedCallback[element] === "function") {
             SF.attributeChangedCallback[element](this);
@@ -98,12 +98,15 @@ var SF = {
       document.head.appendChild(link);
     });
   },
-  replaceBindData: function(target, data){
+  replaceBindData: function(target, data, element){
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
     html = SF.replaceHTML(html, data, '#{bind');
     target.shadowRoot.innerHTML = html;
+    if (typeof SF.bindDataChangedCallback[element] === "function") {
+      SF.bindDataChangedCallback[element](target, data);
+    }
   },
   replaceHTML: function(html, data, prefix){
     let replaced = prefix + '}';
@@ -129,7 +132,8 @@ var SF = {
   attachedCallback: {},
   detachedCallback: {},
   attributeChangedCallback: {},
-  setDataBind: function(target, json){
+  bindDataChangedCallback: {},
+  setBindData: function(target, json){
     target.dataset.bind = JSON.stringify(json);
   }
 }
