@@ -52,8 +52,7 @@ var SF = {
     }
   },
   loadCustomElement: function(elements) {
-    forEach(elements, function(el){loadElement(el)});
-    function loadElement(element){
+    forEach(elements, function(element){
       let link = document.createElement('link');
       link.rel = 'import';
       link.href = './elements/' + element + '.html';
@@ -97,7 +96,7 @@ var SF = {
         console.log(e);
       };
       document.head.appendChild(link);
-    };
+    });
   },
   replaceBindData: function(target, data){
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
