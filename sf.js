@@ -102,15 +102,27 @@ var SF = {
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
-    for (let key in data) {
-      let replaced = '#{bind.' + key + '}';
-      if (typeof data[key] === "string") {
-        html = html.replace(replaced, data[key]);
-      } else {
-        html = html.replace(replaced, JSON.stringify(data[key]).replace(new RegExp('"', 'g'),'&quot;'));
-      }
-    }
+    html = SF.replaceHTML(html, data, '#{bind');
     target.shadowRoot.innerHTML = html;
+  },
+  replaceHTML: function(html, data, prefix){
+    let replaced = prefix + '}';
+    if (Array.isArray(data)) {
+      html = html.replace(replaced, stringify(data));
+      data.forEach(function(value, index){
+        html = SF.replaceHTML(html, value, prefix + '[' + index + ']')
+      });
+    } else if (typeof data === "object") {
+      html = html.replace(replaced, stringify(data));
+      for (let key in data) {
+        html = SF.replaceHTML(html, data[key], prefix + '.' + key)
+        html = SF.replaceHTML(html, data[key], prefix + '[' + key + ']')
+      }
+    } else {
+      let replaced = prefix + '}';
+      html = html.replace(replaced, data);
+    }
+    return html;
   },
   defaultBind: {},
   createdCallback: {},
@@ -134,7 +146,10 @@ function forEach(array, callback) {
     }
   }
 };
-function tryParseJSON (jsonString){
+function stringify(data){
+  return JSON.stringify(data).replace(new RegExp('"', 'g'),'&quot;')
+}
+function tryParseJSON(jsonString){
     try {
         var o = JSON.parse(jsonString);
         if (o && typeof o === "object") {
@@ -146,3 +161,14 @@ function tryParseJSON (jsonString){
     }
     return {};
 };
+function eachRecursive(obj)
+{
+    for (var k in obj) {
+        if (typeof obj[k] == "object" && obj[k] !== null) {
+          eachRecursive(obj[k]);
+        }
+        else {
+
+        }
+    }
+}
