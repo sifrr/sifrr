@@ -1,0 +1,15 @@
+<template>
+  <style>
+    span {
+      color: red;
+    }
+  </style>
+  <span>#{bind.text}</span>
+  <random-el></random-el>
+  <content></content>
+</template>
+<script>
+  let defaultBind = {
+    "text": "I'm a shadow-element using Shadow DOM!"
+  }
+</script>

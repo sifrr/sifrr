@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+</head>
+
+<body>
+  <my-app data-bind='{"text": "abcd"}'>
+    <span>I am okay!</span>
+  </my-app>
+  <span>I am okay!</span>
+  <script type="text/javascript" src="./main.js"></script>
+  <script type="text/javascript">
+    SF.API.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling)
+
+    function consoling(result) {
+      console.log(result.results);
+    }
+    SF.loadCustomElement(['my-app', 'random-el']);
+  </script>
+</body>
+
+</html>
