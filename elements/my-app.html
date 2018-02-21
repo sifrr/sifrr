@@ -8,7 +8,6 @@
   <p>binding with [] - #{bind[text]}</p>
   <p>binding double [] - #{bind[randomElement][0]}</p>
   <input value=#{bind.input}>
-  <random-el data-bind=#{bind.randomElement}></random-el>
   <content></content>
 </template>
 <script>
@@ -19,6 +18,11 @@
   }
   SF.attributeChangedCallback["my-app"] = function(e) {
     e.shadowRoot.querySelector("input").addEventListener("click", myAppClick);
+  }
+  SF.createdCallback["my-app"] = function(e) {
+    var randomEl = document.createElement('random-el');
+    e.shadowRoot.appendChild(randomEl);
+    SF.setDataBind(randomEl, SF.defaultBind["my-app"]["randomElement"]);
   }
 
   function myAppClick() {
