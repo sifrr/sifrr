@@ -1,10 +1,10 @@
 <template>
   <style>
-    span {
+    p {
       color: red;
     }
   </style>
-  <span>hahahhahha #{bind.text} damn son</span>
+  <p>hahahhahha #{bind.text} damn son</p>
   <input value="#{bind.input}">
   <random-el data-bind='{"text":"random text"}'></random-el>
   <content></content>
@@ -13,5 +13,10 @@
   SF.defaultBind["my-app"] = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever"
+  }
+  SF.attachedCallback["my-app"] = function(e) {
+    e.querySelector("input").addEventListener("click", function() {
+      alert('my-app input clicked');
+    });
   }
 </script>

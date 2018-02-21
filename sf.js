@@ -66,12 +66,28 @@ var SF = {
           root.appendChild(clone);
           let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
           let html = this.shadowRoot.innerHTML;
-          this.dataset.originalHTML = html;
+          this.dataset.originalHtml = html;
           SF.replaceBindData(this, defaultBind);
+          if (typeof SF.createdCallback[element] === "function") {
+            SF.createdCallback[element](this);
+          }
         };
         proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
           if (attrName == "data-bind") {
             let html = SF.replaceBindData(this, {});
+          }
+          if (typeof SF.attributeChangedCallback[element] === "function") {
+            SF.attributeChangedCallback[element](this);
+          }
+        };
+        proto.attachedCallback = function() {
+          if (typeof SF.attachedCallback[element] === "function") {
+            SF.attachedCallback[element](this);
+          }
+        };
+        proto.detachedCallback = function() {
+          if (typeof SF.detachedCallback[element] === "function") {
+            SF.detachedCallback[element](this);
           }
         };
         document.registerElement(element, {prototype: proto});
@@ -86,7 +102,7 @@ var SF = {
     target.dataset.bindOld = target.dataset.bindOld ? target.dataset.bindOld : "{}";
     target.dataset.bind = target.dataset.bind ? target.dataset.bind : "{}";
     Object.assign(data, JSON.parse(target.dataset.bindOld), JSON.parse(target.dataset.bind));
-    let html = target.dataset.originalHTML;
+    let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
     for (let key in data) {
       let replaced = '#{bind.' + key + '}';
@@ -94,7 +110,11 @@ var SF = {
     }
     target.shadowRoot.innerHTML = html;
   },
-  defaultBind: {}
+  defaultBind: {},
+  createdCallback: {},
+  attachedCallback: {},
+  detachedCallback: {},
+  attributeChangedCallback: {}
 }
 var forEach = function(array, callback) {
   if (typeof array == 'object' && array != null && array) {
