@@ -99,14 +99,16 @@ var SF = {
     });
   },
   replaceBindData: function(target, data){
-    target.dataset.bindOld = target.dataset.bindOld ? target.dataset.bindOld : "{}";
-    target.dataset.bind = target.dataset.bind ? target.dataset.bind : "{}";
-    Object.assign(data, JSON.parse(target.dataset.bindOld), JSON.parse(target.dataset.bind));
+    Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
     for (let key in data) {
       let replaced = '#{bind.' + key + '}';
-      html = html.replace(replaced, data[key]);
+      if (typeof data[key] === "string") {
+        html = html.replace(replaced, data[key]);
+      } else {
+        html = html.replace(replaced, JSON.stringify(data[key]).replace(new RegExp('"', 'g'),'&quot;'));
+      }
     }
     target.shadowRoot.innerHTML = html;
   },
@@ -116,7 +118,7 @@ var SF = {
   detachedCallback: {},
   attributeChangedCallback: {}
 }
-var forEach = function(array, callback) {
+function forEach(array, callback) {
   if (typeof array == 'object' && array != null && array) {
     for (var key in array) {
       if (array.hasOwnProperty(key) && array[key] && key != "length") {
@@ -131,4 +133,16 @@ var forEach = function(array, callback) {
       callback.call(array[i], array[i], i);
     }
   }
+};
+function tryParseJSON (jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+        if (o && typeof o === "object") {
+            return o;
+        }
+    }
+    catch (e) {
+      return {};
+    }
+    return {};
 };
