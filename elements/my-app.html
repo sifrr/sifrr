@@ -4,14 +4,14 @@
       color: red;
     }
   </style>
-  <span>#{bind.text}</span>
+  <span>hahahhahha #{bind.text} damn son</span>
   <input value="#{bind.input}">
-  <random-el></random-el>
+  <random-el data-bind='{"text":"random text"}'></random-el>
   <content></content>
 </template>
 <script>
-  let defaultBind = {
-    "text": "I'm a shadow-element using Shadow DOM!",
+  SF.defaultBind["my-app"] = {
+    "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever"
   }
 </script>

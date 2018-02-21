@@ -51,14 +51,6 @@ var SF = {
       return SF.API.getHTTP(url, params, callback, failure, "DELETE");
     }
   },
-  observer:
-  new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.type == "attributes") {
-        console.log(this);
-      }
-    });
-  }),
   loadCustomElement: function(elements) {
     forEach(elements, function(element){
       let link = document.createElement('link');
@@ -72,24 +64,15 @@ var SF = {
           let clone = document.importNode(template.content, true);
           let root = this.createShadowRoot();
           root.appendChild(clone);
-          if (defaultBind == undefined) {
-            if (this.dataset.bind == undefined) {
-              return;
-            } else {
-              defaultBind = {};
-            }
-          };
-          if (this.dataset.bind){
-            let data = JSON.parse(this.dataset.bind);
-            Object.assign(defaultBind, data);
-          }
+          let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
           let html = this.shadowRoot.innerHTML;
-          for (let key in defaultBind) {
-            let replaced = '#{bind.' + key + '}';
-            html = html.replace(replaced, defaultBind[key]);
+          this.dataset.originalHTML = html;
+          SF.replaceBindData(this, defaultBind);
+        };
+        proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
+          if (attrName == "data-bind") {
+            let html = SF.replaceBindData(this, {});
           }
-          defaultBind = undefined;
-          this.shadowRoot.innerHTML = html;
         };
         document.registerElement(element, {prototype: proto});
       };
@@ -98,13 +81,26 @@ var SF = {
       };
       document.head.appendChild(link);
     });
-  }
+  },
+  replaceBindData: function(target, data){
+    target.dataset.bindOld = target.dataset.bindOld ? target.dataset.bindOld : "{}";
+    target.dataset.bind = target.dataset.bind ? target.dataset.bind : "{}";
+    Object.assign(data, JSON.parse(target.dataset.bindOld), JSON.parse(target.dataset.bind));
+    let html = target.dataset.originalHTML;
+    target.dataset.bindOld = JSON.stringify(data);
+    for (let key in data) {
+      let replaced = '#{bind.' + key + '}';
+      html = html.replace(replaced, data[key]);
+    }
+    target.shadowRoot.innerHTML = html;
+  },
+  defaultBind: {}
 }
 var forEach = function(array, callback) {
   if (typeof array == 'object' && array != null && array) {
     for (var key in array) {
       if (array.hasOwnProperty(key) && array[key] && key != "length") {
-        callback.call(array[i], array[key], key); // passes back stuff we need
+        callback.call(array[i], array[key], key);
       }
     }
   } else if(array) {
@@ -112,7 +108,7 @@ var forEach = function(array, callback) {
       return false;
     }
     for (var i = 0; i < array.length; i++) {
-      callback.call(array[i], array[i], i); // passes back stuff we need
+      callback.call(array[i], array[i], i);
     }
   }
 };
