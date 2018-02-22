@@ -26,13 +26,12 @@
     e.shadowRoot.querySelector("input").addEventListener("click", myAppClick);
   }
   SF.bindDataChangedCallback["my-app"] = function(e, data) {
-    console.log(data);
     var randomEl = document.createElement('random-el');
     e.shadowRoot.appendChild(randomEl);
     SF.setBindData(randomEl, data["randomElement"]);
   }
 
   function myAppClick() {
-    alert('my-app input clicked');
+    alert('my-app inout clicked');
   }
 </script>

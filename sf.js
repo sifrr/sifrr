@@ -58,40 +58,39 @@ var SF = {
       link.href = './elements/' + element + '.html';
       link.setAttribute('async', '');
       link.onload = function(e) {
-        let proto = Object.create(HTMLElement.prototype);
-        proto.createdCallback = function() {
-          let template = link.import.querySelector('template');
-          let clone = document.importNode(template.content, true);
-          let root = this.attachShadow({mode: 'open'});
-          root.appendChild(clone);
-          let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
-          let html = this.shadowRoot.innerHTML;
-          this.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
-                                          .replace(/\>\s*\</g,'><');
-          SF.replaceBindData(this, defaultBind, element);
-          if (typeof SF.createdCallback[element] === "function") {
-            SF.createdCallback[element](this);
-          }
-        };
-        proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
-          if (attrName == "data-bind") {
-            let html = SF.replaceBindData(this, {}, element);
-          }
-          if (typeof SF.attributeChangedCallback[element] === "function") {
-            SF.attributeChangedCallback[element](this);
-          }
-        };
-        proto.attachedCallback = function() {
-          if (typeof SF.attachedCallback[element] === "function") {
-            SF.attachedCallback[element](this);
-          }
-        };
-        proto.detachedCallback = function() {
-          if (typeof SF.detachedCallback[element] === "function") {
-            SF.detachedCallback[element](this);
-          }
-        };
-        document.registerElement(element, {prototype: proto});
+        window.customElements.define(element,
+          class extends HTMLElement {
+            static get observedAttributes() {return ['data-bind']; }
+            constructor() {
+              super();
+              const template = link.import.querySelector('template').content;
+              const shadowRoot = this.attachShadow({mode: 'open'})
+                .appendChild(template.cloneNode(true));
+              if (typeof SF.createdCallback[element] === "function") {
+                SF.createdCallback[element](this);
+              }
+            }
+            attributeChangedCallback(attrName, oldVal, newVal) {
+              if (attrName == "data-bind") {
+                let html = SF.replaceBindData(this, {}, element);
+              }
+              if (typeof SF.attributeChangedCallback[element] === "function") {
+                SF.attributeChangedCallback[element](this);
+              }
+            }
+            connectedCallback() {
+              let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
+              SF.replaceBindData(this, defaultBind, element);
+              if (typeof SF.connectedCallback[element] === "function") {
+                SF.connectedCallback[element](this);
+              }
+            }
+            disconnectedCallback() {
+              if (typeof SF.disconnectedCallback[element] === "function") {
+                SF.disconnectedCallback[element](this);
+              }
+            }
+        });
       };
       link.onerror = function(e) {
         console.log(e);
@@ -100,6 +99,14 @@ var SF = {
     });
   },
   replaceBindData: function(target, data, element){
+    if (typeof target.dataset.originalHtml === 'undefined') {
+      let html = target.shadowRoot.innerHTML;
+      target.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
+                                      .replace(/\>\s*\</g,'><');
+    }
+    if (typeof target.dataset.bind === 'undefined') {
+      target.dataset.bind = JSON.stringify({});
+    }
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
@@ -130,8 +137,8 @@ var SF = {
   },
   defaultBind: {},
   createdCallback: {},
-  attachedCallback: {},
-  detachedCallback: {},
+  connectedCallback: {},
+  disconnectedCallback: {},
   attributeChangedCallback: {},
   bindDataChangedCallback: {},
   setBindData: function(target, json){
