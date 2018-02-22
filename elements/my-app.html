@@ -3,12 +3,18 @@
     p {
       color: red;
     }
+    slot::slotted(p) {
+      display: block;
+      text-decoration: none;
+      border: 1px solid blue;
+      background: none;
+    }
   </style>
+  <slot></slot>
   <p>binding with . - #{bind.text}</p>
   <p>binding with [] - #{bind[text]}</p>
   <p>binding double [] - #{bind[randomElement][0]}</p>
   <input value=#{bind.input}>
-  <content></content>
 </template>
 <script>
   SF.defaultBind["my-app"] = {

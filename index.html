@@ -4,11 +4,14 @@
 <head>
   <meta charset="utf-8">
   <title>Test</title>
+  <style media="screen">
+  </style>
 </head>
 
 <body>
-  <my-app data-bind='{"text":"abcd"}'>
-    <p>No data binding in Normal DOM #{data.text}</p>
+  <my-app data-bind='{"text":"abcd"}' class="my-app">
+    <p>No data binding in slotted elements #{data.text}.</p>
+    <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
   <script type="text/javascript" src="./sf.js"></script>

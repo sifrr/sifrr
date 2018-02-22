@@ -62,11 +62,12 @@ var SF = {
         proto.createdCallback = function() {
           let template = link.import.querySelector('template');
           let clone = document.importNode(template.content, true);
-          let root = this.createShadowRoot();
+          let root = this.attachShadow({mode: 'open'});
           root.appendChild(clone);
           let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
           let html = this.shadowRoot.innerHTML;
-          this.dataset.originalHtml = html;
+          this.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
+                                          .replace(/\>\s*\</g,'><');
           SF.replaceBindData(this, defaultBind, element);
           if (typeof SF.createdCallback[element] === "function") {
             SF.createdCallback[element](this);
