@@ -172,19 +172,19 @@
   function makeCorousel(e, cardC, rightC, leftC, fsC) {
     main = e.shadowRoot.querySelector(".cor");
     activeC = "active";
-    cardC = typeof cardC !== 'undefined' ? cardC : "cori";
-    rightC = typeof rightC !== 'undefined' ? rightC : "r";
-    leftC = typeof leftC !== 'undefined' ? leftC : "l";
-    fsC = typeof fsC !== 'undefined' ? fsC : "fs";
+    cardC = typeof cardC !== 'undefined' ? cardC : "img";
+    rightC = typeof rightC !== 'undefined' ? rightC : ".r";
+    leftC = typeof leftC !== 'undefined' ? leftC : ".l";
+    fsC = typeof fsC !== 'undefined' ? fsC : ".fs";
     var cards = e.shadowRoot.querySelectorAll("slot")[0].assignedNodes().filter(el => el.tagName === "IMG");
     console.log(main, cards);
     if (children(main, ".scrollD").length > 0) {
-      var cards2 = children(children(main, ".scrollD")[0], "." + cardC);
+      var cards2 = children(children(main, ".scrollD")[0], cardC);
       cards = cards.concat(cards2);
     }
-    var ra = main.querySelector("." + rightC);
-    var la = main.querySelector("." + leftC);
-    var fs = main.querySelector("." + fsC);
+    var ra = main.querySelector(rightC);
+    var la = main.querySelector(leftC);
+    var fs = main.querySelector(fsC);
     var num = main.querySelector(".num");
     if (cards.length < 2 && ra && la) {
       ra.style.display = "none";
@@ -236,8 +236,6 @@
       i = i == l ? i - l : i;
       removeExceptOne(corscards[j], "next", i + 1);
       if (corscards[j][i] && !corscards[j][i].getAttribute("src")) {
-        // var img = new Image();
-        // img.load(corscards[j][i].getAttribute("data-src"),corscards[j][i]);
         corscards[j][i].setAttribute("src", corscards[j][i].getAttribute("data-src"));
       }
       if (num) {
