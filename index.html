@@ -14,6 +14,11 @@
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
+  <simple-carousel>
+    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" class="cori active" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
+    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala" class="cori">
+    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala" class="cori">
+  </simple-carousel>
   <script type="text/javascript" src="./sf.js"></script>
   <script type="text/javascript">
     SF.API.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling)
@@ -21,7 +26,7 @@
     function consoling(result) {
       console.log(result.results);
     }
-    SF.loadCustomElement(['random-el']);
+    SF.loadCustomElement(['random-el', 'simple-carousel']);
     SF.loadCustomElement('my-app');
   </script>
 </body>
