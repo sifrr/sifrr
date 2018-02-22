@@ -1,17 +1,17 @@
 $custom-easing: ease;
-/*Corousel CSS*/
+
 :host {
   display: block;
   width: 300px;
   height: 300px;
-  overflow: hidden;
-  background-color: grey;
 }
 
 .cor {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  background-color: grey;
 
   .br {
     position: absolute;
@@ -38,6 +38,11 @@ $custom-easing: ease;
     &:hover {
       opacity: 1;
     }
+  }
+
+  .scrollD {
+    height: 100%;
+    width: 100%;
   }
 
   .num {
@@ -125,18 +130,4 @@ $custom-easing: ease;
 *::slotted(img.active) {
   display: block;
   opacity: 1;
-}
-
-.arrow {
-  width: 30%;
-}
-
-h2 {
-  padding: 10px;
-  font-size: 1.7em;
-}
-/*for all corousels*/
-.scrollD {
-  height: 100%;
-  width: 100%;
 }
