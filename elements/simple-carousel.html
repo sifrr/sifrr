@@ -18,11 +18,10 @@
   </div>
 </template>
 <script>
-  SF.attributeChangedCallback["simple-carousel"] = function(e) {
+  SF.connectedCallback["simple-carousel"] = function(e) {}
+  SF.bindDataChangedCallback["simple-carousel"] = function(e) {
     makeCorousel(e);
-    console.log('ok');
   }
-  SF.bindDataChangedCallback["simple-carousel"] = function(e, data) {}
   var cors = [],
     corsl = [],
     corscards = [];;
@@ -177,7 +176,6 @@
     leftC = typeof leftC !== 'undefined' ? leftC : ".l";
     fsC = typeof fsC !== 'undefined' ? fsC : ".fs";
     var cards = e.shadowRoot.querySelectorAll("slot")[0].assignedNodes().filter(el => el.tagName === "IMG");
-    console.log(main, cards);
     if (children(main, ".scrollD").length > 0) {
       var cards2 = children(children(main, ".scrollD")[0], cardC);
       cards = cards.concat(cards2);
