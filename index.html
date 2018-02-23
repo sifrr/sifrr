@@ -20,7 +20,7 @@
     <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
     <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
   </simple-carousel>
-  <simple-carousel>
+  <simple-carousel id="noloading">
     <p>One slide</p>
     <p>Two slide</p>
     <p>Three slide</p>
@@ -35,7 +35,14 @@
     SF.loadCustomElement(['random-el', 'my-app']);
     SF.loadCustomElement({
       'simple-carousel': 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html'
-    })
+    });
+    SF.setBindData(document.querySelector('#noloading'), {
+      'loading': {
+        'style': {
+          'display': 'none'
+        }
+      }
+    });
   </script>
 </body>
 
