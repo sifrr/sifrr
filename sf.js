@@ -69,9 +69,6 @@ var SF = {
               if (typeof SF.createdCallback[element] === "function") {
                 SF.createdCallback[element](this);
               }
-              if (template.getAttribute("relative-url") == "true") {
-                this.setAttribute("relative-url", "true");
-              }
             }
             attributeChangedCallback(attrName, oldVal, newVal) {
               if (typeof SF.attributeChangedCallback[element] === "function") {
