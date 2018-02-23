@@ -84,12 +84,12 @@ var SF = {
             connectedCallback() {
               if (this.getAttribute("relative-url") == "true") {
                 var base = link.href;
-                let insideHtml = template.innerHTML;
+                let insideHtml = this.shadowRoot.innerHTML;
                 let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
                 let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
                 let newHtml = insideHtml.replace(href_regex, replacer);
                 newHtml = newHtml.replace(src_regex, replacer);
-                template.innerHTML = newHtml;
+                this.shadowRoot.innerHTML = newHtml;
                 function replacer(match, g1, offset, string) {
                   return string.replace(g1, SF.absolute(base, g1));
                 }
