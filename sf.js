@@ -89,7 +89,7 @@ var SF = {
                 let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
                 let newHtml = insideHtml.replace(href_regex, replacer);
                 newHtml = newHtml.replace(src_regex, replacer);
-                function replacer(match, g1, g2, offset, string) {
+                function replacer(match, g1, offset, string) {
                   console.log(string);
                   return string.replace(g1, SF.absolute(base, g1));
                 }
