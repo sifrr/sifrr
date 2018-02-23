@@ -64,6 +64,18 @@ var SF = {
             constructor() {
               super();
               const template = link.import.querySelector('template');
+              if (template.getAttribute("relative-url") == "true") {
+                var base = link.href;
+                let insideHtml = template.shadowRoot.innerHTML;
+                let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+                let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+                let newHtml = insideHtml.replace(href_regex, replacer);
+                newHtml = newHtml.replace(src_regex, replacer);
+                function replacer(match, g1, offset, string) {
+                  return match.replace(g1, SF.absolute(base, g1));
+                }
+                template.shadowRoot.innerHTML = newHtml;
+              }
               const shadowRoot = this.attachShadow({mode: 'open'})
                 .appendChild(template.content.cloneNode(true));
               if (typeof SF.createdCallback[element] === "function") {
@@ -79,18 +91,6 @@ var SF = {
               }
             }
             connectedCallback() {
-              if (this.getAttribute("relative-url") == "true") {
-                var base = link.href;
-                let insideHtml = this.shadowRoot.innerHTML;
-                let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
-                let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
-                let newHtml = insideHtml.replace(href_regex, replacer);
-                newHtml = newHtml.replace(src_regex, replacer);
-                function replacer(match, g1, offset, string) {
-                  return match.replace(g1, SF.absolute(base, g1));
-                }
-                this.shadowRoot.innerHTML = newHtml;
-              }
               let defaultBind = SF.defaultBind[element] ? SF.defaultBind[element] : {};
               SF.replaceBindData(this, defaultBind, element);
               if (typeof SF.connectedCallback[element] === "function") {
