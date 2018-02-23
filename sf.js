@@ -90,8 +90,7 @@ var SF = {
                 let newHtml = insideHtml.replace(href_regex, replacer);
                 newHtml = newHtml.replace(src_regex, replacer);
                 function replacer(match, g1, offset, string) {
-                  console.log(string);
-                  return string.replace(g1, SF.absolute(base, g1));
+                  return match.replace(g1, SF.absolute(base, g1));
                 }
                 this.shadowRoot.innerHTML = newHtml;
               }
