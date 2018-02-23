@@ -65,7 +65,7 @@ var SF = {
               super();
               const template = link.import.querySelector('template');
               if (template.getAttribute("relative-url") == "true") {
-                let base = link.href.split('/').splice(-1,1).join('/');
+                let base = link.href.split('/').join('/');
                 console.log(base);
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
