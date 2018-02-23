@@ -67,8 +67,8 @@ var SF = {
               if (template.getAttribute("relative-url") == "true") {
                 let base = link.href;
                 let insideHtml = template.innerHTML;
-                let newHtml = insideHtml.replace(/href=['"]?((?!http)[a-zA-z.\/]+)['"]?/g, "href='" + SF.absolute(base, '$1') + "'");
-                newHtml = newHtml.replace(/src=['"]?((?!http)[a-zA-z.\/]+)['"]?/g, "src='" + SF.absolute(base, '$1') + "'");
+                let newHtml = insideHtml.replace(/href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g, "href='" + SF.absolute(base, '$1') + "'");
+                newHtml = newHtml.replace(/src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g, "src='" + SF.absolute(base, '$1') + "'");
                 template.innerHTML = newHtml;
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
