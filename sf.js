@@ -67,7 +67,7 @@ var SF = {
               if (template.getAttribute("relative-url") == "true") {
                 let base = link.href;
                 let insideHtml = template.innerHTML;
-                let newHtml = insideHtml.replace(/href="([a-zA-z.\/]+)"/g, SC.absolute(base, "$1"));
+                let newHtml = insideHtml.replace(/href="([a-zA-z.\/]+)"/g, SF.absolute(base, "$1"));
                 console.log(newHtml);
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
