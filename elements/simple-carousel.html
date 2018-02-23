@@ -17,13 +17,21 @@
     </div>
   </div>
 </template>
-<script src="https://rawgit.com/aadityataparia/Simple-Carousel/master/Vanilla-Javascript/sc.js" charset="utf-8"></script>
+<script src="https://www.aadityataparia.com/carousel/Vanilla-Javascript/sc.js" charset="utf-8"></script>
 <script>
   SF.connectedCallback["simple-carousel"] = function(e) {}
   SF.bindDataChangedCallback["simple-carousel"] = function(e) {
     let cards = e.shadowRoot.querySelectorAll("slot")[0].assignedNodes().filter(el => el.tagName === "IMG");
+    let ra = e.shadowRoot.querySelector(".ra")
+    let la = e.shadowRoot.querySelector(".la")
+    let fs = e.shadowRoot.querySelector(".fs")
+    let num = e.shadowRoot.querySelector(".num")
     SC.new(e, {
-      "cards": cards
+      "cards": cards,
+      "ra": ra,
+      "la": la,
+      "fs": fs,
+      "num": num
     });
   }
 </script>
