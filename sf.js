@@ -67,7 +67,8 @@ var SF = {
               if (template.getAttribute("relative-url") == "true") {
                 let base = link.href;
                 let insideHtml = template.innerHTML;
-                let newHtml = insideHtml.replace(/href="([a-zA-z.\/]+)"/g, SF.absolute(base, "$1"));
+                let newHtml = insideHtml.replace(/href=['"]?([a-zA-z.\/]+)['"]?/g, "href='" + SF.absolute(base, '$1') + "'");
+                newHtml = newHtml.replace(/src=['"]?([a-zA-z.\/]+)['"]?/g, "src='" + SF.absolute(base, '$1') + "'");
                 console.log(newHtml);
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
@@ -155,7 +156,7 @@ var SF = {
         parts = relative.split("/");
     stack.pop(); // remove current file name (or empty string)
                  // (omit if "base" is the current folder without trailing slash)
-    for (var i=0; i<parts.length; i++) {
+    for (let i=0; i<parts.length; i++) {
         if (parts[i] == ".")
             continue;
         if (parts[i] == "..")
