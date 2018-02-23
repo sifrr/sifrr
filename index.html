@@ -32,8 +32,10 @@
     function consoling(result) {
       console.log(result.results);
     }
-    SF.loadCustomElement(['random-el', 'simple-carousel']);
-    SF.loadCustomElement('my-app');
+    SF.loadCustomElement(['random-el', 'my-app']);
+    SF.loadCustomElement({
+      'simple-carousel': 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html'
+    })
   </script>
 </body>
 
