@@ -65,11 +65,16 @@ var SF = {
               super();
               const template = link.import.querySelector('template');
               if (template.getAttribute("relative-url") == "true") {
-                let base = link.href;
+                var base = link.href;
                 let insideHtml = template.innerHTML;
-                let newHtml = insideHtml.replace(/href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g, "href='" + SF.absolute(base, '$1') + "'");
-                newHtml = newHtml.replace(/src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g, "src='" + SF.absolute(base, '$1') + "'");
+                let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+                let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+                let newHtml = insideHtml.replace(href_regex, replacer);
+                newHtml = newHtml.replace(src_regex, replacer);
                 template.innerHTML = newHtml;
+                function replacer(match, g1, offset, string) {
+                  return string.replace(g1, SF.absolute(base, g1));
+                }
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
                 .appendChild(template.content.cloneNode(true));
