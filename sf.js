@@ -65,7 +65,8 @@ var SF = {
               super();
               const template = link.import.querySelector('template');
               if (template.getAttribute("relative-url") == "true") {
-                console.log(template.querySelectorAll('* [src]'));
+                console.log(template.querySelectorAll('img'));
+                console.log(template.querySelectorAll('link'));
               }
               const shadowRoot = this.attachShadow({mode: 'open'})
                 .appendChild(template.content.cloneNode(true));
