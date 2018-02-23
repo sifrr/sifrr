@@ -52,10 +52,10 @@ var SF = {
     }
   },
   loadCustomElement: function(elements) {
-    forEach(elements, function(element){
+    forEach(elements, function(element, href){
       let link = document.createElement('link');
       link.rel = 'import';
-      link.href = './elements/' + element + '.html';
+      link.href = typeof href === "string" ? href : './elements/' + element + '.html';
       link.setAttribute('async', '');
       link.onload = function(e) {
         window.customElements.define(element,
@@ -63,19 +63,23 @@ var SF = {
             static get observedAttributes() {return ['data-bind']; }
             constructor() {
               super();
-              const template = link.import.querySelector('template').content;
+              const template = link.import.querySelector('template');
+              console.log(template, template.getAttribute("relative-url"));
+              if (template.getAttribute("relative-url") == "true") {
+                let base = link.href;
+              }
               const shadowRoot = this.attachShadow({mode: 'open'})
-                .appendChild(template.cloneNode(true));
+                .appendChild(template.content.cloneNode(true));
               if (typeof SF.createdCallback[element] === "function") {
                 SF.createdCallback[element](this);
               }
             }
             attributeChangedCallback(attrName, oldVal, newVal) {
-              if (attrName == "data-bind") {
-                let html = SF.replaceBindData(this, {}, element);
-              }
               if (typeof SF.attributeChangedCallback[element] === "function") {
                 SF.attributeChangedCallback[element](this);
+              }
+              if (attrName == "data-bind") {
+                let html = SF.replaceBindData(this, {}, element);
               }
             }
             connectedCallback() {
@@ -143,21 +147,36 @@ var SF = {
   bindDataChangedCallback: {},
   setBindData: function(target, json){
     target.dataset.bind = JSON.stringify(json);
+  },
+  absolute: function(base, relative) {
+    var stack = base.split("/"),
+        parts = relative.split("/");
+    stack.pop(); // remove current file name (or empty string)
+                 // (omit if "base" is the current folder without trailing slash)
+    for (var i=0; i<parts.length; i++) {
+        if (parts[i] == ".")
+            continue;
+        if (parts[i] == "..")
+            stack.pop();
+        else
+            stack.push(parts[i]);
+    }
+    return stack.join("/");
   }
 }
 function forEach(array, callback) {
-  if (typeof array == 'object' && array != null && array) {
-    for (var key in array) {
-      if (array.hasOwnProperty(key) && array[key] && key != "length") {
-        callback.call(array[i], array[key], key);
-      }
-    }
-  } else if(Array.isArray(array)) {
+  if(Array.isArray(array)) {
     if (array.length < 1) {
       return false;
     }
     for (var i = 0; i < array.length; i++) {
       callback.call(array[i], array[i], i);
+    }
+  } else if (typeof array == 'object' && array != null && array) {
+    for (var key in array) {
+      if (array.hasOwnProperty(key) && array[key] && key != "length") {
+        callback.call(array[key], key, array[key]);
+      }
     }
   } else {
     callback.call(array, array, 0);
