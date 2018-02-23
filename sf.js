@@ -154,8 +154,8 @@ var SF = {
   absolute: function(base, relative) {
     var stack = base.split("/"),
         parts = relative.split("/");
-    stack.pop(); // remove current file name (or empty string)
-                 // (omit if "base" is the current folder without trailing slash)
+    stack.pop();
+    console.log(base, relative, stack, parts);
     for (let i=0; i<parts.length; i++) {
         if (parts[i] == ".")
             continue;
@@ -164,6 +164,7 @@ var SF = {
         else
             stack.push(parts[i]);
     }
+    console.log(stack.join("/"));
     return stack.join("/");
   }
 }
