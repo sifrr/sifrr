@@ -160,7 +160,6 @@ var SF = {
     var stack = base.split("/"),
         parts = relative.split("/");
     stack.pop();
-    console.log(base, relative, stack, parts);
     for (let i=0; i<parts.length; i++) {
         if (parts[i] == ".")
             continue;
