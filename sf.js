@@ -203,6 +203,7 @@ var SF = {
   disconnectedCallback: {},
   attributeChangedCallback: {},
   bindDataChangedCallback: {},
+  observedAttributes: {},
   setBindData: function(target, json){
     target.dataset.bind = JSON.stringify(json);
   },
