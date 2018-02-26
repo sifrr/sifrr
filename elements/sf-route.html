@@ -20,35 +20,31 @@
       for (const [i, r] of route.entries()) {
         if (r == '..') {
           makeRouteActive(el, data);
-          addClass(el, 'active');
           return;
         } else if (typeof path[i] == 'undefined') {
-          removeClass(el, 'active');
           makeRouteInactive(el);
           return;
         } else if (r == path[i] || r == '*') {
-          addClass(el, 'active');
           continue;
         } else if (r[0] == ':') {
           data[r.substr(1)] = path[i];
-          addClass(el, 'active');
           continue;
         } else {
-          removeClass(el, 'active');
           makeRouteInactive(el);
           return
         }
       }
       makeRouteActive(el, data);
-      addClass(el, 'active');
     }
   }
 
   function makeRouteActive(el, data) {
     el.innerHTML = SF.replaceHTML(el.dataset.originalSlotHtml, data, '#{route');
+    addClass(el, 'active');
   }
 
   function makeRouteInactive(el) {
+    removeClass(el, 'active');
     el.dataset.originalSlotHtml = el.dataset.originalSlotHtml ? el.dataset.originalSlotHtml : el.innerHTML;
     el.innerHTML = '';
   }
