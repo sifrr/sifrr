@@ -11,9 +11,6 @@
 </template>
 <script>
   SF.observedAttributes['sf-route'] = ['data-route'];
-  SF.defaultBind["sf-route"] = {
-
-  }
   SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
     let path = SF.getRoutes(window.location.pathname);
     if (attrName == 'data-route') {
