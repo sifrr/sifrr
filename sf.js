@@ -54,7 +54,7 @@ var SF = {
   Routes: {
     run: function(){
       let path = SF.getRoutes(window.location.pathname);
-      forEach(document.querySelectorAll('sf-routes sf-route'), function(el){
+      forEach(document.querySelectorAll('sf-routes sf-route'), function(index, el){
         addClass(el, 'inactive');
         let route = SF.getRoutes(el.dataset.route);
         if (route.indexOf('*') == -1){
