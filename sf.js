@@ -69,25 +69,32 @@ var SF = {
       forEach(document.querySelectorAll('sf-routes sf-route'), function(index, el){
         addClass(el, 'inactive');
         let route = SF.getRoutes(el.dataset.route);
+        let data = {};
         for (const [i, r] of route.entries()) {
           if(r == '..'){
             removeClass(el, 'inactive');
             addClass(el, 'active');
+            return;
+          } else if(typeof path[i] == 'undefined') {
+            removeClass(el, 'active');
+            addClass(el, 'inactive');
             return;
           } else if(r == path[i] || r == '*'){
             removeClass(el, 'inactive');
             addClass(el, 'active');
             continue;
           } else if(r[0] == ':'){
-            el.innerHTML = SF.replaceHTML(el.innerHTML, {`$(r.substr(1))`: path[i]}, '#{route');
+            data[r.substr(1)] = path[i];
             removeClass(el, 'inactive');
             addClass(el, 'active');
             continue;
           } else {
             removeClass(el, 'active');
             addClass(el, 'inactive');
+            return
           }
         }
+        el.innerHTML = SF.replaceHTML(el.innerHTML, data, '#{route');
       });
     }
   },
