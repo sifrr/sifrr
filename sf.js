@@ -200,6 +200,7 @@ var SF = {
     return pathname.split("/");
   }
 }
+SF.Routes.run();
 function forEach(array, callback) {
   if(Array.isArray(array)) {
     if (array.length < 1) {
