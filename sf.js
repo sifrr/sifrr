@@ -58,7 +58,7 @@ var SF = {
         addClass(el, 'inactive');
         let route = SF.getRoutes(el.dataset.route);
         if (route.indexOf('*') == -1){
-          if (route == path){
+          if (route.join('/') == path.join('/')){
             removeClass(el, 'inactive');
             addClass(el, 'active');
           }
