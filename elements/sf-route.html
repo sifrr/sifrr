@@ -2,9 +2,12 @@
   <style>
     :host {
       display: none;
+      opacity: 0;
+      transition: all 0.5s ease;
     }
     :host(.active) {
       display: block;
+      opacity: 1;
     }
   </style>
   <slot></slot>
