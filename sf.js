@@ -51,6 +51,22 @@ var SF = {
       return SF.API.getHTTP(url, params, callback, failure, "DELETE");
     }
   },
+  Routes: {
+    run: function(){
+      let path = SF.getRoutes(window.location.pathname);
+      forEach(document.querySelectorAll('sf-routes sf-route'), function(el){
+        addClass(el, 'inactive');
+        let route = SF.getRoutes(el.dataset.route);
+        if (route.indexOf('*') == -1){
+          if (route == path){
+            removeClass(el, 'inactive');
+            addClass(el, 'active');
+          }
+          return;
+        }
+      });
+    }
+  },
   loadCustomElement: function(elements) {
     forEach(elements, function(element, href){
       let link = document.createElement('link');
@@ -169,6 +185,19 @@ var SF = {
             stack.push(parts[i]);
     }
     return stack.join("/");
+  },
+  getRoutes: function(url){
+    if (url != '/') {
+      let pathname = '/' + url;
+    } else {
+      let pathname = url;
+    }
+    let qIndex = pathname.indexOf("?");
+    if (qIndex != -1)
+    {
+        pathname = pathname.substring(0, qIndex);
+    }
+    return pathname.split("/");
   }
 }
 function forEach(array, callback) {
@@ -203,4 +232,45 @@ function tryParseJSON(jsonString){
       return {};
     }
     return {};
+};
+function addClass(elem, classN) {
+  if (typeof elem == "string") {
+    elem = document.querySelector(elem);
+  }
+  if (!elem) {
+    return false;
+  }
+  if (elem.className.length < 1) {
+    elem.className = classN;
+  }
+  let classes = elem.className.split(" ");
+  if (classes.indexOf(classN) < 0) {
+    classes.push(classN);
+  }
+  elem.className = classes.join(" ");
+}
+
+function removeClass(elem, classN) {
+  if (typeof elem == "string") {
+    elem = document.querySelector(elem);
+  }
+  if (!elem) {
+    return false;
+  }
+  let classes = elem.className.split(" ");
+  classes.remove(classN);
+  elem.className = classes.join(" ");
+}
+
+Array.prototype.remove = function() {
+  let what, a = arguments,
+    L = a.length,
+    ax;
+  while (L && this.length) {
+    what = a[--L];
+    while ((ax = this.indexOf(what)) !== -1) {
+      this.splice(ax, 1);
+    }
+  }
+  return this;
 };
