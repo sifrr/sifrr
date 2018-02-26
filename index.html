@@ -50,6 +50,9 @@
     <sf-route data-route="..">
       show everywhere
     </sf-route>
+    <sf-route data-route="location/:id">
+      <sf-location data-location-id='#{route.id}'></sf-location>
+    </sf-route>
   </sf-routes>
   <my-app data-bind='{"text":"abcd"}' class="my-app">
     <p>No data binding in slotted elements #{data.text}.</p>
@@ -63,7 +66,7 @@
     function consoling(result) {
       console.log(result.results);
     }
-    SF.loadCustomElement(['random-el', 'my-app']);
+    SF.loadCustomElement(['random-el', 'my-app', 'sf-location']);
     SF.loadCustomElement({
       'simple-carousel': 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html'
     });
