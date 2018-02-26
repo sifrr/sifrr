@@ -168,7 +168,6 @@ var SF = {
         else
             stack.push(parts[i]);
     }
-    console.log(stack.join("/"));
     return stack.join("/");
   }
 }
