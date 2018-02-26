@@ -1,0 +1,25 @@
+<template>
+  <style>
+
+  </style>
+  <p>id - #{bind.location.id}</p>
+  <p>name - #{bind.location.name}</p>
+  <p>address - #{bind.location.address}</p>
+  <p>attractions - #{bind.attractions[0].name}</p>
+  <input value=#{bind.input}>
+</template>
+<script>
+  SF.defaultBind["sf-location"] = {
+
+  }
+  SF.attributeChangedCallback["sf-location"] = function(e, attrName, newVal) {
+    if (attrName == 'data-location-id') {
+      SF.API.get(`https://tuneout.aadityataparia.com/api/location/${newVal}`, {}, function(result) {
+        let data = {
+          location: result.results.location,
+          attractions: result.results.attractions
+        }
+      });
+    }
+  }
+</script>

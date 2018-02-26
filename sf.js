@@ -107,7 +107,10 @@ var SF = {
       link.onload = function(e) {
         window.customElements.define(element,
           class extends HTMLElement {
-            static get observedAttributes() {return ['data-bind']; }
+            static get observedAttributes() {
+              SF.observedAttributes[element] = SF.observedAttributes[element] ? SF.observedAttributes[element] : [];
+              return ['data-bind'].concat(SF.observedAttributes[element]);
+            }
             constructor() {
               super();
               const template = link.import.querySelector('template');
@@ -131,7 +134,7 @@ var SF = {
             }
             attributeChangedCallback(attrName, oldVal, newVal) {
               if (typeof SF.attributeChangedCallback[element] === "function") {
-                SF.attributeChangedCallback[element](this);
+                SF.attributeChangedCallback[element](this, attrName, oldVal, newVal);
               }
               if (attrName == "data-bind") {
                 let html = SF.replaceBindData(this, {}, element);
