@@ -1,0 +1,50 @@
+<template>
+  <style>
+    :host {
+      display: none;
+    }
+    :host.active {
+      display: block;
+    }
+  </style>
+  <slot></slot>
+</template>
+<script>
+  SF.observedAttributes['sf-route'] = ['data-route'];
+  SF.defaultBind["sf-route"] = {
+
+  }
+  SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
+    let path = SF.getRoutes(window.location.pathname);
+    if (attrName == 'data-route') {
+      addClass(el, 'inactive');
+      let route = SF.getRoutes(el.dataset.route);
+      let data = {};
+      for (const [i, r] of route.entries()) {
+        if (r == '..') {
+          removeClass(el, 'inactive');
+          addClass(el, 'active');
+          return;
+        } else if (typeof path[i] == 'undefined') {
+          removeClass(el, 'active');
+          addClass(el, 'inactive');
+          return;
+        } else if (r == path[i] || r == '*') {
+          removeClass(el, 'inactive');
+          addClass(el, 'active');
+          continue;
+        } else if (r[0] == ':') {
+          data[r.substr(1)] = path[i];
+          removeClass(el, 'inactive');
+          addClass(el, 'active');
+          continue;
+        } else {
+          removeClass(el, 'active');
+          addClass(el, 'inactive');
+          return
+        }
+      }
+      el.shadowRoot.innerHTML = SF.replaceHTML(el.shadowRoot.innerHTML, data, '#{route');
+    }
+  }
+</script>

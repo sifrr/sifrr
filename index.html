@@ -17,43 +17,41 @@
 </head>
 
 <body>
-  <sf-routes>
-    <sf-route data-route="/home">
-      <simple-carousel>
-        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
-        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
-        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
-      </simple-carousel>
-    </sf-route>
-    <sf-route data-route="/what">
-      <simple-carousel id="noloading">
-        <p>One slide</p>
-        <p>Two slide</p>
-        <p>Three slide</p>
-      </simple-carousel>
-      <sf-route data-route="/what/bang">
-        sf-route inside sf-route doesn't work
-      </sf-route>
-    </sf-route>
-    <sf-route data-route="/what/../okay">
-      /what/../okay
-    </sf-route>
-    <sf-route data-route="/what/*">
-      /what/*
-    </sf-route>
-    <sf-route data-route="/what/:okay">
-      #{route.okay}
-    </sf-route>
+  <sf-route data-route="/home">
+    <simple-carousel>
+      <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
+      <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
+      <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
+    </simple-carousel>
+  </sf-route>
+  <sf-route data-route="/what">
+    <simple-carousel id="noloading">
+      <p>One slide</p>
+      <p>Two slide</p>
+      <p>Three slide</p>
+    </simple-carousel>
     <sf-route data-route="/what/bang">
-      /what/bang
+      sf-route inside sf-route doesn't work
     </sf-route>
-    <sf-route data-route="..">
-      show everywhere
-    </sf-route>
-    <sf-route data-route="location/:id">
-      <sf-location data-location-id='#{route.id}'></sf-location>
-    </sf-route>
-  </sf-routes>
+  </sf-route>
+  <sf-route data-route="/what/../okay">
+    /what/../okay
+  </sf-route>
+  <sf-route data-route="/what/*">
+    /what/*
+  </sf-route>
+  <sf-route data-route="/what/:okay">
+    #{route.okay}
+  </sf-route>
+  <sf-route data-route="/what/bang">
+    /what/bang
+  </sf-route>
+  <sf-route data-route="..">
+    show everywhere
+  </sf-route>
+  <sf-route data-route="location/:id">
+    <sf-location data-location-id='#{route.id}'></sf-location>
+  </sf-route>
   <my-app data-bind='{"text":"abcd"}' class="my-app">
     <p>No data binding in slotted elements #{data.text}.</p>
     <p>Okay.</p>
@@ -66,7 +64,7 @@
     function consoling(result) {
       console.log(result.results);
     }
-    SF.loadCustomElement(['random-el', 'my-app', 'sf-location']);
+    SF.loadCustomElement(['random-el', 'my-app', 'sf-location', 'sf-route']);
     SF.loadCustomElement({
       'simple-carousel': 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html'
     });
