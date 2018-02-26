@@ -134,10 +134,10 @@ var SF = {
     if (typeof target.dataset.bind === 'undefined') {
       target.dataset.bind = JSON.stringify({});
     }
-    if(target.dataset.bindOld == target.dataset.bind){
+    Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
+    if(target.dataset.bindOld == data){
       return;
     }
-    Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
     html = SF.replaceHTML(html, data, '#{bind');
