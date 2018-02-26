@@ -14,6 +14,7 @@
   SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
     let path = SF.getRoutes(window.location.pathname);
     if (attrName == 'data-route') {
+      makeRouteActive(el, data);
       let route = SF.getRoutes(el.dataset.route);
       let data = {};
       for (const [i, r] of route.entries()) {
