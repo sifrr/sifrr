@@ -1,3 +1,15 @@
+Array.prototype.remove = function() {
+  let what, a = arguments,
+    L = a.length,
+    ax;
+  while (L && this.length) {
+    what = a[--L];
+    while ((ax = this.indexOf(what)) !== -1) {
+      this.splice(ax, 1);
+    }
+  }
+  return this;
+};
 var SF = {
   API: {
     getHTTP: function(url, params, callback, failure, type) {
@@ -260,16 +272,3 @@ function removeClass(elem, classN) {
   classes.remove(classN);
   elem.className = classes.join(" ");
 }
-
-Array.prototype.remove = function() {
-  let what, a = arguments,
-    L = a.length,
-    ax;
-  while (L && this.length) {
-    what = a[--L];
-    while ((ax = this.indexOf(what)) !== -1) {
-      this.splice(ax, 1);
-    }
-  }
-  return this;
-};
