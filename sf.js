@@ -75,9 +75,13 @@ var SF = {
             addClass(el, 'active');
             return;
           } else if(r == path[i] || r == '*'){
+            removeClass(el, 'inactive');
+            addClass(el, 'active');
             continue;
           } else if(r[0] == ':'){
             SF.replaceHTML(el.innerHTML, {r.substr(1): path[i]}, '#{route');
+            removeClass(el, 'inactive');
+            addClass(el, 'active');
             continue;
           } else {
             removeClass(el, 'active');
