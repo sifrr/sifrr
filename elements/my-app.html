@@ -29,6 +29,7 @@
     var randomEl = document.createElement('random-el');
     e.shadowRoot.appendChild(randomEl);
     SF.setBindData(randomEl, data["randomElement"]);
+    e.shadowRoot.innerHTML += '<random-el></random-el>';
   }
 
   function myAppClick() {
