@@ -79,7 +79,7 @@ var SF = {
             addClass(el, 'active');
             continue;
           } else if(r[0] == ':'){
-            el.innerHTML = SF.replaceHTML(el.innerHTML, {r.substr(1): path[i]}, '#{route');
+            el.innerHTML = SF.replaceHTML(el.innerHTML, {`$(r.substr(1))`: path[i]}, '#{route');
             removeClass(el, 'inactive');
             addClass(el, 'active');
             continue;
