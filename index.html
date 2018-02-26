@@ -32,13 +32,23 @@
         <p>Three slide</p>
       </simple-carousel>
       <sf-route data-route="/what/bang">
+        sf-route inside sf-route doesn't work
       </sf-route>
     </sf-route>
     <sf-route data-route="/what/..">
       /what/..
     </sf-route>
+    <sf-route data-route="/what/*">
+      /what/*
+    </sf-route>
     <sf-route data-route="/what/:okay">
       #{route.okay}
+    </sf-route>
+    <sf-route data-route="/what/bang">
+      /what/bang
+    </sf-route>
+    <sf-route data-route="..">
+      show everywhere
     </sf-route>
   </sf-routes>
   <my-app data-bind='{"text":"abcd"}' class="my-app">
