@@ -8,6 +8,7 @@
   <p>attractions - #{bind.attractions[0].name}</p>
 </template>
 <script>
+  SF.observedAttributes['sf-location'] = ['data-location-id'];
   SF.defaultBind["sf-location"] = {
 
   }
@@ -26,5 +27,4 @@
       });
     }
   }
-  SF.observedAttributes['sf-location'] = ['data-location-id'];
 </script>

@@ -109,6 +109,7 @@ var SF = {
           class extends HTMLElement {
             static get observedAttributes() {
               SF.observedAttributes[element] = SF.observedAttributes[element] ? SF.observedAttributes[element] : [];
+              console.log(SF.observedAttributes[element]);
               return ['data-bind'].concat(SF.observedAttributes[element]);
             }
             constructor() {
