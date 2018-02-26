@@ -23,7 +23,7 @@
           return;
         } else if (typeof path[i] == 'undefined') {
           removeClass(el, 'active');
-          makeRouteInactive();
+          makeRouteInactive(el);
           return;
         } else if (r == path[i] || r == '*') {
           addClass(el, 'active');
@@ -34,7 +34,7 @@
           continue;
         } else {
           removeClass(el, 'active');
-          makeRouteInactive();
+          makeRouteInactive(el);
           return
         }
       }
