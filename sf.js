@@ -69,12 +69,20 @@ var SF = {
       forEach(document.querySelectorAll('sf-routes sf-route'), function(index, el){
         addClass(el, 'inactive');
         let route = SF.getRoutes(el.dataset.route);
-        if (route.indexOf('*') == -1){
-          if (route.join('/') == path.join('/')){
+        for (const [i, r] of route.entries()) {
+          if(r == '..'){
             removeClass(el, 'inactive');
             addClass(el, 'active');
+            return;
+          } elseif(r == path[i] || r = '*'){
+            continue;
+          } elseif(r[0] == ':'){
+            SF.replaceHTML(el.innerHTML, {r.substr(1): path[i]}, '#{route');
+            continue;
+          } else {
+            removeClass(el, 'active');
+            addClass(el, 'inactive');
           }
-          return;
         }
       });
     }
