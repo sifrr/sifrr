@@ -14,15 +14,13 @@
   SF.attributeChangedCallback["sf-location"] = function(e, attrName, newVal) {
     if (attrName == 'data-location-id') {
       SF.API.get(`https://tuneout.aadityataparia.com/api/location/${newVal}`, {}, function(result) {
-        let data = {};
         if (result && result.results) {
-          data = {
+          let data = {
             location: result.results.location,
             attractions: result.results.attractions
           }
+          SF.replaceBindData(e, data, 'sf-location');
         }
-        console.log(data);
-        SF.replaceBindData(e, data, 'sf-location');
       });
     }
   }
