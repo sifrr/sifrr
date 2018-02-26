@@ -74,9 +74,9 @@ var SF = {
             removeClass(el, 'inactive');
             addClass(el, 'active');
             return;
-          } elseif(r == path[i] || r = '*'){
+          } else if(r == path[i] || r = '*'){
             continue;
-          } elseif(r[0] == ':'){
+          } else if(r[0] == ':'){
             SF.replaceHTML(el.innerHTML, {r.substr(1): path[i]}, '#{route');
             continue;
           } else {
