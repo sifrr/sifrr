@@ -102,7 +102,7 @@ var SF = {
     forEach(elements, function(element, href){
       let link = document.createElement('link');
       link.rel = 'import';
-      link.href = typeof href === "string" ? href : './elements/' + element + '.html';
+      link.href = typeof href === "string" ? href : '/elements/' + element + '.html';
       link.setAttribute('async', '');
       link.onload = function(e) {
         window.customElements.define(element,
