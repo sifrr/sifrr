@@ -12,7 +12,7 @@
   SF.defaultBind["sf-location"] = {
 
   }
-  SF.attributeChangedCallback["sf-location"] = function(e, attrName, newVal) {
+  SF.attributeChangedCallback["sf-location"] = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {
       SF.API.get('https://tuneout.aadityataparia.com/api/location/' + newVal, {}, function(result) {
         console.log(newVal, result);
