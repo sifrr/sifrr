@@ -10,21 +10,27 @@
 </head>
 
 <body>
+  <sf-routes>
+    <sf-route route="/home">
+      <simple-carousel>
+        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
+        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
+        <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
+      </simple-carousel>
+    </sf-route>
+    <sf-route route="/what">
+      <simple-carousel id="noloading">
+        <p>One slide</p>
+        <p>Two slide</p>
+        <p>Three slide</p>
+      </simple-carousel>
+    </sf-route>
+  </sf-routes>
   <my-app data-bind='{"text":"abcd"}' class="my-app">
     <p>No data binding in slotted elements #{data.text}.</p>
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
-  <simple-carousel>
-    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
-    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
-    <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
-  </simple-carousel>
-  <simple-carousel id="noloading">
-    <p>One slide</p>
-    <p>Two slide</p>
-    <p>Three slide</p>
-  </simple-carousel>
   <script type="text/javascript" src="./sf.js"></script>
   <script type="text/javascript">
     SF.API.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling)
