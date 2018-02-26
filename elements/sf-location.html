@@ -18,7 +18,7 @@
         console.log(newVal, result);
         if (result && result.results) {
           let data = {
-            location: result.results.location,
+            location: result.results.location[0],
             attractions: result.results.attractions
           }
           console.log(data);
