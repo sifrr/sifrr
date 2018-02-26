@@ -49,7 +49,7 @@
   }
 
   function makeRouteInactive(el) {
-    el.dataset.originalSlotHtml = el.innerHTML;
+    el.dataset.originalSlotHtml = el.dataset.originalSlotHtml ? el.dataset.originalSlotHtml : el.innerHTML;
     el.innerHTML = '';
   }
 </script>
