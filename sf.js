@@ -187,17 +187,15 @@ var SF = {
     return stack.join("/");
   },
   getRoutes: function(url){
-    if (url != '/') {
-      let pathname = '/' + url;
-    } else {
-      let pathname = url;
+    if (url[0] != '/') {
+      url = '/' + url;
     }
-    let qIndex = pathname.indexOf("?");
+    let qIndex = url.indexOf("?");
     if (qIndex != -1)
     {
-        pathname = pathname.substring(0, qIndex);
+        url = url.substring(0, qIndex);
     }
-    return pathname.split("/");
+    return url.split("/");
   }
 }
 SF.Routes.run();
