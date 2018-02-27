@@ -20,6 +20,11 @@
   SF.clickEvents['a'] = function(el, e) {
     if (el.host == window.location.host) {
       e.preventDefault();
+      var stateObj = {
+        location: el.pathname
+      };
+      history.pushState(stateObj, "Home", el.pathname);
+      refreshRoute();
     }
   }
 
