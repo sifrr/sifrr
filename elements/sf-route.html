@@ -28,6 +28,10 @@
     }
   }
 
+  window.onpopstate = function(event) {
+    refreshAllRoutes();
+  };
+
   function refreshAllRoutes() {
     let path = SF.getRoutes(window.location.pathname);
     document.querySelectorAll('sf-route').forEach(function(el) {
