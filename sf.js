@@ -137,7 +137,9 @@ var SF = {
     }
     target.dataset.bindOld = JSON.stringify(data);
     html = SF.replaceHTML(target.dataset.originalHtml, data, '#{bind');
-    target.shadowRoot.innerHTML = html;
+    if (target.shadowRoot.innerHTML !== html){
+      target.shadowRoot.innerHTML = html;
+    }
     if (typeof SF.bindDataChangedCallback[element] === "function") {
       SF.bindDataChangedCallback[element](target, data);
     }
