@@ -199,7 +199,8 @@ var SF = {
         url = url.substring(0, qIndex);
     }
     return url.split("/");
-  }
+  },
+  clickEvents: {}
 }
 function forEach(array, callback) {
   if(Array.isArray(array)) {
@@ -261,4 +262,31 @@ function removeClass(elem, classN) {
   let classes = elem.className.split(" ");
   classes.remove(classN);
   elem.className = classes.join(" ");
+}
+//Click event listner
+const MAIN = document.body || document.getElementsByTagName("body")[0];
+function clickHandler(e) {
+  e = e || window.event;
+  var target;
+  target = e.target || e.srcElement;
+  for (var k in SF.clickEvents) {
+    x = target;
+    while (x) {
+      if (x.matches(k)) {
+        var fn = SF.clickEvents[k];
+        if (typeof fn === "function") {
+          fn(x, e);
+        }
+      }
+      if (x) {
+        x = x.parentElement;
+      }
+    }
+  }
+}
+
+if (MAIN.addEventListener) {
+  MAIN.addEventListener('click', clickHandler, false);
+} else {
+  MAIN.attachEvent('onclick', clickHandler);
 }
