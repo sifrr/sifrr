@@ -56,10 +56,7 @@
   }
 
   function makeRouteActive(el, data) {
-    let newHtml = SF.replaceHTML(el.dataset.originalSlotHtml, data, '#{route');
-    if (el.innerHTML !== newHtml) {
-      el.innerHTML = newHtml;
-    }
+    el.dataset.bind = SF.replaceHTML(el.dataset.bind, data, '#{route');
     addClass(el, 'active');
   }
 
