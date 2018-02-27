@@ -145,6 +145,7 @@ var SF = {
     }
   },
   replaceHTML: function(html, data, prefix){
+    html = html ? html : return '';
     let replaced = prefix + '}';
     if (Array.isArray(data)) {
       html = html.replace(replaced, stringify(data));
