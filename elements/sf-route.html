@@ -23,6 +23,7 @@
       var stateObj = {
         location: el.pathname
       };
+      document.title = el.pathname;
       history.pushState(stateObj, "Home", el.pathname);
       refreshAllRoutes();
     }
