@@ -59,8 +59,8 @@
   <sf-route data-route="..">
     show everywhere
   </sf-route>
-  <sf-route data-route="location/:id" data-bind='{"id":"#{route.id}"}'>
-    <sf-location data-location-id='#{bind.id}'></sf-location>
+  <sf-route data-route="location/:id">
+    <sf-location data-location-id='#{route.id}'></sf-location>
   </sf-route>
   <my-app data-bind='{"text":"abcd"}' class="my-app">
     <p>No data binding in slotted elements #{data.text}.</p>
