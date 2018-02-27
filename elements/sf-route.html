@@ -56,13 +56,10 @@
   }
 
   function makeRouteActive(el, data) {
-    el.innerHTML = SF.replaceHTML(el.dataset.originalSlotHtml, data, '#{route');
+    let newHtml = SF.replaceHTML(el.dataset.originalSlotHtml, data, '#{route');
+    if (el.innerHTML !== newHtml) {
+      el.innerHTML = newHtml;
+    }
     addClass(el, 'active');
-  }
-
-  function makeRouteInactive(el) {
-    removeClass(el, 'active');
-    el.dataset.originalSlotHtml = el.dataset.originalSlotHtml ? el.dataset.originalSlotHtml : el.innerHTML;
-    el.innerHTML = '';
   }
 </script>
