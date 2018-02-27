@@ -12,8 +12,20 @@
 <script>
   SF.observedAttributes['sf-route'] = ['data-route'];
   SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
-    let path = SF.getRoutes(window.location.pathname);
     if (attrName == 'data-route') {
+      refreshRoute();
+    }
+  }
+
+  SF.clickEvents['a'] = function(el, e) {
+    if (el.host == window.location.host) {
+      e.preventDefault();
+    }
+  }
+
+  function refreshRoute() {
+    let path = SF.getRoutes(window.location.pathname);
+    document.querySelectorAll('sf-route').forEach(function(el) {
       let route = SF.getRoutes(el.dataset.route);
       let data = {};
       makeRouteInactive(el);
@@ -35,7 +47,7 @@
         }
       }
       makeRouteActive(el, data);
-    }
+    });
   }
 
   function makeRouteActive(el, data) {
