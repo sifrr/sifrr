@@ -176,6 +176,11 @@ var SF = {
   setBindData: function(target, json){
     target.dataset.bind = JSON.stringify(json);
   },
+  getBindData: function(target){
+    let data ={};
+    Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
+    return data;
+  },
   absolute: function(base, relative) {
     var stack = base.split("/"),
         parts = relative.split("/");
