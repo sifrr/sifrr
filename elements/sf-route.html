@@ -13,7 +13,7 @@
   SF.observedAttributes['sf-route'] = ['data-route'];
   SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
-      refreshRoute();
+      refreshRoute(el, SF.getRoutes(window.location.pathname));
     }
   }
 
@@ -28,31 +28,35 @@
     }
   }
 
-  function refreshRoute() {
+  function refreshAllRoutes() {
     let path = SF.getRoutes(window.location.pathname);
     document.querySelectorAll('sf-route').forEach(function(el) {
-      let route = SF.getRoutes(el.dataset.route);
-      let data = {};
-      makeRouteInactive(el);
-      for (const [i, r] of route.entries()) {
-        if (r == '..') {
-          makeRouteActive(el, data);
-          return;
-        } else if (typeof path[i] == 'undefined') {
-          makeRouteInactive(el);
-          return;
-        } else if (r == path[i] || r == '*') {
-          continue;
-        } else if (r[0] == ':') {
-          data[r.substr(1)] = path[i];
-          continue;
-        } else {
-          makeRouteInactive(el);
-          return
-        }
-      }
-      makeRouteActive(el, data);
+      refreshRoute(el, path);
     });
+  }
+
+  function refreshRoute(el, path) {
+    let route = SF.getRoutes(el.dataset.route);
+    let data = {};
+    makeRouteInactive(el);
+    for (const [i, r] of route.entries()) {
+      if (r == '..') {
+        makeRouteActive(el, data);
+        return;
+      } else if (typeof path[i] == 'undefined') {
+        makeRouteInactive(el);
+        return;
+      } else if (r == path[i] || r == '*') {
+        continue;
+      } else if (r[0] == ':') {
+        data[r.substr(1)] = path[i];
+        continue;
+      } else {
+        makeRouteInactive(el);
+        return
+      }
+    }
+    makeRouteActive(el, data);
   }
 
   function makeRouteActive(el, data) {
