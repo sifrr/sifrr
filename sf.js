@@ -131,16 +131,12 @@ var SF = {
       target.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
                                       .replace(/\>\s*\</g,'><');
     }
-    if (typeof target.dataset.bind === 'undefined') {
-      target.dataset.bind = JSON.stringify({});
-    }
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     if(target.dataset.bindOld == data){
       return;
     }
-    let html = target.dataset.originalHtml;
     target.dataset.bindOld = JSON.stringify(data);
-    html = SF.replaceHTML(html, data, '#{bind');
+    html = SF.replaceHTML(target.dataset.originalHtml, data, '#{bind');
     target.shadowRoot.innerHTML = html;
     if (typeof SF.bindDataChangedCallback[element] === "function") {
       SF.bindDataChangedCallback[element](target, data);
