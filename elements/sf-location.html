@@ -10,7 +10,14 @@
 <script>
   SF.observedAttributes['sf-location'] = ['data-location-id'];
   SF.defaultBind["sf-location"] = {
-
+    location: {
+      id: 'loading',
+      name: 'loading',
+      address: 'loading'
+    },
+    attractions: [{
+      name: 'loading'
+    }]
   }
   SF.attributeChangedCallback["sf-location"] = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {
