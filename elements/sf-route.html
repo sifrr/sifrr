@@ -62,4 +62,12 @@
     }
     addClass(el, 'active');
   }
+
+  function makeRouteInactive(el) {
+    removeClass(el, 'active');
+    if (!el.dataset.originalSlotHtml) {
+      el.dataset.originalSlotHtml = el.innerHTML;
+    }
+    el.innerHTML = '';
+  }
 </script>
