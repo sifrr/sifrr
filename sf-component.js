@@ -1,5 +1,5 @@
 class SFComponent {
-  constructor(element, href){
+  constructor(element, href = null){
     if(Array.isArray(element)){
       return element.map(e => new SFComponent(e));
     } else if (typeof element == 'object'){
