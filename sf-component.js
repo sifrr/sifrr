@@ -52,6 +52,7 @@ class SFComponent {
     return text;
   }
   static setBindData(target, json){
+    console.log(target, json);
     target.dataset.bind = JSON.stringify(json);
   }
   static getBindData(target, data = {}){
