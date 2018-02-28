@@ -1,56 +1,48 @@
 class SFAPI {
-  static getHTTP(url, params, callback, failure, type) {
-    params = typeof params == 'undefined' ? {} : params;
+  static getHTTP(url, callback, failure, type, {params = {}, headers = {}} = {}) {
     let ans = Object.keys(params).map(function(k) {
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
-      }).join('&'),
-      noload = false;
-    let http = new XMLHttpRequest(),
-      lfres;
+      }).join('&');
+    let http = new XMLHttpRequest();
     http.onload = function() {
       if (http.status > 199 && http.status < 400) {
         let result = JSON.parse(http.responseText);
         if (typeof callback == "function") {
           callback(result);
         }
-        return result;
       } else {
         if (typeof failure == "function") {
           failure(http.status);
         }
-        return false;
       }
     };
     http.onerror = function(e) {
-      if (!noload) {
-        Console.log("Network Error, try again.");
-      }
+      Console.log('Network Error, try again.', e);
     };
     http.ontimeout = function(e) {
-      if (!noload) {
-        Console.log('Request timed out');
-      }
+      Console.log('Request timed out', e);
     }
     http.onprogress = function(e) {
     }
     http.open(type, url + '?' + ans, true);
     http.setRequestHeader("accept", "application/json");
+    headers.forEach((k, v) => http.setRequestHeader(k, v));
     http.send();
   }
 
-  static get(url, params, callback, failure) {
-    return this.getHTTP(url, params, callback, failure, "GET");
+  static get(url, callback, failure, options) {
+    return this.getHTTP(url, callback, failure, "GET", options);
   }
 
-  static post(url, params, callback, failure) {
-    return this.getHTTP(url, params, callback, failure, "POST");
+  static post(url, callback, failure, options) {
+    return this.getHTTP(url, callback, failure, "POST", options);
   }
 
-  static put(url, params, callback, failure) {
-    return this.getHTTP(url, params, callback, failure, "PUT");
+  static put(url, callback, failure, options) {
+    return this.getHTTP(url, callback, failure, "PUT", options);
   }
 
-  static delete(url, params, callback, failure) {
-    return this.getHTTP(url, params, callback, failure, "DELETE");
+  static delete(url, callback, failure, options) {
+    return this.getHTTP(url, callback, failure, "DELETE", options);
   }
 }
