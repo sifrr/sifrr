@@ -71,24 +71,13 @@
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
-  <script type="text/javascript" src="/sf.js"></script>
+  <script type="text/javascript" src="/sf-es6.js"></script>
   <script type="text/javascript">
     SF.API.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling)
 
     function consoling(result) {
       console.log(result.results);
     }
-    SF.loadCustomElement(['my-app', 'sf-location', 'sf-route']);
-    SF.loadCustomElement({
-      'simple-carousel': 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html'
-    });
-    SF.setBindData(document.querySelector('#noloading'), {
-      'loading': {
-        'style': {
-          'display': 'none'
-        }
-      }
-    });
   </script>
 </body>
 
