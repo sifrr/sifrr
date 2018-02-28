@@ -18,7 +18,6 @@
 </template>
 <script>
   let c = SFComponent['my-app'];
-  console.log(c);
   c.defaultBind = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
@@ -33,10 +32,9 @@
     SFComponent.setBindData(randomEl, data["randomElement"]);
     e.shadowRoot.innerHTML += '<random-el data-bind=\'["whatever","abcd"]\'></random-el>';
   }
+  let randomEL = new SFComponent('random-el');
 
   function myAppClick() {
     alert('my-app inout clicked');
   }
-
-  SF.loadCustomElement(['random-el']);
 </script>
