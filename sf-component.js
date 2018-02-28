@@ -21,12 +21,11 @@ class SFComponent {
     }
     target.dataset.bindOld = JSON.stringify(data);
     html = this.replace(target.dataset.originalHtml, data, '#{bind');
-    c = SFComponent[element];
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
     }
     if (typeof c.bindDataChangedCallback === "function") {
-      c.bindDataChangedCallback(target, data);
+      SFComponent[element].bindDataChangedCallback(target, data);
     }
   }
   static replace(text, data, prefix){
