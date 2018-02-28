@@ -1,8 +1,8 @@
 class SFAPI {
   static getHTTP(url, callback, failure, type, {params = {}, headers = {}} = {}) {
-    let ans = Object.keys(params).map(function(k) {
-        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
-      }).join('&');
+    let ans = Object.keys(params).map(k =>
+        encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
+      ).join('&');
     let http = new XMLHttpRequest();
     http.onload = function() {
       if (http.status > 199 && http.status < 400) {
@@ -26,7 +26,7 @@ class SFAPI {
     }
     http.open(type, url + '?' + ans, true);
     http.setRequestHeader("accept", "application/json");
-    headers.forEach((k, v) => http.setRequestHeader(k, v));
+    Object.keys(headers).forEach(k => http.setRequestHeader(k, headers[k]));
     http.send();
   }
 
