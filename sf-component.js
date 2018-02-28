@@ -9,13 +9,16 @@ class SFComponent {
     link.rel = 'import';
     link.href = typeof href === "string" ? href : '/elements/' + element + '.html';
     link.setAttribute('async', '');
+    console.log(link);
     link.onload = e => {
       window.customElements.define(element,
         class extends HTMLElement {
-
+          static get observedAttributes() {
+            return ['data-bind'].concat(this.observedAttributes);
+          }
           constructor() {
-            console.log(this);
             super();
+            console.log(this);
             const template = link.import.querySelector('template');
             if (template.getAttribute("relative-url") == "true") {
               var base = link.href;
@@ -56,10 +59,10 @@ class SFComponent {
             }
           }
       });
-    };
+    }
     link.onerror = function(e) {
       console.log(e);
-    };
+    }
     document.head.appendChild(link);
   }
 }
