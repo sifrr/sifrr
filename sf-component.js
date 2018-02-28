@@ -1,10 +1,10 @@
 class SFComponent {
-  cunstructor(element, href){
-    // if(Array.isArray(element)){
-    //   return element.map(e => new SFComponent(e));
-    // } else if (typeof element == 'object'){
-    //   return Object.keys(element).map(k => new SFComponent(k, element[k]));
-    // }
+  constructor(element, href){
+    if(Array.isArray(element)){
+      return element.map(e => new SFComponent(e));
+    } else if (typeof element == 'object'){
+      return Object.keys(element).map(k => new SFComponent(k, element[k]));
+    }
     let link = document.createElement('link');
     link.rel = 'import';
     link.href = typeof href === "string" ? href : '/elements/' + element + '.html';
