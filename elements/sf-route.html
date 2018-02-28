@@ -14,7 +14,7 @@
   sfRoute.observedAttributes = ['data-route'];
   sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
-      refreshRoute(el, SF.getRoutes(window.location.pathname));
+      refreshRoute(el, SFComponent.getRoutes(window.location.pathname));
     }
   }
 
@@ -35,14 +35,14 @@
   };
 
   function refreshAllRoutes() {
-    let path = SF.getRoutes(window.location.pathname);
+    let path = SFComponent.getRoutes(window.location.pathname);
     document.querySelectorAll('sf-route').forEach(function(el) {
       refreshRoute(el, path);
     });
   }
 
   function refreshRoute(el, path) {
-    let route = SF.getRoutes(el.dataset.route);
+    let route = SFComponent.getRoutes(el.dataset.route);
     let data = {};
     makeRouteInactive(el);
     for (const [i, r] of route.entries()) {
@@ -66,7 +66,7 @@
   }
 
   function makeRouteActive(el, data) {
-    let newHtml = SF.replaceHTML(el.dataset.originalSlotHtml, data, '#{route');
+    let newHtml = SFComponent.replace(el.dataset.originalSlotHtml, data, '#{route');
     if (el.innerHTML !== newHtml) {
       el.innerHTML = newHtml;
     }
