@@ -1,9 +1,9 @@
 class SFComponent {
   cunstructor(element, href){
     if(Array.isArray(elements)){
-      return elements.map(e => return new SFComponent(e));
+      return elements.map(e => new SFComponent(e));
     } else if (typeof elements == 'object'){
-      return Object.keys(elements).map(k => return new SFComponent(k, elements[k]));
+      return Object.keys(elements).map(k => new SFComponent(k, elements[k]));
     }
     let link = document.createElement('link');
     link.rel = 'import';
@@ -12,7 +12,7 @@ class SFComponent {
     link.onload = e => {
       window.customElements.define(element,
         class extends HTMLElement {
-          
+
           constructor() {
             console.log(this);
             super();
