@@ -15,7 +15,7 @@ class SFComponent {
       target.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
                                       .replace(/\>\s*\</g,'><');
     }
-    Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
+    data = SFComponent.getBindData(target, data);
     if(target.dataset.bindOld == data){
       return;
     }
@@ -54,8 +54,7 @@ class SFComponent {
   static setBindData(target, json){
     target.dataset.bind = JSON.stringify(json);
   }
-  static getBindData(target){
-    let data ={};
+  static getBindData(target, data = {}){
     Object.assign(data, tryParseJSON(target.dataset.bindOld), tryParseJSON(target.dataset.bind));
     return data;
   }
