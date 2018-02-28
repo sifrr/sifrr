@@ -8,8 +8,9 @@
   <p>attractions - #{bind.attractions[0].name}</p>
 </template>
 <script>
-  SF.observedAttributes['sf-location'] = ['data-location-id'];
-  SF.defaultBind["sf-location"] = {
+  let c = SFComponent['sf-location'];
+  c.observedAttributes = ['data-location-id'];
+  c.defaultBind = {
     location: {
       id: 'loading',
       name: 'loading',
@@ -19,7 +20,7 @@
       name: 'loading'
     }]
   }
-  SF.attributeChangedCallback["sf-location"] = function(e, attrName, oldVal, newVal) {
+  c.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {
       SF.API.get('https://tuneout.aadityataparia.com/api/location/' + newVal, {}, function(result) {
         console.log(newVal, result);
