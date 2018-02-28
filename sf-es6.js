@@ -1,4 +1,4 @@
-class SF.API {
+class SFAPI {
   static getHTTP(url, params, callback, failure, type) {
     params = typeof params == 'undefined' ? {} : params;
     let ans = Object.keys(params).map(function(k) {
@@ -37,19 +37,19 @@ class SF.API {
     http.setRequestHeader("accept", "application/json");
     http.send();
   }
-  
+
   static get(url, params, callback, failure) {
     return SF.API.getHTTP(url, params, callback, failure, "GET");
   }
-  
+
   static post(url, params, callback, failure) {
     return SF.API.getHTTP(url, params, callback, failure, "POST");
   }
-  
+
   static put(url, params, callback, failure) {
     return SF.API.getHTTP(url, params, callback, failure, "PUT");
   }
-  
+
   static delete(url, params, callback, failure) {
     return SF.API.getHTTP(url, params, callback, failure, "DELETE");
   }
