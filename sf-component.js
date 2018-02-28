@@ -10,7 +10,7 @@ class SFComponent {
     link.href = typeof href === "string" ? href : '/elements/' + element + '.html';
     link.setAttribute('async', '');
     console.log(link);
-    link.onload = e => {
+    link.onload = function(e) {
       window.customElements.define(element,
         class extends HTMLElement {
           static get observedAttributes() {
