@@ -5,11 +5,11 @@ class SFComponent {
     } else if (typeof element == 'object'){
       return Object.keys(element).map(k => new SFComponent(k, element[k]));
     }
+    let component = this;
     let link = document.createElement('link');
     link.rel = 'import';
     link.href = typeof href === "string" ? href : '/elements/' + element + '.html';
     link.setAttribute('async', '');
-    console.log(link);
     link.onload = function(e) {
       window.customElements.define(element,
         class extends HTMLElement {
@@ -18,7 +18,7 @@ class SFComponent {
           }
           constructor() {
             super();
-            console.log(this);
+            console.log(component);
             const template = link.import.querySelector('template');
             if (template.getAttribute("relative-url") == "true") {
               var base = link.href;
