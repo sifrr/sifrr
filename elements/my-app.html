@@ -17,15 +17,15 @@
   <input value=#{bind.input}>
 </template>
 <script>
-  SF.defaultBind["my-app"] = {
+  defaultBind = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
     "randomElement": ["this is random text", "this is second random text"]
   }
-  SF.attributeChangedCallback["my-app"] = function(e) {
+  attributeChangedCallback = function(e) {
     e.shadowRoot.querySelector("input").addEventListener("click", myAppClick);
   }
-  SF.bindDataChangedCallback["my-app"] = function(e, data) {
+  bindDataChangedCallback = function(e, data) {
     var randomEl = document.createElement('random-el');
     e.shadowRoot.appendChild(randomEl);
     SF.setBindData(randomEl, data["randomElement"]);
