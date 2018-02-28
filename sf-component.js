@@ -20,11 +20,11 @@ class SFComponent {
       return;
     }
     target.dataset.bindOld = JSON.stringify(data);
-    html = this.replace(target.dataset.originalHtml, data, '#{bind');
-    let c = SFComponent[element];
+    html = SFComponent.replace(target.dataset.originalHtml, data, '#{bind');
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
     }
+    let c = SFComponent[element];
     if (typeof c.bindDataChangedCallback === "function") {
       c.bindDataChangedCallback(target, data);
     }
