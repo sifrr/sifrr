@@ -9,7 +9,7 @@
 </template>
 <script>
   let sfLocation = SFComponent['sf-location'];
-  sfLocation.observedAttributes = ['data-location-id', 'data-bind'];
+  sfLocation.observedAttributes = ['data-location-id'];
   sfLocation.defaultBind = {
     location: {
       id: 'loading',
@@ -21,6 +21,7 @@
     }]
   }
   sfLocation.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
+    console.log(e, attrName);
     if (attrName == 'data-location-id') {
       SFAPI.get('https://tuneout.aadityataparia.com/api/location/' + newVal, {}, function(result) {
         console.log(newVal, result);
@@ -29,7 +30,7 @@
             location: result.results.location[0],
             attractions: result.results.attractions
           }
-          console.log(data);
+          console.log(e, data);
           SFComponent.setBindData(e, data);
         }
       });
