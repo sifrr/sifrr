@@ -161,30 +161,3 @@ function tryParseJSON(jsonString){
     }
     return {};
 }
-//Click event listner
-const MAIN = document.body || document.getElementsByTagName("body")[0];
-function clickHandler(e) {
-  e = e || window.event;
-  var target;
-  target = e.target || e.srcElement;
-  for (var k in SFComponent.clickEvents) {
-    x = target;
-    while (x) {
-      if (x.matches(k)) {
-        var fn = SFComponent.clickEvents[k];
-        if (typeof fn === "function") {
-          fn(x, e);
-        }
-      }
-      if (x) {
-        x = x.parentElement;
-      }
-    }
-  }
-}
-
-if (MAIN.addEventListener) {
-  MAIN.addEventListener('click', clickHandler, false);
-} else {
-  MAIN.attachEvent('onclick', clickHandler);
-}
