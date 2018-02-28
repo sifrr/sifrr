@@ -1,5 +1,6 @@
 class SFComponent {
   constructor(element, href = null){
+    href = typeof href === "string" ? href : '/elements/' + element + '.text';
     if(Array.isArray(element)){
       return element.map(e => new SFComponent(e));
     } else if (typeof element == 'object'){
@@ -88,7 +89,7 @@ class SFComponent {
 function createComponent(element, href, c){
   let link = document.createElement('link');
   link.rel = 'import';
-  link.href = typeof href === "string" ? href : '/elements/' + element + '.text';
+  link.href = href;
   link.setAttribute('async', '');
   link.onload = function(e) {
     window.customElements.define(element,
