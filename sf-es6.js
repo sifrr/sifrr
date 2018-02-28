@@ -39,18 +39,18 @@ class SFAPI {
   }
 
   static get(url, params, callback, failure) {
-    return SF.API.getHTTP(url, params, callback, failure, "GET");
+    return this.getHTTP(url, params, callback, failure, "GET");
   }
 
   static post(url, params, callback, failure) {
-    return SF.API.getHTTP(url, params, callback, failure, "POST");
+    return this.getHTTP(url, params, callback, failure, "POST");
   }
 
   static put(url, params, callback, failure) {
-    return SF.API.getHTTP(url, params, callback, failure, "PUT");
+    return this.getHTTP(url, params, callback, failure, "PUT");
   }
 
   static delete(url, params, callback, failure) {
-    return SF.API.getHTTP(url, params, callback, failure, "DELETE");
+    return this.getHTTP(url, params, callback, failure, "DELETE");
   }
 }
