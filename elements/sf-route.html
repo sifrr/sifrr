@@ -10,14 +10,15 @@
   <slot></slot>
 </template>
 <script>
-  SF.observedAttributes['sf-route'] = ['data-route'];
-  SF.attributeChangedCallback["sf-route"] = function(el, attrName, oldVal, newVal) {
+  let c = SFComponent['sf-route'];
+  c.observedAttributes = ['data-route'];
+  c.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
       refreshRoute(el, SF.getRoutes(window.location.pathname));
     }
   }
 
-  SF.clickEvents['a'] = function(el, e) {
+  SFComponent.clickEvents['a'] = function(el, e) {
     if (el.host == window.location.host) {
       e.preventDefault();
       var stateObj = {
@@ -78,5 +79,34 @@
       el.dataset.originalSlotHtml = el.innerHTML;
     }
     el.innerHTML = '';
+  }
+
+  function addClass(elem, classN) {
+    if (typeof elem == "string") {
+      elem = document.querySelector(elem);
+    }
+    if (!elem) {
+      return false;
+    }
+    if (elem.className.length < 1) {
+      elem.className = classN;
+    }
+    let classes = elem.className.split(" ");
+    if (classes.indexOf(classN) < 0) {
+      classes.push(classN);
+    }
+    elem.className = classes.join(" ");
+  }
+
+  function removeClass(elem, classN) {
+    if (typeof elem == "string") {
+      elem = document.querySelector(elem);
+    }
+    if (!elem) {
+      return false;
+    }
+    let classes = elem.className.split(" ");
+    classes.remove(classN);
+    elem.className = classes.join(" ");
   }
 </script>
