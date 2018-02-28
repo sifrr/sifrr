@@ -25,7 +25,7 @@ class SFAPI {
     http.onprogress = function(e) {
     }
     http.open(type, url + '?' + ans, true);
-    http.setRequestHeader("accept", "application/json");
+    http.setRequestHeader("Accept", "application/json");
     Object.keys(headers).forEach(k => http.setRequestHeader(k, headers[k]));
     http.send();
   }
