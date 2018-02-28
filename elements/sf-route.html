@@ -11,6 +11,7 @@
 </template>
 <script>
   let sfRoute = SFComponent['sf-route'];
+  let clickEvents = {};
   sfRoute.observedAttributes = ['data-route'];
   sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
@@ -18,7 +19,7 @@
     }
   }
 
-  SFComponent.clickEvents['a'] = function(el, e) {
+  clickEvents['a'] = function(el, e) {
     if (el.host == window.location.host) {
       e.preventDefault();
       var stateObj = {
@@ -108,5 +109,34 @@
     let classes = elem.className.split(" ");
     classes.remove(classN);
     elem.className = classes.join(" ");
+  }
+
+  //Click event listner
+  const MAIN = document.body || document.getElementsByTagName("body")[0];
+
+  function clickHandler(e) {
+    e = e || window.event;
+    var target;
+    target = e.target || e.srcElement;
+    for (var k in clickEvents) {
+      x = target;
+      while (x) {
+        if (x.matches(k)) {
+          var fn = clickEvents[k];
+          if (typeof fn === "function") {
+            fn(x, e);
+          }
+        }
+        if (x) {
+          x = x.parentElement;
+        }
+      }
+    }
+  }
+
+  if (MAIN.addEventListener) {
+    MAIN.addEventListener('click', clickHandler, false);
+  } else {
+    MAIN.attachEvent('onclick', clickHandler);
   }
 </script>
