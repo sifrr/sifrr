@@ -14,7 +14,7 @@ class SFComponent {
       window.customElements.define(element,
         class extends HTMLElement {
           static get observedAttributes() {
-            return ['data-bind'].concat(this.observedAttributes);
+            return ['data-bind'];
           }
           constructor() {
             super();
