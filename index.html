@@ -73,7 +73,14 @@
   <p>Outside p!</p>
   <script type="text/javascript" src="/sf-api.js"></script>
   <script type="text/javascript">
-    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling)
+    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', consoling, , {
+      'params': {
+        'abc': 'xyz'
+      },
+      'headers': {
+        'x-session-pass': 'random'
+      }
+    });
 
     function consoling(result) {
       console.log(result.results);
