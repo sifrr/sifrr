@@ -22,7 +22,7 @@
   }
   c.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {
-      SF.API.get('https://tuneout.aadityataparia.com/api/location/' + newVal, {}, function(result) {
+      SFAPI.get('https://tuneout.aadityataparia.com/api/location/' + newVal, {}, function(result) {
         console.log(newVal, result);
         if (result && result.results) {
           let data = {
@@ -30,7 +30,7 @@
             attractions: result.results.attractions
           }
           console.log(data);
-          SF.setBindData(e, data);
+          SFComponent.setBindData(e, data);
         }
       });
     }
