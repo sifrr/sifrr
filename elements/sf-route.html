@@ -10,9 +10,9 @@
   <slot></slot>
 </template>
 <script>
-  let c = SFComponent['sf-route'];
-  c.observedAttributes = ['data-route'];
-  c.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
+  let sfRoute = SFComponent['sf-route'];
+  sfRoute.observedAttributes = ['data-route'];
+  sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
       refreshRoute(el, SF.getRoutes(window.location.pathname));
     }
