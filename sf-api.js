@@ -17,10 +17,10 @@ class SFAPI {
       }
     };
     http.onerror = function(e) {
-      Console.log('Network Error, try again.', e);
+      console.log('Network Error, try again.', e);
     };
     http.ontimeout = function(e) {
-      Console.log('Request timed out', e);
+      console.log('Request timed out', e);
     }
     http.onprogress = function(e) {
     }
