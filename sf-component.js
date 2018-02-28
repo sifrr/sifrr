@@ -9,8 +9,8 @@ class SFComponent {
     SFComponent[element] = this;
   }
   static replaceBindData(target, data, element = ''){
+    let html = target.shadowRoot.innerHTML;
     if (typeof target.dataset.originalHtml === 'undefined') {
-      let html = target.shadowRoot.innerHTML;
       target.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
                                       .replace(/\>\s*\</g,'><');
     }
@@ -36,13 +36,13 @@ class SFComponent {
     if (Array.isArray(data)) {
       text = text.replace(replaced, stringify(data));
       data.forEach(function(value, index){
-        text = this.replace(text, value, prefix + '[' + index + ']')
+        text = SFComponent.replace(text, value, prefix + '[' + index + ']')
       });
     } else if (typeof data === "object") {
       text = text.replace(replaced, stringify(data));
       for (let key in data) {
-        text = this.replace(text, data[key], prefix + '.' + key)
-        text = this.replace(text, data[key], prefix + '[' + key + ']')
+        text = SFComponent.replace(text, data[key], prefix + '.' + key)
+        text = SFComponent.replace(text, data[key], prefix + '[' + key + ']')
       }
     } else {
       let replaced = prefix + '}';
