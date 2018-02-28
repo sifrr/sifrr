@@ -145,3 +145,18 @@ function createComponent(element, href, c){
   }
   document.head.appendChild(link);
 }
+function stringify(data){
+  return JSON.stringify(data).replace(new RegExp('"', 'g'),'&quot;')
+}
+function tryParseJSON(jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+        if (o && typeof o === "object") {
+            return o;
+        }
+    }
+    catch (e) {
+      return {};
+    }
+    return {};
+}
