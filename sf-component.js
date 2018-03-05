@@ -33,7 +33,7 @@ class SFComponent {
     if(!text){
       return '';
     }
-    let text = text.replace(/#{(.+)}/g, replacer);
+    text = text.replace(/#{(.+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);
       return match.replace(g1, f());
