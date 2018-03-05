@@ -42,7 +42,7 @@ class SFComponent {
         let f = new Function('return ' + g1);
         let text;
         try {
-          text = f();
+          text = tryStringify(f());
         } catch (e) {
           console.log(e);
           text = g1;
@@ -162,4 +162,11 @@ function tryParseJSON(jsonString){
       return {};
     }
     return {};
+}
+function tryStringify(json){
+  if (typeof json === "string"){
+    return json;
+  } else {
+    return JSON.stringify(json);
+  }
 }
