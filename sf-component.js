@@ -34,8 +34,8 @@ class SFComponent {
     if(!text){
       return '';
     }
-    bind = bind.bind || {};
-    route = bind.route || {};
+    bind = data.bind || {};
+    route = data.route || {};
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);
