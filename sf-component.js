@@ -37,8 +37,8 @@ class SFComponent {
     bind = data.bind || {};
     route = data.route || {};
     text = text.replace(/#{([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
-    function replacer(match, offset, string) {
-      g1 = match.slice(2, -1);
+    function replacer(match) {
+      let g1 = match.slice(2, -1);
       function executeCode(){
         let f, text;
         if (g1.search('return') >= 0){
@@ -114,7 +114,7 @@ function createComponent(element, href, c){
             let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
             let newHtml = insideHtml.replace(href_regex, replacer);
             newHtml = newHtml.replace(src_regex, replacer);
-            function replacer(match, g1, offset, string) {
+            function replacer(match, g1) {
               return match.replace(g1, SFComponent.absolute(base, g1));
             }
             template.innerHTML = newHtml;
