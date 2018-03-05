@@ -36,8 +36,9 @@ class SFComponent {
     }
     bind = data.bind || {};
     route = data.route || {};
-    text = text.replace(/#{([^#{}]+)}/g, replacer);
-    function replacer(match, g1, offset, string) {
+    text = text.replace(/#{([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+    function replacer(match, offset, string) {
+      g1 = match.slice(2, -1);
       function executeCode(){
         let f, text;
         if (g1.search('return') >= 0){
