@@ -40,12 +40,14 @@ class SFComponent {
     function replacer(match, g1, offset, string) {
       function executeCode(){
         let f = new Function('return ' + g1);
+        let text;
         try {
-          let text = f();
+          text = f();
         } catch (e) {
           console.log(e);
-          return g1;
+          text = g1;
         }
+        console.log(text);
         return text;
       }
       return match.replace(g1, executeCode());
