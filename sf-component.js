@@ -1,4 +1,4 @@
-var bind;
+var bind, route;
 class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -21,7 +21,7 @@ class SFComponent {
       return;
     }
     target.dataset.bindOld = JSON.stringify(data);
-    html = SFComponent.replace(target.dataset.originalHtml, data, '#{bind');
+    html = SFComponent.replace(target.dataset.originalHtml, {bind: data});
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
     }
@@ -30,11 +30,12 @@ class SFComponent {
       c.bindDataChangedCallback(target, data);
     }
   }
-  static replace(text, data, prefix){
+  static replace(text, {bind = {}, route = {}} = {}){
     if(!text){
       return '';
     }
-    bind = data;
+    bind = bind;
+    route = route;
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);

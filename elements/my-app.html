@@ -12,8 +12,8 @@
   </style>
   <slot></slot>
   <p>binding with . - #{bind.text}</p>
-  <p>binding with [] - #{bind[text]}</p>
-  <p>binding double [] - #{bind[randomElement][0]}</p>
+  <p>binding with [] - #{bind['text']}</p>
+  <p>binding double [] - #{bind['randomElement'][0]}</p>
   <input value=#{bind.input}>
 </template>
 <script>
