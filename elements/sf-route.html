@@ -67,7 +67,9 @@
   }
 
   function makeRouteActive(el, data) {
-    let newHtml = SFComponent.replace(el.dataset.originalSlotHtml, data, '#{route');
+    let newHtml = SFComponent.replace(el.dataset.originalSlotHtml, {
+      route: data
+    });
     if (el.innerHTML !== newHtml) {
       el.innerHTML = newHtml;
     }
