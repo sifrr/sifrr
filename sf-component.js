@@ -33,6 +33,7 @@ class SFComponent {
     if(!text){
       return '';
     }
+    var bind = bund;
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);
