@@ -1,3 +1,4 @@
+var bind;
 class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -29,11 +30,11 @@ class SFComponent {
       c.bindDataChangedCallback(target, data);
     }
   }
-  static replace(text, bind, prefix){
+  static replace(text, data, prefix){
     if(!text){
       return '';
     }
-    var bind = bind;
+    bind = data;
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);
