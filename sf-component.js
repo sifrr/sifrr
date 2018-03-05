@@ -29,25 +29,14 @@ class SFComponent {
       c.bindDataChangedCallback(target, data);
     }
   }
-  static replace(text, data, prefix){
+  static replace(text, bind, prefix){
     if(!text){
       return '';
     }
-    let replaced = prefix + '}';
-    if (Array.isArray(data)) {
-      text = text.replace(replaced, stringify(data));
-      data.forEach(function(value, index){
-        text = SFComponent.replace(text, value, prefix + '[' + index + ']')
-      });
-    } else if (typeof data === "object") {
-      text = text.replace(replaced, stringify(data));
-      for (let key in data) {
-        text = SFComponent.replace(text, data[key], prefix + '.' + key)
-        text = SFComponent.replace(text, data[key], prefix + '[' + key + ']')
-      }
-    } else {
-      let replaced = prefix + '}';
-      text = text.replace(replaced, data);
+    let text = text.replace(/#{(.+)}/g, replacer);
+    function replacer(match, g1, offset, string) {
+      let f = new Function(g1);
+      return match.replace(g1, f());
     }
     return text;
   }
