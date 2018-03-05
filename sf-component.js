@@ -50,7 +50,7 @@ class SFComponent {
         console.log(g1, text);
         return text;
       }
-      return match.replace(g1, executeCode());
+      return executeCode();
     }
     return text;
   }
