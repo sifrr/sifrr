@@ -50,7 +50,7 @@ class SFComponent {
           text = tryStringify(f());
         } catch (e) {
           console.log(e);
-          text = g1;
+          text = match;
         }
         return text;
       }
