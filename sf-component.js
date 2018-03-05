@@ -47,7 +47,7 @@ class SFComponent {
           console.log(e);
           text = g1;
         }
-        console.log(text);
+        console.log(g1, text);
         return text;
       }
       return match.replace(g1, executeCode());
