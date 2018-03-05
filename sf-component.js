@@ -30,12 +30,12 @@ class SFComponent {
       c.bindDataChangedCallback(target, data);
     }
   }
-  static replace(text, {bind = {}, route = {}} = {}){
+  static replace(text, data){
     if(!text){
       return '';
     }
-    bind = bind;
-    route = route;
+    bind = bind.bind || {};
+    route = bind.route || {};
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       let f = new Function(g1);
