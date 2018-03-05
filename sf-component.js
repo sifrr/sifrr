@@ -39,12 +39,12 @@ class SFComponent {
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
       function executeCode(){
+        let f, text;
         if (g1.search('return') >= 0){
-          let f = new Function(g1);
+          f = new Function(g1);
         } else {
-          let f = new Function('return ' + g1);
+          f = new Function('return ' + g1);
         }
-        let text;
         try {
           text = tryStringify(f());
         } catch (e) {
