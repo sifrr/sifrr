@@ -49,7 +49,6 @@ class SFComponent {
         try {
           text = tryStringify(f());
         } catch (e) {
-          console.log(e);
           text = match;
         }
         return text;
