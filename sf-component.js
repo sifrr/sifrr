@@ -43,6 +43,7 @@ class SFComponent {
         try {
           let text = f();
         } catch (e) {
+          console.log(e);
           return g1;
         }
         return text;
