@@ -38,8 +38,16 @@ class SFComponent {
     route = data.route || {};
     text = text.replace(/#{([^#{}]+)}/g, replacer);
     function replacer(match, g1, offset, string) {
-      let f = new Function(g1);
-      return match.replace(g1, f());
+      function executeCode(){
+        let f = new Function('return ' + g1);
+        try {
+          let text = f();
+        } catch (e) {
+          return g1;
+        }
+        return text;
+      }
+      return match.replace(g1, executeCode());
     }
     return text;
   }
