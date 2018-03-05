@@ -88,6 +88,14 @@
     new SFComponent(['sf-location', 'sf-route']);
     new SFComponent('simple-carousel', 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html');
 
+    SFComponent.setBindData(document.querySelector('#noloading'), {
+      'loading': {
+        'style': {
+          'display': 'none'
+        }
+      }
+    });
+
     function consoling(result) {
       console.log(result.results);
     }
