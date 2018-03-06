@@ -79,7 +79,8 @@
   function makeRouteInactive(el) {
     removeClass(el, 'active');
     if (!el.dataset.originalSlotHtml) {
-      el.dataset.originalSlotHtml = el.innerHTML;
+      el.dataset.originalSlotHtml = el.innerHTML.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g, '')
+        .replace(/\>\s*\</g, '><');
     }
     el.innerHTML = '';
   }
