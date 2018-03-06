@@ -43,27 +43,14 @@
   }
 
   function refreshRoute(el, path) {
-    let route = SFComponent.getRoutes(el.dataset.route);
-    let data = {};
+    let route = el.dataset.route;
+    let data = {
+      dot: []
+    };
     makeRouteInactive(el);
     let active = false;
-    for (const [i, r] of route.entries()) {
-      if (r == '..') {
-        active = true;
-      } else if (typeof path[i] == 'undefined') {
-        active = false;
-        break;
-      } else if (r == path[i] || r == '*') {
-        continue;
-      } else if (r[0] == ':') {
-        data[r.substr(1)] = path[i];
-        continue;
-      } else {
-        active = false;
-        break;
-      }
-    }
-    if (active) {
+    let reg = new RegExp('^' + route.split(/\*\*/).join('.{0,}').split(/\*/).map(regExpEscape).join('[^\/]{0,}').replace(/:.*/g, '[^\/]{0,}'));
+    if (path.match(reg)) {
       makeRouteActive(el, data);
     }
   }
