@@ -55,6 +55,10 @@
     }
   }
 
+  function regExpEscape(s) {
+    return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+  }
+
   function makeRouteActive(el, data) {
     let newHtml = SFComponent.replace(el.dataset.originalSlotHtml, {
       route: data
