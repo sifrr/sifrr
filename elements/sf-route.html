@@ -15,8 +15,8 @@
   sfRoute.observedAttributes = ['data-route'];
   sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
     if (attrName == 'data-route') {
-      refreshRoute(el, window.location.pathname));
-  }
+      refreshRoute(el, window.location.pathname);
+    }
   }
 
   clickEvents['a'] = function(el, e) {
