@@ -10,10 +10,11 @@ class SFComponent {
     createComponent(element, href, this);
     SFComponent[element] = this;
   }
-  static replaceBindData(target, data, element = ''){
+  static replaceBindData(target, data, element){
+    element = element || target.tagName;
     let html = target.shadowRoot.innerHTML;
-    if (typeof this.originalHTML === 'undefined') {
-      this.originalHTML = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
+    if (typeof SFComponent[element].originalHTML === 'undefined') {
+      SFComponent[element].originalHTML = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
                                       .replace(/\>\s*\</g,'><');
     }
     data = SFComponent.getBindData(target, data);
@@ -21,7 +22,7 @@ class SFComponent {
       return;
     }
     target.dataset.bindOld = JSON.stringify(data);
-    html = SFComponent.replace(this.originalHTML, {bind: data});
+    html = SFComponent.replace(SFComponent[element].originalHTML, {bind: data});
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
     }
