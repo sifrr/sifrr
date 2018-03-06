@@ -65,7 +65,7 @@
   }
 
   function regExpEscape(s) {
-    return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+    return s.replace(/[|\\()[\]^$+*?.]/g, '\\$&');
   }
 
   function makeRouteActive(el, data) {
