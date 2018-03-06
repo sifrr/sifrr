@@ -12,8 +12,8 @@ class SFComponent {
   }
   static replaceBindData(target, data, element = ''){
     let html = target.shadowRoot.innerHTML;
-    if (typeof target.dataset.originalHtml === 'undefined') {
-      target.dataset.originalHtml = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
+    if (typeof this.originalHTML === 'undefined') {
+      this.originalHTML = html.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g,'')
                                       .replace(/\>\s*\</g,'><');
     }
     data = SFComponent.getBindData(target, data);
@@ -21,7 +21,7 @@ class SFComponent {
       return;
     }
     target.dataset.bindOld = JSON.stringify(data);
-    html = SFComponent.replace(target.dataset.originalHtml, {bind: data});
+    html = SFComponent.replace(this.originalHTML, {bind: data});
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
     }
