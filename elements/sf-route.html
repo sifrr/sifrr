@@ -49,7 +49,7 @@
     };
     makeRouteInactive(el);
     let active = false;
-    let reg = new RegExp('^' + route.split(/\*\*/).join('.{0,}').split(/\*/).map(regExpEscape).join('[^\/]{0,}').replace(/:[^\/]{0,}/g, '[^\/]{0,}'));
+    let reg = new RegExp('^' + regExpEscape(route.split(/\*\*/).join('.{0,}').split(/\*/).join('[^\/]{0,}').replace(/:[^\/]{0,}/g, '[^\/]{0,}')));
     let pathSplit = SFComponent.getRoutes(path);
     for (const [i, r] of SFComponent.getRoutes(route).entries()) {
       if (r[0] == ':') {
