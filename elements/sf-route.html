@@ -46,24 +46,26 @@
     let route = SFComponent.getRoutes(el.dataset.route);
     let data = {};
     makeRouteInactive(el);
+    let active = false;
     for (const [i, r] of route.entries()) {
       if (r == '..') {
-        makeRouteActive(el, data);
-        return;
+        active = true;
       } else if (typeof path[i] == 'undefined') {
-        makeRouteInactive(el);
-        return;
+        active = false;
+        break;
       } else if (r == path[i] || r == '*') {
         continue;
       } else if (r[0] == ':') {
         data[r.substr(1)] = path[i];
         continue;
       } else {
-        makeRouteInactive(el);
-        return
+        active = false;
+        break;
       }
     }
-    makeRouteActive(el, data);
+    if (active) {
+      makeRouteActive(el, data);
+    }
   }
 
   function makeRouteActive(el, data) {
