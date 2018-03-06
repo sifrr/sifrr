@@ -36,21 +36,22 @@
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
     </simple-carousel>
   </sf-route>
-  <sf-route data-route="/what">
+  <sf-route data-route="/what**">
+    <h3>/what**</h3>
     <simple-carousel id="noloading">
       <p>One slide</p>
       <p>Two slide</p>
       <p>Three slide</p>
     </simple-carousel>
-    <sf-route data-route="/what/bang">
+    <sf-route data-route="/what/bang**">
       /what/bang (sf-route inside sf-route works)
     </sf-route>
   </sf-route>
-  <sf-route data-route="/what/**/okay">
+  <sf-route data-route="/what/*/okay">
     /what/**/okay
   </sf-route>
-  <sf-route data-route="/what/*">
-    /what/*
+  <sf-route data-route="/what/**">
+    /what/**
   </sf-route>
   <sf-route data-route="/what/:okay">
     #{route.okay}
