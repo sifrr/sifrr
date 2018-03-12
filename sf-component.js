@@ -21,7 +21,7 @@ class SFComponent {
     if(target.bindOld == data){
       return;
     }
-    target.bindOld = JSON.stringify(data);
+    target.bindOld = data;
     html = SFComponent.replace(SFComponent[element].originalHTML, {bind: data});
     if (target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
@@ -62,7 +62,7 @@ class SFComponent {
     target.dataset.bind = JSON.stringify(json);
   }
   static getBindData(target, data = {}){
-    Object.assign(data, tryParseJSON(target.bindOld), tryParseJSON(target.dataset.bind));
+    Object.assign(data, target.bindOld, tryParseJSON(target.dataset.bind));
     return data;
   }
   static absolute(base, relative) {
