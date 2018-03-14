@@ -32,7 +32,7 @@
             location: result.results.location[0],
             attractions: result.results.attractions
           }
-          SFComponent.setBindData(e, data);
+          e.bind = data;
         }
       });
     }

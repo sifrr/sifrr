@@ -55,11 +55,12 @@
   <sf-route data-route="/location/:id">
     <sf-location data-location-id='#{route.id}'></sf-location>
   </sf-route>
-  <my-app data-bind='{"text":"abcd"}' class="my-app">
+  <my-app class="my-app">
     <p>No data binding in slotted elements #{data.text}.</p>
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
+  <script type="text/javascript" src="/webcomponents-hi.js"></script>
   <script type="text/javascript" src="/sf-api.js"></script>
   <script type="text/javascript" src="/sf-component.js"></script>
   <script type="text/javascript">

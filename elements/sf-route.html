@@ -64,7 +64,7 @@
   }
 
   function makeRouteActive(el, data) {
-    let newHtml = SFComponent.replace(el.dataset.originalSlotHtml, {
+    let newHtml = SFComponent.replace(el.slotHTML, {
       route: data
     });
     if (el.innerHTML !== newHtml) {
@@ -75,8 +75,8 @@
 
   function makeRouteInactive(el) {
     removeClass(el, 'active');
-    if (!el.dataset.originalSlotHtml) {
-      el.dataset.originalSlotHtml = el.innerHTML.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g, '')
+    if (!el.slotHTML) {
+      el.slotHTML = el.innerHTML.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g, '')
         .replace(/\>\s*\</g, '><');
     }
   }
