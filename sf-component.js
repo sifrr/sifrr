@@ -14,6 +14,9 @@ class SFComponent {
     let c = SFComponent[element];
     let bind = target.bind;
     this.replaceNode(c.originalNode, target.shadowRoot, {bind: bind});
+    if (typeof c.bindDataChangeCallback === "function") {
+      c.bindDataChangeCallback(this);
+    }
   }
   static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}){
     if (!originalNode){
