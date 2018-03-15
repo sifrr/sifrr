@@ -48,12 +48,9 @@
 
   function refreshRoute(el, path) {
     let route = el.dataset.route;
-    makeRouteInactive(el);
     let active = false;
     let parsed = parseRoute(route, path);
-    if (parsed.match) {
-      makeRouteActive(el, parsed.data);
-    }
+    parsed.match ? makeRouteActive(el, parsed.data) : makeRouteInactive(el);
   }
 
   function parseRoute(route, path) {
