@@ -21,6 +21,9 @@ class SFComponent {
       }
     }
   }
+  static processTemplate(strings, ...codes){
+    console.log()
+  }
   static clearbindData(target){
     target.bindValue = {};
     replaceBindData(target);
