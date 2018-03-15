@@ -14,10 +14,10 @@
   let clickEvents = {};
   sfRoute.connectedCallback = function(el) {
     el.slotHTML = el.cloneNode(true);
+    refreshRoute(el, window.location.pathname);
   }
   sfRoute.observedAttributes = ['data-route'];
   sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
-    console.log(el, attrName, oldVal, newVal);
     if (attrName == 'data-route') {
       refreshRoute(el, window.location.pathname);
     }
@@ -76,7 +76,6 @@
   }
 
   function makeRouteActive(el, route) {
-    console.log(el.slotHTML);
     SFComponent.replaceNode(el.slotHTML, el, {
       route: route
     });
