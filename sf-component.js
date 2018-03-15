@@ -1,4 +1,3 @@
-var bind, route, bind2;
 class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -25,33 +24,11 @@ class SFComponent {
     target.bindValue = {};
     replaceBindData(target);
   }
-  static replace(text, data){
+  static replace(text, {bind = {}, route = {}}){
     if(!text){
       return '';
     }
-    bind = data.bind || {};
-    route = data.route || {};
-    bind2 = data.bind2 || {};
-    text = text.replace(/${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
-    function replacer(match) {
-      let g1 = match.slice(2, -1);
-      function executeCode(){
-        let f, text;
-        if (g1.search('return') >= 0){
-          f = new Function(g1);
-        } else {
-          f = new Function('return ' + g1);
-        }
-        try {
-          text = tryStringify(f());
-        } catch (e) {
-          text = match;
-        }
-        return text;
-      }
-      return executeCode();
-    }
-    return text;
+    return eval('`' + text + '`');
   }
   static clearBindData(target){
     target.bind = {};
