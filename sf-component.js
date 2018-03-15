@@ -19,10 +19,8 @@ class SFComponent {
     if (!originalNode){
       return;
     }
-    console.log(originalNode, oldNode);
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
-    console.log(originalChilds, oldChilds);
     this.replaceAttribute(originalNode, oldNode, bind);
     if(originalNode.innerHTML == oldNode.innerHTML){
       originalChilds.forEach(function(v, i){
@@ -35,6 +33,8 @@ class SFComponent {
           SFComponent.replaceNode(v, oldChilds[i], bind);
         }
       });
+    } else {
+
     }
   }
   static replaceAttribute(originalNode, oldNode, bind){
@@ -48,10 +48,14 @@ class SFComponent {
       let newV = SFComponent.evaluateString(v, bind);
       let newN = SFComponent.evaluateString(n, bind);
       if (n === newN){
-        oldNode.setAttribute(n, newV);
+        if (newV !== oldNode.getAttribute(n)){
+          oldNode.setAttribute(n, newV);
+        }
       } else {
         oldNode.removeAttribute(n);
-        oldNode.setAttribute(newN, newV);
+        if (newV !== oldNode.getAttribute(newV)){
+          oldNode.setAttribute(newN, newV);
+        }
       }
     }
   }
