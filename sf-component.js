@@ -13,22 +13,22 @@ class SFComponent {
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
     let bind = target.bind;
-    this.replaceNode(c.originalNode, target.shadowRoot, bind);
+    this.replaceNode(c.originalNode, target.shadowRoot, {bind: bind});
   }
-  static replaceNode(originalNode, oldNode, bind){
+  static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}){
     if (!originalNode){
       return;
     }
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
-    this.replaceAttribute(originalNode, oldNode, bind);
+    this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
     if(originalNode.innerHTML == oldNode.innerHTML){
       oldNode.original = true;
       originalChilds.forEach(function(v, i){
         if(v.nodeType === 3){
           let val = v.nodeValue;
           if (val.length > 3) {
-            let newV = SFComponent.evaluateString(val, bind);
+            let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
             if (newV != oldChilds[i].nodeValue){
               let body = document.createElement('body');
               body.innerHTML = newV;
@@ -36,7 +36,7 @@ class SFComponent {
             }
           }
         } else {
-          SFComponent.replaceNode(v, oldChilds[i], bind);
+          SFComponent.replaceNode(v, oldChilds[i], {bind: bind, route: route});
         }
       });
     } else {
@@ -47,7 +47,7 @@ class SFComponent {
             while (oldChilds[i].nodeValue == "\n  "){
               oldNode.removeChild(oldChilds[i]);
             }
-            let newV = SFComponent.evaluateString(val, bind);
+            let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
             if (newV != oldChilds[i].nodeValue){
               let body = document.createElement('body');
               body.innerHTML = newV;
@@ -58,12 +58,12 @@ class SFComponent {
             }
           }
         } else {
-          SFComponent.replaceNode(v, oldChilds[i], bind);
+          SFComponent.replaceNode(v, oldChilds[i], {bind: bind, route: route});
         }
       });
     }
   }
-  static replaceAttribute(originalNode, oldNode, bind){
+  static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
     if (!originalAttributes){
       return;
@@ -71,22 +71,31 @@ class SFComponent {
     for(let i = 0; i < originalAttributes.length; i++){
       let v = originalAttributes[i].value;
       let n = originalAttributes[i].name;
-      let newV = SFComponent.evaluateString(v, bind);
-      let newN = SFComponent.evaluateString(n, bind);
+      let newV = SFComponent.evaluateString(v, {bind: bind, route: route});
+      let newN = SFComponent.evaluateString(n, {bind: bind, route: route});
       if (n === newN){
         if (newV !== oldNode.getAttribute(n)){
           oldNode.setAttribute(n, newV);
         }
       } else {
         oldNode.removeAttribute(n);
-        if (newV !== oldNode.getAttribute(newV)){
+        if (newV !== oldNode.getAttribute(newN)){
           oldNode.setAttribute(newN, newV);
         }
       }
     }
   }
-  static evaluateString(string, bind){
-    return eval('`' + string + '`');
+  static evaluateString(string, {bind = {}, route = {}} = {}){
+    let ans;
+    try {
+      ans = eval('`' + string + '`');
+    } catch(e) {
+      ans = string;
+    }
+    if (typeof ans === undefined){
+      return string;
+    }
+    return ans;
   }
   static clearbindData(target){
     target.bindValue = {};
@@ -163,12 +172,12 @@ function createComponent(element, href, c){
           }
         }
         connectedCallback() {
-          let defaultBind = c.defaultBind || {};
-          let bv = this.bind || {};
-          this.bind = Object.assign(defaultBind, bv);
           if (typeof c.connectedCallback === "function") {
             c.connectedCallback(this);
           }
+          let defaultBind = c.defaultBind || {};
+          let bv = this.bind || {};
+          this.bind = Object.assign(defaultBind, bv);
           let x = this;
         }
         disconnectedCallback() {

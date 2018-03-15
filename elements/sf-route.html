@@ -12,8 +12,12 @@
 <script>
   let sfRoute = SFComponent['sf-route'];
   let clickEvents = {};
+  sfRoute.connectedCallback = function(el) {
+    el.slotHTML = el.cloneNode(true);
+  }
   sfRoute.observedAttributes = ['data-route'];
   sfRoute.attributeChangedCallback = function(el, attrName, oldVal, newVal) {
+    console.log(el, attrName, oldVal, newVal);
     if (attrName == 'data-route') {
       refreshRoute(el, window.location.pathname);
     }
@@ -72,19 +76,15 @@
   }
 
   function makeRouteActive(el, route) {
-    let newHtml = eval('`' + el.slotHTML + '`')
-    if (el.innerHTML !== newHtml) {
-      el.innerHTML = newHtml;
-    }
+    console.log(el.slotHTML);
+    SFComponent.replaceNode(el.slotHTML, el, {
+      route: route
+    });
     addClass(el, 'active');
   }
 
   function makeRouteInactive(el) {
     removeClass(el, 'active');
-    if (!el.slotHTML) {
-      el.slotHTML = el.innerHTML.replace(/\<\!--\s*?[^\s?\[][\s\S]*?--\>/g, '')
-        .replace(/\>\s*\</g, '><');
-    }
   }
 
   function addClass(elem, classN) {
