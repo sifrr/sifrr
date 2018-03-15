@@ -89,16 +89,26 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    let ans;
-    try {
-      ans = eval('`' + string + '`');
-    } catch(e) {
-      ans = string;
+    return string.replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+    function replacer(match) {
+      let g1 = match.slice(2, -1);
+      function executeCode(){
+        let f, text;
+        if (g1.search('return') >= 0){
+          f = new Function('bind', 'route', g1);
+        } else {
+          f = new Function('bind', 'route', 'return ' + g1);
+        }
+        try {
+          text = tryStringify(f(bind, route));
+        } catch (e) {
+          console.log(e);
+          text = match;
+        }
+        return text;
+      }
+      return executeCode();
     }
-    if (typeof ans === undefined){
-      return string;
-    }
-    return ans;
   }
   static clearbindData(target){
     target.bindValue = {};
