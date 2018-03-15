@@ -2,11 +2,7 @@
   <style>
 
   </style>
-  <p class="#{if (bind.location.id == '1') {
-    return 'bang';
-  } else {
-    return 'boom';
-  }}">id - ${bind.location.id}</p>
+  <p class="${bind.location.id == `1` ? `boom` : `bang`}">id - ${bind.location.id}</p>
   <p>name - ${bind.location.name}</p>
   <p>address - ${bind.location.address}</p>
   <p>attractions - ${bind.attractions[0].name}</p>

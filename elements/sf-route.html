@@ -63,10 +63,8 @@
     }
   }
 
-  function makeRouteActive(el, data) {
-    let newHtml = SFComponent.replace(el.slotHTML, {
-      route: data
-    });
+  function makeRouteActive(el, route) {
+    let newHtml = eval('`' + el.slotHTML + '`')
     if (el.innerHTML !== newHtml) {
       el.innerHTML = newHtml;
     }

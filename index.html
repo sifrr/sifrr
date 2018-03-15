@@ -41,10 +41,10 @@
     /what/*/okay
   </sf-route>
   <sf-route data-route="/what/*">
-    /what/*, * = #{route.star[0]}
+    /what/*, * = ${route.star[0]}
   </sf-route>
   <sf-route data-route="/what/:okay">
-    /what/:okay, okay = #{route.okay}
+    /what/:okay, okay = ${route.okay}
   </sf-route>
   <sf-route data-route="/what/bang">
     /what/bang
@@ -53,10 +53,10 @@
     show everywhere
   </sf-route>
   <sf-route data-route="/location/:id">
-    <sf-location data-location-id='#{route.id}'></sf-location>
+    <sf-location data-location-id='${route.id}'></sf-location>
   </sf-route>
   <my-app class="my-app">
-    <p>No data binding in slotted elements #{data.text}.</p>
+    <p>No data binding in slotted elements ${data.text}.</p>
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
@@ -78,13 +78,13 @@
     new SFComponent(['sf-location', 'sf-route']);
     new SFComponent('simple-carousel', 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html');
 
-    SFComponent.setBindData(document.querySelector('#noloading'), {
+    document.querySelector('#noloading').bind = {
       'loading': {
         'style': {
           'display': 'none'
         }
       }
-    });
+    };
 
     function consoling(result) {
       console.log(result.results);

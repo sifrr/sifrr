@@ -9,10 +9,11 @@ class SFComponent {
     createComponent(element, href, this);
     SFComponent[element] = this;
   }
-  static replaceBindData(target, {bind2 = {}} = {}){
+  static replaceBindData(target){
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
-    let html = SFComponent.replace(c.originalHTML, {bind: target.bind, bind2: bind2});
+    let bind = target.bind;
+    let html = eval('`' + c.originalHTML + '`');
     if (target.shadowRoot && target.shadowRoot.innerHTML !== html){
       target.shadowRoot.innerHTML = html;
       if (typeof c.bindDataChangedCallback === "function") {
@@ -23,15 +24,6 @@ class SFComponent {
   static clearbindData(target){
     target.bindValue = {};
     replaceBindData(target);
-  }
-  static replace(text, {bind = {}, route = {}}){
-    if(!text){
-      return '';
-    }
-    return eval('`' + text + '`');
-  }
-  static clearBindData(target){
-    target.bind = {};
   }
   static absolute(base, relative) {
     var stack = base.split("/"),
@@ -58,15 +50,7 @@ class SFComponent {
     }
     return url.split("/");
   }
-  static change(target, parent){
-    let binder = target.dataset.binder;
-    bind = {};
-    let f = new Function(binder + ' = "' + target.value.replace(/"/g, "&quot;") + '";');
-    f();
-    parent.bind = bind;
-  }
   static createVirtualDOM(html){
-
   }
 }
 
@@ -117,12 +101,6 @@ function createComponent(element, href, c){
             c.connectedCallback(this);
           }
           let x = this;
-          this.shadowRoot.addEventListener("change", function(e) {
-            SFComponent.change(e.target, x);
-          });
-          this.shadowRoot.addEventListener("keyup", function(e) {
-            SFComponent.change(e.target, x);
-          });
         }
         disconnectedCallback() {
           if (typeof c.disconnectedCallback === "function") {
