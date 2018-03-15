@@ -32,7 +32,7 @@ class SFComponent {
     bind = data.bind || {};
     route = data.route || {};
     bind2 = data.bind2 || {};
-    text = text.replace(/#{([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+    text = text.replace(/${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
     function replacer(match) {
       let g1 = match.slice(2, -1);
       function executeCode(){
@@ -87,6 +87,9 @@ class SFComponent {
     let f = new Function(binder + ' = "' + target.value.replace(/"/g, "&quot;") + '";');
     f();
     parent.bind = bind;
+  }
+  static createVirtualDOM(html){
+
   }
 }
 

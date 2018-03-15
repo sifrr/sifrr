@@ -11,10 +11,10 @@
     }
   </style>
   <slot></slot>
-  <p>binding with . - #{bind.text} ---- ---- #{x}</p>
-  <p>binding with [] - #{bind['text']}</p>
-  <p>binding double [] - #{bind['randomElement'][0]}</p>
-  <input value=#{bind.text} data-binder="bind.text">
+  <p>binding with . - ${bind.text}</p>
+  <p>binding with [] - ${bind['text']}</p>
+  <p>binding double [] - ${bind['randomElement'][0]}</p>
+  <input value=${bind.text}>
   <p></p>
 </template>
 <script>
