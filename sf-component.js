@@ -23,12 +23,17 @@ class SFComponent {
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, bind);
     if(originalNode.innerHTML == oldNode.innerHTML){
-      oldNode.original = originalNode;
+      oldNode.original = true;
       originalChilds.forEach(function(v, i){
         if(v.nodeType === 3){
           let val = v.nodeValue;
           if (val.length > 3) {
-            oldChilds[i].nodeValue = SFComponent.evaluateString(val, bind);
+            let newV = SFComponent.evaluateString(val, bind);
+            if (newV != oldChilds[i].nodeValue){
+              let body = document.createElement('body');
+              body.innerHTML = newV;
+              oldChilds[i].replaceWith(...body.childNodes);
+            }
           }
         } else {
           SFComponent.replaceNode(v, oldChilds[i], bind);
@@ -36,15 +41,23 @@ class SFComponent {
       });
     } else {
       originalChilds.forEach(function(v, i){
-        if(v.nodeType === 3 && oldChilds[i].nodeType == 3){
+        if(v.nodeType === 3){
           let val = v.nodeValue;
           if (val.length > 3) {
-            oldChilds[i].nodeValue = SFComponent.evaluateString(val, bind);
+            while (oldChilds[i].nodeValue == "\n  "){
+              oldNode.removeChild(oldChilds[i]);
+            }
+            let newV = SFComponent.evaluateString(val, bind);
+            if (newV != oldChilds[i].nodeValue){
+              let body = document.createElement('body');
+              body.innerHTML = newV;
+              while(oldChilds[i + 1] && !oldChilds[i + 1].original){
+                oldNode.removeChild(oldChilds[i + 1]);
+              }
+              oldChilds[i].replaceWith(...body.childNodes);
+            }
           }
         } else {
-          while(!oldChilds[i].original.isEqualNode(v)){
-            oldChilds.splice(i, 1);
-          }
           SFComponent.replaceNode(v, oldChilds[i], bind);
         }
       });
