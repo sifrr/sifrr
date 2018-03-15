@@ -13,16 +13,50 @@ class SFComponent {
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
     let bind = target.bind;
-    let html = eval('`' + c.originalHTML + '`');
-    if (target.shadowRoot && target.shadowRoot.innerHTML !== html){
-      target.shadowRoot.innerHTML = html;
-      if (typeof c.bindDataChangedCallback === "function") {
-        c.bindDataChangedCallback(target, target.bind);
+    this.replaceNode(c.originalNode, target.shadowRoot, bind);
+  }
+  static replaceNode(originalNode, oldNode, bind){
+    if (!originalNode){
+      return;
+    }
+    console.log(originalNode, oldNode);
+    let originalChilds = originalNode.childNodes;
+    let oldChilds = oldNode.childNodes;
+    console.log(originalChilds, oldChilds);
+    this.replaceAttribute(originalNode, oldNode, bind);
+    if(originalNode.innerHTML == oldNode.innerHTML){
+      originalChilds.forEach(function(v, i){
+        if(v.nodeType === 3){
+          let val = v.nodeValue;
+          if (val.length > 3) {
+            oldChilds[i].nodeValue = SFComponent.evaluateString(val, bind);
+          }
+        } else {
+          SFComponent.replaceNode(v, oldChilds[i], bind);
+        }
+      });
+    }
+  }
+  static replaceAttribute(originalNode, oldNode, bind){
+    let originalAttributes = originalNode.attributes;
+    if (!originalAttributes){
+      return;
+    }
+    for(let i = 0; i < originalAttributes.length; i++){
+      let v = originalAttributes[i].value;
+      let n = originalAttributes[i].name;
+      let newV = SFComponent.evaluateString(v, bind);
+      let newN = SFComponent.evaluateString(n, bind);
+      if (n === newN){
+        oldNode.setAttribute(n, newV);
+      } else {
+        oldNode.removeAttribute(n);
+        oldNode.setAttribute(newN, newV);
       }
     }
   }
-  static processTemplate(strings, ...codes){
-    
+  static evaluateString(string, bind){
+    return eval('`' + string + '`');
   }
   static clearbindData(target){
     target.bindValue = {};
@@ -86,7 +120,9 @@ function createComponent(element, href, c){
           }
           const shadowRoot = this.attachShadow({mode: 'open'})
             .appendChild(template.content.cloneNode(true));
-          c.originalHTML = template.innerHTML;
+          let x = document.createElement('body');
+          x.appendChild(template.content.cloneNode(true));
+          c.originalNode = x;
           if (typeof c.createdCallback === "function") {
             c.createdCallback(this);
           }
