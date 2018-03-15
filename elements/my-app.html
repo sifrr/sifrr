@@ -1,7 +1,7 @@
 <template>
   <style>
     p {
-      color: red;
+      color: ${bind.color};
     }
     slot::slotted(p) {
       display: block;
@@ -11,18 +11,22 @@
     }
   </style>
   <slot></slot>
-  <p>binding with . - ${bind.text}</p>
+  <p ${bind.attr}="what">binding with . - ${bind.text}</p>
   <p>binding with [] - ${bind['text']}</p>
   <p>binding double [] - ${bind['randomElement'][0]}</p>
   <input value=${bind.text}>
   <p></p>
+  ${'<'+bind.custom+'></'+bind.custom+'>'}
 </template>
 <script>
   let myApp = SFComponent['my-app'];
   myApp.defaultBind = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
-    "randomElement": ["this is random text", "this is second random text"]
+    "randomElement": ["this is random text", "this is second random text"],
+    "attr": "data-attr",
+    "color": "red",
+    "custom": "random-el"
   }
   myApp.bindDataChangedCallback = function(e, data) {
     let randomEl = document.createElement('random-el');
