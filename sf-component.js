@@ -23,6 +23,7 @@ class SFComponent {
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, bind);
     if(originalNode.innerHTML == oldNode.innerHTML){
+      oldNode.original = originalNode;
       originalChilds.forEach(function(v, i){
         if(v.nodeType === 3){
           let val = v.nodeValue;
@@ -34,7 +35,19 @@ class SFComponent {
         }
       });
     } else {
-
+      originalChilds.forEach(function(v, i){
+        if(v.nodeType === 3 && oldChilds[i].nodeType == 3){
+          let val = v.nodeValue;
+          if (val.length > 3) {
+            oldChilds[i].nodeValue = SFComponent.evaluateString(val, bind);
+          }
+        } else {
+          while(!oldChilds[i].original.isEqualNode(v)){
+            oldChilds.splice(i, 1);
+          }
+          SFComponent.replaceNode(v, oldChilds[i], bind);
+        }
+      });
     }
   }
   static replaceAttribute(originalNode, oldNode, bind){
