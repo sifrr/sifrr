@@ -88,32 +88,19 @@
   }
 
   function addClass(elem, classN) {
-    if (typeof elem == "string") {
-      elem = document.querySelector(elem);
-    }
+    elem = typeof elem == "string" ? elem = document.querySelector(elem) : elem;
     if (!elem) {
       return false;
     }
-    if (elem.className.length < 1) {
-      elem.className = classN;
-    }
-    let classes = elem.className.split(" ");
-    if (classes.indexOf(classN) < 0) {
-      classes.push(classN);
-    }
-    elem.className = classes.join(" ");
+    elem.classList.add(classN);
   }
 
   function removeClass(elem, classN) {
-    if (typeof elem == "string") {
-      elem = document.querySelector(elem);
-    }
+    elem = typeof elem == "string" ? elem = document.querySelector(elem) : elem;
     if (!elem) {
       return false;
     }
-    let classes = elem.className.split(" ");
-    classes.remove(classN);
-    elem.className = classes.join(" ");
+    elem.classList.remove(classN);
   }
 
   //Click event listner
