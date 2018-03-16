@@ -11,7 +11,6 @@
 </template>
 <script>
   let sfRoute = SFComponent['sf-route'];
-  let clickEvents = {};
   sfRoute.connectedCallback = function(el) {
     el.slotHTML = el.cloneNode(true);
     refreshRoute(el, window.location.pathname);
@@ -23,6 +22,7 @@
     }
   }
 
+  let clickEvents = {};
   clickEvents['a'] = function(el, e) {
     if (el.host == window.location.host) {
       e.preventDefault();
@@ -73,6 +73,12 @@
   }
 
   function makeRouteActive(el, route) {
+    try {
+      let lazyComps = JSON.parse(el.dataset.lazy);
+      new SFComponent(lazyComps);
+    } catch (e) {
+      console.log(e);
+    }
     SFComponent.replaceNode(el.slotHTML, el, {
       route: route
     });

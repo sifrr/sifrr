@@ -21,14 +21,14 @@
   <a href="/what/bang/okay">what/bang/okay</a>
   <a href="/what">what</a>
   <a href="/locations">locations</a>
-  <sf-route data-route="/home">
+  <sf-route data-route="/home" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
     <simple-carousel>
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
     </simple-carousel>
   </sf-route>
-  <sf-route data-route="/what">
+  <sf-route data-route="/what" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
     <simple-carousel id="noloading">
       <p>One slide</p>
       <p>Two slide</p>
@@ -80,7 +80,6 @@
 
     new SFComponent('my-app', '/elements/my-app.html');
     new SFComponent(['sf-location', 'sf-route', 'sf-locations']);
-    new SFComponent('simple-carousel', 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html');
 
     document.querySelector('#noloading').bind = {
       'loading': {
