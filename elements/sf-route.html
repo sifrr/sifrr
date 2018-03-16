@@ -53,17 +53,21 @@
   };
 
   function refreshAllRoutes() {
-    let path = window.location.pathname;
+    const path = window.location.pathname;
+    let activeRouteEls = [];
     document.querySelectorAll('sf-route').forEach(function(el) {
-      refreshRoute(el, path);
+      if (refreshRoute(el, path)) {
+        activeRouteEls.push(el);
+      }
     });
   }
 
   function refreshRoute(el, path) {
     let route = el.dataset.route;
-    let active = false;
     let parsed = parseRoute(route, path);
-    parsed.match ? makeRouteActive(el, parsed.data) : makeRouteInactive(el);
+    const match = parsed.match;
+    match ? makeRouteActive(el, parsed.data) : makeRouteInactive(el);
+    return match;
   }
 
   function parseRoute(route, path) {
@@ -86,15 +90,15 @@
   }
 
   function makeRouteActive(el, route) {
+    SFComponent.replaceNode(el.slotHTML, el, {
+      route: route
+    });
     try {
       let lazyComps = tryParseJSON(el.dataset.lazy);
       new SFComponent(lazyComps);
     } catch (e) {
       console.log(e);
     }
-    SFComponent.replaceNode(el.slotHTML, el, {
-      route: route
-    });
     addClass(el, 'active');
   }
 
