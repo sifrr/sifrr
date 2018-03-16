@@ -143,8 +143,6 @@ class SFComponent {
     }
     return url.split("/");
   }
-  static createVirtualDOM(html){
-  }
 }
 
 function createComponent(element, href, c){
