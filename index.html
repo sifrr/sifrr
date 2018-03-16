@@ -20,6 +20,7 @@
   <a href="/home">home</a>
   <a href="/what/bang/okay">what/bang/okay</a>
   <a href="/what">what</a>
+  <a href="/locations">locations</a>
   <sf-route data-route="/home">
     <simple-carousel>
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
@@ -39,6 +40,11 @@
   </sf-route>
   <sf-route data-route="/what/*/okay">
     /what/*/okay
+  </sf-route>
+  <sf-route data-route="/locations">
+    `${[1,2,3].map(i => {
+      '<sf-location data-location-id="' + i + '"></sf-location>'
+    }).join("")}`
   </sf-route>
   <sf-route data-route="/what/*">
     /what/*, * = ${route.star[0]}
