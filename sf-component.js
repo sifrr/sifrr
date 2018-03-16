@@ -7,7 +7,6 @@ class SFComponent {
       return Object.keys(element).map(k => new SFComponent(k, element[k]));
     }
     createComponent(element, href, this);
-    SFComponent[element] = this;
   }
   static replaceBindData(target){
     let element = target.tagName.toLowerCase();
@@ -149,9 +148,10 @@ class SFComponent {
 }
 
 function createComponent(element, href, c){
-  if(window.customElements.get(element)){
+  if(!element || window.customElements.get(element) || element.indexOf("-") < 0){
     return;
   }
+  SFComponent[element] = c;
   let link = document.createElement('link');
   link.rel = 'import';
   link.href = href;
@@ -217,15 +217,12 @@ function stringify(data){
 }
 function tryParseJSON(jsonString){
     try {
-        var o = JSON.parse(jsonString);
-        if (o && typeof o === "object") {
-            return o;
-        }
+      var o = JSON.parse(jsonString);
+      return o;
     }
     catch (e) {
-      return {};
+      return jsonString;
     }
-    return {};
 }
 function tryStringify(json){
   if (typeof json === "string"){

@@ -74,7 +74,7 @@
 
   function makeRouteActive(el, route) {
     try {
-      let lazyComps = JSON.parse(el.dataset.lazy);
+      let lazyComps = tryParseJSON(el.dataset.lazy);
       new SFComponent(lazyComps);
     } catch (e) {
       console.log(e);
