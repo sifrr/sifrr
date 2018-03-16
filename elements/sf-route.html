@@ -2,9 +2,22 @@
   <style>
     :host {
       display: none;
+      transition: all 0.5s ease;
     }
     :host(.active) {
       display: block;
+      opacity: 0;
+      animation: slide 0.5s ease forwards;
+    }
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 100px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
     }
   </style>
   <slot></slot>
