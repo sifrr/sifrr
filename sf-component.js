@@ -27,44 +27,46 @@ class SFComponent {
     this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
     if(originalNode.innerHTML == oldNode.innerHTML){
       oldNode.original = true;
-      originalChilds.forEach(function(v, i){
-        if(v.nodeType === 3){
-          let val = v.nodeValue;
-          if (val.length > 3) {
-            let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
-            if (newV != oldChilds[i].nodeValue){
-              let body = document.createElement('body');
-              body.innerHTML = newV;
-              oldChilds[i].replaceWith(...body.childNodes);
-            }
-          }
-        } else {
-          SFComponent.replaceNode(v, oldChilds[i], {bind: bind, route: route});
-        }
-      });
-    } else {
-      originalChilds.forEach(function(v, i){
-        if(v.nodeType === 3){
-          let val = v.nodeValue;
-          if (val.length > 3) {
-            while (oldChilds[i].nodeValue == "\n  "){
-              oldNode.removeChild(oldChilds[i]);
-            }
-            let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
-            if (newV != oldChilds[i].nodeValue){
-              let body = document.createElement('body');
-              body.innerHTML = newV;
-              while(oldChilds[i + 1] && !oldChilds[i + 1].original){
-                oldNode.removeChild(oldChilds[i + 1]);
-              }
-              oldChilds[i].replaceWith(...body.childNodes);
-            }
-          }
-        } else {
-          SFComponent.replaceNode(v, oldChilds[i], {bind: bind, route: route});
-        }
-      });
     }
+    let replacing = [], j = 0;
+    originalChilds.forEach((v, i) => {
+      if(v.nodeType === 3){
+        if (v.isEqualNode(oldChilds[j])){
+          oldChilds[j].original = true;
+        }
+        let val = v.nodeValue;
+        if (val.indexOf('${') > -1) {
+          replacing[i] = {replaced: [], replacer: []};
+          if(oldChilds[j].original){
+            replacing[i].replaced.push(oldChilds[j]);
+          } else {
+            while (oldChilds[j] && !oldChilds[j].original){
+              replacing[i].replaced.push(oldChilds[j]);
+              j++;
+            }
+            j--;
+          }
+          let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
+          let body = document.createElement('body');
+          body.innerHTML = newV;
+          replacing[i].replacer.push(body);
+        }
+      } else {
+        SFComponent.replaceNode(v, oldChilds[j], {bind: bind, route: route});
+      }
+      j++;
+    });
+    replacing.forEach((v,i) => {
+      let original = v.replaced.splice(0,1)[0];
+      if (v.replaced.length > 0){
+        v.replaced.forEach((a, i) => {
+          if (a && a.nodeType){
+            oldNode.removeChild(a)
+          }
+        });
+      }
+      original.replaceWith(...v.replacer[0].childNodes);
+    });
   }
   static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
