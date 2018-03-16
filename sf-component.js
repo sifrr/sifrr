@@ -149,6 +149,9 @@ class SFComponent {
 }
 
 function createComponent(element, href, c){
+  if(window.customElements.get(element)){
+    return;
+  }
   let link = document.createElement('link');
   link.rel = 'import';
   link.href = href;
