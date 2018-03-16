@@ -91,6 +91,9 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
+    if (string.indexOf("${") < 0){
+      return string;
+    }
     return string.replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
     function replacer(match) {
       let g1 = match.slice(2, -1);
@@ -193,7 +196,6 @@ function createComponent(element, href, c){
           let defaultBind = c.defaultBind || {};
           let bv = this.bind || {};
           this.bind = Object.assign(defaultBind, bv);
-          let x = this;
         }
         disconnectedCallback() {
           if (typeof c.disconnectedCallback === "function") {
@@ -236,9 +238,7 @@ Object.defineProperty(HTMLElement.prototype, "bind", {
   set(v){
     bv = this.bindValue || {};
     total = Object.assign(bv, v);
-    if (Object.keys(total).length > 0){
-      this.bindValue = total;
-      SFComponent.replaceBindData(this);
-    }
+    this.bindValue = total;
+    SFComponent.replaceBindData(this);
   }
 });

@@ -1,0 +1,13 @@
+<template>
+  <style>
+
+  </style>
+
+  ${[1,2,3].map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
+</template>
+<script>
+  let sfLocations = SFComponent['sf-locations'];
+  sfLocations.connectedCallback = function(e) {
+
+  }
+</script>

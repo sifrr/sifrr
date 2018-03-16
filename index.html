@@ -42,9 +42,7 @@
     /what/*/okay
   </sf-route>
   <sf-route data-route="/locations">
-    `${[1,2,3].map(i => {
-      '<sf-location data-location-id="' + i + '"></sf-location>'
-    }).join("")}`
+    <sf-locations></sf-locations>
   </sf-route>
   <sf-route data-route="/what/*">
     /what/*, * = ${route.star[0]}
@@ -81,7 +79,7 @@
     });
 
     new SFComponent('my-app', '/elements/my-app.html');
-    new SFComponent(['sf-location', 'sf-route']);
+    new SFComponent(['sf-location', 'sf-route', 'sf-locations']);
     new SFComponent('simple-carousel', 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html');
 
     document.querySelector('#noloading').bind = {
