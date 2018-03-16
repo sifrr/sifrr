@@ -3,7 +3,7 @@
 
   </style>
 
-  ${[1,2,3].map(i => "<sf-location data-location-id=" + i + "></sf-location>").join("")}
+  ${[1,2,3].map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
 </template>
 <script>
   let sfLocations = SFComponent['sf-locations'];
