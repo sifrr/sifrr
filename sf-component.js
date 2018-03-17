@@ -11,6 +11,7 @@ class SFComponent {
   static replaceBindData(target){
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
+    if (!c) return;
     let bind = target.bind;
     this.replaceNode(c.originalNode, target.shadowRoot, {bind: bind});
     if (typeof c.bindDataChangeCallback === "function") {
