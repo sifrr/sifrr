@@ -33,7 +33,7 @@ class SFComponent {
     }
     let replacing = [], j = 0;
     originalChilds.forEach((v, i) => {
-      while(oldChilds[j].skip){
+      while(oldChilds[j].skip || (oldChilds[j].dataset && oldChilds[j].dataset.skip)){
         j++;
       }
       if(v.nodeType === 3){
