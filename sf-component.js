@@ -48,7 +48,18 @@ class SFComponent {
           let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
           let body = document.createElement('body');
           body.innerHTML = newV;
-          replacing[i].replacer.push(body);
+          if (replacing[i].replaced.length === 1 && body.childNodes.length === 1){
+            const remove = replacing[i].replaced[0];
+            const add = body.childNodes[0];
+            if (remove.nodeType === 3 && add.nodeType === 3){
+              remove.nodeValue = add.nodeValue;
+            } else {
+              remove.replaceWith(add);
+            }
+            replacing[i] = {replaced: [], replacer: []};
+          } else {
+            replacing[i].replacer.push(body);
+          }
         }
       } else {
         SFComponent.replaceNode(v, oldChilds[j], {bind: bind, route: route});
@@ -60,7 +71,7 @@ class SFComponent {
       if (v.replaced.length > 0){
         v.replaced.forEach((a, i) => {
           if (a && a.nodeType){
-            oldNode.removeChild(a)
+            oldNode.removeChild(a);
           }
         });
       }
