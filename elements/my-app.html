@@ -15,7 +15,7 @@
   <p ${bind.attr}="what">binding with . - ${bind.text}</p>
   <p>binding with [] - ${bind['text']}</p>
   <p>binding double [] - ${bind['randomElement'][0]}</p>
-  <input value=${bind.text}>
+  <input value=${bind.text} data-bind-to="bind.text">
   ${bind.elements}
   <p></p>
 </template>
@@ -29,7 +29,7 @@
     "color": "red",
     "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>"
   }
-  myApp.bindDataChangedCallback = function(e, data) {
+  myApp.connectedCallback = function(e, data) {
     let randomEl = document.createElement('random-el');
     randomEl.bind = e.bind["randomElement"];
     e.shadowRoot.appendChild(randomEl);
