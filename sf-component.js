@@ -168,60 +168,60 @@ function createComponent(element, href, c){
   }
   SFComponent[element] = c;
   let link = document.createElement('link');
+  const cl = class extends HTMLElement {
+    static get observedAttributes() {
+      c.observedAttributes = c.observedAttributes || [];
+      return c.observedAttributes;
+    }
+    constructor() {
+      super();
+      const template = link.import.querySelector('template');
+      if (template.getAttribute("relative-url") == "true") {
+        var base = link.href;
+        let insideHtml = template.innerHTML;
+        let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+        let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
+        let newHtml = insideHtml.replace(href_regex, replacer);
+        newHtml = newHtml.replace(src_regex, replacer);
+        function replacer(match, g1) {
+          return match.replace(g1, SFComponent.absolute(base, g1));
+        }
+        template.innerHTML = newHtml;
+      }
+      const shadowRoot = this.attachShadow({mode: 'open'})
+        .appendChild(template.content.cloneNode(true));
+      let x = document.createElement('body');
+      x.appendChild(template.content.cloneNode(true));
+      c.originalNode = x;
+      if (typeof c.createdCallback === "function") {
+        c.createdCallback(this);
+      }
+    }
+    attributeChangedCallback(attrName, oldVal, newVal) {
+      if (typeof c.attributeChangedCallback === "function") {
+        c.attributeChangedCallback(this, attrName, oldVal, newVal);
+      }
+    }
+    connectedCallback() {
+      let defaultBind = c.defaultBind || {};
+      let bv = this.bind || {};
+      this.bind = Object.assign(defaultBind, bv);
+      if (typeof c.connectedCallback === "function") {
+        c.connectedCallback(this);
+      }
+    }
+    disconnectedCallback() {
+      if (typeof c.disconnectedCallback === "function") {
+        c.disconnectedCallback(this);
+      }
+    }
+  }
   link.rel = 'import';
   link.href = href;
   link.setAttribute('async', '');
   link.onload = function(e) {
     try {
-      window.customElements.define(element,
-        class extends HTMLElement {
-          static get observedAttributes() {
-            c.observedAttributes = c.observedAttributes || [];
-            return c.observedAttributes;
-          }
-          constructor() {
-            super();
-            const template = link.import.querySelector('template');
-            if (template.getAttribute("relative-url") == "true") {
-              var base = link.href;
-              let insideHtml = template.innerHTML;
-              let href_regex = /href=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
-              let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
-              let newHtml = insideHtml.replace(href_regex, replacer);
-              newHtml = newHtml.replace(src_regex, replacer);
-              function replacer(match, g1) {
-                return match.replace(g1, SFComponent.absolute(base, g1));
-              }
-              template.innerHTML = newHtml;
-            }
-            const shadowRoot = this.attachShadow({mode: 'open'})
-              .appendChild(template.content.cloneNode(true));
-            let x = document.createElement('body');
-            x.appendChild(template.content.cloneNode(true));
-            c.originalNode = x;
-            if (typeof c.createdCallback === "function") {
-              c.createdCallback(this);
-            }
-          }
-          attributeChangedCallback(attrName, oldVal, newVal) {
-            if (typeof c.attributeChangedCallback === "function") {
-              c.attributeChangedCallback(this, attrName, oldVal, newVal);
-            }
-          }
-          connectedCallback() {
-            let defaultBind = c.defaultBind || {};
-            let bv = this.bind || {};
-            this.bind = Object.assign(defaultBind, bv);
-            if (typeof c.connectedCallback === "function") {
-              c.connectedCallback(this);
-            }
-          }
-          disconnectedCallback() {
-            if (typeof c.disconnectedCallback === "function") {
-              c.disconnectedCallback(this);
-            }
-          }
-      });
+      window.customElements.define(element, cl);
     } catch(e) {
       console.log(e, element, c);
       console.log(customElements.get(element));
