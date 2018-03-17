@@ -25,14 +25,17 @@ class SFComponent {
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
-    if (originalNode.innerHTML.indexOf('${') < 0){
-      return;
-    }
     if(originalNode.innerHTML == oldNode.innerHTML){
       oldNode.original = true;
     }
+    if (originalNode.innerHTML.indexOf('${') < 0){
+      return;
+    }
     let replacing = [], j = 0;
     originalChilds.forEach((v, i) => {
+      while(oldChilds[j].skip){
+        j++;
+      }
       if(v.nodeType === 3){
         if (v.isEqualNode(oldChilds[j])){
           oldChilds[j].original = true;

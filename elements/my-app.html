@@ -16,8 +16,7 @@
   <p>binding with [] - ${bind['text']}</p>
   <p>binding double [] - ${bind['randomElement'][0]}</p>
   <input value=${bind.text} data-bind-to="bind.text">
-  ${bind.elements}
-  <p></p>
+  <p>orig${bind.elements}inal</p>
 </template>
 <script>
   let myApp = SFComponent['my-app'];
@@ -32,7 +31,8 @@
   myApp.connectedCallback = function(e, data) {
     let randomEl = document.createElement('random-el');
     randomEl.bind = e.bind["randomElement"];
-    e.shadowRoot.appendChild(randomEl);
+    randomEl.skip = true;
+    e.shadowRoot.insertBefore(randomEl, e.shadowRoot.childNodes[4]);
   }
   let randomEL = new SFComponent('random-el');
 
