@@ -163,7 +163,17 @@ class SFComponent {
 }
 
 function createComponent(element, href, c){
-  if(!element || window.customElements.get(element) || element.indexOf("-") < 0){
+  if(!element) {
+    console.log('Error creating element: No element name.');
+    return;
+  } else if (window.customElements.get(element)) {
+    console.log('Error creating element: Element already defined.');
+    return;
+  } else if (element.indexOf("-") < 0) {
+    console.log('Error creating element: Element name must have one "-".');
+    return;
+  } else if (SFComponent[element]) {
+    console.log('Error creating element: Element declaration in process.');
     return;
   }
   SFComponent[element] = c;
@@ -223,7 +233,7 @@ function createComponent(element, href, c){
     try {
       window.customElements.define(element, cl);
     } catch(e) {
-      console.log(e, element, c);
+      console.log(element, e);
       console.log(customElements.get(element));
     }
   }
