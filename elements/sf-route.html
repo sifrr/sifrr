@@ -129,13 +129,12 @@
   }
 
   //Click event listner
-  const MAIN = document.body || document.getElementsByTagName("body")[0];
+  const MAIN = document.body;
 
   function clickHandler(e) {
     e = e || window.event;
-    var target;
-    target = e.target || e.srcElement;
-    for (var k in clickEvents) {
+    let target = e.composedPath()[0] || e.target || e.srcElement;
+    for (let k in clickEvents) {
       x = target;
       while (x) {
         if (x.matches(k)) {
@@ -151,11 +150,7 @@
     }
   }
 
-  if (MAIN.addEventListener) {
-    MAIN.addEventListener('click', clickHandler, false);
-  } else {
-    MAIN.attachEvent('onclick', clickHandler);
-  }
+  MAIN.addEventListener('click', clickHandler, false);
 
   Array.prototype.remove = function() {
     let what, a = arguments,

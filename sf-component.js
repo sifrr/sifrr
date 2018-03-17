@@ -163,6 +163,19 @@ class SFComponent {
     }
     return url.split("/");
   }
+  static twoWayBind(e){
+    const target = e.composedPath()[0] || e.target;
+    let host = target;
+    while (host.nodeType != 11){
+      host = host.parentNode;
+      if (!host) return;
+    }
+    host = host.host;
+    let val = target.value || target.innerHTML;
+    let data = {};
+    data[target.dataset.bindTo.slice(5)] = val.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+    host.bind = data;
+  }
 }
 
 function createComponent(element, href, c){
@@ -222,6 +235,7 @@ function createComponent(element, href, c){
       let defaultBind = c.defaultBind || {};
       let bv = this.bind || {};
       this.bind = Object.assign(defaultBind, bv);
+      this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
         c.connectedCallback(this);
       }
@@ -278,3 +292,4 @@ Object.defineProperty(HTMLElement.prototype, "bind", {
     SFComponent.replaceBindData(this);
   }
 });
+document.addEventListener('input', SFComponent.twoWayBind);
