@@ -18,12 +18,15 @@ class SFComponent {
     }
   }
   static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}){
-    if (!originalNode){
+    if (!originalNode || !oldNode){
       return;
     }
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
+    if (originalNode.innerHTML.indexOf('${') < 0 || oldNode.innerHTML.indexOf('${') < 0){
+      return;
+    }
     if(originalNode.innerHTML == oldNode.innerHTML){
       oldNode.original = true;
     }
