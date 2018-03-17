@@ -184,7 +184,7 @@ function createComponent(element, href, c){
   const cl = class extends HTMLElement {
     static get observedAttributes() {
       c.observedAttributes = c.observedAttributes || [];
-      return c.observedAttributes;
+      return ['data-bind'].concat(c.observedAttributes);
     }
     constructor() {
       super();
@@ -211,6 +211,9 @@ function createComponent(element, href, c){
       }
     }
     attributeChangedCallback(attrName, oldVal, newVal) {
+      if (attrName === "data-bind"){
+        this.bind = tryParseJSON(newVal);
+      }
       if (typeof c.attributeChangedCallback === "function") {
         c.attributeChangedCallback(this, attrName, oldVal, newVal);
       }
