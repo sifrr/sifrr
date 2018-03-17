@@ -24,7 +24,7 @@ class SFComponent {
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
-    if (originalNode.innerHTML.indexOf('${') < 0 || oldNode.innerHTML.indexOf('${') < 0){
+    if (originalNode.innerHTML.indexOf('${') < 0){
       return;
     }
     if(originalNode.innerHTML == oldNode.innerHTML){
@@ -55,11 +55,13 @@ class SFComponent {
             const remove = replacing[i].replaced[0];
             const add = body.childNodes[0];
             if (remove.nodeType === 3 && add.nodeType === 3){
-              remove.nodeValue = add.nodeValue;
+              if (remove.nodeValue != add.nodeValue) {
+                remove.nodeValue = add.nodeValue;
+              }
             } else {
               remove.replaceWith(add);
             }
-            replacing[i] = {replaced: [], replacer: []};
+            replacing.splice(i, 1);
           } else {
             replacing[i].replacer.push(body);
           }
