@@ -90,12 +90,16 @@
   }
 
   function makeRouteActive(el, route) {
+    if (el.classList.contains('active')) return;
     SFComponent.replaceNode(el.slotHTML, el, {
       route: route
     });
     try {
-      let lazyComps = tryParseJSON(el.dataset.lazy);
-      new SFComponent(lazyComps);
+      if (el.dataset.lazy && el.dataset.lazy.indexOf('-') > 0) {
+        let lazyComps = tryParseJSON(el.dataset.lazy);
+        new SFComponent(lazyComps);
+        el.dataset.lazy = "";
+      }
     } catch (e) {
       console.log(e);
     }

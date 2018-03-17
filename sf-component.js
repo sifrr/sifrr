@@ -169,7 +169,7 @@ function createComponent(element, href, c){
   } else if (window.customElements.get(element)) {
     console.log('Error creating element: Element already defined.');
     return;
-  } else if (element.indexOf("-") < 0) {
+  } else if (element.indexOf("-") < 1) {
     console.log('Error creating element: Element name must have one "-".');
     return;
   } else if (SFComponent[element]) {
