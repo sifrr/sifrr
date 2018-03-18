@@ -18,7 +18,7 @@ class SFComponent {
       c.bindDataChangeCallback(this);
     }
   }
-  static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}){
+  static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}, {original = 'original'} = {}){
     if (!originalNode || !oldNode){
       return;
     }
@@ -26,7 +26,7 @@ class SFComponent {
     let oldChilds = oldNode.childNodes;
     this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
     if(originalNode.innerHTML == oldNode.innerHTML){
-      oldNode.original = true;
+      oldNode[original] = true;
     }
     if (originalNode.innerHTML.indexOf('${') < 0){
       return;
@@ -38,15 +38,15 @@ class SFComponent {
       }
       if(v.nodeType === 3){
         if (v.isEqualNode(oldChilds[j])){
-          oldChilds[j].original = true;
+          oldChilds[j][original] = true;
         }
         let val = v.nodeValue;
         if (val.indexOf('${') > -1) {
           replacing[i] = {replaced: [], replacer: []};
-          if(oldChilds[j].original){
+          if(oldChilds[j][original]){
             replacing[i].replaced.push(oldChilds[j]);
           } else {
-            while (oldChilds[j] && !oldChilds[j].original){
+            while (oldChilds[j] && !oldChilds[j][original]){
               replacing[i].replaced.push(oldChilds[j]);
               j++;
             }
