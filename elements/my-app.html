@@ -22,12 +22,13 @@
   <div>${bind.elements}</div>
   <select name="abcd" data-bind-to="bind.select">
     <option value="volvo">Volvo</option>
-    <option value="saab">Saab</option>
+    <option value="saab" selected>Saab</option>
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
-  <textarea name="name" rows="8" cols="80" data-bind-to="bind.textarea"></textarea>
+  <textarea name="name" rows="2" cols="40" data-bind-to="bind.textarea">${bind.textarea}</textarea>
   <div class="" contenteditable data-bind-to="bind.elements">
+    ${bind.elements}
   </div>
 </template>
 <script>
@@ -35,7 +36,7 @@
   myApp.defaultBind = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
-    "select": "whatever",
+    "select": "mercedes",
     "textarea": "whatever",
     "randomElement": ["this is random text", "this is second random text"],
     "attr": "data-attr",

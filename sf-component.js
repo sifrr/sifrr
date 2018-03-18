@@ -177,16 +177,16 @@ class SFComponent {
 
 function createComponent(element, href, c){
   if(!element) {
-    console.log('Error creating element: No element name.');
+    console.log(`Error creating element: No element name - ${element}.`);
     return;
   } else if (window.customElements.get(element)) {
-    console.log('Error creating element: Element already defined.');
+    console.log(`Error creating element: Element (${element}) already defined.`);
     return;
   } else if (element.indexOf("-") < 1) {
-    console.log('Error creating element: Element name must have one "-".');
+    console.log(`Error creating element: Element name (${element}) must have one "-".`);
     return;
   } else if (SFComponent[element]) {
-    console.log('Error creating element: Element declaration in process.');
+    console.log(`Error creating element: Element (${element}) declaration in process.`);
     return;
   }
   SFComponent[element] = c;
@@ -230,8 +230,9 @@ function createComponent(element, href, c){
     }
     connectedCallback() {
       let defaultBind = c.defaultBind || {};
-      let bv = this.bind || {};
-      this.bind = Object.assign(defaultBind, bv);
+      let dataBind = tryParseJSON(this.dataset.bind) || {};
+      this.bind = this.bind || {};
+      this.bind = Object.assign(defaultBind, dataBind, this.bind);
       this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
         c.connectedCallback(this);
