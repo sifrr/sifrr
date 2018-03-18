@@ -1,5 +1,5 @@
 class SFAPI {
-  static getHTTP(url, callback, failure, type, {params = {}, headers = {}} = {}) {
+  static getHTTP(url, callback, failure, type, {params = {}, headers = {}, data = {}} = {}) {
     let ans = Object.keys(params).map(k =>
         encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
       ).join('&');
@@ -25,9 +25,15 @@ class SFAPI {
     http.onprogress = function(e) {
     }
     http.open(type, url + '?' + ans, true);
+
     http.setRequestHeader("Accept", "application/json");
     Object.keys(headers).forEach(k => http.setRequestHeader(k, headers[k]));
-    http.send();
+    if (type === "POST"){
+      http.setRequestHeader("Content-Type", "application/json");
+      http.send(JSON.stringify(data));
+    } else {
+      http.send();
+    }
   }
 
   static get(url, callback, failure, options) {
