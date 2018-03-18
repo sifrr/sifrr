@@ -30,9 +30,6 @@ class SFComponent {
     }
     let replacing = [], j = 0;
     originalChilds.forEach((v, i) => {
-      while (SFComponent.skip(oldChilds[j])) {
-        j++;
-      }
       if (!oldChilds[j]){
         oldNode.appendChild(v);
       } else if (v.tagName !== oldChilds[j].tagName){
@@ -65,12 +62,6 @@ class SFComponent {
       } else {
         SFComponent.replaceNode(v, oldChilds[j], {bind: bind, route: route});
       }
-      while (!SFComponent.original(oldChilds[j])){
-        if (!SFComponent.skip(oldChilds[j])){
-          oldNode.removeChild(oldChilds[j]);
-        }
-        j++;
-      }
       j++;
     });
     replacing.forEach((v,i) => {
@@ -78,11 +69,14 @@ class SFComponent {
       SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
     });
   }
-  static skip(el){
+  static remove(el){
+    while (!SFComponent.original(oldChilds[j], original)){
+      if (!SFComponent.skip(oldChilds[j])){
+        oldNode.removeChild(oldChilds[j]);
+      }
+      j++;
+    }
     return el && (el.skip || (el.dataset && el.dataset.skip));
-  }
-  static original(el){
-    return el && (el.original || (el.dataset && el.dataset.original));
   }
   static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
