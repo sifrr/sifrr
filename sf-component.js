@@ -13,7 +13,7 @@ class SFComponent {
     let c = SFComponent[element];
     if (!c) return;
     let bind = target.bind;
-    this.replaceNode(c.originalNode, target.shadowRoot, {bind: bind});
+    this.replaceNode(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind});
     if (typeof c.bindDataChangeCallback === "function") {
       c.bindDataChangeCallback(this);
     }
@@ -21,6 +21,9 @@ class SFComponent {
   static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}, {original = 'original'} = {}){
     if (!originalNode || !oldNode){
       return;
+    }
+    if (originalNode.tagName && originalNode.tagName !== oldNode.tagName){
+      oldNode.replaceWith(originalNode);
     }
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
@@ -30,10 +33,12 @@ class SFComponent {
     }
     let replacing = [], j = 0;
     originalChilds.forEach((v, i) => {
+      while (SFComponent.skip(oldChilds[j])){
+        j++;
+      }
       if (!oldChilds[j]){
         oldNode.appendChild(v);
-      } else if (v.tagName !== oldChilds[j].tagName){
-        oldChilds[j].replaceWith(v);
+        return;
       } else if(v.nodeType === 3){
         if (v.isEqualNode(oldChilds[j])){
           oldChilds[j][original] = true;
@@ -49,6 +54,8 @@ class SFComponent {
           if (remove.nodeType === 3){
             if (remove.nodeValue != add.nodeValue) {
               remove.nodeValue = add.nodeValue;
+            } else {
+              remove[original] = true;
             }
           } else {
             remove.replaceWith(add);
@@ -64,19 +71,21 @@ class SFComponent {
       }
       j++;
     });
-    replacing.forEach((v,i) => {
-      console.log(v);
-      SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
-    });
-  }
-  static remove(el){
-    while (!SFComponent.original(oldChilds[j], original)){
+    while (oldChilds[j]){
       if (!SFComponent.skip(oldChilds[j])){
         oldNode.removeChild(oldChilds[j]);
       }
       j++;
     }
+    replacing.forEach((v,i) => {
+      SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
+    });
+  }
+  static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
+  }
+  static original(el, original){
+    return el && (el[original] || (el.dataset && el.dataset.original));
   }
   static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
@@ -101,9 +110,6 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    if (string.indexOf("${") < 0){
-      return string;
-    }
     return string.replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
     function replacer(match) {
       let g1 = match.slice(2, -1);
@@ -208,7 +214,7 @@ function createComponent(element, href, c){
       const shadowRoot = this.attachShadow({mode: 'open'})
         .appendChild(template.content.cloneNode(true));
       let x = document.createElement('body');
-      x.appendChild(template.content.cloneNode(true));
+      x.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
       c.originalNode = x;
       if (typeof c.createdCallback === "function") {
         c.createdCallback(this);
