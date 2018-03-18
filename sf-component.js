@@ -28,64 +28,61 @@ class SFComponent {
     if(originalNode.innerHTML == oldNode.innerHTML){
       oldNode[original] = true;
     }
-    if (originalNode.innerHTML.indexOf('${') < 0){
-      return;
-    }
     let replacing = [], j = 0;
     originalChilds.forEach((v, i) => {
-      while(oldChilds[j].skip || (oldChilds[j].dataset && oldChilds[j].dataset.skip)){
+      while (SFComponent.skip(oldChilds[j])) {
         j++;
       }
-      if(v.nodeType === 3){
+      if (!oldChilds[j]){
+        oldNode.appendChild(v);
+      } else if (v.tagName !== oldChilds[j].tagName){
+        oldChilds[j].replaceWith(v);
+      } else if(v.nodeType === 3){
         if (v.isEqualNode(oldChilds[j])){
           oldChilds[j][original] = true;
         }
         let val = v.nodeValue;
-        if (val.indexOf('${') > -1) {
-          replacing[i] = {replaced: [], replacer: []};
-          if(oldChilds[j][original]){
-            replacing[i].replaced.push(oldChilds[j]);
-          } else {
-            while (oldChilds[j] && !oldChilds[j][original]){
-              replacing[i].replaced.push(oldChilds[j]);
-              j++;
+        replacing[i] = {replaced: oldChilds[j], replacer: document.createElement('sf-bind')};
+        let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
+        replacing[i].replacer[original] = true;
+        replacing[i].replacer.innerHTML = newV;
+        const remove = replacing[i].replaced;
+        const add = replacing[i].replacer.childNodes[0];
+        if (replacing[i].replacer.childNodes.length === 1 && add.nodeType === 3){
+          if (remove.nodeType === 3){
+            if (remove.nodeValue != add.nodeValue) {
+              remove.nodeValue = add.nodeValue;
             }
-            j--;
-          }
-          let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
-          let body = document.createElement('body');
-          body.innerHTML = newV;
-          if (replacing[i].replaced.length === 1 && body.childNodes.length === 1){
-            const remove = replacing[i].replaced[0];
-            const add = body.childNodes[0];
-            if (remove.nodeType === 3 && add.nodeType === 3){
-              if (remove.nodeValue != add.nodeValue) {
-                remove.nodeValue = add.nodeValue;
-              }
-            } else {
-              remove.replaceWith(add);
-            }
-            replacing.splice(i, 1);
           } else {
-            replacing[i].replacer.push(body);
+            remove.replaceWith(add);
           }
+          replacing.splice(i, 1);
+        } else if (remove.nodeType === 3){
+          replacing[i].replacer.childNodes.forEach(v => v.bindel = true);
+          remove.replaceWith(replacing[i].replacer);
+          replacing.splice(i, 1);
         }
       } else {
         SFComponent.replaceNode(v, oldChilds[j], {bind: bind, route: route});
       }
+      while (!SFComponent.original(oldChilds[j])){
+        if (!SFComponent.skip(oldChilds[j])){
+          oldNode.removeChild(oldChilds[j]);
+        }
+        j++;
+      }
       j++;
     });
     replacing.forEach((v,i) => {
-      let original = v.replaced.splice(0,1)[0];
-      if (v.replaced.length > 0){
-        v.replaced.forEach((a, i) => {
-          if (a && a.nodeType){
-            oldNode.removeChild(a);
-          }
-        });
-      }
-      original.replaceWith(...v.replacer[0].childNodes);
+      console.log(v);
+      SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
     });
+  }
+  static skip(el){
+    return el && (el.skip || (el.dataset && el.dataset.skip));
+  }
+  static original(el){
+    return el && (el.original || (el.dataset && el.dataset.original));
   }
   static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
@@ -286,9 +283,8 @@ Object.defineProperty(HTMLElement.prototype, "bind", {
     return this.bindValue;
   },
   set(v){
-    bv = this.bindValue || {};
-    total = Object.assign(bv, v);
-    this.bindValue = total;
+    this.bindValue = this.bindValue || {};
+    total = Object.assign(this.bindValue, v);
     SFComponent.replaceBindData(this);
   }
 });
