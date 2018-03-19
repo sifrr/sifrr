@@ -10,14 +10,12 @@
       background: none;
     }
   </style>
-  sfnkdjgbk
+  sfnkdjgbk ${bind.text}
   <slot></slot>
   <p>select - ${bind.select}</p>
   <p>input - ${bind.input}</p>
   <p>textarea - ${bind.textarea}</p>
-  <p ${bind.attr}="what">binding with . - ${bind.text}</p>
-  <p>binding with [] - ${bind['text']}</p>
-  <p>binding double [] - ${bind['randomElement'][0]}</p>
+  <p ${bind.attr}="what">bind attr name - ${bind.attr}</p>
   <input value=${bind.input} data-bind-to="bind.input">
   <div>${bind.elements}</div>
   <select name="abcd" data-bind-to="bind.select">
