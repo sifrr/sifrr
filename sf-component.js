@@ -22,7 +22,7 @@ class SFComponent {
     if (!originalNode || !oldNode){
       return;
     }
-    if (originalNode.tagName && originalNode.tagName !== oldNode.tagName){
+    if (originalNode.nodeName !== oldNode.nodeName){
       oldNode.replaceWith(originalNode);
     }
     let originalChilds = originalNode.childNodes;
