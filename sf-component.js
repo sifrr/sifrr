@@ -35,7 +35,6 @@ class SFComponent {
       return;
     } else if (originalNode.nodeType === 3) {
       if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
-      console.log(oldNode, oldNode.parentNode);
       return;
     }
     this.replaceAttribute(originalNode, oldNode);
@@ -269,7 +268,6 @@ function createComponent(element, href, c){
       window.customElements.define(element, cl);
     } catch(e) {
       console.log(element, e);
-      console.log(customElements.get(element));
     }
   }
   link.onerror = function(e) {
