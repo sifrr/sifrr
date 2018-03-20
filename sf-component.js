@@ -172,6 +172,9 @@ class SFComponent {
   }
   static twoWayBind(e){
     const target = e.composedPath()[0] || e.target;
+    if (!target.dataset || !target.dataset.bindTo){
+      return;
+    }
     let host = target;
     while (host.nodeType != 11){
       host = host.parentNode;
