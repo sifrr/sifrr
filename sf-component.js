@@ -1,4 +1,3 @@
-class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : './elements/' + element + '.html';
     if(Array.isArray(element)){
@@ -186,12 +185,10 @@ class SFComponent {
     let data = {};
     data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML.trim();
     host.bind = data;
-    if (!target.value){
-      range.setStart(startN, startO);
-      range.setEnd(endN, endO);
-      sr.getSelection().removeAllRanges();
-      sr.getSelection().addRange(range);
-    }
+    range.setStart(startN, startO);
+    range.setEnd(endN, endO);
+    sr.getSelection().removeAllRanges();
+    sr.getSelection().addRange(range);
   }
 }
 
