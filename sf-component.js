@@ -115,7 +115,7 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    return string.replace(/&[^;]+;/g, function(match, dec) {
+    return string.replace(/&[^;]+;/g, function(match) {
                    let map = {
                      '&lt;': '<',
                      '&#x3C;': '<',
