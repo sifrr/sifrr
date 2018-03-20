@@ -178,10 +178,18 @@ class SFComponent {
       host = host.parentNode;
       if (!host) return;
     }
+    let sr = host, range = sr.getSelection().getRangeAt(0).cloneRange();
+    let [startN, startO, endN, endO] = [range.startContainer, range.startOffset, range.endContainer, range.endOffset];
     host = host.host;
     let data = {};
     data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML.trim();
     host.bind = data;
+    if (!target.value){
+      range.setStart(startN, startO);
+      range.setEnd(endN, endO);
+      sr.getSelection().removeAllRanges();
+      sr.getSelection().addRange(range);
+    }
   }
 }
 
