@@ -74,8 +74,7 @@ class SFComponent {
     }
   }
   static searchNext(child, children, j){
-    let key = -1, node = -1;
-    let i = j || 0;
+    let key = -1, node = -1, i = j || 0;
     if (child.dataset && child.dataset.key) {
       while (i < children.length){
         if (children[i].dataset && children[i].dataset.key == child.dataset.key){
