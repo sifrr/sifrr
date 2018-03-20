@@ -182,12 +182,6 @@ class SFComponent {
     let data = {};
     data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML.trim();
     host.bind = data;
-    let range = document.createRange();
-    range.selectNodeContents(target);
-    range.collapse(false);
-    selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
   }
 }
 
