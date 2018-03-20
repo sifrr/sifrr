@@ -117,7 +117,8 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    return string.replace(/&[^;]+;/g, function(match, dec) {
+    console.log(string, string.trim);
+    return string.trim().replace(/&[^;]+;/g, function(match, dec) {
                    let map = {
                      '&lt;': '<',
                      '&#x3C;': '<',
@@ -138,7 +139,6 @@ class SFComponent {
         try {
           text = tryStringify(f(bind, route));
         } catch (e) {
-          console.log(e);
           text = match;
         }
         return text;
