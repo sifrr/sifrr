@@ -73,9 +73,10 @@ class SFComponent {
     });
     while (oldChilds[j]){
       if (!SFComponent.skip(oldChilds[j])){
-        oldNode.removeChild(oldChilds[j]);
+        oldChilds[j].remove();
+      } else {
+        j++;
       }
-      j++;
     }
     replacing.forEach((v,i) => {
       SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
