@@ -68,18 +68,9 @@
   <script type="text/javascript" src="/sf-api.js"></script>
   <script type="text/javascript" src="/sf-component.js"></script>
   <script type="text/javascript">
-    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', consoling, null, {
-      'params': {
-        'abc': 'xyz',
-        'mno': 'zio'
-      },
-      'headers': {
-        'x-session-pass': 'random'
-      }
-    });
+    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling, null);
 
-    new SFComponent('my-app', '/elements/my-app.html');
-    new SFComponent(['sf-location', 'sf-route', 'sf-locations']);
+    new SFComponent(['my-app', 'sf-location', 'sf-route', 'sf-locations']);
 
     document.querySelector('#noloading').bind = {
       'loading': {
