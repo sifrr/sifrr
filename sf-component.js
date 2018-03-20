@@ -35,12 +35,10 @@ class SFComponent {
       return;
     } else if (originalNode.nodeType === 3) {
       if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
+      console.log(oldNode, oldNode.parentNode);
       return;
     }
     this.replaceAttribute(originalNode, oldNode);
-    if(originalNode.innerHTML == oldNode.innerHTML){
-      return;
-    }
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
     SFComponent.replaceChildren(originalChilds, oldChilds, oldNode);
@@ -78,15 +76,15 @@ class SFComponent {
   }
   static searchNext(child, children, j){
     let key = -1, node = -1;
-    let i = j;
-    while (i < children.length){
-      if (child.dataset && child.dataset.key && children[i].dataset && children[i].dataset.key == child.dataset.key){
-        key = i;
-        break;
+    let i = j || 0;
+    if (child.dataset && child.dataset.key) {
+      while (i < children.length){
+        if (children[i].dataset && children[i].dataset.key == child.dataset.key){
+          key = i;
+          break;
+        }
+        i++;
       }
-      i++;
-    }
-    if (key > 0){
       return key;
     } else {
       i = j;
@@ -117,8 +115,7 @@ class SFComponent {
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    console.log(string, string.trim);
-    return string.trim().replace(/&[^;]+;/g, function(match, dec) {
+    return string.replace(/&[^;]+;/g, function(match, dec) {
                    let map = {
                      '&lt;': '<',
                      '&#x3C;': '<',
@@ -183,9 +180,8 @@ class SFComponent {
       if (!host) return;
     }
     host = host.host;
-    let val = target.value || target.innerHTML;
     let data = {};
-    data[target.dataset.bindTo.slice(5)] = val.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+    data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML;
     host.bind = data;
   }
 }
