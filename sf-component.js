@@ -181,7 +181,7 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML;
+    data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML.trim();
     host.bind = data;
   }
 }
