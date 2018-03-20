@@ -11,63 +11,60 @@ class SFComponent {
   static replaceBindData(target){
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
-    if (!c) return;
+    if (!c || !c.originalNode) return;
     let bind = target.bind;
-    this.replaceNode(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind});
+    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind})
     if (typeof c.bindDataChangeCallback === "function") {
       c.bindDataChangeCallback(this);
     }
   }
-  static replaceNode(originalNode, oldNode, {bind = {}, route = {}} = {}, {original = 'original'} = {}){
+  static replaceDOM(original, old, {bind = {}, route = {}}){
+    if (!original || !old){
+      return;
+    }
+    let replacer = document.createElement('sf-element');
+    replacer.innerHTML = SFComponent.evaluateString(original.innerHTML, {bind: bind, route: route});
+    this.replaceChildren(replacer.childNodes, old.childNodes, old);
+  }
+  static replaceNode(originalNode, oldNode){
     if (!originalNode || !oldNode){
       return;
     }
-    if (originalNode.nodeName !== oldNode.nodeName){
+    if (originalNode.nodeName !== oldNode.nodeName && oldNode.nodeName !== "#document-fragment"){
       oldNode.replaceWith(originalNode);
+      return;
+    } else if (originalNode.nodeType === 3) {
+      if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
+      return;
+    }
+    this.replaceAttribute(originalNode, oldNode);
+    if(originalNode.innerHTML == oldNode.innerHTML){
+      return;
     }
     let originalChilds = originalNode.childNodes;
     let oldChilds = oldNode.childNodes;
-    this.replaceAttribute(originalNode, oldNode, {bind: bind, route: route});
-    if(originalNode.innerHTML == oldNode.innerHTML){
-      oldNode[original] = true;
-    }
-    let replacing = [], j = 0;
+    SFComponent.replaceChildren(originalChilds, oldChilds, oldNode);
+  }
+  static replaceChildren(originalChilds, oldChilds, parent){
+    let j = 0;
     originalChilds.forEach((v, i) => {
       while (SFComponent.skip(oldChilds[j])){
         j++;
       }
       if (!oldChilds[j]){
-        oldNode.appendChild(v);
+        parent.appendChild(v.cloneNode(true));
+        j++;
         return;
-      } else if(v.nodeType === 3){
-        if (v.isEqualNode(oldChilds[j])){
-          oldChilds[j][original] = true;
-        }
-        let val = v.nodeValue;
-        replacing[i] = {replaced: oldChilds[j], replacer: document.createElement('sf-bind')};
-        let newV = SFComponent.evaluateString(val, {bind: bind, route: route});
-        replacing[i].replacer[original] = true;
-        replacing[i].replacer.innerHTML = newV;
-        const remove = replacing[i].replaced;
-        const add = replacing[i].replacer.childNodes[0];
-        if (replacing[i].replacer.childNodes.length === 1 && add.nodeType === 3){
-          if (remove.nodeType === 3){
-            if (remove.nodeValue != add.nodeValue) {
-              remove.nodeValue = add.nodeValue;
-            } else {
-              remove[original] = true;
-            }
-          } else {
-            remove.replaceWith(add);
-          }
-          replacing.splice(i, 1);
-        } else if (remove.nodeType === 3){
-          replacing[i].replacer.childNodes.forEach(v => v.bindel = true);
-          remove.replaceWith(replacing[i].replacer);
-          replacing.splice(i, 1);
+      } else if(v.nodeName !== oldChilds[j].nodeName){
+        i = SFComponent.searchNext(v, oldChilds, j);
+        if (i > 0){
+          parent.insertBefore(oldChilds[i], oldChilds[j]);
+          SFComponent.replaceNode(v, oldChilds[j]);
+        } else {
+          parent.insertBefore(v.cloneNode(true), oldChilds[j]);
         }
       } else {
-        SFComponent.replaceNode(v, oldChilds[j], {bind: bind, route: route});
+        SFComponent.replaceNode(v, oldChilds[j]);
       }
       j++;
     });
@@ -78,15 +75,33 @@ class SFComponent {
         j++;
       }
     }
-    replacing.forEach((v,i) => {
-      SFComponent.replaceNode(v.replacer, v.replaced, {bind: bind, route: route}, {original: 'bindel'});
-    });
+  }
+  static searchNext(child, children, j){
+    let key = -1, node = -1;
+    let i = j;
+    while (i < children.length){
+      if (child.dataset && child.dataset.key && children[i].dataset && children[i].dataset.key == child.dataset.key){
+        key = i;
+        break;
+      }
+      i++;
+    }
+    if (key > 0){
+      return key;
+    } else {
+      i = j;
+      while (i < children.length){
+        if (child.nodeName == children[i].nodeName){
+          node = i;
+          break;
+        }
+        i++;
+      }
+      return node;
+    }
   }
   static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
-  }
-  static original(el, original){
-    return el && (el[original] || (el.dataset && el.dataset.original));
   }
   static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
     let originalAttributes = originalNode.attributes;
@@ -96,22 +111,21 @@ class SFComponent {
     for(let i = 0; i < originalAttributes.length; i++){
       let v = originalAttributes[i].value;
       let n = originalAttributes[i].name;
-      let newV = SFComponent.evaluateString(v, {bind: bind, route: route});
-      let newN = SFComponent.evaluateString(n, {bind: bind, route: route});
-      if (n === newN){
-        if (newV !== oldNode.getAttribute(n)){
-          oldNode.setAttribute(n, newV);
-        }
-      } else {
-        oldNode.removeAttribute(n);
-        if (newV !== oldNode.getAttribute(newN)){
-          oldNode.setAttribute(newN, newV);
-        }
+      if (v !== oldNode.getAttribute(n)){
+        oldNode.setAttribute(n, v);
       }
     }
   }
   static evaluateString(string, {bind = {}, route = {}} = {}){
-    return string.replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+    return string.replace(/&[^;]+;/g, function(match, dec) {
+                   let map = {
+                     '&lt;': '<',
+                     '&#x3C;': '<',
+                     '&gt;': '>',
+                     '&#x3E;': '>'
+                   }
+                   return map[match] ? map[match] : match;
+            		 }).replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
     function replacer(match) {
       let g1 = match.slice(2, -1);
       function executeCode(){
