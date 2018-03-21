@@ -1,5 +1,5 @@
 class SFAPI {
-  static getHTTP(url, callback, failure, type, {params = {}, headers = {}} = {}) {
+  static getHTTP(url, {params = {}, headers = {}, data = {}} = {}, callback, failure, type) {
     let ans = Object.keys(params).map(k =>
         encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
       ).join('&');
@@ -15,34 +15,40 @@ class SFAPI {
           failure(http.status);
         }
       }
-    };
+    }
     http.onerror = function(e) {
       console.log('Network Error, try again.', e);
-    };
+    }
     http.ontimeout = function(e) {
       console.log('Request timed out', e);
     }
     http.onprogress = function(e) {
     }
     http.open(type, url + '?' + ans, true);
+
     http.setRequestHeader("Accept", "application/json");
     Object.keys(headers).forEach(k => http.setRequestHeader(k, headers[k]));
-    http.send();
+    if (type === "POST"){
+      http.setRequestHeader("Content-Type", "application/json");
+      http.send(JSON.stringify(data));
+    } else {
+      http.send();
+    }
   }
 
-  static get(url, callback, failure, options) {
-    return this.getHTTP(url, callback, failure, "GET", options);
+  static get(url, options, callback, failure) {
+    return this.getHTTP(url, options, callback, failure, "GET");
   }
 
-  static post(url, callback, failure, options) {
-    return this.getHTTP(url, callback, failure, "POST", options);
+  static post(url, options, callback, failure) {
+    return this.getHTTP(url, options, callback, failure, "POST");
   }
 
-  static put(url, callback, failure, options) {
-    return this.getHTTP(url, callback, failure, "PUT", options);
+  static put(url, options, callback, failure) {
+    return this.getHTTP(url, options, callback, failure, "PUT");
   }
 
-  static delete(url, callback, failure, options) {
-    return this.getHTTP(url, callback, failure, "DELETE", options);
+  static delete(url, options, callback, failure) {
+    return this.getHTTP(url, options, callback, failure, "DELETE");
   }
 }

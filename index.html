@@ -20,14 +20,15 @@
   <a href="/home">home</a>
   <a href="/what/bang/okay">what/bang/okay</a>
   <a href="/what">what</a>
-  <sf-route data-route="/home">
+  <a href="/locations">locations</a>
+  <sf-route data-route="/home" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
     <simple-carousel>
-      <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala" src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg">
+      <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala">
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/1.jpg" alt="Karnala">
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/2.jpg" alt="Karnala">
     </simple-carousel>
   </sf-route>
-  <sf-route data-route="/what">
+  <sf-route data-route="/what" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
     <simple-carousel id="noloading">
       <p>One slide</p>
       <p>Two slide</p>
@@ -40,11 +41,14 @@
   <sf-route data-route="/what/*/okay">
     /what/*/okay
   </sf-route>
+  <sf-route data-route="/locations">
+    <sf-locations></sf-locations>
+  </sf-route>
   <sf-route data-route="/what/*">
-    /what/*, * = #{route.star[0]}
+    /what/*, * = ${route.star[0]}
   </sf-route>
   <sf-route data-route="/what/:okay">
-    /what/:okay, okay = #{route.okay}
+    /what/:okay, okay = ${route.okay}
   </sf-route>
   <sf-route data-route="/what/bang">
     /what/bang
@@ -53,37 +57,28 @@
     show everywhere
   </sf-route>
   <sf-route data-route="/location/:id">
-    <sf-location data-location-id='#{route.id}'></sf-location>
+    <sf-location data-location-id='${route.id}'></sf-location>
   </sf-route>
-  <my-app data-bind='{"text":"abcd"}' class="my-app">
-    <p>No data binding in slotted elements #{data.text}.</p>
+  <my-app class="my-app">
+    <p>No data binding in slotted elements ${data.text}.</p>
     <p>Okay.</p>
   </my-app>
   <p>Outside p!</p>
+  <script type="text/javascript" src="/webcomponents-hi.js"></script>
   <script type="text/javascript" src="/sf-api.js"></script>
   <script type="text/javascript" src="/sf-component.js"></script>
   <script type="text/javascript">
-    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', consoling, null, {
-      'params': {
-        'abc': 'xyz',
-        'mno': 'zio'
-      },
-      'headers': {
-        'x-session-pass': 'random'
-      }
-    });
+    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling, null);
 
-    new SFComponent('my-app', '/elements/my-app.html');
-    new SFComponent(['sf-location', 'sf-route']);
-    new SFComponent('simple-carousel', 'https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html');
+    new SFComponent(['my-app', 'sf-location', 'sf-route', 'sf-locations']);
 
-    SFComponent.setBindData(document.querySelector('#noloading'), {
+    document.querySelector('#noloading').bind = {
       'loading': {
         'style': {
           'display': 'none'
         }
       }
-    });
+    };
 
     function consoling(result) {
       console.log(result.results);

@@ -4,10 +4,12 @@
       color: blue;
     }
   </style>
-  <p>#{bind[0]}</p>
-  <p>#{bind[1]}</p>
-  <p>#{bind}</p>
+  <p>${bind[0]}</p>
+  <p>${bind[1]}</p>
+  <p>${bind}</p>
   <content></content>
 </template>
 <script type="text/javascript">
+  let randomEl = SFComponent['random-el'];
+  randomEl.defaultBind = ['default', 'bind'];
 </script>
