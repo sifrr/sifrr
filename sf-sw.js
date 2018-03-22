@@ -25,29 +25,12 @@ self.addEventListener('fetch', event => {
   let request = event.request;
   if (request.method === 'GET') {
     let new_request = request.clone();
-    fromNetwork(new_request, 10).then(rsp => event.respondWith(rsp));
+    event.respondWith(fromNetwork(new_request).catch(rsn => fromCache(request)));
   }
 });
 
 function requestFromURL(url) {
   return new Request(url, {method: 'GET'});
-}
-
-function replaceUrl(request){
-  const oldUrl = request.url;
-  let newUrl = '';
-  return new Request(newURL, {
-    method: request.method,
-    headers: request.headers,
-    body: body,
-    referrer: request.referrer,
-    referrerPolicy: request.referrerPolicy,
-    mode: request.mode,
-    credentials: request.credentials,
-    cache: request.cache,
-    redirect: request.redirect,
-    integrity: request.integrity,
-  });
 }
 
 function precache(urls) {
@@ -60,27 +43,13 @@ function precache(urls) {
 }
 
 function fromCache(request, from = null) {
-  const cache = caches.open(CACHE).then(cache => cache.match(request));
-  if (!cache && !from) {
-    let rsp;
-    console.log('trying network');
-    fromNetwork(request).then(resp => rsp = resp);
-    return rsp;
-  } else if (cache){
-    return cache;
-  } else {
-    return fallback(request);
-  }
+  return cache = caches.open(CACHE).then(cache => cache.match(request));
 }
 
-function fromNetwork(request, timeout) {
-  return new Promise(function (fulfill) {
-    let timeoutId = setTimeout(() => fulfill(fromCache(request, 'network')), timeout);
-    fetch(request).then(response => {
-      let rsp = response.clone();
-      clearTimeout(timeoutId);
-      fulfill(response);
-      caches.open(CACHE).then(cache => cache.put(request, rsp));
-    }).catch(() => fulfill(fromCache(request, 'network')));
+function fromNetwork(request) {
+  return fetch(request).then(response => {
+    let rsp = response.clone();
+    caches.open(CACHE).then(cache => cache.put(request, rsp));
+    return response;
   });
 }

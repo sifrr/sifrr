@@ -11,13 +11,18 @@ class SFAPI {
       method: type,
       headers: Object.assign(defaultHeaders, options.headers),
       mode: 'cors',
-      cache: 'no-cache',
       redirect: 'follow',
     });
     if (type === "POST" && Object.keys(options.data).length > 0){
       options.headers['content-type'] = 'application/json';
     }
-    return fetch(url + '?' + ans, options).then(resp => resp.json());
+    return fetch(url + '?' + ans, options).then(resp => {
+      if (!resp.ok) {
+        throw Error(response.statusText);
+      } else {
+        return resp.json();
+      }
+    });
   }
 
   static get(url, options) {
