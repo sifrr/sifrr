@@ -1,3 +1,7 @@
+const POLICY = {
+  '^https://framework.aadityataparia.com': 'NETWORK_FIRST',
+  '.*': 'CACHE_FIRST'
+}
 const CACHE = 'cache-v1';
 
 const PRECACHE_URLS = [
@@ -24,10 +28,30 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   let request = event.request;
   if (request.method === 'GET') {
-    let new_request = request.clone();
-    event.respondWith(fromNetwork(new_request).catch(rsn => fromCache(request)));
+    const url = request.url;
+    for (let [key, value] of Object.entries(POLICY)) {
+      const regex = new RegExp(key);
+      if (url.match(regex)) return event.respondWith(respondWithPolicy(request, value));
+    }
+    return event.respondWith(fromNetwork(new_request).catch(rsn => fromCache(request)));
   }
 });
+
+function respondWithPolicy(request, policy = 'default'){
+  let new_request = request.clone();
+  switch(policy){
+    case 'NETWORK_ONLY':
+      return fromNetwork(new_request);
+    case 'CACHE_ONLY':
+      return fromCache(new_request);
+    case 'CACHE_FIRST':
+      const resp = fromCache(new_request);
+      if (resp) return resp;
+      else return fromNetwork(request);
+    default:
+      return fromNetwork(new_request).catch(rsn => fromCache(request));
+  }
+}
 
 function requestFromURL(url) {
   return new Request(url, {method: 'GET'});
@@ -43,7 +67,7 @@ function precache(urls) {
 }
 
 function fromCache(request, from = null) {
-  return cache = caches.open(CACHE).then(cache => cache.match(request));
+  return caches.open(CACHE).then(cache => cache.match(request));
 }
 
 function fromNetwork(request) {
