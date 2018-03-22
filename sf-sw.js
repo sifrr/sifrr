@@ -1,8 +1,7 @@
 const POLICY = {
-  '^https://framework.aadityataparia.com': 'NETWORK_FIRST',
-  '.*': 'CACHE_FIRST'
+  '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main-v1'},
+  '.*': {type: 'CACHE_FIRST', cache: 'other-v1'}
 }
-const CACHE = 'cache-v1';
 
 const PRECACHE_URLS = [
   './sf-component.js',
@@ -15,7 +14,10 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  const currentCaches = [CACHE];
+  let currentCaches = ['extra'];
+  for (let [key, value] of Object.entries(POLICY)) {
+    currentCaches.push(value.cache);
+  }
   caches.keys().then(cacheNames => {
     return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
   }).then(cachesToDelete => {
@@ -29,27 +31,34 @@ self.addEventListener('fetch', event => {
   let request = event.request;
   if (request.method === 'GET') {
     const url = request.url;
-    for (let [key, value] of Object.entries(POLICY)) {
-      const regex = new RegExp(key);
-      if (url.match(regex)) return event.respondWith(respondWithPolicy(request, value));
-    }
-    return event.respondWith(fromNetwork(new_request).catch(rsn => fromCache(request)));
+    event.respondWith(respondWithPolicy(request, findPolicy(url)));
   }
 });
 
-function respondWithPolicy(request, policy = 'default'){
+function findPolicy(url){
+  for (let [key, value] of Object.entries(POLICY)) {
+    const regex = new RegExp(key);
+    if (url.match(regex)) return value;
+  }
+  return {type: 'DEFAULT', cache: 'extra'}
+}
+
+function respondWithPolicy(request, {type, cache}){
   let new_request = request.clone();
-  switch(policy){
+  switch(type){
     case 'NETWORK_ONLY':
-      return fromNetwork(new_request);
+      return fromNetwork(new_request, cache);
     case 'CACHE_ONLY':
-      return fromCache(new_request);
+      return fromCache(new_request, cache);
     case 'CACHE_FIRST':
-      const resp = fromCache(new_request);
-      if (resp) return resp;
-      else return fromNetwork(request);
+      return fromCache(new_request, cache).then(resp => {
+        if (resp) return resp;
+        else return fromNetwork(request, cache);
+      });
+    case 'NETWORK_FIRST':
+      return fromNetwork(new_request, cache).catch(rsn => fromCache(request, cache));
     default:
-      return fromNetwork(new_request).catch(rsn => fromCache(request));
+      return fromNetwork(new_request, cache).catch(rsn => fromCache(request, cache));
   }
 }
 
@@ -58,22 +67,16 @@ function requestFromURL(url) {
 }
 
 function precache(urls) {
-  return caches.open(CACHE).then(function (cache) {
-    urls.forEach(u => {
-      let req = requestFromURL(u);
-      return fetch(req).then(rsp => cache.put(req, rsp.clone()));
-    });
+  urls.forEach(u => {
+    let req = requestFromURL(u);
+    return fromNetwork(req, findPolicy(u).cache);
   });
 }
 
-function fromCache(request, from = null) {
-  return caches.open(CACHE).then(cache => cache.match(request));
+function fromCache(request, cache) {
+  return caches.open(cache).then(cache => cache.match(request));
 }
 
-function fromNetwork(request) {
-  return fetch(request).then(response => {
-    let rsp = response.clone();
-    caches.open(CACHE).then(cache => cache.put(request, rsp));
-    return response;
-  });
+function fromNetwork(request, cache) {
+  return caches.open(cache).then(cache => fetch(request).then(response => cache.put(request, response.clone()).then(() => response)));
 }
