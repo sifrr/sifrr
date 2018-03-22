@@ -1,21 +1,9 @@
 /**
-@license @nocompile
+@license
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-(function(){/*
-
- Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
- This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- Code distributed by Google as part of the polymer project is also
- subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
+(function(){
 'use strict';(function(h){function B(a,b){if("function"===typeof window.CustomEvent)return new CustomEvent(a,b);var c=document.createEvent("CustomEvent");c.initCustomEvent(a,!!b.bubbles,!!b.cancelable,b.detail);return c}function n(a){if(w)return a.ownerDocument!==document?a.ownerDocument:null;var b=a.__importDoc;if(!b&&a.parentNode){b=a.parentNode;if("function"===typeof b.closest)b=b.closest("link[rel=import]");else for(;!r(b)&&(b=b.parentNode););a.__importDoc=b}return b}function L(a){var b=l(document,
 "link[rel=import]:not([import-dependency])"),c=b.length;c?g(b,function(b){return t(b,function(){0===--c&&a()})}):a()}function C(a){function b(){"loading"!==document.readyState&&document.body&&(document.removeEventListener("readystatechange",b),a())}document.addEventListener("readystatechange",b);b()}function D(a){C(function(){return L(function(){return a&&a()})})}function t(a,b){if(a.__loaded)b&&b();else if("script"===a.localName&&!a.src||"style"===a.localName&&!a.firstChild)a.__loaded=!0,b&&b();
 else{var c=function(d){a.removeEventListener(d.type,c);a.__loaded=!0;b&&b()};a.addEventListener("load",c);x&&"style"===a.localName||a.addEventListener("error",c)}}function r(a){return a.nodeType===Node.ELEMENT_NODE&&"link"===a.localName&&"import"===a.rel}function k(){var a=this;this.a={};this.b=0;this.g=new MutationObserver(function(b){return a.A(b)});this.g.observe(document.head,{childList:!0,subtree:!0});this.loadImports(document)}function E(a){g(l(a,"template"),function(a){g(l(a.content,'script:not([type]),script[type="application/javascript"],script[type="text/javascript"]'),
@@ -31,25 +19,7 @@ y=e;m.parentNode.replaceChild(e,m);t(e,function(){y=null;b(f+1)})}else a()}var c
 e.__appliedElement=b;e.setAttribute("type","import-placeholder");b.parentNode.insertBefore(e,b.nextSibling);for(e=n(b);e&&n(e);)e=n(e);e.parentNode!==document.head&&(e=null);document.head.insertBefore(b,e);b.removeAttribute("type")}})}else a()};k.prototype.w=function(){var a=this;g(l(document,"link[rel=import]"),function(b){return a.j(b)},!0)};k.prototype.j=function(a){a.__loaded||(a.__loaded=!0,a.import&&(a.import.readyState="complete"),a.dispatchEvent(B(a.import?"load":"error",{bubbles:!1,cancelable:!1,
 detail:void 0})))};k.prototype.A=function(a){var b=this;g(a,function(a){return g(a.addedNodes,function(a){a&&a.nodeType===Node.ELEMENT_NODE&&(r(a)?b.l(a):b.loadImports(a))})})};var z=null;if(w)g(l(document,"link[rel=import]"),function(a){a.import&&"loading"===a.import.readyState||(a.__loaded=!0)}),p=function(a){a=a.target;r(a)&&(a.__loaded=!0)},document.addEventListener("load",p,!0),document.addEventListener("error",p,!0);else{var q=Object.getOwnPropertyDescriptor(Node.prototype,"baseURI");Object.defineProperty((!q||
 q.configurable?Node:Element).prototype,"baseURI",{get:function(){var a=r(this)?this:n(this);return a?a.href:q&&q.get?q.get.call(this):(document.querySelector("base")||window.location).href},configurable:!0,enumerable:!0});Object.defineProperty(HTMLLinkElement.prototype,"import",{get:function(){return this.__import||null},configurable:!0,enumerable:!0});C(function(){z=new k})}D(function(){return document.dispatchEvent(B("HTMLImportsLoaded",{cancelable:!0,bubbles:!0,detail:void 0}))});h.useNative=w;
-h.whenReady=D;h.importForElement=n;h.loadImports=function(a){z&&z.loadImports(a)}})(window.HTMLImports=window.HTMLImports||{});/*
-
- Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
- This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- Code distributed by Google as part of the polymer project is also
- subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
+h.whenReady=D;h.importForElement=n;h.loadImports=function(a){z&&z.loadImports(a)}})(window.HTMLImports=window.HTMLImports||{});
 var u=window.customElements,v=window.HTMLImports,A=window.HTMLTemplateElement;window.WebComponents=window.WebComponents||{};if(u&&u.polyfillWrapFlushCallback){var G,H=function(){if(G){A.u&&A.u(window.document);var h=G;G=null;h();return!0}},I=v.whenReady;u.polyfillWrapFlushCallback(function(h){G=h;I(H)});v.whenReady=function(h){I(function(){H()?v.whenReady(h):h()})}}
-v.whenReady(function(){requestAnimationFrame(function(){window.WebComponents.ready=!0;document.dispatchEvent(new CustomEvent("WebComponentsReady",{bubbles:!0}))})});var J=document.createElement("style");J.textContent="body {transition: opacity ease-in 0.2s; } \nbody[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } \n";var K=document.querySelector("head");K.insertBefore(J,K.firstChild);/*
-
-Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
+v.whenReady(function(){requestAnimationFrame(function(){window.WebComponents.ready=!0;document.dispatchEvent(new CustomEvent("WebComponentsReady",{bubbles:!0}))})});var J=document.createElement("style");J.textContent="body {transition: opacity ease-in 0.2s; } \nbody[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } \n";var K=document.querySelector("head");K.insertBefore(J,K.firstChild);
 }).call(this);
-
-//# sourceMappingURL=webcomponents-hi.js.map
