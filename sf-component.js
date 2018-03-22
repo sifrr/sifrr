@@ -1,3 +1,4 @@
+class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : './elements/' + element + '.html';
     if(Array.isArray(element)){
@@ -35,6 +36,10 @@
     } else if (originalNode.nodeType === 3) {
       if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
       return;
+    } else if (originalNode.nodeName === 'textarea') {
+      oldNode.value = originalNode.value;
+    } else if (originalNode.nodeName === 'select') {
+      oldNode.value = originalNode.getAttribute('value') || originalNode.value ;
     }
     this.replaceAttribute(originalNode, oldNode);
     let originalChilds = originalNode.childNodes;
@@ -183,12 +188,14 @@
     let [startN, startO, endN, endO] = [range.startContainer, range.startOffset, range.endContainer, range.endOffset];
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.slice(5)] = target.value || target.innerHTML.trim();
+    data[target.dataset.bindTo.slice(5)] = typeof target.value === 'string' ? target.value : target.innerHTML.trim();
     host.bind = data;
-    range.setStart(startN, startO);
-    range.setEnd(endN, endO);
-    sr.getSelection().removeAllRanges();
-    sr.getSelection().addRange(range);
+    if (!target.value){
+      range.setStart(startN, startO);
+      range.setEnd(endN, endO);
+      sr.getSelection().removeAllRanges();
+      sr.getSelection().addRange(range);
+    }
   }
 }
 
