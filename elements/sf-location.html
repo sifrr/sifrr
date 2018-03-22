@@ -23,7 +23,6 @@
   sfLocation.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {
       SFAPI.get('https://tuneout.aadityataparia.com/api/location/' + newVal).then(function(result) {
-        result.json().then(rsp => console.log(rsp));
         if (result && result.results) {
           let data = {
             location: result.results.location[0],

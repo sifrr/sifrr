@@ -17,7 +17,7 @@ class SFAPI {
     if (type === "POST" && Object.keys(options.data).length > 0){
       options.headers['content-type'] = 'application/json';
     }
-    return fetch(url + '?' + ans, options);
+    return fetch(url + '?' + ans, options).then(resp => resp.json());
   }
 
   static get(url, options) {
