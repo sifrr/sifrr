@@ -1,9 +1,10 @@
+const CACHE_VERSION = '1';
 const POLICIES = {
-  '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main-v1'},
-  'default': {type: 'CACHE_FIRST', cache: 'other-v1'}
+  '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main'},
+  'default': {type: 'CACHE_FIRST', cache: 'other'}
 }
 
-const FALLBACK_CACHE = 'fallbacks-v1';
+const FALLBACK_CACHE = 'fallbacks';
 const FALLBACKS = {
   '.jpg$': 'https://pbs.twimg.com/profile_images/54789364/JPG-logo-highres_400x400.jpg',
   'default': 'https://framework.aadityataparia.com/index.html'
@@ -20,9 +21,9 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  let currentCaches = [FALLBACK_CACHE];
+  let currentCaches = [FALLBACK_CACHE + '-v' + CACHE_VERSION];
   for (let [key, value] of Object.entries(POLICIES)) {
-    currentCaches.push(value.cache);
+    currentCaches.push(value.cache + '-v' + CACHE_VERSION);
   }
   caches.keys().then(cacheNames => {
     return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
@@ -52,7 +53,7 @@ function findRegex(url, obj){
 
 function respondWithPolicy(request){
   let new_request = request.clone();
-  ({type, cache} = findRegex(request.url, POLICIES) || {type: 'default', cache: 'extra-v1'});
+  ({type, cache} = findRegex(request.url, POLICIES) || {type: 'default', cache: 'extra'});
   switch(type){
     case 'NETWORK_ONLY':
       return fromNetwork(new_request, cache);
@@ -91,12 +92,12 @@ function precache(urls, fbs) {
 }
 
 function fromCache(request, cache) {
-  return caches.open(cache).then(cache => cache.match(request)).then(resp => {
+  return caches.open(cache + '-v' + CACHE_VERSION).then(cache => cache.match(request)).then(resp => {
     if (resp) return resp;
     else throw "Cache not found for " + request.url;
   });
 }
 
 function fromNetwork(request, cache) {
-  return caches.open(cache).then(cache => fetch(request).then(response => cache.put(request, response.clone()).then(() => response)));
+  return caches.open(cache + '-v' + CACHE_VERSION).then(cache => fetch(request).then(response => cache.put(request, response.clone()).then(() => response)));
 }
