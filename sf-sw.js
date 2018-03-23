@@ -78,21 +78,22 @@ function requestFromURL(url) {
 }
 
 function precache(urls, fbs) {
+  let promises = [];
   urls.forEach(u => {
     let req = requestFromURL(u);
-    return fromNetwork(req, findRegex(u, POLICIES).cache);
+    return promises.push(fromNetwork(req, findRegex(u, POLICIES).cache));
   });
   for (let [key, value] of Object.entries(fbs)) {
     let req = requestFromURL(value);
-    console.log(value);
-    return fromNetwork(req, FALLBACK_CACHE);
+    promises.push(fromNetwork(req, FALLBACK_CACHE));
   }
+  return Promise.all(promises);
 }
 
 function fromCache(request, cache) {
   return caches.open(cache).then(cache => cache.match(request)).then(resp => {
     if (resp) return resp;
-    else throw Error("Cache not found for " + request.url);
+    else throw "Cache not found for " + request.url;
   });
 }
 
