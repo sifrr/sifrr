@@ -24,7 +24,6 @@ class SFAPI {
       }
     });
   }
-
   static get(url, options) {
     return this.getHTTP(url, options, "GET");
   }
