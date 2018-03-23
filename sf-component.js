@@ -13,7 +13,7 @@ class SFComponent {
     let c = SFComponent[element];
     if (!c || !c.originalNode) return;
     let bind = target.bind;
-    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind})
+    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind});
     if (typeof c.bindDataChangeCallback === "function") {
       c.bindDataChangeCallback(this);
     }
