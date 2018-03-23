@@ -1,12 +1,12 @@
 const POLICIES = {
   '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main-v1'},
-  '.*': {type: 'CACHE_FIRST', cache: 'other-v1'}
+  'default': {type: 'CACHE_FIRST', cache: 'other-v1'}
 }
 
 const FALLBACK_CACHE = 'fallbacks-v1';
 const FALLBACKS = {
   '.jpg$': 'https://pbs.twimg.com/profile_images/54789364/JPG-logo-highres_400x400.jpg',
-  '.*': 'https://framework.aadityataparia.com/index.html'
+  'default': 'https://framework.aadityataparia.com/index.html'
 }
 
 const PRECACHE_URLS = [
@@ -47,7 +47,7 @@ function findRegex(url, obj){
     const regex = new RegExp(key);
     if (url.match(regex)) return value;
   }
-  return undefined;
+  return obj['default'];
 }
 
 function respondWithPolicy(request){
