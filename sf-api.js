@@ -17,10 +17,10 @@ class SFAPI {
       options.headers['content-type'] = 'application/json';
     }
     return fetch(url + '?' + ans, options).then(resp => {
-      if (!resp.ok) {
-        throw Error(response.statusText);
-      } else {
+      if (resp.ok) {
         return resp.json();
+      } else {
+        throw Error(resp.statusText);
       }
     });
   }
