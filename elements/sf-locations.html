@@ -4,7 +4,7 @@
   </style>
   <a href="location/1">location/1</a>
   <simple-carousel>
-    ${this.locations.split(',').map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
+    ${locations.split(',').map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
   </simple-carousel>
   <input type="text" name="" value="1,2,3" data-bind-to="locations">
 </template>

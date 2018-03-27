@@ -116,6 +116,10 @@ class SFComponent {
     }
   }
   static evaluateString(string, state){
+    let binder = '';
+    for (let i in state){
+      binder += 'let ' + i + ' = this["' + i + '"]; ';
+    }
     return string.replace(/&[^;]+;/g, function(match) {
                    let map = {
                      '&lt;': '<',
@@ -130,9 +134,9 @@ class SFComponent {
       function executeCode(){
         let f, text;
         if (g1.search('return') >= 0){
-          f = new Function(g1).bind(state);
+          f = new Function(binder + g1).bind(state);
         } else {
-          f = new Function('return ' + g1).bind(state);
+          f = new Function(binder + 'return ' + g1).bind(state);
         }
         try {
           text = tryStringify(f());
@@ -315,3 +319,4 @@ Object.defineProperty(HTMLElement.prototype, "state", {
   }
 });
 document.addEventListener('input', SFComponent.twoWayBind);
+document.addEventListener('change', SFComponent.twoWayBind);
