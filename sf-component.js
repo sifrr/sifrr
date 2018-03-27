@@ -188,7 +188,7 @@ class SFComponent {
     let [startN, startO, endN, endO] = [range.startContainer, range.startOffset, range.endContainer, range.endOffset];
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.slice(5)] = typeof target.value === 'string' ? target.value : target.innerHTML.trim();
+    data[target.dataset.bindTo.slice(5)] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     host.bind = data;
     if (!target.value){
       range.setStart(startN, startO);
