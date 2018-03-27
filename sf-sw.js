@@ -1,4 +1,4 @@
-const CACHE_VERSION = '1';
+const CACHE_VERSION = '0';
 const POLICIES = {
   '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main'},
   'default': {type: 'CACHE_FIRST', cache: 'other'}
