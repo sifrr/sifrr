@@ -3,7 +3,10 @@
 
   </style>
   <a href="location/1">location/1</a>
-  ${[{id: 1},{id: 2},{id: 3}].map(i => "&lt;sf-location data-location-id=" + tryStringify(i.id) + ">&lt;/sf-location>").join("")}
+  <simple-carousel>
+    ${bind.locations.split(',').map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
+  </simple-carousel>
+  <input type="text" name="" value="1,2,3" data-bind-to="bind.locations">
 </template>
 <script>
 </script>
