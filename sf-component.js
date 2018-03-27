@@ -29,16 +29,15 @@ class SFComponent {
   static replaceNode(originalNode, oldNode){
     if (!originalNode || !oldNode){
       return;
-    }
-    if (originalNode.nodeName !== oldNode.nodeName && oldNode.nodeName !== "#document-fragment"){
+    } else if (originalNode.nodeName !== oldNode.nodeName && originalNode.nodeName !== "#document-fragment"){
       oldNode.replaceWith(originalNode);
       return;
     } else if (originalNode.nodeType === 3) {
       if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
       return;
-    } else if (originalNode.nodeName === 'textarea') {
+    } else if (originalNode.nodeName === 'TEXTAREA') {
       oldNode.value = originalNode.value;
-    } else if (originalNode.nodeName === 'select') {
+    } else if (originalNode.nodeName === 'SELECT') {
       oldNode.value = originalNode.getAttribute('value') || originalNode.value ;
     }
     this.replaceAttribute(originalNode, oldNode);
@@ -58,7 +57,7 @@ class SFComponent {
         return;
       } else if(v.nodeName !== oldChilds[j].nodeName){
         i = SFComponent.searchNext(v, oldChilds, j);
-        if (i > 0){
+        if (i > 0) {
           parent.insertBefore(oldChilds[i], oldChilds[j]);
           SFComponent.replaceNode(v, oldChilds[j]);
         } else {
