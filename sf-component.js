@@ -130,12 +130,12 @@ class SFComponent {
       function executeCode(){
         let f, text;
         if (g1.search('return') >= 0){
-          f = new Function('state', 'Object.assign(this, state);' + g1);
+          f = new Function(g1).bind(state);
         } else {
-          f = new Function('state', 'Object.assign(this, state);' + 'return ' + g1);
+          f = new Function('return ' + g1).bind(state);
         }
         try {
-          text = tryStringify(f(state));
+          text = tryStringify(f());
         } catch (e) {
           text = match;
         }
@@ -190,7 +190,7 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    data[target.dataset.bindTo.replace(/this./g, '')] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     host.state = data;
     if (!target.value){
       range.setStart(startN, startO);

@@ -2,10 +2,10 @@
   <style>
 
   </style>
-  <p class="${location.id == `1` ? `boom` : `bang`}">id - ${location.id}</p>
-  <p>name - ${location.name}</p>
-  <p>address - ${location.address}</p>
-  <p>attractions - ${attractions[0].name}</p>
+  <p class="${this.location1()}">id - ${this.location.id}</p>
+  <p>name - ${this.location.name}</p>
+  <p>address - ${this.location.address}</p>
+  <p>attractions - ${this.attractions[0].name}</p>
 </template>
 <script>
   let sfLocation = SFComponent['sf-location'];
@@ -18,7 +18,10 @@
     },
     attractions: [{
       name: 'loading'
-    }]
+    }],
+    location1: function() {
+      return this.location.id == 1 ? 'bang' : 'boom';
+    }
   }
   sfLocation.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
     if (attrName == 'data-location-id') {

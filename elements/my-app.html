@@ -10,23 +10,23 @@
       background: none;
     }
   </style>
-  okokok____ok ${text}
+  okokok____ok ${this.text}
   <slot></slot>
-  <p>select - ${select}</p>
-  <p>input - ${input}</p>
-  <p>textarea - ${textarea}</p>
-  <p ${bind.attr}="what">bind attr name - ${attr}</p>
-  <input value=${input} data-bind-to="input">
-  <div>${elements}</div>
+  <p>select - ${this.select}</p>
+  <p>input - ${this.input}</p>
+  <p>textarea - ${this.textarea}</p>
+  <p ${bind.attr}="what">bind attr name - ${this.attr}</p>
+  <input value=${this.input} data-bind-to="this.input">
+  <div>${this.elements}</div>
   <select name="abcd" data-bind-to="bind.select" value="${bind.select}">
     <option value="volvo">Volvo</option>
     <option value="saab">Saab</option>
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
-  <textarea name="name" rows="2" cols="40" data-bind-to="bind.textarea">${textarea}</textarea>
-  <div class="" contenteditable data-bind-to="elements">
-    ${elements}
+  <textarea name="name" rows="2" cols="40" data-bind-to="this.textarea">${this.textarea}</textarea>
+  <div class="" contenteditable data-bind-to="this.elements">
+    ${this.elements}
   </div>
 </template>
 <script>
@@ -43,7 +43,9 @@
   }
   myApp.connectedCallback = function(e, data) {
     let randomEl = document.createElement('random-el');
-    randomEl.bind = e.bind["randomElement"];
+    randomEl.state = {
+      bind: e.state["randomElement"]
+    };
     randomEl.skip = true;
     e.shadowRoot.insertBefore(randomEl, e.shadowRoot.childNodes[4]);
   }
