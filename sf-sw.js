@@ -11,8 +11,8 @@ const FALLBACKS = {
 }
 
 const PRECACHE_URLS = [
-  './sf-component.js',
-  './sf-api.js'
+  'https://framework.aadityataparia.com/sf-component.js',
+  'https://framework.aadityataparia.com/sf-api.js'
 ];
 
 self.addEventListener('install', event => {
