@@ -8,22 +8,22 @@ class SFComponent {
     }
     createComponent(element, href, this);
   }
-  static replaceBindData(target){
+  static updateState(target){
     let element = target.tagName.toLowerCase();
     let c = SFComponent[element];
     if (!c || !c.originalNode) return;
-    let bind = target.bind;
-    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, {bind: bind});
-    if (typeof c.bindDataChangeCallback === "function") {
-      c.bindDataChangeCallback(this);
+    let state = target.state;
+    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, state);
+    if (typeof c.stateChangeCallback === "function") {
+      c.stateChangeCallback(this);
     }
   }
-  static replaceDOM(original, old, {bind = {}, route = {}}){
+  static replaceDOM(original, old, state){
     if (!original || !old){
       return;
     }
     let replacer = document.createElement('sf-element');
-    replacer.innerHTML = SFComponent.evaluateString(original.innerHTML, {bind: bind, route: route});
+    replacer.innerHTML = SFComponent.evaluateString(original.innerHTML, state);
     this.replaceChildren(replacer.childNodes, old.childNodes, old);
   }
   static replaceNode(originalNode, oldNode){
@@ -102,7 +102,7 @@ class SFComponent {
   static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
   }
-  static replaceAttribute(originalNode, oldNode, {bind = {}, route = {}} = {}){
+  static replaceAttribute(originalNode, oldNode){
     let originalAttributes = originalNode.attributes;
     if (!originalAttributes){
       return;
@@ -115,7 +115,7 @@ class SFComponent {
       }
     }
   }
-  static evaluateString(string, {bind = {}, route = {}} = {}){
+  static evaluateString(string, state){
     return string.replace(/&[^;]+;/g, function(match) {
                    let map = {
                      '&lt;': '<',
@@ -130,12 +130,12 @@ class SFComponent {
       function executeCode(){
         let f, text;
         if (g1.search('return') >= 0){
-          f = new Function('bind', 'route', g1);
+          f = new Function('state', 'Object.assign(this, state);' + g1);
         } else {
-          f = new Function('bind', 'route', 'return ' + g1);
+          f = new Function('state', 'Object.assign(this, state);' + 'return ' + g1);
         }
         try {
-          text = tryStringify(f(bind, route));
+          text = tryStringify(f(state));
         } catch (e) {
           text = match;
         }
@@ -144,9 +144,9 @@ class SFComponent {
       return executeCode();
     }
   }
-  static clearbindData(target){
-    target.bindValue = {};
-    replaceBindData(target);
+  static clearState(target){
+    target._state = {};
+    updateState(target);
   }
   static absolute(base, relative) {
     var stack = base.split("/"),
@@ -190,8 +190,8 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.slice(5)] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-    host.bind = data;
+    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    host.state = data;
     if (!target.value){
       range.setStart(startN, startO);
       range.setEnd(endN, endO);
@@ -248,17 +248,17 @@ function createComponent(element, href, c){
     }
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === "data-bind"){
-        this.bind = tryParseJSON(newVal);
+        this.state = {bind: tryParseJSON(newVal)};
       }
       if (typeof c.attributeChangedCallback === "function") {
         c.attributeChangedCallback(this, attrName, oldVal, newVal);
       }
     }
     connectedCallback() {
-      let defaultBind = c.defaultBind || {};
+      let defaultState = c.defaultState || {};
       let dataBind = tryParseJSON(this.dataset.bind) || {};
-      this.bind = this.bind || {};
-      this.bind = Object.assign(defaultBind, dataBind, this.bind);
+      this.state = this.state || {};
+      this.state = Object.assign(defaultState, {bind: dataBind}, this.state);
       this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
         c.connectedCallback(this);
@@ -304,14 +304,14 @@ function tryStringify(json){
     return JSON.stringify(json);
   }
 }
-Object.defineProperty(HTMLElement.prototype, "bind", {
+Object.defineProperty(HTMLElement.prototype, "state", {
   get(){
-    return this.bindValue;
+    return this._state;
   },
   set(v){
-    this.bindValue = this.bindValue || {};
-    total = Object.assign(this.bindValue, v);
-    SFComponent.replaceBindData(this);
+    this._state = this._state || {};
+    total = Object.assign(this._state, v);
+    SFComponent.updateState(this);
   }
 });
 document.addEventListener('input', SFComponent.twoWayBind);

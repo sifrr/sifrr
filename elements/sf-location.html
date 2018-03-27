@@ -2,15 +2,15 @@
   <style>
 
   </style>
-  <p class="${bind.location.id == `1` ? `boom` : `bang`}">id - ${bind.location.id}</p>
-  <p>name - ${bind.location.name}</p>
-  <p>address - ${bind.location.address}</p>
-  <p>attractions - ${bind.attractions[0].name}</p>
+  <p class="${location.id == `1` ? `boom` : `bang`}">id - ${location.id}</p>
+  <p>name - ${location.name}</p>
+  <p>address - ${location.address}</p>
+  <p>attractions - ${attractions[0].name}</p>
 </template>
 <script>
   let sfLocation = SFComponent['sf-location'];
   sfLocation.observedAttributes = ['data-location-id'];
-  sfLocation.defaultBind = {
+  sfLocation.defaultState = {
     location: {
       id: 'loading',
       name: 'loading',
@@ -28,7 +28,7 @@
             location: result.results.location[0],
             attractions: result.results.attractions
           }
-          e.bind = data;
+          e.state = data;
         }
       });
     }
