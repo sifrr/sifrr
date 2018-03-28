@@ -4,9 +4,16 @@
   </style>
   <a href="location/1">location/1</a>
   <simple-carousel>
-    ${locations.split(',').map(i => "&lt;sf-location data-location-id=" + i + ">&lt;/sf-location>").join("")}
+    ${locs()}
   </simple-carousel>
-  <input type="text" name="" value="1,2,3" data-bind-to="locations">
+  <input type="text" name="" value="${locations}" data-bind-to="locations">
 </template>
 <script>
+  let sfLocations = SFComponent['sf-locations'];
+  sfLocations.defaultState = {
+    locations: '1,2,3',
+    locs: function() {
+      return locations.split(',').map(i => "<sf-location data-location-id=" + i + "></sf-location>").join("");
+    }
+  }
 </script>

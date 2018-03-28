@@ -118,7 +118,7 @@ class SFComponent {
   static evaluateString(string, state){
     let binder = '';
     for (let i in state){
-      binder += 'let ' + i + ' = this["' + i + '"]; ';
+      binder += 'var ' + i + ' = this["' + i + '"]; ';
     }
     return string.replace(/&[^;]+;/g, function(match) {
                    let map = {
