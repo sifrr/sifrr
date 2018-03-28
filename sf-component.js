@@ -39,6 +39,11 @@ class SFComponent {
       oldNode.value = originalNode.value;
     } else if (originalNode.nodeName === 'SELECT') {
       oldNode.value = originalNode.getAttribute('value') || originalNode.value ;
+    } else if (originalNode.contentEditable === "true") {
+      let txt = document.createElement("textarea");
+      txt.innerHTML = originalNode.innerHTML;
+      oldNode.childNodes[0].nodeValue = txt.value;
+      return;
     }
     this.replaceAttribute(originalNode, oldNode);
     let originalChilds = originalNode.childNodes;
@@ -194,7 +199,7 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.replace(/this./g, '')] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    data[target.dataset.bindTo.replace(/this./g, '')] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>');
     host.state = data;
     if (!target.value){
       range.setStart(startN, startO);
