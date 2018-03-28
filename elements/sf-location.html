@@ -2,7 +2,7 @@
   <style>
 
   </style>
-  <p class="${location1()}">id - ${location.id}</p>
+  <p class="${location1(location.id)}">id - ${location.id}</p>
   <p>name - ${location.name}</p>
   <p>address - ${location.address}</p>
   <p>attractions - ${attractions[0].name}</p>
@@ -19,8 +19,8 @@
     attractions: [{
       name: 'loading'
     }],
-    location1: function() {
-      return location.id == 1 ? 'bang' : 'boom';
+    location1: function(id) {
+      return id == 1 ? 'bang' : 'boom';
     }
   }
   sfLocation.attributeChangedCallback = function(e, attrName, oldVal, newVal) {
