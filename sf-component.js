@@ -56,12 +56,13 @@ class SFComponent {
   }
   static replaceChildren(originalChilds, oldChilds, parent){
     let j = 0;
+    let frag = document.createDocumentFragment();
     originalChilds.forEach((v, i) => {
       while (SFComponent.skip(oldChilds[j])){
         j++;
       }
       if (!oldChilds[j]){
-        parent.appendChild(v.cloneNode(true));
+        frag.appendChild(v.cloneNode(true));
         j++;
         return;
       } else if(v.nodeName !== oldChilds[j].nodeName){
@@ -84,6 +85,7 @@ class SFComponent {
         j++;
       }
     }
+    parent.appendChild(frag);
   }
   static searchNext(child, children, j){
     let key = -1, node = -1, i = j || 0;
