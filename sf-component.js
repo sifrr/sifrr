@@ -50,13 +50,15 @@ class SFComponent {
           v.replaceWith(...replacing);
         } else if (replacing.nodeType) {
           v.replaceWith(replacing);
-        } else if (replacing.indexOf('<') < 0) {
-          v.nodeValue = replacing;
         } else {
-          let x = document.createElement('body');
-          if (typeof replacing === 'object') replacing = tryStringify(replacing);
-          x.innerHTML = replacing;
-          v.replaceWith(...x.childNodes);
+          if (typeof replacing !== 'string') replacing = tryStringify(replacing);
+          if (replacing.indexOf('<') < 0) {
+            v.nodeValue = replacing;
+          } else {
+            let x = document.createElement('body');
+            x.innerHTML = replacing;
+            v.replaceWith(...x.childNodes);
+          }
         }
       } else {
         SFComponent.evaluateAttributes(v, state);
@@ -150,10 +152,12 @@ class SFComponent {
   }
   static evaluateString(string, state){
     if (string.indexOf('${') < 0) return string;
+    string = string.trim();
     let binder = '';
     for (let i in state){
-      binder += 'var ' + i + ' = this["' + i + '"]; ';
+      binder += 'let ' + i + ' = this["' + i + '"]; ';
     }
+    if (string.indexOf('${') === 0) return replacer(string);
     return string.replace(/&[^;]+;/g, function(match) {
                    let map = {
                      '&lt;': '<',
@@ -179,7 +183,7 @@ class SFComponent {
         }
         return text;
       }
-      return executeCode();
+      return executeCode() || "";
     }
   }
   static clearState(target){
@@ -301,8 +305,8 @@ function createComponent(element, href, c){
     connectedCallback() {
       let defaultState = c.defaultState || {};
       let dataBind = tryParseJSON(this.dataset.bind) || {};
-      this.state = this.state || {};
-      this.state = Object.assign(defaultState, {bind: dataBind}, this.state);
+      let oldState = this.state || {};
+      this.state = Object.assign(defaultState, {bind: dataBind}, oldState);
       if (this.shadowRoot) this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       else this.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
