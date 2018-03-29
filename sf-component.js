@@ -45,9 +45,19 @@ class SFComponent {
     children.forEach(v => {
       if (v.nodeType === 3){
         if (v.nodeValue.indexOf('${') < 0) return;
-        let x = document.createElement('body');
-        x.innerHTML = SFComponent.evaluateString(v.nodeValue, state);
-        v.replaceWith(...x.childNodes);
+        let replacing = SFComponent.evaluateString(v.nodeValue, state);
+        if (Array.isArray(replacing)){
+          v.replaceWith(...replacing);
+        } else if (replacing.nodeType) {
+          v.replaceWith(replacing);
+        } else if (replacing.indexOf('<') < 0) {
+          v.nodeValue = replacing;
+        } else {
+          let x = document.createElement('body');
+          if (typeof replacing === 'object') replacing = tryStringify(replacing);
+          x.innerHTML = replacing;
+          v.replaceWith(...x.childNodes);
+        }
       } else {
         SFComponent.evaluateAttributes(v, state);
         SFComponent.evaluateChildren(v.childNodes, state);
@@ -163,7 +173,7 @@ class SFComponent {
           f = new Function(binder + 'return ' + g1).bind(state);
         }
         try {
-          text = tryStringify(f());
+          text = f();
         } catch (e) {
           text = match;
         }
@@ -267,7 +277,6 @@ function createComponent(element, href, c){
       }
       let x = document.createElement('body');
       if (template.getAttribute('shadow-root') === "false"){
-        this.appendChild(template.content.cloneNode(true));
         x.appendChild(template.content.cloneNode(true));
         c.shadowRoot = false;
       } else {
