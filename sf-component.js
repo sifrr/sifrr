@@ -306,6 +306,7 @@ function createComponent(element, href, c){
       let defaultState = c.defaultState || {};
       let dataBind = tryParseJSON(this.dataset.bind) || {};
       let oldState = this.state || {};
+      console.log(this._state, this.cloneNode(true));
       this.state = Object.assign(defaultState, {bind: dataBind}, oldState);
       if (this.shadowRoot) this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       else this.addEventListener('change', SFComponent.twoWayBind);
@@ -361,6 +362,7 @@ Object.defineProperty(HTMLElement.prototype, "state", {
     this._state = this._state || {};
     total = Object.assign(this._state, v);
     SFComponent.updateState(this);
+
   }
 });
 document.addEventListener('input', SFComponent.twoWayBind);
