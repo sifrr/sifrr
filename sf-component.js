@@ -61,13 +61,7 @@ class SFComponent {
         j++;
         return;
       } else if(v.nodeName !== oldChilds[j].nodeName){
-        i = SFComponent.searchNext(v, oldChilds, j);
-        if (i > 0) {
-          parent.insertBefore(oldChilds[i], oldChilds[j]);
-          SFComponent.replaceNode(v, oldChilds[j]);
-        } else {
-          parent.insertBefore(v.cloneNode(true), oldChilds[j]);
-        }
+        parent.insertBefore(v.cloneNode(true), oldChilds[j]);
       } else {
         SFComponent.replaceNode(v, oldChilds[j]);
       }
@@ -81,29 +75,6 @@ class SFComponent {
       }
     }
     parent.appendChild(frag);
-  }
-  static searchNext(child, children, j){
-    let key = -1, node = -1, i = j || 0;
-    if (child.dataset && child.dataset.key) {
-      while (i < children.length){
-        if (children[i].dataset && children[i].dataset.key == child.dataset.key){
-          key = i;
-          break;
-        }
-        i++;
-      }
-      return key;
-    } else {
-      i = j;
-      while (i < children.length){
-        if (child.nodeName == children[i].nodeName){
-          node = i;
-          break;
-        }
-        i++;
-      }
-      return node;
-    }
   }
   static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
