@@ -43,11 +43,6 @@ class SFComponent {
       oldNode.value = originalNode.value;
     } else if (originalNode.nodeName === 'SELECT') {
       oldNode.value = originalNode.getAttribute('value') || originalNode.value ;
-    } else if (originalNode.contentEditable === "true") {
-      let txt = document.createElement("textarea");
-      txt.innerHTML = originalNode.innerHTML;
-      oldNode.childNodes[0].nodeValue = txt.value;
-      return;
     }
     this.replaceAttribute(originalNode, oldNode);
     let originalChilds = originalNode.childNodes;
