@@ -13,7 +13,11 @@ class SFComponent {
     let c = SFComponent[element];
     if (!c || !c.originalNode) return;
     let state = target.state;
-    SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, state);
+    if (c.shadowRoot){
+      SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, state);
+    } else {
+      SFComponent.replaceDOM(c.originalNode, target, state);
+    }
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
     }
@@ -246,10 +250,17 @@ function createComponent(element, href, c){
         }
         template.innerHTML = newHtml;
       }
-      const shadowRoot = this.attachShadow({mode: 'open'})
-        .appendChild(template.content.cloneNode(true));
       let x = document.createElement('body');
-      x.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
+      if (template.getAttribute('shadow-root') === "false"){
+        this.appendChild(template.content.cloneNode(true));
+        x.appendChild(template.content.cloneNode(true));
+        c.shadowRoot = false;
+      } else {
+        const shadowRoot = this.attachShadow({mode: 'open'})
+          .appendChild(template.content.cloneNode(true));
+        x.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
+        c.shadowRoot = true;
+      }
       c.originalNode = x;
       if (typeof c.createdCallback === "function") {
         c.createdCallback(this);
@@ -268,7 +279,8 @@ function createComponent(element, href, c){
       let dataBind = tryParseJSON(this.dataset.bind) || {};
       this.state = this.state || {};
       this.state = Object.assign(defaultState, {bind: dataBind}, this.state);
-      this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
+      if (this.shadowRoot) this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
+      else this.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
         c.connectedCallback(this);
       }
