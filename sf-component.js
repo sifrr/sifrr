@@ -14,7 +14,7 @@ class SFComponent {
     if (!c || !c.originalNode) return;
     let state = target.state;
     if (c.shadowRoot){
-      SFComponent.replaceDOM(c.originalNode.shadowRoot, target.shadowRoot, state);
+      SFComponent.replaceDOM(c.originalNode, target.shadowRoot, state);
     } else {
       SFComponent.replaceDOM(c.originalNode, target, state);
     }
@@ -26,9 +26,53 @@ class SFComponent {
     if (!original || !old){
       return;
     }
-    let replacer = document.createElement('sf-element');
-    replacer.innerHTML = SFComponent.evaluateString(original.innerHTML, state);
+    let replacer = SFComponent.evaluateDOM(original, state);
     this.replaceChildren(replacer.childNodes, old.childNodes, old);
+  }
+  static evaluateDOM(dom, state){
+    if (!dom){
+      return dom;
+    }
+    let ans = dom.cloneNode(true);
+    SFComponent.evaluateAttributes(ans, state);
+    if(ans.innerHTML.indexOf('${') < 0){
+      return ans;
+    }
+    SFComponent.evaluateChildren(ans.childNodes, state);
+    return ans;
+  }
+  static evaluateChildren(children, state){
+    children.forEach(v => {
+      if (v.nodeType === 3){
+        if (v.nodeValue.indexOf('${') < 0) return;
+        let x = document.createElement('body');
+        x.innerHTML = SFComponent.evaluateString(v.nodeValue, state);
+        v.replaceWith(...x.childNodes);
+      } else {
+        SFComponent.evaluateAttributes(v, state);
+        SFComponent.evaluateChildren(v.childNodes, state);
+      }
+    });
+  }
+  static evaluateAttributes(dom, state){
+    let attrs = dom.attributes;
+    if (!attrs){
+      return;
+    }
+    for(let i = 0; i < attrs.length; i++){
+      let v = attrs[i].value;
+      let n = attrs[i].name;
+      let newV = SFComponent.evaluateString(v, state);
+      let newN = SFComponent.evaluateString(n, state);
+      if (n === newN){
+        if (newV !== dom.getAttribute(n)){
+          dom.setAttribute(n, newV);
+        }
+      } else {
+        dom.removeAttribute(n);
+        dom.setAttribute(newN, newV);
+      }
+    }
   }
   static replaceNode(originalNode, oldNode){
     if (!originalNode || !oldNode){
@@ -95,6 +139,7 @@ class SFComponent {
     }
   }
   static evaluateString(string, state){
+    if (string.indexOf('${') < 0) return string;
     let binder = '';
     for (let i in state){
       binder += 'var ' + i + ' = this["' + i + '"]; ';
@@ -228,7 +273,7 @@ function createComponent(element, href, c){
       } else {
         const shadowRoot = this.attachShadow({mode: 'open'})
           .appendChild(template.content.cloneNode(true));
-        x.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
+        x.appendChild(template.content.cloneNode(true));
         c.shadowRoot = true;
       }
       c.originalNode = x;
@@ -239,6 +284,9 @@ function createComponent(element, href, c){
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === "data-bind"){
         this.state = {bind: tryParseJSON(newVal)};
+      }
+      if (typeof c.attributeChangedCallback === "function") {
+        c.attributeChangedCallback(this, attrName, oldVal, newVal);
       }
     }
     connectedCallback() {

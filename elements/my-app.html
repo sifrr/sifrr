@@ -15,7 +15,7 @@
   <p>select - ${select}</p>
   <p>input - ${input}</p>
   <p>textarea - ${textarea}</p>
-  <p ${bind.attr}="what">bind attr name - ${attr}</p>
+  <p ${attr}=${input}>bind attr name - ${attr}</p>
   <input value=${input} data-bind-to="input">
   <div>${elements}</div>
   <select name="abcd" data-bind-to="select" value="${select}">
