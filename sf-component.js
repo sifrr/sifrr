@@ -61,7 +61,7 @@ class SFComponent {
         j++;
         return;
       } else if(v.nodeName !== oldChilds[j].nodeName){
-        parent.insertBefore(v.cloneNode(true), oldChilds[j]);
+        parent.replaceChild(v.cloneNode(true), oldChilds[j]);
       } else {
         SFComponent.replaceNode(v, oldChilds[j]);
       }
@@ -74,7 +74,9 @@ class SFComponent {
         j++;
       }
     }
-    parent.appendChild(frag);
+    if (frag.childNodes.length > 0){
+      parent.appendChild(frag);
+    }
   }
   static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
@@ -237,9 +239,6 @@ function createComponent(element, href, c){
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === "data-bind"){
         this.state = {bind: tryParseJSON(newVal)};
-      }
-      if (typeof c.attributeChangedCallback === "function") {
-        c.attributeChangedCallback(this, attrName, oldVal, newVal);
       }
     }
     connectedCallback() {
