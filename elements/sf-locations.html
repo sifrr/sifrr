@@ -15,16 +15,7 @@
     locs: function(l) {
       let ans = l.split(',').map(i => {
         let x = document.createElement('sf-location');
-        x.state = {
-          location: {
-            id: i,
-            name: 'what',
-            address: 'now'
-          },
-          attractions: [{
-            name: 'ok'
-          }]
-        }
+        x.dataset.locationId = i;
         return x;
       });
       return ans;
