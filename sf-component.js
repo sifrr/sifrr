@@ -1,3 +1,13 @@
+Object.defineProperty(HTMLElement.prototype, "state", {
+  get(){
+    return this._state;
+  },
+  set(v){
+    this._state = this._state || {};
+    Object.assign(this._state, v);
+    SFComponent.updateState(this);
+  }
+});
 class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -46,6 +56,7 @@ class SFComponent {
       if (v.nodeType === 3){
         if (v.nodeValue.indexOf('${') < 0) return;
         let replacing = SFComponent.evaluateString(v.nodeValue, state);
+        if (!replacing) return;
         if (Array.isArray(replacing)){
           v.replaceWith(...replacing);
         } else if (replacing.nodeType) {
@@ -113,11 +124,11 @@ class SFComponent {
         j++;
       }
       if (!oldChilds[j]){
-        frag.appendChild(v.cloneNode(true));
+        frag.appendChild(v);
         j++;
         return;
       } else if(v.nodeName !== oldChilds[j].nodeName){
-        parent.replaceChild(v.cloneNode(true), oldChilds[j]);
+        parent.replaceChild(v, oldChilds[j]);
       } else {
         SFComponent.replaceNode(v, oldChilds[j]);
       }
@@ -170,20 +181,19 @@ class SFComponent {
     function replacer(match) {
       let g1 = match.slice(2, -1);
       function executeCode(){
-        let f, text;
+        let f;
         if (g1.search('return') >= 0){
           f = new Function(binder + g1).bind(state);
         } else {
           f = new Function(binder + 'return ' + g1).bind(state);
         }
         try {
-          text = f();
+          return f();
         } catch (e) {
-          text = match;
+          return match;
         }
-        return text;
       }
-      return executeCode() || "";
+      return executeCode();
     }
   }
   static clearState(target){
@@ -304,7 +314,7 @@ function createComponent(element, href, c){
     connectedCallback() {
       let defaultState = c.defaultState || {};
       let dataBind = tryParseJSON(this.dataset.bind) || {};
-      let oldState = this.state || {};
+      let oldState = this.state;
       this.state = Object.assign(defaultState, {bind: dataBind}, oldState);
       if (this.shadowRoot) this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       else this.addEventListener('change', SFComponent.twoWayBind);
@@ -352,15 +362,5 @@ function tryStringify(json){
     return JSON.stringify(json);
   }
 }
-Object.defineProperty(HTMLElement.prototype, "state", {
-  get(){
-    return this._state;
-  },
-  set(v){
-    this._state = this._state || {};
-    total = Object.assign(this._state, v);
-    SFComponent.updateState(this);
-  }
-});
 document.addEventListener('input', SFComponent.twoWayBind);
 document.addEventListener('change', SFComponent.twoWayBind);

@@ -12,8 +12,22 @@
   let sfLocations = SFComponent['sf-locations'];
   sfLocations.defaultState = {
     locations: '1,2,3',
-    locs: function(locations) {
-      return locations.split(',').map(i => "<sf-location data-location-id=" + i + "></sf-location>").join("");
+    locs: function(l) {
+      let ans = l.split(',').map(i => {
+        let x = document.createElement('sf-location');
+        x.state = {
+          location: {
+            id: i,
+            name: 'what',
+            address: 'now'
+          },
+          attractions: [{
+            name: 'ok'
+          }]
+        }
+        return x;
+      });
+      return ans;
     }
   }
 </script>
