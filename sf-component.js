@@ -124,6 +124,9 @@ class SFComponent {
       while (SFComponent.skip(oldChilds[j])){
         j++;
       }
+      if (v.dataset && v.dataset.key && oldChilds[j] && oldChilds[j].dataset && v.dataset.key !== oldChilds[j].dataset.key){
+        if (oldChilds[j + 1] && oldChilds[j + 1].dataset && v.dataset.key === oldChilds[j + 1].dataset.key) oldChilds[j].remove();
+      }
       if (!oldChilds[j]){
         let x = v.cloneNode(true);
         if (v.state) x.state = v.state;
