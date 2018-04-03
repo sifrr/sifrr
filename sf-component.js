@@ -1,13 +1,3 @@
-Object.defineProperty(HTMLElement.prototype, "state", {
-  get(){
-    return this._state;
-  },
-  set(v){
-    this._state = this._state || {};
-    Object.assign(this._state, v);
-    SFComponent.updateState(this);
-  }
-});
 class SFComponent {
   constructor(element, href = null){
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -334,6 +324,20 @@ function createComponent(element, href, c){
       if (typeof c.disconnectedCallback === "function") {
         c.disconnectedCallback(this);
       }
+    }
+    get state(){
+      return this._state;
+    }
+    set state(v){
+      this._state = this._state || {};
+      Object.assign(this._state, v);
+      SFComponent.updateState(this);
+    }
+    get key(){
+      return this._key;
+    }
+    set key(v){
+      this._key = v;
     }
   }
   link.rel = 'import';
