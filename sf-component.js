@@ -13,7 +13,7 @@ class SFComponent {
     let c = SFComponent[element];
     if (!c || !c.originalNode) return;
     let state = target.state;
-    if (c.shadowRoot){
+    if (c.sr){
       SFComponent.replaceDOM(c.originalNode, target.shadowRoot, state);
     } else {
       SFComponent.replaceDOM(c.originalNode, target, state);
@@ -291,11 +291,11 @@ function createComponent(element, href, c){
       let x = document.createElement('body');
       if (template.getAttribute('shadow-root') === "false"){
         x.appendChild(template.content.cloneNode(true));
-        c.shadowRoot = false;
+        c.sr = false;
       } else {
         const shadowRoot = this.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
         x.appendChild(template.content.cloneNode(true));
-        c.shadowRoot = true;
+        c.sr = true;
       }
       c.originalNode = x;
       if (typeof c.createdCallback === "function") {
