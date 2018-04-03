@@ -21,6 +21,7 @@
   <a href="/what/bang/okay">what/bang/okay</a>
   <a href="/what">what</a>
   <a href="/locations">locations</a>
+  <a href="/tabs">tabs</a>
   <sf-route data-route="/home" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
     <simple-carousel>
       <img data-src="https://tuneout.aadityataparia.com/s3/img/locations/2/2d/0.jpg" alt="Karnala">
@@ -58,6 +59,42 @@
   </sf-route>
   <sf-route data-route="/location/:id">
     <sf-location data-location-id='${route.id}'></sf-location>
+  </sf-route>
+  <sf-route data-route="/tabs" data-lazy='{"simple-tabs": "https://www.aadityataparia.com/tabs/SF-Component/simple-tabs.html"}'>
+    <simple-tabs>
+      <li slot="list">Head 1</li>
+      <li slot="list">Random heading</li>
+      <li slot="list">Lorem ipsum</li>
+      <li slot="list">Ok</li>
+      <li slot="list">What</li>
+      <li slot="list">Random</li>
+      <li slot="list">.....</li>
+      <li slot="list">-----</li>
+      <div class="tab" slot="tabs">
+        Head 1
+      </div>
+      <div class="tab" slot="tabs">
+        Random heading
+      </div>
+      <div class="tab" slot="tabs">
+        Lorem ipsum
+      </div>
+      <div class="tab" slot="tabs">
+        Ok
+      </div>
+      <div class="tab" slot="tabs">
+        What
+      </div>
+      <div class="tab" slot="tabs">
+        Random
+      </div>
+      <div class="tab" slot="tabs">
+        .....
+      </div>
+      <div class="tab" slot="tabs">
+        -----
+      </div>
+    </simple-tabs>
   </sf-route>
   <my-app class="my-app">
     <p>No data binding in slotted elements ${data.text}.</p>
