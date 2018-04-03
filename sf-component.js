@@ -325,6 +325,11 @@ function createComponent(element, href, c){
         c.disconnectedCallback(this);
       }
     }
+    clone(deep = true){
+      let ans = this.cloneNode(deep);
+      ans.key = this.key;
+      return ans;
+    }
     get state(){
       return this._state;
     }
