@@ -82,8 +82,8 @@ class SFComponent {
           dom.setAttribute(n, newV);
         }
       } else {
-        dom.removeAttribute(n);
         dom.setAttribute(newN, newV);
+        dom.removeAttribute(n);
       }
     }
   }
@@ -123,7 +123,7 @@ class SFComponent {
         frag.appendChild(x);
         j++;
         return;
-      } else if(v.nodeName !== oldChilds[j].nodeName){
+      } else if (v.nodeName != oldChilds[j].nodeName){
         let x = v.cloneNode(true);
         if (v.state) x.state = v.state;
         parent.replaceChild(x, oldChilds[j]);
@@ -148,13 +148,14 @@ class SFComponent {
   }
   static replaceAttribute(originalNode, oldNode){
     let originalAttributes = originalNode.attributes;
+    let oldAttributes = oldNode.attributes;
     if (!originalAttributes){
       return;
     }
     for(let i = 0; i < originalAttributes.length; i++){
       let v = originalAttributes[i].value;
       let n = originalAttributes[i].name;
-      if (v !== oldNode.getAttribute(n)){
+      if (v !== oldNode.getAttribute(n) || !oldNode.hasAttribute(n)){
         oldNode.setAttribute(n, v);
       }
     }
@@ -328,6 +329,7 @@ function createComponent(element, href, c){
     clone(deep = true){
       let ans = this.cloneNode(deep);
       ans.key = this.key;
+      ans.state = this.state;
       return ans;
     }
     get state(){
