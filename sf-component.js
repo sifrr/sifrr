@@ -326,7 +326,7 @@ function createComponent(element, href, c){
         c.disconnectedCallback(this);
       }
     }
-    clone(deep = true){
+    clone(deep = true) {
       let ans = this.cloneNode(deep);
       ans.key = this.key;
       ans.state = this.state;
@@ -362,10 +362,10 @@ function createComponent(element, href, c){
   }
   document.head.appendChild(link);
 }
-function stringify(data){
+function stringify(data) {
   return JSON.stringify(data).replace(new RegExp('"', 'g'),'&quot;')
 }
-function tryParseJSON(jsonString){
+function tryParseJSON(jsonString) {
     try {
       var o = JSON.parse(jsonString);
       return o;
@@ -374,7 +374,7 @@ function tryParseJSON(jsonString){
       return jsonString;
     }
 }
-function tryStringify(json){
+function tryStringify(json) {
   if (typeof json === "string"){
     return json;
   } else {
