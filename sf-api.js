@@ -18,25 +18,32 @@ class SFAPI {
     }
     return fetch(url + '?' + ans, options).then(resp => {
       if (resp.ok) {
-        return resp.json();
+        if (options.headers.accept == 'application/json') return resp.json();
+        return resp.body;
       } else {
         throw Error(resp.statusText);
       }
     });
   }
-  static get(url, options) {
+  static get(url, options = {}) {
     return this.getHTTP(url, options, "GET");
   }
 
-  static post(url, options) {
+  static post(url, options = {}) {
     return this.getHTTP(url, options, "POST");
   }
 
-  static put(url, options) {
+  static put(url, options = {}) {
     return this.getHTTP(url, options, "PUT");
   }
 
-  static delete(url, options) {
+  static delete(url, options = {}) {
     return this.getHTTP(url, options, "DELETE");
+  }
+
+  static file(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers.accept = options.headers.accept || '*/*';
+    return this.getHTTP(url, options, "GET");
   }
 }
