@@ -35,21 +35,15 @@ class SFComponent {
     } else {
       const attrs = html.attributes || {}, l = attrs.length, attr = [];
       for(let i = 0; i < l; i++){
-        attr[i] = {
-          name: attrs[i].name,
-          value: {
-            data: attrs[i].value,
-            state: attrs[i].value.indexOf('${') > -1
-          }
-        };
+        attr[attrs[i].name] = {
+          value: attrs[i].value,
+          state: attrs[i].value.indexOf('${') > -1
+        }
       }
       let ans = {
         tag: html.nodeName,
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
-      };
-      if (ans.tag === 'SELECT') {
-        ans.value = html.value;
       }
       if (dom) ans.dom = html;
       return ans;
@@ -104,23 +98,19 @@ class SFComponent {
         default:
           let ans = {
             tag: vdom.tag,
-            attrs: [],
+            attrs: {},
             children: SFComponent.evaluateVDOM(vdom.children, state)
           }
-          vdom.attrs.forEach((a, i) => {
-            if (a.value.state){
-              ans.attrs.push({
-                name: a.name,
-                value: {
-                  state: a.value.state,
-                  data: SFComponent.evaluateString(a.value.data, state)
-                }
-              });
+          for (let name in vdom.attrs){
+            if (vdom.attrs[name].state){
+              ans.attrs[name] = {
+                state: true,
+                value: SFComponent.evaluateString(vdom.attrs[name].value, state)
+              }
             } else {
-              ans.attrs.push(a);
+              ans.attrs[name] = vdom.attrs[name];
             }
-          });
-          if (vdom.tag === 'SELECT') ans.value = vdom.value;
+          }
           return ans;
       }
     }
@@ -132,15 +122,16 @@ class SFComponent {
       domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
     } else if (vnode.tag === 'SELECT'){
-      domnode.value = vnode.value;
-      console.log(domnode, vnode);
+      domnode.value = SFComponent.evaluateString(vnode.attrs['value'].value, state);
     }
     this.replaceAttributes(domnode, vnode, state);
     this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
-    if (vnode.attrs.length < 1){
-      return;
+    for (let name in vnode.attrs){
+      if (vnode.attrs[name].state) {
+        domnode.setAttribute(name, SFComponent.evaluateString(vnode.attrs[name].value, state));
+      }
     }
     vnode.attrs.forEach(a => {
       if (a.value.state) {
