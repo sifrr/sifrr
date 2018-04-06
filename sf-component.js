@@ -14,9 +14,9 @@ class SFComponent {
     if (!c || !c.originalNode) return;
     let state = target.state;
     if (c.sr){
-      SFComponent.replaceDOM(c.originalNode, target.shadowRoot, state);
+      SFComponent.replaceNode(target.shadowRoot, c.originalNode, state);
     } else {
-      SFComponent.replaceDOM(c.originalNode, target, state);
+      SFComponent.replaceNode(target, c.originalNode, state);
     }
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
@@ -64,16 +64,14 @@ class SFComponent {
         case '#text':
           html = document.createTextNode(node.value);
           break;
-        case '#document-fragment':
-          html = document.createDocumentFragment();
-          break;
         default:
           html = document.createElement(node.tag);
           node.attrs.forEach(a => {
             html.setAttribute(a.name.data, a.value.data);
           });
+          SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
+          break;
       }
-      SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
       return html;
     }
   }
@@ -81,21 +79,11 @@ class SFComponent {
     if (!domnode || !vnode){
       return;
     } else if (vnode.tag !== domnode.nodeName && vnode.tag !== "#document-fragment"){
-      domnode.replaceWith(originalNode);
+      domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
-    } else if (originalNode.nodeType === 3) {
-      if (domnode.nodeValue !== originalNode.nodeValue) domnode.nodeValue = originalNode.nodeValue;
-      return;
-    } else if (originalNode.nodeName === 'TEXTAREA') {
-      domnode.value = originalNode.value;
-    } else if (originalNode.nodeName === 'SELECT') {
-      domnode.value = originalNode.getAttribute('value') || originalNode.value ;
     }
-    if (originalNode.state) domnode.state = originalNode.state;
-    this.replaceAttribute(originalNode, domnode);
-    let originalChilds = originalNode.childNodes;
-    let oldChilds = domnode.childNodes;
-    SFComponent.replaceChildren(originalChilds, oldChilds, domnode);
+    this.replaceAttributes(domnode, vnode);
+    this.replaceChildren(domnode.childNodes, vnode.children, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
     if (!vnode.attrs){
@@ -115,149 +103,62 @@ class SFComponent {
     });
   }
   static replaceChildren(doms, vnodes, state){
-    vnodes.forEach((v, i) => {
-      if (v.tag === '#text'){
-        if (!v.state) return;
-        let replacing = SFComponent.evaluateString(v.data, state);
-        if (!replacing) return;
-        if (Array.isArray(replacing)){
-          doms[i].replaceWith(...replacing);
-        } else if (replacing.nodeType) {
-          doms[i].replaceWith(replacing);
-        } else {
-          if (typeof replacing !== 'string') replacing = tryStringify(replacing);
-          if (replacing.indexOf('<') < 0) {
-            v.nodeValue = replacing;
-          } else {
-            let x = document.createElement('body');
-            x.innerHTML = replacing;
-            v.replaceWith(...x.childNodes);
-          }
-        }
-      } else {
-        SFComponent.evaluateAttributes(v, state);
-        SFComponent.evaluateChildren(v.childNodes, state);
-      }
-    });
-  }
-  static evaluateChildren(children, state){
-    children.forEach(v => {
-      if (v.nodeType === 3){
-        if (v.nodeValue.indexOf('${') < 0) return;
-        let replacing = SFComponent.evaluateString(v.nodeValue, state);
-        if (!replacing) return;
-        if (Array.isArray(replacing)){
-          v.replaceWith(...replacing);
-        } else if (replacing.nodeType) {
-          v.replaceWith(replacing);
-        } else {
-          if (typeof replacing !== 'string') replacing = tryStringify(replacing);
-          if (replacing.indexOf('<') < 0) {
-            v.nodeValue = replacing;
-          } else {
-            let x = document.createElement('body');
-            x.innerHTML = replacing;
-            v.replaceWith(...x.childNodes);
-          }
-        }
-      } else {
-        SFComponent.evaluateAttributes(v, state);
-        SFComponent.evaluateChildren(v.childNodes, state);
-      }
-    });
-  }
-  static evaluateAttributes(dom, state){
-    let attrs = dom.attributes;
-    if (!attrs){
-      return;
-    }
-    for(let i = 0; i < attrs.length; i++){
-      let v = attrs[i].value;
-      let n = attrs[i].name;
-      let newV = SFComponent.evaluateString(v, state);
-      let newN = SFComponent.evaluateString(n, state);
-      if (n === newN){
-        if (newV !== dom.getAttribute(n)){
-          dom.setAttribute(n, newV);
-        }
-      } else {
-        dom.setAttribute(newN, newV);
-        dom.removeAttribute(n);
-      }
-    }
-  }
-  static replaceNode(originalNode, oldNode){
-    if (!originalNode || !oldNode){
-      return;
-    } else if (originalNode.nodeName !== oldNode.nodeName && originalNode.nodeName !== "#document-fragment"){
-      oldNode.replaceWith(originalNode);
-      return;
-    } else if (originalNode.nodeType === 3) {
-      if (oldNode.nodeValue !== originalNode.nodeValue) oldNode.nodeValue = originalNode.nodeValue;
-      return;
-    } else if (originalNode.nodeName === 'TEXTAREA') {
-      oldNode.value = originalNode.value;
-    } else if (originalNode.nodeName === 'SELECT') {
-      oldNode.value = originalNode.getAttribute('value') || originalNode.value ;
-    }
-    if (originalNode.state) oldNode.state = originalNode.state;
-    this.replaceAttribute(originalNode, oldNode);
-    let originalChilds = originalNode.childNodes;
-    let oldChilds = oldNode.childNodes;
-    SFComponent.replaceChildren(originalChilds, oldChilds, oldNode);
-  }
-  static replaceChildren(originalChilds, oldChilds, parent){
+    if (!vnodes) return;
     let j = 0;
-    let frag = document.createDocumentFragment();
-    originalChilds.forEach((v, i) => {
-      while (SFComponent.skip(oldChilds[j])){
+    let frag = [];
+    let replaced = [];
+    vnodes.forEach((v, i) => {
+      while (SFComponent.skip(doms[j])){
         j++;
       }
-      if (v.dataset && v.dataset.key && oldChilds[j] && oldChilds[j].dataset && v.dataset.key !== oldChilds[j].dataset.key){
-        if (oldChilds[j + 1] && oldChilds[j + 1].dataset && v.dataset.key === oldChilds[j + 1].dataset.key) oldChilds[j].remove();
-      }
-      if (!oldChilds[j]){
-        let x = v.cloneNode(true);
-        if (v.state) x.state = v.state;
-        frag.appendChild(x);
+      // if (v.dataset && v.dataset.key && doms[j] && doms[j].dataset && v.dataset.key !== doms[j].dataset.key){
+      //   if (doms[j + 1] && doms[j + 1].dataset && v.dataset.key === doms[j + 1].dataset.key) doms[j].remove();
+      // }
+      if (!doms[j]){
+        frag.push(v);
         j++;
         return;
-      } else if (v.nodeName != oldChilds[j].nodeName){
-        let x = v.cloneNode(true);
-        if (v.state) x.state = v.state;
-        parent.replaceChild(x, oldChilds[j]);
+      } else if (v.tag === '#text'){
+        if (!v.state) return;
+        replaced.push({
+          dom: doms[j],
+          replacing: SFComponent.evaluateString(v.data, state)
+        });
       } else {
-        SFComponent.replaceNode(v, oldChilds[j]);
+        SFComponent.replaceNode(doms[j], v, state);
       }
       j++;
     });
-    while (oldChilds[j]){
-      if (!SFComponent.skip(oldChilds[j])){
-        oldChilds[j].remove();
+    while (doms[j]){
+      if (!SFComponent.skip(doms[j])){
+        doms[j].remove();
       } else {
         j++;
       }
     }
+    replaced.forEach(v => {
+      if (!v.replacing) return;
+      if (Array.isArray(replacing)){
+        v.dom.replaceWith(...v.replacing);
+      } else if (replacing.nodeType) {
+        v.dom.replaceWith(v.replacing);
+      } else {
+        if (typeof v.replacing !== 'string') replacing = tryStringify(replacing);
+        if (v.replacing.indexOf('<') < 0) {
+          v.dom.nodeValue = replacing;
+        } else {
+          let x = document.createElement('body');
+          x.innerHTML = v.replacing;
+          v.replaceWith(...x.childNodes);
+        }
+      }
+    });
     if (frag.childNodes.length > 0){
-      parent.appendChild(frag);
+      parent.appendChild(SFComponent.toHTML(frag));
     }
   }
   static skip(el){
     return el && (el.skip || (el.dataset && el.dataset.skip));
-  }
-  static replaceAttribute(originalNode, oldNode){
-    let originalAttributes = originalNode.attributes;
-    let oldAttributes = oldNode.attributes;
-    if (!originalAttributes){
-      return;
-    }
-    for(let i = 0; i < originalAttributes.length; i++){
-      let v = originalAttributes[i].value;
-      let n = originalAttributes[i].name;
-      if (v !== oldNode.getAttribute(n) || !oldNode.hasAttribute(n)){
-        oldNode.setAttribute(n, v);
-      }
-    }
   }
   static evaluateString(string, state){
     if (string.indexOf('${') < 0) return string;
@@ -387,16 +288,13 @@ function createComponent(element, href, c){
         }
         template.innerHTML = newHtml;
       }
-      let x = document.createElement('body');
       if (template.getAttribute('shadow-root') === "false"){
-        x.appendChild(template.content.cloneNode(true));
         c.sr = false;
       } else {
         const shadowRoot = this.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
-        x.appendChild(template.content.cloneNode(true));
         c.sr = true;
       }
-      c.originalNode = x;
+      c.originalNode = SFComponent.toVDOM(template.content.cloneNode(true));
       if (typeof c.createdCallback === "function") {
         c.createdCallback(this);
       }
