@@ -1,4 +1,11 @@
 RewriteEngine on
+
+<IfModule mod_headers.c>
+	Header unset ETag
+  Header set Cache-Control "max-age=10, private, must-revalidate"
+</IfModule>
+FileETag None
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule . index.html [L]

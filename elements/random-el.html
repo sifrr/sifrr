@@ -1,6 +1,6 @@
-<template>
+<template shadow-root="false">
   <style>
-    p {
+    random-el p {
       color: blue;
     }
   </style>
@@ -11,5 +11,7 @@
 </template>
 <script type="text/javascript">
   let randomEl = SFComponent['random-el'];
-  randomEl.defaultBind = ['default', 'bind'];
+  randomEl.defaultState = {
+    bind: ['default', 'bind']
+  };
 </script>

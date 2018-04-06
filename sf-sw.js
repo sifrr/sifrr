@@ -1,4 +1,4 @@
-const CACHE_VERSION = '1';
+const CACHE_VERSION = '0';
 const POLICIES = {
   '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main'},
   'default': {type: 'CACHE_FIRST', cache: 'other'}
@@ -11,8 +11,8 @@ const FALLBACKS = {
 }
 
 const PRECACHE_URLS = [
-  './sf-component.js',
-  './sf-api.js'
+  'https://framework.aadityataparia.com/sf-component.js',
+  'https://framework.aadityataparia.com/sf-api.js'
 ];
 
 self.addEventListener('install', event => {
