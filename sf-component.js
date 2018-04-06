@@ -27,10 +27,11 @@ class SFComponent {
       let ans = [];
       html.forEach(v => ans.push(SFComponent.toVDOM(v)));
       return ans;
-    } else if (html.nodeType === 3) {
-      return { tag: html.nodeName,
-               data: html.nodeValue,
-               state: html.nodeValue.indexOf('${') > -1};
+    } else if (html.nodeType === 3 || typeof html === 'string') {
+      const x = html.nodeValue || html;
+      return { tag: '#text',
+               data: x,
+               state: x.indexOf('${') > -1};
     } else {
       const attrs = html.attributes || {}, l = attrs.length, attr = [];
       for(let i = 0; i < l; i++){
@@ -47,7 +48,6 @@ class SFComponent {
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
       };
-      if (ans.tag === 'SELECT') ans.value = html.value;
       return ans;
     }
   }
@@ -71,6 +71,53 @@ class SFComponent {
           break;
       }
       return html;
+    }
+  }
+  static evaluateVDOM(vdom, state){
+    if (Array.isArray(vdom)){
+      return [].concat(vdom.map(v => SFComponent.evaluateVDOM(v, state)));
+    } else if (!vdom) {
+      return vdom;
+    } else {
+      switch(vdom.tag){
+        case '#text':
+          if (!vdom.state) return vdom;
+          let replacing = SFComponent.evaluateString(vdom.data, state)
+          if (!replacing) return;
+          if (Array.isArray(replacing) || replacing.nodeType){
+            return SFComponent.toVDOM(replacing);
+          } else {
+            if (typeof replacing !== 'string') replacing = tryStringify(replacing);
+            if (replacing.indexOf('<') < 0) {
+              return SFComponent.toVDOM(replacing);
+            } else {
+              let x = document.createElement('body');
+              x.innerHTML = replacing;
+              return SFComponent.toVDOM(x.childNodes);
+            }
+          }
+          break;
+        default:
+          let ans = {
+            tag: vdom.tag,
+            attrs: [],
+            children: SFComponent.evaluateVDOM(vdom.children, state)
+          }
+          vdom.attrs.forEach((a, i) => {
+            if (a.value.state){
+              ans.attrs.push({
+                name: a.name,
+                value: {
+                  state: a.value.state,
+                  data: SFComponent.evaluateString(a.value.data, state)
+                }
+              });
+            } else {
+              ans.attrs.push(a);
+            }
+          });
+          return ans;
+      }
     }
   }
   static replaceNode(domnode, vnode, state){
@@ -139,13 +186,12 @@ class SFComponent {
       } else {
         if (typeof v.replacing !== 'string') v.replacing = tryStringify(v.replacing);
         if (v.dom.nodeValue === v.replacing || v.dom.innerHTML === v.replacing) return;
-        if (v.replacing.indexOf('<') > 0) {
+        if (v.replacing.indexOf('<') < 0) {
           v.dom.nodeValue = v.replacing;
         } else {
           let x = document.createElement('body');
           x.innerHTML = v.replacing;
           v.dom.replaceWith(...x.childNodes);
-          console.log(v.dom, v.replacing);
         }
       }
     });
