@@ -83,6 +83,7 @@ class SFComponent {
       return;
     }
     this.replaceAttributes(domnode, vnode);
+    console.log(domnode.childNodes, vnode.children);
     this.replaceChildren(domnode.childNodes, vnode.children, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
