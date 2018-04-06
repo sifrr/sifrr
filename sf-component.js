@@ -22,6 +22,38 @@ class SFComponent {
       c.stateChangeCallback(this);
     }
   }
+  static toVDOM(html){
+    if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)){
+      let ans = [];
+      html.forEach(v => ans.push(SFComponent.toVDOM(v)));
+      return ans;
+    } else if (html.nodeType === 3) {
+      return { tag: html.nodeName,
+               data: html.nodeValue,
+               state: html.nodeValue.indexOf('${') > -1};
+    } else {
+      const attrs = html.attributes || {}, l = attrs.length, attr = [];
+      for(let i = 0; i < l; i++){
+        attr[i] = {
+          name: {
+            data: attrs[i].name,
+            state: attrs[i].name.indexOf('${') > -1
+          },
+          value: {
+            data: attrs[i].value,
+            state: attrs[i].value.indexOf('${') > -1
+          }
+        };
+      }
+      let ans = {
+        tag: html.nodeName.toLowerCase(),
+        attrs: attr,
+        children: SFComponent.toVDOM(html.childNodes)
+      };
+
+      return ans;
+    }
+  }
   static replaceDOM(original, old, state){
     if (!original || !old){
       return;
