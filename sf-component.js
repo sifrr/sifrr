@@ -47,6 +47,7 @@ class SFComponent {
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
       };
+      if (ans.tag === 'SELECT') ans.value = html.value;
       return ans;
     }
   }
@@ -78,6 +79,8 @@ class SFComponent {
     } else if (vnode.tag !== domnode.nodeName && vnode.tag !== "#document-fragment"){
       domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
+    } else if (vnode.tag === 'SELECT'){
+      domnode.value = vnode.value;
     }
     this.replaceAttributes(domnode, vnode, state);
     this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
@@ -134,13 +137,15 @@ class SFComponent {
       } else if (v.replacing.nodeType) {
         v.dom.replaceWith(v.replacing);
       } else {
-        if (typeof v.replacing !== 'string') v.replacing = tryStringify(replacing);
-        if (v.replacing.indexOf('<') < 0) {
+        if (typeof v.replacing !== 'string') v.replacing = tryStringify(v.replacing);
+        if (v.dom.nodeValue === v.replacing || v.dom.innerHTML === v.replacing) return;
+        if (v.replacing.indexOf('<') > 0) {
           v.dom.nodeValue = v.replacing;
         } else {
           let x = document.createElement('body');
           x.innerHTML = v.replacing;
           v.dom.replaceWith(...x.childNodes);
+          console.log(v.dom, v.replacing);
         }
       }
     });
