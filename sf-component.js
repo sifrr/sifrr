@@ -35,10 +35,7 @@ class SFComponent {
       const attrs = html.attributes || {}, l = attrs.length, attr = [];
       for(let i = 0; i < l; i++){
         attr[i] = {
-          name: {
-            data: attrs[i].name,
-            state: attrs[i].name.indexOf('${') > -1
-          },
+          name: attrs[i].name,
           value: {
             data: attrs[i].value,
             state: attrs[i].value.indexOf('${') > -1
@@ -83,27 +80,19 @@ class SFComponent {
       return;
     }
     this.replaceAttributes(domnode, vnode);
-    console.log(domnode.childNodes, vnode.children);
-    this.replaceChildren(domnode.childNodes, vnode.children, domnode);
+    this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
     if (!vnode.attrs){
       return;
     }
     vnode.attrs.forEach(a => {
-      let v = a.value.data;
-      let n = a.name.data;
-      if (a.value.state) v = SFComponent.evaluateString(v, state);
-      if (a.name.state){
-        n = SFComponent.evaluateString(n, state);
-        domnode.removeAttribute(a.name.data);
-        domnode.setAttribute(n, v);
-      } else if (v !== a.value.data) {
-        domnode.setAttribute(n, v);
+      if (a.value.state) {
+        domnode.setAttribute(a.name, SFComponent.evaluateString(a.value.data, state));
       }
     });
   }
-  static replaceChildren(doms, vnodes, state){
+  static replaceChildren(doms, vnodes, state, parent){
     if (!vnodes) return;
     let j = 0;
     let frag = [];
@@ -138,6 +127,7 @@ class SFComponent {
       }
     }
     replaced.forEach(v => {
+      console.log(v);
       if (!v.replacing) return;
       if (Array.isArray(v.replacing)){
         v.dom.replaceWith(...v.replacing);

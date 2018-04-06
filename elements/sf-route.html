@@ -27,7 +27,7 @@
 <script>
   let sfRoute = SFComponent['sf-route'];
   sfRoute.connectedCallback = function(el) {
-    el.slotHTML = el.cloneNode(true);
+    el.VDOM = SFComponent.toVDOM(el.cloneNode(true));
     refreshRoute(el, window.location.pathname);
   }
   sfRoute.observedAttributes = ['data-route'];
@@ -92,7 +92,7 @@
   }
 
   function makeRouteActive(el, route) {
-    SFComponent.replaceDOM(el.slotHTML, el, {
+    SFComponent.replaceNode(el, el.VDOM, {
       route: route
     });
     if (el.classList.contains('active')) return;
