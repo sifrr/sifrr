@@ -138,14 +138,14 @@ class SFComponent {
     }
     replaced.forEach(v => {
       if (!v.replacing) return;
-      if (Array.isArray(replacing)){
+      if (Array.isArray(v.replacing)){
         v.dom.replaceWith(...v.replacing);
-      } else if (replacing.nodeType) {
+      } else if (v.replacing.nodeType) {
         v.dom.replaceWith(v.replacing);
       } else {
-        if (typeof v.replacing !== 'string') replacing = tryStringify(replacing);
+        if (typeof v.replacing !== 'string') v.replacing = tryStringify(replacing);
         if (v.replacing.indexOf('<') < 0) {
-          v.dom.nodeValue = replacing;
+          v.dom.nodeValue = v.replacing;
         } else {
           let x = document.createElement('body');
           x.innerHTML = v.replacing;
@@ -153,8 +153,8 @@ class SFComponent {
         }
       }
     });
-    if (frag.childNodes.length > 0){
-      parent.appendChild(SFComponent.toHTML(frag));
+    if (frag.length > 0){
+      parent.appendChild(...SFComponent.toHTML(frag));
     }
   }
   static skip(el){
