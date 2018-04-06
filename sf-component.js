@@ -48,6 +48,9 @@ class SFComponent {
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
       };
+      if (ans.tag === 'SELECT') {
+        ans.value = html.value;
+      }
       if (dom) ans.dom = html;
       return ans;
     }
@@ -117,6 +120,7 @@ class SFComponent {
               ans.attrs.push(a);
             }
           });
+          if (vdom.tag === 'SELECT') ans.value = vdom.value;
           return ans;
       }
     }
@@ -129,6 +133,7 @@ class SFComponent {
       return;
     } else if (vnode.tag === 'SELECT'){
       domnode.value = vnode.value;
+      console.log(domnode, vnode);
     }
     this.replaceAttributes(domnode, vnode, state);
     this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
