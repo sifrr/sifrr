@@ -22,7 +22,7 @@ class SFComponent {
       c.stateChangeCallback(this);
     }
   }
-  static toVDOM(html){
+  static toVDOM(html, dom = false){
     if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)){
       let ans = [];
       html.forEach(v => ans.push(SFComponent.toVDOM(v)));
@@ -48,6 +48,7 @@ class SFComponent {
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
       };
+      if (dom) ans.dom = html;
       return ans;
     }
   }
@@ -75,7 +76,7 @@ class SFComponent {
   }
   static evaluateVDOM(vdom, state){
     if (Array.isArray(vdom)){
-      return [].concat(vdom.map(v => SFComponent.evaluateVDOM(v, state)));
+      return [].concat(...vdom.map(v => SFComponent.evaluateVDOM(v, state)));
     } else if (!vdom) {
       return vdom;
     } else {
@@ -85,7 +86,7 @@ class SFComponent {
           let replacing = SFComponent.evaluateString(vdom.data, state)
           if (!replacing) return;
           if (Array.isArray(replacing) || replacing.nodeType){
-            return SFComponent.toVDOM(replacing);
+            return SFComponent.toVDOM(replacing, true);
           } else {
             if (typeof replacing !== 'string') replacing = tryStringify(replacing);
             if (replacing.indexOf('<') < 0) {
@@ -93,7 +94,7 @@ class SFComponent {
             } else {
               let x = document.createElement('body');
               x.innerHTML = replacing;
-              return SFComponent.toVDOM(x.childNodes);
+              return SFComponent.toVDOM(x.childNodes, true);
             }
           }
           break;
