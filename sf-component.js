@@ -79,11 +79,11 @@ class SFComponent {
       domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
     }
-    this.replaceAttributes(domnode, vnode);
+    this.replaceAttributes(domnode, vnode, state);
     this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
-    if (!vnode.attrs){
+    if (vnode.attrs.length < 1){
       return;
     }
     vnode.attrs.forEach(a => {
@@ -93,7 +93,7 @@ class SFComponent {
     });
   }
   static replaceChildren(doms, vnodes, state, parent){
-    if (!vnodes) return;
+    if (vnodes.length < 1) return;
     let j = 0;
     let frag = [];
     let replaced = [];
@@ -109,11 +109,12 @@ class SFComponent {
         j++;
         return;
       } else if (v.tag === '#text'){
-        if (!v.state) return;
-        replaced.push({
-          dom: doms[j],
-          replacing: SFComponent.evaluateString(v.data, state)
-        });
+        if (v.state) {
+          replaced.push({
+            dom: doms[j],
+            replacing: SFComponent.evaluateString(v.data, state)
+          });
+        }
       } else {
         SFComponent.replaceNode(doms[j], v, state);
       }
@@ -127,7 +128,6 @@ class SFComponent {
       }
     }
     replaced.forEach(v => {
-      console.log(v);
       if (!v.replacing) return;
       if (Array.isArray(v.replacing)){
         v.dom.replaceWith(...v.replacing);
@@ -140,7 +140,7 @@ class SFComponent {
         } else {
           let x = document.createElement('body');
           x.innerHTML = v.replacing;
-          v.replaceWith(...x.childNodes);
+          v.dom.replaceWith(...x.childNodes);
         }
       }
     });

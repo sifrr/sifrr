@@ -15,7 +15,7 @@
   <p>select - ${select}</p>
   <p>input - ${input}</p>
   <p>textarea - ${textarea}</p>
-  <p ${attr}=${input}>bind attr name - ${attr}</p>
+  <p data-attr=${attr}>binded data-attr - ${attr}</p>
   <input value=${input} data-bind-to="input">
   <div>${elements}</div>
   <select name="abcd" data-bind-to="select" value="${select}">
@@ -37,7 +37,7 @@
     "select": "mercedes",
     "textarea": "whatever",
     "randomElement": ["this is random text", "this is second random text"],
-    "attr": "data-attr",
+    "attr": "bang",
     "color": "red",
     "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>"
   }
