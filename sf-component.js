@@ -50,8 +50,36 @@ class SFComponent {
         attrs: attr,
         children: SFComponent.toVDOM(html.childNodes)
       };
-
       return ans;
+    }
+  }
+  static toHTML(node){
+    if (Array.isArray(node)){
+      return node.map(v => SFComponent.toHTML(v));
+    } else if (!node) {
+      return node;
+    } else {
+      let html;
+      switch(node.tag){
+        case '#text':
+          html = document.createTextNode(node.value);
+          break;
+        case '#document-fragment':
+          html = document.createDocumentFragment();
+          break;
+        default:
+          html = document.createElement(node.tag);
+          Object.keys(node.attrs).forEach(a => {
+            html.setAttribute(a, node.attrs[a]);
+          });
+      }
+      SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
+      return html;
+    }
+  }
+  static replaceNode(domnode, vnode, state){
+    if (!domnode || !vnode){
+      return;
     }
   }
   static replaceDOM(original, old, state){
