@@ -3,7 +3,7 @@ class SFAPI {
     options = Object.assign({
       params: {},
       headers: {},
-      data: {}
+      body: {}
     }, options);
     let ans = Object.keys(options.params).map(k =>
       encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
@@ -11,8 +11,13 @@ class SFAPI {
     let defaultHeaders = {
       'accept': 'application/json'
     }
-    if (type === "POST" && Object.keys(options.data).length > 0) {
-      options.headers['content-type'] = 'application/json';
+    if (type === "POST" && Object.keys(options.body).length > 0) {
+      options.headers['content-type'] = 'multipart/form-data';
+      let b = new FormData();
+      for (let k in options.body) {
+        b.append(k, options.body[k]);
+      }
+      options.body = b;
     }
     Object.assign(options, {
       method: type,
