@@ -14,6 +14,7 @@ class SFComponent {
     if (!c || !c.originalNode) return;
     let state = target.state;
     let vdom = SFComponent.evaluateVDOM(c.originalNode, state);
+    console.log(vdom);
     if (c.sr){
       SFComponent.replaceNode(target.shadowRoot, vdom, {});
     } else {
@@ -23,28 +24,28 @@ class SFComponent {
       c.stateChangeCallback(this);
     }
   }
-  static toVDOM(html, dom = false){
+  static toVDOM(html, dom = false, state = false){
     if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)){
       let ans = [];
-      html.forEach(v => ans.push(SFComponent.toVDOM(v)));
+      html.forEach(v => ans.push(SFComponent.toVDOM(v, dom, state)));
       return ans;
     } else if (html.nodeType === 3 || typeof html === 'string') {
       const x = html.nodeValue || html;
       return { tag: '#text',
                data: x,
-               state: x.indexOf('${') > -1};
+               state: x.indexOf('${') > -1 || state};
     } else {
       const attrs = html.attributes || {}, l = attrs.length, attr = [];
       for(let i = 0; i < l; i++){
         attr[attrs[i].name] = {
           value: attrs[i].value,
-          state: attrs[i].value.indexOf('${') > -1
+          state: attrs[i].value.indexOf('${') > -1 || state
         }
       }
       let ans = {
         tag: html.nodeName,
         attrs: attr,
-        children: SFComponent.toVDOM(html.childNodes)
+        children: SFComponent.toVDOM(html.childNodes, dom, state)
       }
       if (dom) ans.dom = html;
       return ans;
@@ -62,6 +63,7 @@ class SFComponent {
           html = document.createTextNode(node.value);
           break;
         default:
+          if (node.dom) return node.dom;
           html = document.createElement(node.tag);
           for (let name in node.attrs){
             html.setAttribute(name, node.attrs[name].value);
@@ -84,17 +86,15 @@ class SFComponent {
           let replacing = SFComponent.evaluateString(vdom.data, state)
           if (!replacing) return;
           if (Array.isArray(replacing) || replacing.nodeType){
-            return SFComponent.toVDOM(replacing, true);
+            return SFComponent.toVDOM(replacing, true, true);
           } else {
             if (typeof replacing !== 'string') replacing = tryStringify(replacing);
             if (replacing.indexOf('<') < 0) {
-              let x = SFComponent.toVDOM(replacing);
-              x.state = true;
-              return x;
+              return SFComponent.toVDOM(replacing, true, true);
             } else {
               let x = document.createElement('body');
               x.innerHTML = replacing;
-              return SFComponent.toVDOM(x.childNodes, true);
+              return SFComponent.toVDOM(x.childNodes, true, true);
             }
           }
           break;
