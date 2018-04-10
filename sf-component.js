@@ -124,6 +124,9 @@ class SFComponent {
     } else if (vnode.tag !== domnode.nodeName && vnode.tag !== "#document-fragment"){
       domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
+    } else if (vnode.tag === '#text'){
+      if (vnode.state && domnode.nodeValue !== vnode.data) domnode.nodeValue = vnode.data;
+      return;
     } else if (vnode.tag === 'SELECT'){
       domnode.value = vnode.attrs['value'].value;
     }
@@ -153,13 +156,6 @@ class SFComponent {
         frag.push(v);
         j++;
         return;
-      } else if (v.tag === '#text'){
-        if (v.state) {
-          replaced.push({
-            dom: doms[j],
-            replacing: v.data
-          });
-        }
       } else {
         SFComponent.replaceNode(doms[j], v);
       }
@@ -172,24 +168,6 @@ class SFComponent {
         j++;
       }
     }
-    replaced.forEach(v => {
-      if (!v.replacing) return;
-      if (Array.isArray(v.replacing)){
-        v.dom.replaceWith(...v.replacing);
-      } else if (v.replacing.nodeType) {
-        v.dom.replaceWith(v.replacing);
-      } else {
-        if (typeof v.replacing !== 'string') v.replacing = tryStringify(v.replacing);
-        if (v.dom.nodeValue === v.replacing || v.dom.innerHTML === v.replacing) return;
-        if (v.replacing.indexOf('<') < 0) {
-          v.dom.nodeValue = v.replacing;
-        } else {
-          let x = document.createElement('body');
-          x.innerHTML = v.replacing;
-          v.dom.replaceWith(...x.childNodes);
-        }
-      }
-    });
     if (frag.length > 0){
       parent.appendChild(...SFComponent.toHTML(frag));
     }
