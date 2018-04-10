@@ -125,9 +125,9 @@
     <input id="file" type="file" name="image[]" multiple>
     <p id="formresult"></p>
   </form>
-  <script type="text/javascript" src="./webcomponents-hi.js"></script>
-  <script type="text/javascript" src="./sf-api.min.js"></script>
-  <script type="text/javascript" src="./sf-component.min.js"></script>
+  <script type="text/javascript" src="/webcomponents-hi.js"></script>
+  <script type="text/javascript" src="/sf-api.min.js"></script>
+  <script type="text/javascript" src="/sf-component.min.js"></script>
   <script type="text/javascript">
     new SFComponent(['my-app', 'sf-location', 'sf-route', 'sf-locations']);
 
@@ -141,7 +141,7 @@
     let form = document.getElementById('form');
     document.getElementById('file').addEventListener('change', function(e) {
       document.getElementById('formresult').innerHTML = 'uploading';
-      SFAPI.post('./extra/form.php', {
+      SFAPI.post('/extra/form.php', {
         body: new FormData(form)
       }).then(r => {
         let i = "Params: ";
