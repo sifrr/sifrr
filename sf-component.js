@@ -152,8 +152,8 @@ class SFComponent {
       while (SFComponent.skip(doms[j])){
         j++;
       }
-      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'] !== doms[j].dataset.key){
-        if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'] === doms[j + 1].dataset.key) doms[j].remove();
+      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key){
+        if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'].value === doms[j + 1].dataset.key) doms[j].remove();
       }
       if (!doms[j]){
         frag.push(v);
