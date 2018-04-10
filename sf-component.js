@@ -62,13 +62,13 @@ class SFComponent {
     } else if (!node) {
       return node;
     } else {
+      if (node.dom) return node.dom;
       let html;
       switch(node.tag){
         case '#text':
-          html = document.createTextNode(node.value);
+          html = document.createTextNode(node.data);
           break;
         default:
-          if (node.dom) return node.dom;
           html = document.createElement(node.tag);
           for (let name in node.attrs){
             html.setAttribute(name, node.attrs[name].value);
