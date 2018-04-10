@@ -16,9 +16,9 @@ class SFComponent {
     let vdom = SFComponent.evaluateVDOM(c.originalNode, state);
     console.log(vdom);
     if (c.sr){
-      SFComponent.replaceNode(target.shadowRoot, vdom, {});
+      SFComponent.replaceNode(target.shadowRoot, vdom);
     } else {
-      SFComponent.replaceNode(target, vdom, {});
+      SFComponent.replaceNode(target, vdom);
     }
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
@@ -118,26 +118,26 @@ class SFComponent {
       }
     }
   }
-  static replaceNode(domnode, vnode, state){
+  static replaceNode(domnode, vnode){
     if (!domnode || !vnode){
       return;
     } else if (vnode.tag !== domnode.nodeName && vnode.tag !== "#document-fragment"){
       domnode.replaceWith(SFComponent.toHTML(vnode));
       return;
     } else if (vnode.tag === 'SELECT'){
-      domnode.value = SFComponent.evaluateString(vnode.attrs['value'].value, state);
+      domnode.value = vnode.attrs['value'].value;
     }
-    this.replaceAttributes(domnode, vnode, state);
-    this.replaceChildren(domnode.childNodes, vnode.children, state, domnode);
+    this.replaceAttributes(domnode, vnode);
+    this.replaceChildren(domnode.childNodes, vnode.children, domnode);
   }
   static replaceAttributes(domnode, vnode, state){
     for (let name in vnode.attrs){
       if (vnode.attrs[name].state) {
-        domnode.setAttribute(name, SFComponent.evaluateString(vnode.attrs[name].value, state));
+        domnode.setAttribute(name, vnode.attrs[name].value);
       }
     }
   }
-  static replaceChildren(doms, vnodes, state, parent){
+  static replaceChildren(doms, vnodes, parent){
     if (vnodes.length < 1) return;
     let j = 0;
     let frag = [];
@@ -157,11 +157,11 @@ class SFComponent {
         if (v.state) {
           replaced.push({
             dom: doms[j],
-            replacing: SFComponent.evaluateString(v.data, state)
+            replacing: v.data
           });
         }
       } else {
-        SFComponent.replaceNode(doms[j], v, state);
+        SFComponent.replaceNode(doms[j], v);
       }
       j++;
     });
