@@ -120,10 +120,14 @@
     <p>No data binding in slotted elements ${data.text}.</p>
     <p>Okay.</p>
   </my-app>
-  <p>Outside p!</p>
-  <script type="text/javascript" src="/webcomponents-hi.js"></script>
-  <script type="text/javascript" src="/sf-api.min.js"></script>
-  <script type="text/javascript" src="/sf-component.min.js"></script>
+  <form id="form">
+    <input type="text" name="name" value="ok">
+    <input id="file" type="file" name="image[]" multiple>
+    <p id="formresult"></p>
+  </form>
+  <script type="text/javascript" src="./webcomponents-hi.js"></script>
+  <script type="text/javascript" src="./sf-api.min.js"></script>
+  <script type="text/javascript" src="./sf-component.min.js"></script>
   <script type="text/javascript">
     new SFComponent(['my-app', 'sf-location', 'sf-route', 'sf-locations']);
 
@@ -134,6 +138,18 @@
         console.log('ServiceWorker registration failed: ', err);
       });
     }
+    let form = document.getElementById('form');
+    document.getElementById('file').addEventListener('change', function(e) {
+      SFAPI.post('./extra/form.php', {
+        body: new FormData(form)
+      }).then(r => {
+        let i = "Params: ";
+        for (let n in r.post) i += `${n} = ${r.post[n]}, `;
+        i += "<br>Files: ";
+        r.files.image.name.forEach(n => i += `${n}, `);
+        document.getElementById('formresult').innerHTML = i;
+      });
+    });
   </script>
 </body>
 

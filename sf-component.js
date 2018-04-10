@@ -1,6 +1,6 @@
 class SFComponent {
   constructor(element, href = null) {
-    href = typeof href === "string" ? href : '/elements/' + element + '.html';
+    href = typeof href === "string" ? href : './elements/' + element + '.html';
     if (Array.isArray(element)) {
       return element.map(e => new SFComponent(e));
     } else if (typeof element == 'object') {

@@ -2,8 +2,7 @@ class SFAPI {
   static getHTTP(url, options, type) {
     options = Object.assign({
       params: {},
-      headers: {},
-      body: {}
+      headers: {}
     }, options);
     let ans = Object.keys(options.params).map(k =>
       encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
@@ -13,11 +12,6 @@ class SFAPI {
     }
     if (type === "POST" && Object.keys(options.body).length > 0) {
       options.headers['content-type'] = 'multipart/form-data';
-      let b = new FormData();
-      for (let k in options.body) {
-        b.append(k, options.body[k]);
-      }
-      options.body = b;
     }
     Object.assign(options, {
       method: type,
