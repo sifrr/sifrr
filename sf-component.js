@@ -14,7 +14,6 @@ class SFComponent {
     if (!c || !c.originalNode) return;
     let state = target.state;
     let vdom = SFComponent.evaluateVDOM(c.originalNode, state);
-    console.log(vdom);
     if (c.sr){
       SFComponent.replaceNode(target.shadowRoot, vdom);
     } else {
@@ -51,9 +50,15 @@ class SFComponent {
       return ans;
     }
   }
-  static toHTML(node){
+  static toHTML(node, frag = false){
     if (Array.isArray(node)){
-      return node.map(v => SFComponent.toHTML(v));
+      if (frag) {
+        let x = document.createDocumentFragment();
+        node.forEach(v => x.appendChild(SFComponent.toHTML(v)));
+        return x;
+      } else {
+        return node.map(v => SFComponent.toHTML(v));
+      }
     } else if (!node) {
       return node;
     } else {
@@ -144,14 +149,13 @@ class SFComponent {
     if (vnodes.length < 1) return;
     let j = 0;
     let frag = [];
-    let replaced = [];
     vnodes.forEach((v, i) => {
       while (SFComponent.skip(doms[j])){
         j++;
       }
-      // if (v.dataset && v.dataset.key && doms[j] && doms[j].dataset && v.dataset.key !== doms[j].dataset.key){
-      //   if (doms[j + 1] && doms[j + 1].dataset && v.dataset.key === doms[j + 1].dataset.key) doms[j].remove();
-      // }
+      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'] !== doms[j].dataset.key){
+        if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'] === doms[j + 1].dataset.key) doms[j].remove();
+      }
       if (!doms[j]){
         frag.push(v);
         j++;
@@ -169,7 +173,7 @@ class SFComponent {
       }
     }
     if (frag.length > 0){
-      parent.appendChild(...SFComponent.toHTML(frag));
+      parent.appendChild(SFComponent.toHTML(frag, true));
     }
   }
   static skip(el){
