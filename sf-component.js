@@ -312,6 +312,11 @@ function createComponent(element, href, c) {
         }).appendChild(template.content.cloneNode(true));
         c.sr = true;
       }
+      if (template.getAttribute('state') === "false") Object.defineProperty(this, 'state', {
+        set: function(v) {
+          this._state = v;
+        }
+      });
       c.vdom = SFComponent.toVDOM(template.content.cloneNode(true));
       if (typeof c.createdCallback === "function") {
         c.createdCallback(this);

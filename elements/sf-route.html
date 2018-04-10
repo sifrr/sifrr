@@ -1,4 +1,4 @@
-<template>
+<template state="false">
   <style>
     :host {
       display: none;
@@ -12,13 +12,11 @@
     @keyframes slide {
       from {
         opacity: 0;
-        margin-top: 100px;
-        // transform: translate3d(0, 100px, 0);
+        transform: translate3d(0, 100px, 0);
       }
       to {
         opacity: 1;
-        margin-top: 0;
-        // transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
       }
     }
   </style>
@@ -27,7 +25,7 @@
 <script>
   let sfRoute = SFComponent['sf-route'];
   sfRoute.connectedCallback = function(el) {
-    el.VDOM = SFComponent.toVDOM(el.cloneNode(true));
+    el.vdom = SFComponent.toVDOM(el.cloneNode(true));
     refreshRoute(el, window.location.pathname);
   }
   sfRoute.observedAttributes = ['data-route'];
@@ -62,6 +60,7 @@
         activeRouteEls.push(el);
       }
     });
+    return activeRouteEls;
   }
 
   function refreshRoute(el, path) {
@@ -92,9 +91,9 @@
   }
 
   function makeRouteActive(el, route) {
-    SFComponent.replaceNode(el, el.VDOM, {
+    SFComponent.replaceNode(el, SFComponent.evaluateVDOM(el.vdom, {
       route: route
-    });
+    }));
     if (el.classList.contains('active')) return;
     try {
       if (el.dataset.lazy && el.dataset.lazy.indexOf('-') > 0) {
