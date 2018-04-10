@@ -1,14 +1,14 @@
 class SFComponent {
-  constructor(element, href = null){
+  constructor(element, href = null) {
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
-    if(Array.isArray(element)){
+    if (Array.isArray(element)) {
       return element.map(e => new SFComponent(e));
-    } else if (typeof element == 'object'){
+    } else if (typeof element == 'object') {
       return Object.keys(element).map(k => new SFComponent(k, element[k]));
     }
     createComponent(element, href, this);
   }
-  static updateState(target){
+  static updateState(target) {
     let c = SFComponent[target.tagName.toLowerCase()];
     if (!c || !c.vdom) return;
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
@@ -18,19 +18,23 @@ class SFComponent {
       c.stateChangeCallback(this);
     }
   }
-  static toVDOM(html, dom = false, state = false){
-    if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)){
+  static toVDOM(html, dom = false, state = false) {
+    if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)) {
       let ans = [];
       html.forEach(v => ans.push(SFComponent.toVDOM(v, dom, state)));
       return ans;
     } else if (html.nodeType === 3 || typeof html === 'string') {
       const x = html.nodeValue || html;
-      return { tag: '#text',
-               data: x,
-               state: x.indexOf('${') > -1 || state};
+      return {
+        tag: '#text',
+        data: x,
+        state: x.indexOf('${') > -1 || state
+      }
     } else {
-      const attrs = html.attributes || {}, l = attrs.length, attr = [];
-      for(let i = 0; i < l; i++){
+      const attrs = html.attributes || {},
+        l = attrs.length,
+        attr = [];
+      for (let i = 0; i < l; i++) {
         attr[attrs[i].name] = {
           value: attrs[i].value,
           state: attrs[i].value.indexOf('${') > -1 || state
@@ -45,8 +49,8 @@ class SFComponent {
       return ans;
     }
   }
-  static toHTML(node, frag = false){
-    if (Array.isArray(node)){
+  static toHTML(node, frag = false) {
+    if (Array.isArray(node)) {
       if (frag) {
         let x = document.createDocumentFragment();
         node.forEach(v => x.appendChild(SFComponent.toHTML(v)));
@@ -59,13 +63,13 @@ class SFComponent {
     } else {
       if (node.dom) return node.dom;
       let html;
-      switch(node.tag){
+      switch (node.tag) {
         case '#text':
           html = document.createTextNode(node.data);
           break;
         default:
           html = document.createElement(node.tag);
-          for (let name in node.attrs){
+          for (let name in node.attrs) {
             html.setAttribute(name, node.attrs[name].value);
           }
           SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
@@ -74,18 +78,18 @@ class SFComponent {
       return html;
     }
   }
-  static evaluateVDOM(vdom, state){
-    if (Array.isArray(vdom)){
+  static evaluateVDOM(vdom, state) {
+    if (Array.isArray(vdom)) {
       return [].concat(...vdom.map(v => SFComponent.evaluateVDOM(v, state)));
     } else if (!vdom) {
       return vdom;
     } else {
-      switch(vdom.tag){
+      switch (vdom.tag) {
         case '#text':
           if (!vdom.state) return vdom;
           let replacing = SFComponent.evaluateString(vdom.data, state)
           if (!replacing) return;
-          if (Array.isArray(replacing) || replacing.nodeType){
+          if (Array.isArray(replacing) || replacing.nodeType) {
             return SFComponent.toVDOM(replacing, true, true);
           } else {
             if (typeof replacing !== 'string') replacing = tryStringify(replacing);
@@ -104,8 +108,8 @@ class SFComponent {
             attrs: {},
             children: SFComponent.evaluateVDOM(vdom.children, state)
           }
-          for (let name in vdom.attrs){
-            if (vdom.attrs[name].state){
+          for (let name in vdom.attrs) {
+            if (vdom.attrs[name].state) {
               ans.attrs[name] = {
                 state: true,
                 value: SFComponent.evaluateString(vdom.attrs[name].value, state)
@@ -118,39 +122,39 @@ class SFComponent {
       }
     }
   }
-  static replaceNode(dom, vdom){
-    if (!dom || !vdom){
+  static replaceNode(dom, vdom) {
+    if (!dom || !vdom) {
       return;
-    } else if (vdom.tag !== dom.nodeName && vdom.tag !== "#document-fragment"){
+    } else if (vdom.tag !== dom.nodeName && vdom.tag !== "#document-fragment") {
       dom.replaceWith(SFComponent.toHTML(vdom));
       return;
-    } else if (vdom.tag === '#text'){
+    } else if (vdom.tag === '#text') {
       if (vdom.state && dom.nodeValue !== vdom.data) dom.nodeValue = vdom.data;
       return;
-    } else if (vdom.tag === 'SELECT'){
+    } else if (vdom.tag === 'SELECT') {
       dom.value = vdom.attrs['value'].value;
     }
     this.replaceAttributes(dom, vdom);
     this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
-  static replaceAttributes(dom, vdom, state){
-    for (let name in vdom.attrs){
+  static replaceAttributes(dom, vdom, state) {
+    for (let name in vdom.attrs) {
       if (vdom.attrs[name].state) {
         dom.setAttribute(name, vdom.attrs[name].value);
       }
     }
   }
-  static replaceChildren(doms, vdoms, parent){
+  static replaceChildren(doms, vdoms, parent) {
     let j = 0;
     let frag = [];
     vdoms.forEach((v, i) => {
-      while (SFComponent.skip(doms[j])){
+      while (SFComponent.skip(doms[j])) {
         j++;
       }
-      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key){
+      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key) {
         if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'].value === doms[j + 1].dataset.key) doms[j].remove();
       }
-      if (!doms[j]){
+      if (!doms[j]) {
         frag.push(v);
         j++;
         return;
@@ -159,42 +163,44 @@ class SFComponent {
       }
       j++;
     });
-    while (doms[j]){
-      if (!SFComponent.skip(doms[j])){
+    while (doms[j]) {
+      if (!SFComponent.skip(doms[j])) {
         doms[j].remove();
       } else {
         j++;
       }
     }
-    if (frag.length > 0){
+    if (frag.length > 0) {
       parent.appendChild(SFComponent.toHTML(frag, true));
     }
   }
-  static skip(el){
+  static skip(el) {
     return el && (el.skip || (el.dataset && el.dataset.skip));
   }
-  static evaluateString(string, state){
+  static evaluateString(string, state) {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
     let binder = '';
-    for (let i in state){
+    for (let i in state) {
       binder += 'let ' + i + ' = this["' + i + '"]; ';
     }
     if (string.indexOf('${') === 0) return replacer(string);
     return string.replace(/&[^;]+;/g, function(match) {
-                   let map = {
-                     '&lt;': '<',
-                     '&#x3C;': '<',
-                     '&gt;': '>',
-                     '&#x3E;': '>'
-                   }
-                   return map[match] ? map[match] : match;
-            		 }).replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+      let map = {
+        '&lt;': '<',
+        '&#x3C;': '<',
+        '&gt;': '>',
+        '&#x3E;': '>'
+      }
+      return map[match] ? map[match] : match;
+    }).replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+
     function replacer(match) {
       let g1 = match.slice(2, -1);
-      function executeCode(){
+
+      function executeCode() {
         let f;
-        if (g1.search('return') >= 0){
+        if (g1.search('return') >= 0) {
           f = new Function(binder + g1).bind(state);
         } else {
           f = new Function(binder + 'return ' + g1).bind(state);
@@ -210,41 +216,41 @@ class SFComponent {
   }
   static absolute(base, relative) {
     var stack = base.split("/"),
-        parts = relative.split("/");
+      parts = relative.split("/");
     stack.pop();
-    for (let i=0; i<parts.length; i++) {
-        if (parts[i] == ".")
-            continue;
-        if (parts[i] == "..")
-            stack.pop();
-        else
-            stack.push(parts[i]);
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i] == ".")
+        continue;
+      if (parts[i] == "..")
+        stack.pop();
+      else
+        stack.push(parts[i]);
     }
     return stack.join("/");
   }
-  static getRoutes(url){
+  static getRoutes(url) {
     if (url[0] != '/') {
       url = '/' + url;
     }
     let qIndex = url.indexOf("?");
-    if (qIndex != -1)
-    {
-        url = url.substring(0, qIndex);
+    if (qIndex != -1) {
+      url = url.substring(0, qIndex);
     }
     return url.split("/");
   }
-  static twoWayBind(e){
+  static twoWayBind(e) {
     const target = e.composedPath()[0] || e.target;
-    if (!target.dataset || !target.dataset.bindTo){
+    if (!target.dataset || !target.dataset.bindTo) {
       return;
     }
     let host = target;
-    while (host.nodeType != 11){
+    while (host.nodeType != 11) {
       host = host.parentNode;
       if (!host) return;
     }
-    let sr = host, range, startN, startO, endN, endO;
-    if (!target.value){
+    let sr = host,
+      range, startN, startO, endN, endO;
+    if (!target.value) {
       range = sr.getSelection().getRangeAt(0).cloneRange();
       [startN, startO, endN, endO] = [range.startContainer, range.startOffset, range.endContainer, range.endOffset];
     }
@@ -252,7 +258,7 @@ class SFComponent {
     let data = {};
     data[target.dataset.bindTo.replace(/this./g, '')] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>');
     host.state = data;
-    if (!target.value){
+    if (!target.value) {
       range.setStart(startN, startO);
       range.setEnd(endN, endO);
       sr.getSelection().removeAllRanges();
@@ -261,8 +267,8 @@ class SFComponent {
   }
 }
 
-function createComponent(element, href, c){
-  if(!element) {
+function createComponent(element, href, c) {
+  if (!element) {
     console.log(`Error creating element: No element name - ${element}.`);
     return;
   } else if (window.customElements.get(element)) {
@@ -292,15 +298,18 @@ function createComponent(element, href, c){
         let src_regex = /src=['"]?((?!http)[a-zA-z.\/\-\_]+)['"]?/g;
         let newHtml = insideHtml.replace(href_regex, replacer);
         newHtml = newHtml.replace(src_regex, replacer);
+
         function replacer(match, g1) {
           return match.replace(g1, SFComponent.absolute(base, g1));
         }
         template.innerHTML = newHtml;
       }
-      if (template.getAttribute('shadow-root') === "false"){
+      if (template.getAttribute('shadow-root') === "false") {
         c.sr = false;
       } else {
-        const shadowRoot = this.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
+        const shadowRoot = this.attachShadow({
+          mode: 'open'
+        }).appendChild(template.content.cloneNode(true));
         c.sr = true;
       }
       c.vdom = SFComponent.toVDOM(template.content.cloneNode(true));
@@ -309,8 +318,10 @@ function createComponent(element, href, c){
       }
     }
     attributeChangedCallback(attrName, oldVal, newVal) {
-      if (attrName === "data-bind"){
-        this.state = {bind: tryParseJSON(newVal)};
+      if (attrName === "data-bind") {
+        this.state = {
+          bind: tryParseJSON(newVal)
+        }
       }
       if (typeof c.attributeChangedCallback === "function") {
         c.attributeChangedCallback(this, attrName, oldVal, newVal);
@@ -320,7 +331,9 @@ function createComponent(element, href, c){
       let defaultState = c.defaultState || {};
       let dataBind = tryParseJSON(this.dataset.bind) || {};
       let oldState = this.state;
-      this.state = Object.assign(defaultState, {bind: dataBind}, oldState);
+      this.state = Object.assign(defaultState, {
+        bind: dataBind
+      }, oldState);
       if (this.shadowRoot) this.shadowRoot.addEventListener('change', SFComponent.twoWayBind);
       else this.addEventListener('change', SFComponent.twoWayBind);
       if (typeof c.connectedCallback === "function") {
@@ -337,15 +350,15 @@ function createComponent(element, href, c){
       ans.state = this.state;
       return ans;
     }
-    get state(){
+    get state() {
       return this._state;
     }
-    set state(v){
+    set state(v) {
       this._state = this._state || {};
       Object.assign(this._state, v);
       SFComponent.updateState(this);
     }
-    clearState(){
+    clearState() {
       this._state = {};
       SFComponent.updateState(this);
     }
@@ -354,18 +367,31 @@ function createComponent(element, href, c){
   link.href = href;
   link.setAttribute('async', '');
   link.onload = function(e) {
-    try { window.customElements.define(element, cl); }
-    catch(e) { console.log(element, e); }
+    try {
+      window.customElements.define(element, cl);
+    } catch (e) {
+      console.log(element, e);
+    }
   }
-  link.onerror = function(e) { console.log(e); }
+  link.onerror = function(e) {
+    console.log(e);
+  }
   document.head.appendChild(link);
 }
+
 function tryParseJSON(jsonString) {
-    try { return JSON.parse(jsonString); }
-    catch (e) { return jsonString; }
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {
+    return jsonString;
+  }
 }
+
 function tryStringify(json) {
-  if (typeof json === "string"){ return json; }
-  else { return JSON.stringify(json); }
+  if (typeof json === "string") {
+    return json;
+  } else {
+    return JSON.stringify(json);
+  }
 }
 document.addEventListener('input', SFComponent.twoWayBind);

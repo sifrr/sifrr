@@ -1,9 +1,13 @@
 class SFAPI {
   static getHTTP(url, options, type) {
-    options = Object.assign({params: {}, headers: {}, data: {}}, options);
+    options = Object.assign({
+      params: {},
+      headers: {},
+      data: {}
+    }, options);
     let ans = Object.keys(options.params).map(k =>
-        encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
-      ).join('&');
+      encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
+    ).join('&');
     let defaultHeaders = {
       'accept': 'application/json'
     }
@@ -13,7 +17,7 @@ class SFAPI {
       mode: 'cors',
       redirect: 'follow',
     });
-    if (type === "POST" && Object.keys(options.data).length > 0){
+    if (type === "POST" && Object.keys(options.data).length > 0) {
       options.headers['content-type'] = 'application/json';
     }
     return fetch(url + '?' + ans, options).then(resp => {

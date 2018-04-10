@@ -1,7 +1,13 @@
 const CACHE_VERSION = '0';
 const POLICIES = {
-  '^https://framework.aadityataparia.com': {type: 'NETWORK_FIRST', cache: 'main'},
-  'default': {type: 'CACHE_FIRST', cache: 'other'}
+  '^https://framework.aadityataparia.com': {
+    type: 'NETWORK_FIRST',
+    cache: 'main'
+  },
+  'default': {
+    type: 'CACHE_FIRST',
+    cache: 'other'
+  }
 }
 
 const FALLBACK_CACHE = 'fallbacks';
@@ -43,7 +49,7 @@ self.addEventListener('fetch', event => {
   }
 });
 
-function findRegex(url, obj){
+function findRegex(url, obj) {
   for (let [key, value] of Object.entries(obj)) {
     const regex = new RegExp(key);
     if (url.match(regex)) return value;
@@ -51,10 +57,16 @@ function findRegex(url, obj){
   return obj['default'];
 }
 
-function respondWithPolicy(request){
+function respondWithPolicy(request) {
   let new_request = request.clone();
-  ({type, cache} = findRegex(request.url, POLICIES) || {type: 'default', cache: 'extra'});
-  switch(type){
+  ({
+    type,
+    cache
+  } = findRegex(request.url, POLICIES) || {
+    type: 'default',
+    cache: 'extra'
+  });
+  switch (type) {
     case 'NETWORK_ONLY':
       return fromNetwork(new_request, cache);
     case 'CACHE_ONLY':
@@ -68,14 +80,16 @@ function respondWithPolicy(request){
   }
 }
 
-function respondWithFallback(request){
+function respondWithFallback(request) {
   const fallback = findRegex(request.url, FALLBACKS);
   const fb = new Request(fallback);
   return fromCache(fb, FALLBACK_CACHE);
 }
 
 function requestFromURL(url) {
-  return new Request(url, {method: 'GET'});
+  return new Request(url, {
+    method: 'GET'
+  });
 }
 
 function precache(urls, fbs) {
