@@ -120,7 +120,7 @@
     <p>No data binding in slotted elements ${data.text}.</p>
     <p>Okay.</p>
   </my-app>
-  <form id="form">
+  <form id="form" onsubmit="document.getElementById('file').dispatchEvent(new Event('change')); return false;">
     <input type="text" name="name" value="ok">
     <input id="file" type="file" name="image[]" multiple>
     <p id="formresult"></p>
@@ -140,6 +140,7 @@
     }
     let form = document.getElementById('form');
     document.getElementById('file').addEventListener('change', function(e) {
+      document.getElementById('formresult').innerHTML = 'uploading';
       SFAPI.post('./extra/form.php', {
         body: new FormData(form)
       }).then(r => {
