@@ -146,7 +146,6 @@ class SFComponent {
     }
   }
   static replaceChildren(doms, vnodes, parent){
-    if (vnodes.length < 1) return;
     let j = 0;
     let frag = [];
     vnodes.forEach((v, i) => {
