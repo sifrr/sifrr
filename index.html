@@ -149,7 +149,7 @@
         i += "<br>Files: ";
         r.files.image.name.forEach(n => i += `${n}, `);
         document.getElementById('formresult').innerHTML = i;
-      });
+      }).catch(e => document.getElementById('formresult').innerHTML = "Error");
     });
   </script>
 </body>
