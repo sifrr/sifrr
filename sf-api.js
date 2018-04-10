@@ -11,15 +11,15 @@ class SFAPI {
     let defaultHeaders = {
       'accept': 'application/json'
     }
+    if (type === "POST" && Object.keys(options.data).length > 0) {
+      options.headers['content-type'] = 'application/json';
+    }
     Object.assign(options, {
       method: type,
       headers: Object.assign(defaultHeaders, options.headers),
       mode: 'cors',
       redirect: 'follow',
     });
-    if (type === "POST" && Object.keys(options.data).length > 0) {
-      options.headers['content-type'] = 'application/json';
-    }
     return fetch(url + '?' + ans, options).then(resp => {
       if (resp.ok) {
         if (options.headers.accept == 'application/json') return resp.json();

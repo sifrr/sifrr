@@ -40,7 +40,7 @@
     </simple-carousel>
   </sf-route>
   <sf-route data-route="/what" data-lazy='{"simple-carousel": "https://www.aadityataparia.com/carousel/SF-Component/simple-carousel.html"}'>
-    <simple-carousel id="noloading">
+    <simple-carousel id="noloading" options='{"showLoading": false}'>
       <p>One slide</p>
       <p>Two slide</p>
       <p>Three slide</p>
@@ -105,7 +105,7 @@
         -----
       </div>
     </simple-tabs>
-    <simple-tabs>
+    <simple-tabs options='{"showMenu": false, "showArrows": true}'>
       <li slot="list">Head 1</li>
       <li slot="list">Random heading</li>
       <div class="tab" slot="tabs">
@@ -125,21 +125,7 @@
   <script type="text/javascript" src="/sf-api.min.js"></script>
   <script type="text/javascript" src="/sf-component.min.js"></script>
   <script type="text/javascript">
-    SFAPI.get('https://tuneout.aadityataparia.com/api/location/1', {}, consoling, null);
-
     new SFComponent(['my-app', 'sf-location', 'sf-route', 'sf-locations']);
-
-    document.querySelector('#noloading').state = {
-      'loading': {
-        'style': {
-          'display': 'none'
-        }
-      }
-    };
-
-    function consoling(result) {
-      console.log(result.results);
-    }
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sf-sw.js').then(function(registration) {
