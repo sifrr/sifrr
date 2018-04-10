@@ -62,9 +62,9 @@ class SFComponent {
           break;
         default:
           html = document.createElement(node.tag);
-          node.attrs.forEach(a => {
-            html.setAttribute(a.name.data, a.value.data);
-          });
+          for (let name in vnode.attrs){
+            html.setAttribute(name, vnode.attrs[name].value);
+          }
           SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
           break;
       }
@@ -133,11 +133,6 @@ class SFComponent {
         domnode.setAttribute(name, SFComponent.evaluateString(vnode.attrs[name].value, state));
       }
     }
-    vnode.attrs.forEach(a => {
-      if (a.value.state) {
-        domnode.setAttribute(a.name, SFComponent.evaluateString(a.value.data, state));
-      }
-    });
   }
   static replaceChildren(doms, vnodes, state, parent){
     if (vnodes.length < 1) return;
