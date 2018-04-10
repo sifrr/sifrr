@@ -13,10 +13,11 @@ class SFComponent {
     let c = SFComponent[element];
     if (!c || !c.originalNode) return;
     let state = target.state;
+    let vdom = SFComponent.evaluateVDOM(c.originalNode, state);
     if (c.sr){
-      SFComponent.replaceNode(target.shadowRoot, c.originalNode, state);
+      SFComponent.replaceNode(target.shadowRoot, vdom, {});
     } else {
-      SFComponent.replaceNode(target, c.originalNode, state);
+      SFComponent.replaceNode(target, vdom, {});
     }
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
@@ -62,8 +63,8 @@ class SFComponent {
           break;
         default:
           html = document.createElement(node.tag);
-          for (let name in vnode.attrs){
-            html.setAttribute(name, vnode.attrs[name].value);
+          for (let name in node.attrs){
+            html.setAttribute(name, node.attrs[name].value);
           }
           SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
           break;
@@ -87,7 +88,9 @@ class SFComponent {
           } else {
             if (typeof replacing !== 'string') replacing = tryStringify(replacing);
             if (replacing.indexOf('<') < 0) {
-              return SFComponent.toVDOM(replacing);
+              let x = SFComponent.toVDOM(replacing);
+              x.state = true;
+              return x;
             } else {
               let x = document.createElement('body');
               x.innerHTML = replacing;
