@@ -1,5 +1,5 @@
 class SFAPI {
-  static getHTTP(url, options, type) {
+  static getHTTP(url, options, type, progress) {
     options = Object.assign({
       params: {},
       headers: {}
@@ -20,43 +20,49 @@ class SFAPI {
       redirect: 'follow',
     });
     return fetch(url + '?' + ans, options).then(resp => {
-      let reader = resp.clone().body.getReader();
-      let bytesReceived = 0;
       let length = resp.headers.get("Content-Length");
-      return reader.read().then(function processResult(result) {
-        if (result.done) {
-          if (resp.ok) {
-            if (options.headers.accept == 'application/json') return resp.json();
-            return resp.body;
-          } else {
-            throw Error(resp.statusText);
+      if (length) {
+        let reader = resp.clone().body.getReader();
+        let received = 0;
+        reader.read().then(function pR({done, value}) {
+          if (done) {
+            return;
           }
+          received += value.length;
+          if (typeof progress === 'function') progress(received/length);
+          return reader.read().then(pR);
+        });
+      }
+      if (resp.ok) {
+        try {
+          return resp.json()
+        } catch (e) {
+          return resp.body;
         }
-        bytesReceived += result.value.length;
-        console.log(`Received ${bytesReceived} (${bytesReceived/length}) bytes of data so far`);
-        return reader.read().then(processResult);
-      });
+      } else {
+        throw Error(resp.statusText);
+      }
     });
   }
-  static get(url, options = {}) {
-    return this.getHTTP(url, options, "GET");
+  static get(url, options = {}, progress) {
+    return this.getHTTP(url, options, "GET", progress);
   }
 
-  static post(url, options = {}) {
-    return this.getHTTP(url, options, "POST");
+  static post(url, options = {}, progress) {
+    return this.getHTTP(url, options, "POST", progress);
   }
 
-  static put(url, options = {}) {
-    return this.getHTTP(url, options, "PUT");
+  static put(url, options = {}, progress) {
+    return this.getHTTP(url, options, "PUT", progress);
   }
 
-  static delete(url, options = {}) {
-    return this.getHTTP(url, options, "DELETE");
+  static delete(url, options = {}, progress) {
+    return this.getHTTP(url, options, "DELETE", progress);
   }
 
-  static file(url, options = {}) {
+  static file(url, options = {}, progress) {
     options.headers = options.headers || {};
     options.headers.accept = options.headers.accept || '*/*';
-    return this.getHTTP(url, options, "GET");
+    return this.getHTTP(url, options, "GET", progress);
   }
 }

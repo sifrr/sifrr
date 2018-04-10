@@ -143,7 +143,7 @@
       document.getElementById('formresult').innerHTML = 'uploading';
       SFAPI.post('/extra/form.php', {
         body: new FormData(form)
-      }).then(r => {
+      }, console.log).then(r => {
         let i = "Params: ";
         for (let n in r.post) i += `${n} = ${r.post[n]}, `;
         i += "<br>Files: ";
