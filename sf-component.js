@@ -9,16 +9,11 @@ class SFComponent {
     createComponent(element, href, this);
   }
   static updateState(target){
-    let element = target.tagName.toLowerCase();
-    let c = SFComponent[element];
-    if (!c || !c.originalNode) return;
-    let state = target.state;
-    let vdom = SFComponent.evaluateVDOM(c.originalNode, state);
-    if (c.sr){
-      SFComponent.replaceNode(target.shadowRoot, vdom);
-    } else {
-      SFComponent.replaceNode(target, vdom);
-    }
+    let c = SFComponent[target.tagName.toLowerCase()];
+    if (!c || !c.vdom) return;
+    let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
+    if (c.sr) target = target.shadowRoot;
+    SFComponent.replaceNode(target, vdom);
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
     }
@@ -123,32 +118,32 @@ class SFComponent {
       }
     }
   }
-  static replaceNode(domnode, vnode){
-    if (!domnode || !vnode){
+  static replaceNode(dom, vdom){
+    if (!dom || !vdom){
       return;
-    } else if (vnode.tag !== domnode.nodeName && vnode.tag !== "#document-fragment"){
-      domnode.replaceWith(SFComponent.toHTML(vnode));
+    } else if (vdom.tag !== dom.nodeName && vdom.tag !== "#document-fragment"){
+      dom.replaceWith(SFComponent.toHTML(vdom));
       return;
-    } else if (vnode.tag === '#text'){
-      if (vnode.state && domnode.nodeValue !== vnode.data) domnode.nodeValue = vnode.data;
+    } else if (vdom.tag === '#text'){
+      if (vdom.state && dom.nodeValue !== vdom.data) dom.nodeValue = vdom.data;
       return;
-    } else if (vnode.tag === 'SELECT'){
-      domnode.value = vnode.attrs['value'].value;
+    } else if (vdom.tag === 'SELECT'){
+      dom.value = vdom.attrs['value'].value;
     }
-    this.replaceAttributes(domnode, vnode);
-    this.replaceChildren(domnode.childNodes, vnode.children, domnode);
+    this.replaceAttributes(dom, vdom);
+    this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
-  static replaceAttributes(domnode, vnode, state){
-    for (let name in vnode.attrs){
-      if (vnode.attrs[name].state) {
-        domnode.setAttribute(name, vnode.attrs[name].value);
+  static replaceAttributes(dom, vdom, state){
+    for (let name in vdom.attrs){
+      if (vdom.attrs[name].state) {
+        dom.setAttribute(name, vdom.attrs[name].value);
       }
     }
   }
-  static replaceChildren(doms, vnodes, parent){
+  static replaceChildren(doms, vdoms, parent){
     let j = 0;
     let frag = [];
-    vnodes.forEach((v, i) => {
+    vdoms.forEach((v, i) => {
       while (SFComponent.skip(doms[j])){
         j++;
       }
@@ -212,10 +207,6 @@ class SFComponent {
       }
       return executeCode();
     }
-  }
-  static clearState(target){
-    target._state = {};
-    updateState(target);
   }
   static absolute(base, relative) {
     var stack = base.split("/"),
@@ -312,7 +303,7 @@ function createComponent(element, href, c){
         const shadowRoot = this.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
         c.sr = true;
       }
-      c.originalNode = SFComponent.toVDOM(template.content.cloneNode(true));
+      c.vdom = SFComponent.toVDOM(template.content.cloneNode(true));
       if (typeof c.createdCallback === "function") {
         c.createdCallback(this);
       }
@@ -343,7 +334,6 @@ function createComponent(element, href, c){
     }
     clone(deep = true) {
       let ans = this.cloneNode(deep);
-      ans.key = this.key;
       ans.state = this.state;
       return ans;
     }
@@ -355,42 +345,27 @@ function createComponent(element, href, c){
       Object.assign(this._state, v);
       SFComponent.updateState(this);
     }
-    get key(){
-      return this._key;
-    }
-    set key(v){
-      this._key = v;
+    clearState(){
+      this._state = {};
+      SFComponent.updateState(this);
     }
   }
   link.rel = 'import';
   link.href = href;
   link.setAttribute('async', '');
   link.onload = function(e) {
-    try {
-      window.customElements.define(element, cl);
-    } catch(e) {
-      console.log(element, e);
-    }
+    try { window.customElements.define(element, cl); }
+    catch(e) { console.log(element, e); }
   }
-  link.onerror = function(e) {
-    console.log(e);
-  }
+  link.onerror = function(e) { console.log(e); }
   document.head.appendChild(link);
 }
 function tryParseJSON(jsonString) {
-    try {
-      var o = JSON.parse(jsonString);
-      return o;
-    }
-    catch (e) {
-      return jsonString;
-    }
+    try { return JSON.parse(jsonString); }
+    catch (e) { return jsonString; }
 }
 function tryStringify(json) {
-  if (typeof json === "string"){
-    return json;
-  } else {
-    return JSON.stringify(json);
-  }
+  if (typeof json === "string"){ return json; }
+  else { return JSON.stringify(json); }
 }
 document.addEventListener('input', SFComponent.twoWayBind);
