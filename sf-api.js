@@ -1,5 +1,5 @@
 class SFAPI {
-  static getHTTP(url, options, type, progress) {
+  static getHTTP(url, options, type) {
     let ans = Object.keys(options.params || {}).map(k =>
       encodeURIComponent(k) + '=' + encodeURIComponent(options.params[k])
     ).join('&');
@@ -15,19 +15,6 @@ class SFAPI {
       redirect: 'follow',
     });
     return fetch(url + '?' + ans, options).then(resp => {
-      let length = resp.headers.get("Content-Length");
-      if (length) {
-        let reader = resp.clone().body.getReader();
-        let received = 0;
-        reader.read().then(function pR({done, value}) {
-          if (done) {
-            return;
-          }
-          received += value.length;
-          if (typeof progress === 'function') progress(received/length);
-          return reader.read().then(pR);
-        });
-      }
       if (resp.ok) {
         try {
           return resp.json()
@@ -39,25 +26,25 @@ class SFAPI {
       }
     });
   }
-  static get(url, options = {}, progress) {
-    return this.getHTTP(url, options, "GET", progress);
+  static get(url, options = {}) {
+    return this.getHTTP(url, options, "GET");
   }
 
-  static post(url, options = {}, progress) {
-    return this.getHTTP(url, options, "POST", progress);
+  static post(url, options = {}) {
+    return this.getHTTP(url, options, "POST");
   }
 
-  static put(url, options = {}, progress) {
-    return this.getHTTP(url, options, "PUT", progress);
+  static put(url, options = {}) {
+    return this.getHTTP(url, options, "PUT");
   }
 
-  static delete(url, options = {}, progress) {
-    return this.getHTTP(url, options, "DELETE", progress);
+  static delete(url, options = {}) {
+    return this.getHTTP(url, options, "DELETE");
   }
 
-  static file(url, options = {}, progress) {
+  static file(url, options = {}) {
     options.headers = options.headers || {};
     options.headers.accept = options.headers.accept || '*/*';
-    return this.getHTTP(url, options, "GET", progress);
+    return this.getHTTP(url, options, "GET");
   }
 }
