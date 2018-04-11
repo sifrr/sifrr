@@ -400,5 +400,3 @@ function tryStringify(json) {
     return JSON.stringify(json);
   }
 }
-
-module.exports = SFComponent;
