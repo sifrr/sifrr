@@ -1,0 +1,32 @@
+{
+  "name": "simple-framework",
+  "version": "1.0.0",
+  "description": "Simple Frontend framework using webcomponents v1 (customelements), data binding and vdom.",
+  "main": "sf-core.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aadityataparia/Simple-Framework.git"
+  },
+  "keywords": [
+    "simple",
+    "frontend",
+    "framework",
+    "vdom",
+    "data-binding",
+    "webcomponents",
+    "custom",
+    "elements"
+  ],
+  "author": "Aaditya Taparia <aadityataparia@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aadityataparia/Simple-Framework/issues"
+  },
+  "homepage": "https://github.com/aadityataparia/Simple-Framework#readme"
+}

@@ -7,6 +7,7 @@ class SFComponent {
       return Object.keys(element).map(k => new SFComponent(k, element[k]));
     }
     createComponent(element, href, this);
+    document.addEventListener('input', SFComponent.twoWayBind);
   }
   static updateState(target) {
     let c = SFComponent[target.tagName.toLowerCase()];
@@ -399,4 +400,5 @@ function tryStringify(json) {
     return JSON.stringify(json);
   }
 }
-document.addEventListener('input', SFComponent.twoWayBind);
+
+module.exports = SFComponent;
