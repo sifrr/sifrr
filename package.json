@@ -1,6 +1,6 @@
 {
-  "name": "simple-framework",
-  "version": "1.0.0",
+  "name": "simfra",
+  "version": "0.1.0",
   "description": "Simple Frontend framework using webcomponents v1 (customelements), data binding and vdom.",
   "main": "sf-core.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aadityataparia/Simple-Framework.git"
+    "url": "git+https://github.com/aadityataparia/simfra.git"
   },
   "keywords": [
     "simple",
@@ -26,7 +26,7 @@
   "author": "Aaditya Taparia <aadityataparia@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aadityataparia/Simple-Framework/issues"
+    "url": "https://github.com/aadityataparia/simfra/issues"
   },
-  "homepage": "https://github.com/aadityataparia/Simple-Framework#readme"
+  "homepage": "https://github.com/aadityataparia/simfra#readme"
 }
