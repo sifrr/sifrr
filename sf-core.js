@@ -123,6 +123,7 @@ class SFComponent {
           let ans = {
             tag: vdom.tag,
             attrs: {},
+            children: SFComponent.evaluateVDOM(vdom.children, state),
             state: vdom.state
           }
           for (let name in vdom.attrs) {
@@ -135,7 +136,6 @@ class SFComponent {
               ans.attrs[name] = vdom.attrs[name];
             }
           }
-          ans.children = vdom.state ? SFComponent.evaluateVDOM(vdom.children, state) : vdom.children;
           return ans;
       }
     }
