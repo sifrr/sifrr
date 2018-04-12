@@ -23,14 +23,13 @@ class SFComponent {
     let c = SFComponent[target.tagName.toLowerCase()];
     if (!c || !c.vdom) return;
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
-    if (c.sr) target = target.shadowRoot;
-    SFComponent.replaceChildren(target.childNodes, vdom.children, target);
-    SFComponent.replaceAttributes(target.childNodes, vdom.children);
+    if (c.sr) SFComponent.replaceNode(target.shadowRoot, vdom, target);
+    else SFComponent.replaceNode(target, vdom, target);
     if (typeof c.stateChangeCallback === 'function') {
       c.stateChangeCallback(target, oldState, target.state);
     }
-    if (typeof SFComponent.stateChange === 'function') {
-      SFComponent.stateChange(target, oldState, target.state);
+    if (typeof SFComponent.stateChanged === 'function') {
+      SFComponent.stateChanged(target, oldState, target.state);
     }
   }
   static toVDOM(html, dom = false, state = false) {
@@ -46,6 +45,7 @@ class SFComponent {
         state: x.indexOf('${') > -1 || state
       }
     } else {
+      let nstate = false;
       const attrs = html.attributes || {},
         l = attrs.length,
         attr = [];
@@ -54,6 +54,7 @@ class SFComponent {
           value: attrs[i].value,
           state: attrs[i].value.indexOf('${') > -1 || state
         }
+        if (attr[attrs[i].name].state) nstate = true;
       }
       let ans = {
         tag: html.nodeName,
@@ -61,11 +62,10 @@ class SFComponent {
         children: SFComponent.toVDOM(html.childNodes, dom, state)
       }
       if (dom) ans.dom = html;
-      let childState = false;
       ans.children.forEach(c => {
-        if(c.state) childState = true;
+        if(c.state) nstate = true;
       });
-      ans.state = state || childState;
+      ans.state = state || nstate;
       return ans;
     }
   }
@@ -155,22 +155,17 @@ class SFComponent {
     } else if (vdom.tag === 'SELECT') {
       dom.value = vdom.attrs['value'].value;
     }
-    if (vdom.state) this.replaceChildren(dom.childNodes, vdom.children, dom);
+    if (vdom.state) {
+      this.replaceChildren(dom.childNodes, vdom.children, dom)
+      SFComponent.replaceAttributes(dom, vdom);
+    }
   }
   static replaceAttributes(dom, vdom) {
-    console.log(dom, vdom);
-    if (!dom || !vdom) {
-      return;
-    } else if (Array.isArray(vdom)) {
-      vdom.forEach((v, i) => SFComponent.replaceAttributes(dom[i], v));
-      return;
-    } else if (vdom.tag === '#text') return;
     for (let name in vdom.attrs) {
       if (vdom.attrs[name].state) {
         dom.setAttribute(name, vdom.attrs[name].value);
       }
     }
-    this.replaceAttributes(dom.childNodes, vdom.children)
   }
   static replaceChildren(doms, vdoms, parent) {
     let j = 0;
