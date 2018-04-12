@@ -19,15 +19,18 @@ class SFComponent {
     requestAnimationFrame(createCustomElements);
     document.addEventListener('input', SFComponent.twoWayBind);
   }
-  static updateState(target) {
+  static updateState(target, oldState) {
     let c = SFComponent[target.tagName.toLowerCase()];
     if (!c || !c.vdom) return;
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
     if (c.sr) target = target.shadowRoot;
     SFComponent.replaceChildren(target.childNodes, vdom.children, target);
     SFComponent.replaceAttributes(target.childNodes, vdom.children);
-    if (typeof c.stateChangeCallback === "function") {
-      c.stateChangeCallback(this);
+    if (typeof c.stateChangeCallback === 'function') {
+      c.stateChangeCallback(target, oldState, target.state);
+    }
+    if (typeof SFComponent.stateChange === 'function') {
+      SFComponent.stateChange(target, oldState, target.state);
     }
   }
   static toVDOM(html, dom = false, state = false) {
@@ -155,6 +158,7 @@ class SFComponent {
     if (vdom.state) this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
   static replaceAttributes(dom, vdom) {
+    console.log(dom, vdom);
     if (!dom || !vdom) {
       return;
     } else if (Array.isArray(vdom)) {
@@ -384,8 +388,9 @@ function createComponent(element, href, c) {
     }
     set state(v) {
       this._state = this._state || {};
+      let oldState = Object.assign({}, this._state);
       Object.assign(this._state, v);
-      SFComponent.updateState(this);
+      SFComponent.updateState(this, oldState);
     }
     clearState() {
       this._state = {};
