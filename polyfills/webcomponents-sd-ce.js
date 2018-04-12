@@ -2,20 +2,8 @@
 @license @nocompile
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-(function(){/*
-
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
+(function(){
 'use strict';var n,p="undefined"!=typeof window&&window===this?this:"undefined"!=typeof global&&null!=global?global:this,aa="function"==typeof Object.defineProperties?Object.defineProperty:function(a,b,c){a!=Array.prototype&&a!=Object.prototype&&(a[b]=c.value)};function ba(){ba=function(){};p.Symbol||(p.Symbol=ca)}var ca=function(){var a=0;return function(b){return"jscomp_symbol_"+(b||"")+a++}}();
 function da(){ba();var a=p.Symbol.iterator;a||(a=p.Symbol.iterator=p.Symbol("iterator"));"function"!=typeof Array.prototype[a]&&aa(Array.prototype,a,{configurable:!0,writable:!0,value:function(){return ea(this)}});da=function(){}}function ea(a){var b=0;return fa(function(){return b<a.length?{done:!1,value:a[b++]}:{done:!0}})}function fa(a){da();a={next:a};a[p.Symbol.iterator]=function(){return this};return a}function ha(a){da();var b=a[Symbol.iterator];return b?b.call(a):ea(a)}
 function ia(a){for(var b,c=[];!(b=a.next()).done;)c.push(b.value);return c}function ja(){this.ja=this.root=null;this.P=!1;this.w=this.L=this.aa=this.assignedSlot=this.assignedNodes=this.F=null;this.childNodes=this.nextSibling=this.previousSibling=this.lastChild=this.firstChild=this.parentNode=this.H=void 0;this.oa=this.da=!1}ja.prototype.toJSON=function(){return{}};function r(a){a.W||(a.W=new ja);return a.W}function t(a){return a&&a.W};var u=window.ShadyDOM||{};u.ya=!(!Element.prototype.attachShadow||!Node.prototype.getRootNode);var ka=Object.getOwnPropertyDescriptor(Node.prototype,"firstChild");u.s=!!(ka&&ka.configurable&&ka.get);u.ha=u.force||!u.ya;var la=navigator.userAgent.match("Trident"),ma=navigator.userAgent.match("Edge");void 0===u.la&&(u.la=u.s&&(la||ma));function v(a){return(a=t(a))&&void 0!==a.firstChild}function w(a){return"ShadyRoot"===a.sa}function x(a){a=a.getRootNode();if(w(a))return a}
@@ -109,24 +97,8 @@ return b})}function d(b,c){function d(b,c){for(var d=[];b!==c;b=b.nextSibling)d.
 a,b),d(this.nextSibling,e);else throw new SyntaxError("The value provided ("+String(a)+") is not one of 'beforebegin', 'afterbegin', 'beforeend', or 'afterend'.");})}md&&M(Element.prototype,"attachShadow",function(a){return this.__CE_shadowRoot=a=md.call(this,a)});nd&&nd.get?b(Element.prototype,nd):Dd&&Dd.get?b(HTMLElement.prototype,Dd):Sc(a,function(a){b(a,{enumerable:!0,configurable:!0,get:function(){return gd.call(this,!0).innerHTML},set:function(a){var b="template"===this.localName,c=b?this.content:
 this,d=$c.call(document,this.localName);for(d.innerHTML=a;0<c.childNodes.length;)jd.call(c,c.childNodes[0]);for(a=b?d.content:d;0<a.childNodes.length;)hd.call(c,a.childNodes[0])}})});M(Element.prototype,"setAttribute",function(b,c){if(1!==this.__CE_state)return pd.call(this,b,c);var d=od.call(this,b);pd.call(this,b,c);c=od.call(this,b);a.attributeChangedCallback(this,b,d,c,null)});M(Element.prototype,"setAttributeNS",function(b,c,d){if(1!==this.__CE_state)return sd.call(this,b,c,d);var e=rd.call(this,
 b,c);sd.call(this,b,c,d);d=rd.call(this,b,c);a.attributeChangedCallback(this,c,e,d,b)});M(Element.prototype,"removeAttribute",function(b){if(1!==this.__CE_state)return qd.call(this,b);var c=od.call(this,b);qd.call(this,b);null!==c&&a.attributeChangedCallback(this,b,c,null,null)});M(Element.prototype,"removeAttributeNS",function(b,c){if(1!==this.__CE_state)return td.call(this,b,c);var d=rd.call(this,b,c);td.call(this,b,c);var e=rd.call(this,b,c);d!==e&&a.attributeChangedCallback(this,c,d,e,b)});Ed?
-c(HTMLElement.prototype,Ed):ud?c(Element.prototype,ud):console.warn("Custom Elements: `Element#insertAdjacentElement` was not patched.");Fd?d(HTMLElement.prototype,Fd):vd?d(Element.prototype,vd):console.warn("Custom Elements: `Element#insertAdjacentHTML` was not patched.");Jd(a,Element.prototype,{S:wd,append:xd});Md(a)};/*
-
- Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
- This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- Code distributed by Google as part of the polymer project is also
- subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-var Od=window.customElements;if(!Od||Od.forcePolyfill||"function"!=typeof Od.define||"function"!=typeof Od.get){var Id=new Qc;Hd();Kd();Jd(Id,DocumentFragment.prototype,{S:ed,append:fd});Ld();Nd();document.__CE_hasRegistry=!0;var customElements=new R(Id);Object.defineProperty(window,"customElements",{configurable:!0,enumerable:!0,value:customElements})};/*
-
-Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
+c(HTMLElement.prototype,Ed):ud?c(Element.prototype,ud):console.warn("Custom Elements: `Element#insertAdjacentElement` was not patched.");Fd?d(HTMLElement.prototype,Fd):vd?d(Element.prototype,vd):console.warn("Custom Elements: `Element#insertAdjacentHTML` was not patched.");Jd(a,Element.prototype,{S:wd,append:xd});Md(a)};
+var Od=window.customElements;if(!Od||Od.forcePolyfill||"function"!=typeof Od.define||"function"!=typeof Od.get){var Id=new Qc;Hd();Kd();Jd(Id,DocumentFragment.prototype,{S:ed,append:fd});Ld();Nd();document.__CE_hasRegistry=!0;var customElements=new R(Id);Object.defineProperty(window,"customElements",{configurable:!0,enumerable:!0,value:customElements})};
 function Pd(){this.end=this.start=0;this.rules=this.parent=this.previous=null;this.cssText=this.parsedCssText="";this.atRule=!1;this.type=0;this.parsedSelector=this.selector=this.keyframesName=""}
 function Qd(a){a=a.replace(Rd,"").replace(Sd,"");var b=Td,c=a,d=new Pd;d.start=0;d.end=c.length;for(var e=d,f=0,g=c.length;f<g;f++)if("{"===c[f]){e.rules||(e.rules=[]);var h=e,k=h.rules[h.rules.length-1]||null;e=new Pd;e.start=f+1;e.parent=h;e.previous=k;h.rules.push(e)}else"}"===c[f]&&(e.end=f+1,e=e.parent||d);return b(d,a)}
 function Td(a,b){var c=b.substring(a.start,a.end-1);a.parsedCssText=a.cssText=c.trim();a.parent&&(c=b.substring(a.previous?a.previous.end:a.parent.start,a.start-1),c=Ud(c),c=c.replace(Vd," "),c=c.substring(c.lastIndexOf(";")+1),c=a.parsedSelector=a.selector=c.trim(),a.atRule=0===c.indexOf("@"),a.atRule?0===c.indexOf("@media")?a.type=Wd:c.match(Xd)&&(a.type=Yd,a.keyframesName=a.selector.split(Vd).pop()):a.type=0===c.indexOf("--")?Zd:$d);if(c=a.rules)for(var d=0,e=c.length,f;d<e&&(f=c[d]);d++)Td(f,
@@ -168,5 +140,3 @@ n.getComputedStyleValue=function(a,b){var c;T||(c=(X(a)||X(Of(this,a))).A[b]);re
 Y.prototype.prepareTemplate=Y.prototype.prepareTemplate;Y.prototype.styleElement=Y.prototype.styleElement;Y.prototype.styleDocument=Y.prototype.styleDocument;Y.prototype.styleSubtree=Y.prototype.styleSubtree;Y.prototype.getComputedStyleValue=Y.prototype.getComputedStyleValue;Y.prototype.setElementClass=Y.prototype.Ea;Y.prototype._styleInfoForNode=Y.prototype.va;Y.prototype.transformCustomStyleForDocument=Y.prototype.ka;Y.prototype.getStyleAst=Y.prototype.xa;Y.prototype.styleAstToString=Y.prototype.Fa;
 Y.prototype.flushCustomStyles=Y.prototype.C;Object.defineProperties(Y.prototype,{nativeShadow:{get:function(){return S}},nativeCss:{get:function(){return T}}});var Z=new Y,Pf,Qf;window.ShadyCSS&&(Pf=window.ShadyCSS.ApplyShim,Qf=window.ShadyCSS.CustomStyleInterface);window.ShadyCSS={ScopingShim:Z,prepareTemplate:function(a,b,c){Z.C();Z.prepareTemplate(a,b,c)},styleSubtree:function(a,b){Z.C();Z.styleSubtree(a,b)},styleElement:function(a){Z.C();Z.styleElement(a)},styleDocument:function(a){Z.C();Z.styleDocument(a)},getComputedStyleValue:function(a,b){return Z.getComputedStyleValue(a,b)},nativeCss:T,nativeShadow:S};Pf&&(window.ShadyCSS.ApplyShim=Pf);
 Qf&&(window.ShadyCSS.CustomStyleInterface=Qf);var Rf=window.document;window.WebComponents=window.WebComponents||{};function Sf(){requestAnimationFrame(function(){window.WebComponents.ready=!0;window.document.dispatchEvent(new CustomEvent("WebComponentsReady",{bubbles:!0}))})}function Tf(){Sf();Rf.removeEventListener("readystatechange",Tf)}"loading"!==Rf.readyState?Sf():Rf.addEventListener("readystatechange",Tf);}).call(this);
-
-//# sourceMappingURL=webcomponents-sd-ce.js.map
