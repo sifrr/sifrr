@@ -25,6 +25,7 @@ class SFComponent {
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
     if (c.sr) target = target.shadowRoot;
     SFComponent.replaceChildren(target.childNodes, vdom.children, target);
+    SFComponent.replaceAttributes(target.childNodes, vdom.children);
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
     }
@@ -151,15 +152,20 @@ class SFComponent {
     } else if (vdom.tag === 'SELECT') {
       dom.value = vdom.attrs['value'].value;
     }
-    this.replaceAttributes(dom, vdom);
     if (vdom.state) this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
-  static replaceAttributes(dom, vdom, state) {
+  static replaceAttributes(dom, vdom) {
+    if (Array.isArray(vdom)) {
+      vdom.forEach((v, i) => SFComponent.replaceAttributes(dom[i], v));
+      return;
+    }
+    if (vdom.tag === '#text') return;
     for (let name in vdom.attrs) {
       if (vdom.attrs[name].state) {
         dom.setAttribute(name, vdom.attrs[name].value);
       }
     }
+    this.replaceAttributes(dom.childNodes, vdom.children)
   }
   static replaceChildren(doms, vdoms, parent) {
     let j = 0;
