@@ -122,7 +122,7 @@ class SFComponent {
           let ans = {
             tag: vdom.tag,
             attrs: {},
-            children: SFComponent.evaluateVDOM(vdom.children, state)
+            state: vdom.state
           }
           for (let name in vdom.attrs) {
             if (vdom.attrs[name].state) {
@@ -134,6 +134,7 @@ class SFComponent {
               ans.attrs[name] = vdom.attrs[name];
             }
           }
+          ans.children = vdom.state ? SFComponent.evaluateVDOM(vdom.children, state) : vdom.children;
           return ans;
       }
     }
@@ -151,7 +152,7 @@ class SFComponent {
       dom.value = vdom.attrs['value'].value;
     }
     this.replaceAttributes(dom, vdom);
-    this.replaceChildren(dom.childNodes, vdom.children, dom);
+    if (vdom.state) this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
   static replaceAttributes(dom, vdom, state) {
     for (let name in vdom.attrs) {
