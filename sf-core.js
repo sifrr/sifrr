@@ -1,3 +1,4 @@
+loadPolyfills();
 class SFComponent {
   constructor(element, href = null) {
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -244,7 +245,7 @@ class SFComponent {
     return url.split("/");
   }
   static twoWayBind(e) {
-    const target = e.composedPath()[0] || e.target;
+    const target = e.composedPath() ? e.composedPath()[0] : e.target;
     if (!target.dataset || !target.dataset.bindTo) {
       return;
     }
@@ -443,5 +444,3 @@ function loadPolyfills() {
     });
   }
 }
-
-loadPolyfills();
