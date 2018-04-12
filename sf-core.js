@@ -155,11 +155,12 @@ class SFComponent {
     if (vdom.state) this.replaceChildren(dom.childNodes, vdom.children, dom);
   }
   static replaceAttributes(dom, vdom) {
-    if (Array.isArray(vdom)) {
+    if (!dom || !vdom) {
+      return;
+    } else if (Array.isArray(vdom)) {
       vdom.forEach((v, i) => SFComponent.replaceAttributes(dom[i], v));
       return;
-    }
-    if (vdom.tag === '#text') return;
+    } else if (vdom.tag === '#text') return;
     for (let name in vdom.attrs) {
       if (vdom.attrs[name].state) {
         dom.setAttribute(name, vdom.attrs[name].value);
