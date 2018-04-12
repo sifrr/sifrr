@@ -154,6 +154,10 @@ class SFComponent {
       }
       if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key) {
         if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'].value === doms[j + 1].dataset.key) doms[j].remove();
+        if (doms[j + 2] && doms[j + 2].dataset && v.attrs['data-key'].value === doms[j + 2].dataset.key) {
+          doms[j].remove();
+          doms[j + 1].remove();
+        }
       }
       if (!doms[j]) {
         frag.push(v);
@@ -400,3 +404,44 @@ function tryStringify(json) {
     return JSON.stringify(json);
   }
 }
+
+function loadPolyfills() {
+  window.WebComponents = window.WebComponents || {};
+  let polyfills = [];
+  if (!('import' in document.createElement('link'))) {
+    polyfills.push('hi');
+  }
+  if (!('attachShadow' in Element.prototype && 'getRootNode' in Element.prototype) ||
+    (window.ShadyDOM && window.ShadyDOM.force)) {
+    polyfills.push('sd');
+  }
+  if (!window.customElements || window.customElements.forcePolyfill) {
+    polyfills.push('ce');
+  }
+  if (!('content' in document.createElement('template')) || !window.Promise || !Array.from ||
+    !(document.createDocumentFragment().cloneNode() instanceof DocumentFragment)) {
+    polyfills = ['lite'];
+  }
+
+  if (polyfills.length) {
+    let script = document.querySelector('script[src*="sf-core.js"]') || document.querySelector('script[src*="sf-core.min.js"]');
+    let newScript = document.createElement('script');
+    let replacement = 'polyfills/webcomponents-' + polyfills.join('-') + '.js';
+    let url = script.src.replace(/sf-core.(min\.)?js/, replacement);
+    newScript.src = url;
+    if (document.readyState === 'loading' && ('import' in document.createElement('link'))) {
+      document.write(newScript.outerHTML);
+    } else {
+      document.head.appendChild(newScript);
+    }
+  } else {
+    requestAnimationFrame(function() {
+      window.WebComponents.ready = true;
+      document.dispatchEvent(new CustomEvent('WebComponentsReady', {
+        bubbles: true
+      }));
+    });
+  }
+}
+
+loadPolyfills();
