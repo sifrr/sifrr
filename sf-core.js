@@ -14,7 +14,7 @@ class SFComponent {
     if (!c || !c.vdom) return;
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
     if (c.sr) target = target.shadowRoot;
-    SFComponent.replaceNode(target, vdom);
+    SFComponent.replaceChildren(target.childNodes, vdom.children);
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
     }
