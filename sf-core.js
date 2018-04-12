@@ -7,7 +7,16 @@ class SFComponent {
     } else if (typeof element == 'object') {
       return Object.keys(element).map(k => new SFComponent(k, element[k]));
     }
-    createComponent(element, href, this);
+    SFComponent[element] = this;
+
+    function createCustomElements() {
+      if (window.WebComponents.ready) {
+        createComponent(element, href, SFComponent[element]);
+        return;
+      }
+      requestAnimationFrame(createCustomElements);
+    }
+    requestAnimationFrame(createCustomElements);
     document.addEventListener('input', SFComponent.twoWayBind);
   }
   static updateState(target) {
@@ -15,7 +24,7 @@ class SFComponent {
     if (!c || !c.vdom) return;
     let vdom = SFComponent.evaluateVDOM(c.vdom, target.state);
     if (c.sr) target = target.shadowRoot;
-    SFComponent.replaceChildren(target.childNodes, vdom.children);
+    SFComponent.replaceChildren(target.childNodes, vdom.children, target);
     if (typeof c.stateChangeCallback === "function") {
       c.stateChangeCallback(this);
     }
@@ -283,11 +292,7 @@ function createComponent(element, href, c) {
   } else if (element.indexOf("-") < 1) {
     console.log(`Error creating element: Element name (${element}) must have one "-".`);
     return;
-  } else if (SFComponent[element]) {
-    console.log(`Error creating element: Element (${element}) declaration in process.`);
-    return;
   }
-  SFComponent[element] = c;
   let link = document.createElement('link');
   const cl = class extends HTMLElement {
     static get observedAttributes() {
@@ -436,11 +441,6 @@ function loadPolyfills() {
       document.head.appendChild(newScript);
     }
   } else {
-    requestAnimationFrame(function() {
-      window.WebComponents.ready = true;
-      document.dispatchEvent(new CustomEvent('WebComponentsReady', {
-        bubbles: true
-      }));
-    });
+    window.WebComponents.ready = true;
   }
 }
