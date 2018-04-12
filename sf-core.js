@@ -57,6 +57,11 @@ class SFComponent {
         children: SFComponent.toVDOM(html.childNodes, dom, state)
       }
       if (dom) ans.dom = html;
+      let childState = false;
+      ans.children.forEach(c => {
+        if(c.state) childState = true;
+      });
+      ans.state = state || childState;
       return ans;
     }
   }
