@@ -1,4 +1,3 @@
-loadPolyfills();
 class SFComponent {
   constructor(element, href = null) {
     href = typeof href === "string" ? href : '/elements/' + element + '.html';
@@ -17,7 +16,6 @@ class SFComponent {
       requestAnimationFrame(createCustomElements);
     }
     requestAnimationFrame(createCustomElements);
-    document.addEventListener('input', SFComponent.twoWayBind);
   }
   static updateState(target, oldState) {
     let c = SFComponent[target.tagName.toLowerCase()];
@@ -174,7 +172,7 @@ class SFComponent {
       while (SFComponent.skip(doms[j])) {
         j++;
       }
-      if (v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key) {
+      if (v && v.attrs && v.attrs['data-key'] && doms[j] && doms[j].dataset && v.attrs['data-key'].value !== doms[j].dataset.key) {
         if (doms[j + 1] && doms[j + 1].dataset && v.attrs['data-key'].value === doms[j + 1].dataset.key) doms[j].remove();
         if (doms[j + 2] && doms[j + 2].dataset && v.attrs['data-key'].value === doms[j + 2].dataset.key) {
           doms[j].remove();
@@ -230,6 +228,7 @@ class SFComponent {
         if (g1.search('return') >= 0) {
           f = new Function(binder + g1).bind(state);
         } else {
+          console.log(match);
           f = new Function(binder + 'return ' + g1).bind(state);
         }
         try {
@@ -292,8 +291,25 @@ class SFComponent {
       sr.getSelection().addRange(range);
     }
   }
+  static clickHandler(e) {
+    e = e || window.event;
+    let target = e.composedPath()[0] || e.target || e.srcElement;
+    for (let k in SFComponent.clickEvents) {
+      let x = target;
+      while (x) {
+        if (x.matches(k)) {
+          var fn = SFComponent.clickEvents[k];
+          if (typeof fn === "function") {
+            fn(x, e);
+          }
+        }
+        if (x) {
+          x = x.parentElement;
+        }
+      }
+    }
+  }
 }
-
 function createComponent(element, href, c) {
   if (!element) {
     console.log(`Error creating element: No element name - ${element}.`);
@@ -457,3 +473,8 @@ function loadPolyfills() {
     window.WebComponents.ready = true;
   }
 }
+
+loadPolyfills();
+document.addEventListener('input', SFComponent.twoWayBind);
+document.addEventListener('click', SFComponent.clickHandler);
+SFComponent.clickEvents = {};
