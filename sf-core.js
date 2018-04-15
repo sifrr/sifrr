@@ -85,6 +85,9 @@ class SFComponent {
         case '#text':
           html = document.createTextNode(node.data);
           break;
+        case '#comment':
+          html = document.createComment('comment');
+          break;
         default:
           html = document.createElement(node.tag);
           for (let name in node.attrs) {
@@ -210,15 +213,7 @@ class SFComponent {
       binder += 'let ' + i + ' = this["' + i + '"]; ';
     }
     if (string.indexOf('${') === 0) return replacer(string);
-    return string.replace(/&[^;]+;/g, function(match) {
-      let map = {
-        '&lt;': '<',
-        '&#x3C;': '<',
-        '&gt;': '>',
-        '&#x3E;': '>'
-      }
-      return map[match] ? map[match] : match;
-    }).replace(/\${([^{}]*({[^}]*})*[^{}]*)*}/g, replacer);
+    return string.replace(/\${([^{}\$]|{([^{}\$])*})*}/g, replacer);
 
     function replacer(match) {
       let g1 = match.slice(2, -1);
@@ -228,7 +223,6 @@ class SFComponent {
         if (g1.search('return') >= 0) {
           f = new Function(binder + g1).bind(state);
         } else {
-          console.log(match);
           f = new Function(binder + 'return ' + g1).bind(state);
         }
         try {
@@ -269,11 +263,7 @@ class SFComponent {
     if (!target.dataset || !target.dataset.bindTo) {
       return;
     }
-    let host = target;
-    while (host.nodeType != 11) {
-      host = host.parentNode;
-      if (!host) return;
-    }
+    let host = target.getRootNode();
     let sr = host,
       range, startN, startO, endN, endO;
     if (!target.value) {
@@ -282,7 +272,7 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo.replace(/this./g, '')] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>');
+    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>');
     host.state = data;
     if (!target.value) {
       range.setStart(startN, startO);
