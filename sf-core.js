@@ -260,6 +260,7 @@ class SFComponent {
   }
   static twoWayBind(e) {
     const target = e.composedPath() ? e.composedPath()[0] : e.target;
+    target.setAttribute("value", target.value);
     if (!target.dataset || !target.dataset.bindTo) {
       return;
     }
@@ -272,7 +273,10 @@ class SFComponent {
     }
     host = host.host;
     let data = {};
-    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value : target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>');
+    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value :
+      target.innerHTML.trim()
+            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+            .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
     host.state = data;
     if (!target.value) {
       range.setStart(startN, startO);
