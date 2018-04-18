@@ -153,7 +153,7 @@ class SFComponent {
     } else if (vdom.tag === '#text') {
       if (vdom.state && dom.nodeValue !== vdom.data) dom.nodeValue = vdom.data;
       return;
-    } else if (vdom.tag === 'SELECT') {
+    } else if (['SELECT', 'TEXTAREA', 'INPUT'].indexOf(vdom.tag) > -1 && vdom.attrs['value'].state) {
       dom.value = vdom.attrs['value'].value;
     }
     if (vdom.state) {
