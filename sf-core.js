@@ -171,6 +171,16 @@ class SFComponent {
   static replaceChildren(doms, vdoms, parent) {
     let j = 0;
     let frag = [];
+    if (vdoms.length < 1) {
+      while (doms[j]) {
+        if (!SFComponent.skip(doms[j])) {
+          doms[j].remove();
+        } else {
+          j++;
+        }
+      }
+      return;
+    }
     vdoms.forEach((v, i) => {
       while (SFComponent.skip(doms[j])) {
         j++;
