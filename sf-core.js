@@ -108,8 +108,8 @@ class SFComponent {
       switch (vdom.tag) {
         case '#text':
           if (!vdom.state) return vdom;
-          let replacing = SFComponent.evaluateString(vdom.data, state)
-          if (!replacing) return;
+          let replacing = SFComponent.evaluateString(vdom.data, state);
+          if (!replacing) return SFComponent.toVDOM("", true, true);
           if (Array.isArray(replacing) || replacing.nodeType) {
             return SFComponent.toVDOM(replacing, true, true);
           } else {
