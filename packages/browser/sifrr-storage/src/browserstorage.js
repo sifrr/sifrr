@@ -26,7 +26,7 @@ class BrowserStorage {
   }
 
   get priority() {
-    return this._options.priority.concat(['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage']);
+    return this._options.priority.concat(['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage'])
   }
 
   supportedStore() {
