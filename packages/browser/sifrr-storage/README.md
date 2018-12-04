@@ -1,14 +1,14 @@
-# BrowserStorage
-Browser key-value(JSON) storage library with cow powers.
+# sifrr-storage
+#### TODO: Change to sifrr documentation
 
-Build: [![CircleCI](https://circleci.com/gh/aadityataparia/browserStorage.svg?style=svg)](https://circleci.com/gh/aadityataparia/browserStorage)
+Browser key-value(JSON) storage library with cow powers.
 
 ### Size
 | Type | Size     |
 | :------------ | :------------: |
-| Normal (`dist/browserstorage.js`)       | [![Normal](https://img.badgesize.io/aadityataparia/browserStorage/master/dist/browserstorage.js?maxAge=600)](https://github.com/aadityataparia/browserStorage/blob/master/dist/browserstorage.js) |
-| Minified (`dist/browserstorage.min.js`) | [![Minified](https://img.badgesize.io/aadityataparia/browserStorage/master/dist/browserstorage.min.js?maxAge=600)](https://github.com/aadityataparia/browserStorage/blob/master/dist/browserstorage.min.js) |
-| Minified + Gzipped (`dist/browserstorage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/aadityataparia/browserStorage/master/dist/browserstorage.min.js?compression=gzip&maxAge=600)](https://github.com/aadityataparia/browserStorage/blob/master/dist/browserstorage.min.js) |
+| Normal (`dist/browserstorage.js`)       | [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.js) |
+| Minified (`dist/browserstorage.min.js`) | [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.min.js) |
+| Minified + Gzipped (`dist/browserstorage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.min.js) |
 
 ## Types of storages available (in default priority order)
 - IndexedDB (Persisted - on page refresh or open/close)
@@ -30,7 +30,7 @@ Add any of `/dist/browserstorage.js` or `/dist/browserstorage.min.js` as script 
 #### If you want to support older browsers without promises support, use [Promises Polyfill](https://github.com/stefanpenner/es6-promise) with it.
 
 ### Using npm
-Do `npm i @aadityataparia/browser-storage` or add the package to your `package.json`.
+Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json`.
 
 ## API
 
