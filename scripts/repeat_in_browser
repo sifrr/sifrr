@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+for dir in ./packages/browser/*
+do
+    echo ${dir}
+    cd ${dir}
+    $1 || echo "Info: No '$1' command in ${dir}"
+    cd ../../../
+done

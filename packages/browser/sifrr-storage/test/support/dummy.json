@@ -1,0 +1,49 @@
+{
+  "a": "d",
+  "b": "d",
+  "c": "d",
+  "names": ["aaditya", "mayank", "aayush"],
+  "surnames": ["taparia", "maheshwari"],
+  "mnop": "wxyz",
+  "pqrs": "xyzsfd",
+  "customers": 10,
+  "shops": 5,
+  "range": 15,
+  "aaditya": {
+    "name": "aaditya",
+    "surname": "taparia",
+    "hobby": ["badminton", "tennis", "squash"],
+    "age": 22,
+    "hello": {
+      "why": "you",
+      "length": 3
+    }
+  },
+  "mayank": {
+    "name": "mayank",
+    "surname": "maheshwari",
+    "hobby": ["piano", "squash"],
+    "age": 25,
+    "hello": {
+      "why": "me",
+      "length": 2
+    }
+  },
+  "aayush": {
+    "name": "aayush",
+    "surname": "taparia",
+    "hobby": ["cricket"],
+    "age": 20,
+    "hello": {
+      "why": "myself",
+      "length": 6
+    }
+  },
+  "random": {
+    "age": 10,
+    "hello": {
+      "why": "you",
+      "length": 3
+    }
+  }
+}

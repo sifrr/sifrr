@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./scripts/repeat_in_sub "yarn run $1"

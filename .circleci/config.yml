@@ -1,0 +1,57 @@
+version: 2
+jobs:
+  build_and_test:
+    working_directory: ~/sifrr
+    docker:
+      - image: circleci/node:latest-browsers
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6"
+      - restore_cache:
+          keys:
+            - sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
+            - sifrr-v1-source-{{ .Branch }}-
+            - sifrr-v1-source-
+      - checkout
+      - save_cache:
+          key: sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - run:
+          name: Yarn workspaces
+          command: yarn config set workspaces-experimental true
+      - restore_cache:
+          keys:
+            - sifrr-v1-yarn-
+      - run:
+          name: Yarn install
+          command: yarn install
+      - save_cache:
+          key: sifrr-v1-yarn-{{ epoch }}
+          paths:
+            - ~/.cache/yarn
+      - run:
+          name: Build dist
+          command: ./scripts/repeat_in_browser 'yarn run rollup'
+      - run:
+          name: Run tests
+          command: ./scripts/yarn jtest
+      - store_test_results:
+          path: test
+      - run:
+          name: Add git user email and name
+          command: |
+            git config --global user.email "aadityataparia@gmail.com"
+            git config --global user.name "Aaditya Taparia"
+      - run:
+          name: New Release
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./scripts/release/tag
+            fi
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test

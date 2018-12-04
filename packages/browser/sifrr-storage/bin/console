@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const repl = require('repl');
+const BrowserStorage = require('../src/browserstorage');
+
+repl.start('bs> ').context.BrowserStorage = BrowserStorage;
