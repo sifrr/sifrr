@@ -1,7 +1,8 @@
 linters:
   shellcheck:
     shell: bash
-  tslint: {  }
+  eslint:
+    config: './eslintrc.json'
 files:
   ignore:
     - 'bower_components/*'
