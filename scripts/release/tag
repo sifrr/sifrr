@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+const package = require('../../package.json');
+const exec = require('child_process').execSync;
+let tag = 'v' + package.version;
+
+const deleteSameTag = exec(`git tag -d ${tag} && git push origin :refs/tags/${tag}`, (error, stdout, stderr) => {
+  console.log(`stdout: ${stdout}`);
+  console.log(`stderr: ${stderr}`);
+  if (error !== null) {
+      console.log(`exec error: ${error}`);
+      throw Error('Deleting tag failed');
+  }
+});
+
+const createTag = exec(`git tag -a ${tag} -m "Release of ${tag}"`, (error, stdout, stderr) => {
+  console.log(`stdout: ${stdout}`);
+  console.log(`stderr: ${stderr}`);
+  if (error !== null) {
+      console.log(`exec error: ${error}`);
+      throw Error('Releasing new tag failed');
+  }
+});
+
+const pushTag = exec(`git push origin ${tag}`, (error, stdout, stderr) => {
+  console.log(`stdout: ${stdout}`);
+  console.log(`stderr: ${stderr}`);
+  if (error !== null) {
+      console.log(`exec error: ${error}`);
+      throw Error('Pushing new tag failed');
+  }
+});

@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "version": "0.1.0",
+  "description": "sifrr",
+  "licence": "MIT",
+  "browserslist": [
+    "chrome >= 55",
+    "safari >= 10.1",
+    "opera >= 42",
+    "firefox >= 53"
+  ],
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sifrr/sifrr.git"
+  },
+  "keywords": [],
+  "author": "Sifrr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sifrr/sifrr/issues"
+  },
+  "homepage": "https://github.com/sifrr/sifrr",
+  "dependencies": {},
+  "devDependencies": {
+    "babel": "^6.23.0"
+  }
+}
