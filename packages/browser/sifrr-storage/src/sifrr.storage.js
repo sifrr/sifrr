@@ -1,4 +1,4 @@
-const storages = require('./utils/storages');
+const storages = require('./storages');
 const JsonStorage = require('./storages/jsonstorage');
 
 class SifrrStorage {

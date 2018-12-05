@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
 const repl = require('repl');
-const SifrrStorage = require('../src/sifrr.storage');
+const SifrrFetch = require('../src/sifrr.fetch');
 
-repl.start('bs> ').context.Sifrr = { Storage: SifrrStorage };
+repl.start('sifrr-fetch> ').context.Sifrr = { Fetch: SifrrFetch };
