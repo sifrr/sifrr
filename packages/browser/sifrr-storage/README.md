@@ -1,14 +1,13 @@
 # sifrr-storage
-#### TODO: Change to sifrr documentation
 
 Browser key-value(JSON) storage library with cow powers.
 
 ### Size
 | Type | Size     |
 | :------------ | :------------: |
-| Normal (`dist/browserstorage.js`)       | [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.js) |
-| Minified (`dist/browserstorage.min.js`) | [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.min.js) |
-| Minified + Gzipped (`dist/browserstorage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/browserstorage.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/browserstorage.min.js) |
+| Normal (`dist/sifrr.storage.js`)       | [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.js) |
+| Minified (`dist/sifrr.storage.min.js`) | [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js) |
+| Minified + Gzipped (`dist/sifrr.storage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js) |
 
 ## Types of storages available (in default priority order)
 - IndexedDB (Persisted - on page refresh or open/close)
@@ -19,28 +18,32 @@ Browser key-value(JSON) storage library with cow powers.
 
 ## How to use
 ### Directly in Browser using standalone distribution
-Add any of `/dist/browserstorage.js` or `/dist/browserstorage.min.js` as script tag in your website.
+Add script tag in your website.
+```html
+<script src="https://unpkg.com/@sifrr/storage@0.1.0-alpha/dist/sifrr.storage.min.js"></script>
+```
 
-#### Compatibility table for standalone distribution (Needs support for Promises)
+#### Compatibility table for standalone distribution (Needs support for JavaScript Promises)
 - chrome >= 55
 - safari >= 10.1
 - opera >= 42
 - firefox >= 53
 
-#### If you want to support older browsers without promises support, use [Promises Polyfill](https://github.com/stefanpenner/es6-promise) with it.
+#### If you want to support older browsers without promises support, use [Promises Polyfill](https://github.com/stefanpenner/es6-promise) with sifrr-storage.
 
 ### Using npm
-Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json`.
+Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json` file.
+Compatible with webpack/rollup etc, with plugin to convert commonjs files.
 
 ## API
 
-BrowserStorage uses Promises API.
+Sifrr.Storage uses Promises.
 
 ### Initialization
 
 - Initialize a storage with a type
 ```js
-let storage = new BrowserStorage(type)
+let storage = new Sifrr.Storage(type)
 ```
 where type is one of `indexeddb`, `websql`, `localstorage`, `cookies`, `jsonstorage`.
 
@@ -51,12 +54,12 @@ where type is one of `indexeddb`, `websql`, `localstorage`, `cookies`, `jsonstor
 // Options with default values
 let options = {
   priority: ['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage'], // Priority Array of type of storages to use
-  name: 'BroswerStorage', // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
+  name: 'SifrrStorage', // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
   version: 1, // version number (integer / float / string), 1 is treated same as '1'
-  desciption: 'Browser Storage', // description (text)
+  desciption: 'Sifrr Storage', // description (text)
   size: 5 * 1024 * 1024 // Max db size in bytes only for websql (integer)
 }
-storage = new BrowserStorage(options)
+storage = new Sifrr.Storage(options)
 ```
 
 ### Get details
@@ -143,5 +146,5 @@ storage.data().then((data) => console.log(data)); // > { key: { upValue: 'up' },
 
 ### Get all created storage instances
 ```js
-BrowserStorage.all;
+Sifrr.Storage.all;
 ```

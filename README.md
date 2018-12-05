@@ -1,4 +1,6 @@
 # sifrr
+[WIP]
+
 Build: [![CircleCI](https://circleci.com/gh/sifrr/sifrr.svg?style=svg)](https://circleci.com/gh/sifrr/sifrr)
 
 sifrr is a vanilla js API-View framework based on:
