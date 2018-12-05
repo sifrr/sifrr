@@ -3,4 +3,4 @@
 const repl = require('repl');
 const SifrrStorage = require('../src/sifrr.storage');
 
-repl.start('sifrr-storage> ').context.Sifrr = { Storage: SifrrStorage };
+repl.start('bs> ').context.Sifrr = { Storage: SifrrStorage };
