@@ -1,7 +1,7 @@
 {
   "name": "@sifrr/dom",
   "version": "0.1.0-alpha",
-  "description": "Sifrr's DOM library for creating user interfaces in browser.",
+  "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "licence": "MIT",
   "main": "src/sifrr.storage.js",
   "browser": "dist/sifrr.storage.min.js",
