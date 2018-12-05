@@ -1,10 +1,10 @@
 {
   "name": "@sifrr/storage",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "description": "Frontend key-value(JSON to JSON) persisted storage library",
   "licence": "MIT",
-  "main": "src/browserstorage.js",
-  "browser": "dist/browserstorage.min.js",
+  "main": "src/sifrr.storage.js",
+  "browser": "dist/sifrr.storage.min.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -43,9 +43,7 @@
     "babel-preset-env": "^1.7.0",
     "browserslist": "^4.1.0",
     "chai": "^4.1.2",
-    "fast-async": "^6.3.8",
     "file-url": "^2.0.2",
-    "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "puppeteer": "^1.11.0",

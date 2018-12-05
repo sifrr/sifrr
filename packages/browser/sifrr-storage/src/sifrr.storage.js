@@ -1,12 +1,7 @@
 const storages = require('./utils/storages');
 const JsonStorage = require('./storages/jsonstorage');
 
-/** Main BrowserStorage class. */
 class SifrrStorage {
-  /**
-  * Get Storage instance based on options.
-  * @param {json} options - Options.
-  */
   constructor(options) {
     if (typeof options == 'string') options = { priority: [options] }; else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);

@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+const version = require('../../package.json').version;
+const fs = require('fs');
+let packageFileString = '../.' + process.argv[2], packageFile;
+
+try {
+  packageFile  = require(packageFileString);
+} catch(e) {
+  console.log('No package file in this folder');
+  process.exit(0);
+}
+
+packageFile.version = version;
+fs.writeFileSync(__dirname + '/' + packageFileString, JSON.stringify(packageFile, null, 2) + '\n');
+console.log("Done");

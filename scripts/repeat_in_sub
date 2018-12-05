@@ -2,8 +2,8 @@
 
 for dir in ./packages/*/*
 do
-    echo ${dir}
-    cd ${dir}
-    $1 || echo "Info: No '$1' command in ${dir}"
-    cd ../../../
+  echo "Going to ${dir}"
+  cd ${dir}
+  $1 || echo "Info: No '$1' command in ${dir}"
+  cd ../../../
 done
