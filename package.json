@@ -17,7 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
-  "keywords": [],
+  "keywords": [
+    "sifrr"
+  ],
   "author": "Sifrr",
   "license": "MIT",
   "bugs": {

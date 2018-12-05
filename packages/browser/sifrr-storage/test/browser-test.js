@@ -16,7 +16,7 @@ describe('Sifrr.Storage in browser', () => {
     browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     page = await browser.newPage();
     await page.setViewport( { width: 1280, height: 800} );
-    await page.goto(fileUrl('./test/test.html'));
+    await page.goto(fileUrl('./test/support/test.html'));
     await page.addScriptTag({ path: './dist/sifrr.storage.min.js' });
   });
 

@@ -20,7 +20,7 @@ for (let key in Sifrr.Storage.availableStores) {
       if (key == 'cookies') {
         await page.goto('https://www.google.com');
       } else {
-        await page.goto(fileUrl('./test/test.html'));
+        await page.goto(fileUrl('./test/support/test.html'));
       }
       await page.addScriptTag({ path: './dist/sifrr.storage.js' });
       await page.addScriptTag({ path: './test/support/support.js' });
