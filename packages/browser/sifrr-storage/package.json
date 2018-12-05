@@ -1,7 +1,7 @@
 {
   "name": "@sifrr/storage",
   "version": "0.1.0",
-  "description": "Frontend key-value(JSON to JSON) storage library",
+  "description": "Frontend key-value(JSON to JSON) persisted storage library",
   "licence": "MIT",
   "main": "src/browserstorage.js",
   "browser": "dist/browserstorage.min.js",

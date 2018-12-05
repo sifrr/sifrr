@@ -2,7 +2,7 @@ const storages = require('./utils/storages');
 const JsonStorage = require('./storages/jsonstorage');
 
 /** Main BrowserStorage class. */
-class BrowserStorage {
+class SifrrStorage {
   /**
   * Get Storage instance based on options.
   * @param {json} options - Options.
@@ -57,9 +57,9 @@ class BrowserStorage {
   static get defaultOptions() {
     return {
       priority: [],
-      name: 'BrowserStorage',
+      name: 'SifrrStorage',
       version: 1,
-      description: 'Browser Storage',
+      description: 'Sifrr Storage',
       size: 5 * 1024 * 1024
     };
   }
@@ -73,4 +73,4 @@ class BrowserStorage {
   }
 }
 
-module.exports = BrowserStorage;
+module.exports = SifrrStorage;

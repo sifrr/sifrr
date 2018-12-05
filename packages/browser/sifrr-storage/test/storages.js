@@ -1,14 +1,15 @@
+let Sifrr = {};
+Sifrr.Storage = require('../src/sifrr.storage');
 const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  BrowserStorage = require('../src/browserstorage'),
   puppeteer = require('puppeteer'),
   fileUrl = require('file-url');
 
 let browser, page;
 
-for (let key in BrowserStorage.availableStores) {
+for (let key in Sifrr.Storage.availableStores) {
   describe(`${key} in browser`, () => {
     let browser, page;
 
@@ -21,7 +22,7 @@ for (let key in BrowserStorage.availableStores) {
       } else {
         await page.goto(fileUrl('./test/test.html'));
       }
-      await page.addScriptTag({ path: './dist/browserstorage.js' });
+      await page.addScriptTag({ path: './dist/sifrr.storage.js' });
       await page.addScriptTag({ path: './test/support/support.js' });
     });
 
@@ -32,7 +33,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`Setting priority to ${key} give ${key} instance`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           return storage.type;
         } catch(e) {
           return e.message;
@@ -44,7 +45,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`Giving options to ${key} give ${key} instance`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           return storage.type;
         } catch(e) {
           return e.message;
@@ -56,8 +57,8 @@ for (let key in BrowserStorage.availableStores) {
     it(`Same table name for ${key} give same instance`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage1 = new BrowserStorage(key);
-          let storage2 = new BrowserStorage(key);
+          let storage1 = new Sifrr.Storage(key);
+          let storage2 = new Sifrr.Storage(key);
           return storage1 === storage2;
         } catch(e) {
           return e.message;
@@ -70,7 +71,7 @@ for (let key in BrowserStorage.availableStores) {
       const result = await page.evaluate(async (key) => {
         try {
           eval(`save_${key}();`);
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           return storage.data();
         } catch(e) {
           return e.message;
@@ -82,7 +83,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`${key}.select selects cookie`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           await storage.insert('w', 'x');
           await storage.insert('y', 'z');
           return {
@@ -101,7 +102,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`${key}.upsert updates or inserts cookie`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           await storage.upsert('w', 'abc');
           await storage.upsert('y', 'abc');
           await storage.upsert('z', 'abc');
@@ -119,7 +120,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`${key}.delete deletes cookie`, async () => {
       const result = await page.evaluate((key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           storage.insert('w', 'x');
           storage.insert('y', 'z');
           storage.insert('a', 'b');
@@ -138,9 +139,9 @@ for (let key in BrowserStorage.availableStores) {
     it('can handle multiple tables', async() => {
       const result = await page.evaluate(async (key) => {
         try {
-          let st1 = new BrowserStorage({ priority: [key], name: 'first', version: 1 });
-          let st2 = new BrowserStorage({ priority: [key], name: 'first', version: 2 });
-          let st3 = new BrowserStorage({ priority: [key], name: 'third', version: 1 });
+          let st1 = new Sifrr.Storage({ priority: [key], name: 'first', version: 1 });
+          let st2 = new Sifrr.Storage({ priority: [key], name: 'first', version: 2 });
+          let st3 = new Sifrr.Storage({ priority: [key], name: 'third', version: 1 });
           await st1.insert('m', 'a');
           await st2.insert('m', 'b');
           await st3.insert('m', 'c');
@@ -161,7 +162,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`${key}.insert works with json`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key);
+          let storage = new Sifrr.Storage(key);
           await storage.insert('aadi', { name: { first: 'aaditya' } });
           return storage.data();
         } catch(e) {
@@ -174,7 +175,7 @@ for (let key in BrowserStorage.availableStores) {
     it(`${key}.clear clears the storage`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          let storage = new BrowserStorage(key), ans = {};
+          let storage = new Sifrr.Storage(key), ans = {};
           await storage.insert('a', 'b');
           ans.before = await storage.select('a');
           await storage.clear();

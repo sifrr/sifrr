@@ -1,4 +1,5 @@
-var BrowserStorage = (function () {
+this.Sifrr = this.Sifrr || {};
+this.Sifrr.Storage = (function () {
   'use strict';
 
   class JsonExt {
@@ -427,7 +428,7 @@ var BrowserStorage = (function () {
   storages[jsonstorage.type] = jsonstorage;
   var storages_1 = storages;
 
-  class BrowserStorage {
+  class SifrrStorage {
     constructor(options) {
       if (typeof options == 'string') options = { priority: [options] };else options = options || {};
       this._options = Object.assign(this.constructor.defaultOptions, options);
@@ -473,9 +474,9 @@ var BrowserStorage = (function () {
     static get defaultOptions() {
       return {
         priority: [],
-        name: 'BrowserStorage',
+        name: 'SifrrStorage',
         version: 1,
-        description: 'Browser Storage',
+        description: 'Sifrr Storage',
         size: 5 * 1024 * 1024
       };
     }
@@ -486,8 +487,8 @@ var BrowserStorage = (function () {
       return new jsonstorage({}, data);
     }
   }
-  var browserstorage = BrowserStorage;
+  var sifrr_storage = SifrrStorage;
 
-  return browserstorage;
+  return sifrr_storage;
 
 }());

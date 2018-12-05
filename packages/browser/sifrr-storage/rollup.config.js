@@ -1,3 +1,4 @@
+const version = require('../../package.json').version;
 const babel = require('rollup-plugin-babel');
 const eslint = require('rollup-plugin-eslint').eslint;
 const terser = require('rollup-plugin-terser').terser;
@@ -7,11 +8,11 @@ const cleanup = require('rollup-plugin-cleanup');
 
 export default [
   {
-    input: 'src/browserstorage.js',
+    input: 'src/sifrr.storage.js',
     output: {
-      file: 'dist/browserstorage.min.js',
+      file: 'dist/sifrr.storage.min.js',
       format: 'iife',
-      name: 'BrowserStorage',
+      name: 'Sifrr.Storage',
       sourceMap: true
     },
     plugins: [
@@ -20,17 +21,17 @@ export default [
       }),
       commonjs(),
       babel({
-        exclude: 'node_modules/**',
+        // exclude: 'node_modules/**',
       }),
       terser()
     ]
   },
   {
-    input: 'src/browserstorage.js',
+    input: 'src/sifrr.storage.js',
     output: {
-      file: 'dist/browserstorage.js',
+      file: 'dist/sifrr.storage.js',
       format: 'iife',
-      name: 'BrowserStorage'
+      name: 'Sifrr.Storage'
     },
     plugins: [
       resolve({
@@ -39,7 +40,7 @@ export default [
       commonjs(),
       eslint(),
       babel({
-        exclude: 'node_modules/**',
+        // exclude: 'node_modules/**',
       }),
       cleanup()
     ]

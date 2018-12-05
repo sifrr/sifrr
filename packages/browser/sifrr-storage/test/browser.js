@@ -1,14 +1,15 @@
+let Sifrr = {};
+Sifrr.Storage = require('../src/sifrr.storage');
 const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  BrowserStorage = require('../src/browserstorage'),
   puppeteer = require('puppeteer'),
   fileUrl = require('file-url');
 
 let browser, page;
 
-describe('BrowserStorage in browser', () => {
+describe('Sifrr.Storage in browser', () => {
   let browser, page;
 
   before(async () => {
@@ -16,28 +17,28 @@ describe('BrowserStorage in browser', () => {
     page = await browser.newPage();
     await page.setViewport( { width: 1280, height: 800} );
     await page.goto(fileUrl('./test/test.html'));
-    await page.addScriptTag({ path: './dist/browserstorage.min.js' });
+    await page.addScriptTag({ path: './dist/sifrr.storage.min.js' });
   });
 
   after(async () => {
     await browser.close();
   });
 
-  it('Website Should have BrowserStorage', async () => {
+  it('Website Should have Sifrr.Storage', async () => {
     const result = await page.evaluate(() => {
       try {
-        return BrowserStorage.availableStores;
+        return Sifrr.Storage.availableStores;
       } catch(e) {
         return e;
       }
     });
-    expect(result).to.have.all.keys(Object.keys(BrowserStorage.availableStores));
+    expect(result).to.have.all.keys(Object.keys(Sifrr.Storage.availableStores));
   });
 
   it('Website Should have LocalStorage', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new BrowserStorage({ priority: ['localstorage'] });
+        let x = new Sifrr.Storage({ priority: ['localstorage'] });
         x.store;
         return true;
       } catch(e) {
@@ -50,7 +51,7 @@ describe('BrowserStorage in browser', () => {
   it('Website Should have indexedDB', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new BrowserStorage({ priority: ['indexeddb'] });
+        let x = new Sifrr.Storage({ priority: ['indexeddb'] });
         x.store;
         return true;
       } catch(e) {
@@ -63,7 +64,7 @@ describe('BrowserStorage in browser', () => {
   it('Website Should have websql', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new BrowserStorage({ priority: ['websql'] });
+        let x = new Sifrr.Storage({ priority: ['websql'] });
         x.store;
         return true;
       } catch(e) {
@@ -76,7 +77,7 @@ describe('BrowserStorage in browser', () => {
   it('Website Should have cookies', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new BrowserStorage({ priority: ['cookies'] });
+        let x = new Sifrr.Storage({ priority: ['cookies'] });
         x.store;
         return true;
       } catch(e) {
@@ -86,10 +87,10 @@ describe('BrowserStorage in browser', () => {
     assert.equal(result, true);
   });
 
-  it('BrowserStorage should be indexeddb by default', async () => {
+  it('Sifrr.Storage should be indexeddb by default', async () => {
     const result = await page.evaluate(() => {
       try {
-        return new BrowserStorage().type;
+        return new Sifrr.Storage().type;
       } catch(e) {
         return false;
       }

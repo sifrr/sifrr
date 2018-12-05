@@ -1,24 +1,25 @@
+let Sifrr = {};
+Sifrr.Storage = require('../src/sifrr.storage');
 const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  BrowserStorage = require('../src/browserstorage'),
   JsonStorage = require('../src/storages/jsonstorage'),
   Storage = require('../src/storages/storage'),
   dummyData = require('./support/dummy.json');
 
-describe('BrowserStorage', () => {
+describe('Sifrr.Storage', () => {
   describe('#new', () => {
     it('should return supported storage by default', () => {
-      let x = new BrowserStorage();
-      expect(x).to.be.an.instanceof(BrowserStorage.availableStores['indexeddb']);
+      let x = new Sifrr.Storage();
+      expect(x).to.be.an.instanceof(Sifrr.Storage.availableStores['indexeddb']);
       assert.equal(x.type, 'indexeddb')
     });
 
-    Object.keys(BrowserStorage.availableStores).forEach((type) => {
+    Object.keys(Sifrr.Storage.availableStores).forEach((type) => {
       it(`should return ${type} if ${type} is prioritized`, () => {
-        let x = new BrowserStorage({priority: [type]});
-        expect(x).to.be.an.instanceof(BrowserStorage.availableStores[type]);
+        let x = new Sifrr.Storage({priority: [type]});
+        expect(x).to.be.an.instanceof(Sifrr.Storage.availableStores[type]);
         assert.equal(x.type, type);
       });
     });
@@ -26,16 +27,16 @@ describe('BrowserStorage', () => {
 
   describe('#all', () => {
     it('should return all instances there are', () => {
-      BrowserStorage._all = [];
-      new BrowserStorage({ priority: ['cookies'] });
-      new BrowserStorage({ priority: ['indexeddb'] });
-      assert.equal(BrowserStorage.all.length, 2);
+      Sifrr.Storage._all = [];
+      new Sifrr.Storage({ priority: ['cookies'] });
+      new Sifrr.Storage({ priority: ['indexeddb'] });
+      assert.equal(Sifrr.Storage.all.length, 2);
     });
   });
 
   describe('#json', () => {
     it('should return jsonstorage', () => {
-      let x = BrowserStorage.json({ a: 'b' });
+      let x = Sifrr.Storage.json({ a: 'b' });
       assert.equal(x.type, 'jsonstorage');
     });
   });
@@ -43,7 +44,7 @@ describe('BrowserStorage', () => {
 
 describe('JsonStorage', () => {
   let options = {
-    name: 'BrowserStorage',
+    name: 'Sifrr.Storage',
     version: 1
   }
 
