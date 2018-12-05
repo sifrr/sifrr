@@ -1,7 +1,7 @@
 {
-  "name": "@sifrr/storage",
+  "name": "@sifrr/fetch",
   "version": "0.1.0-alpha",
-  "description": "Frontend key-value(JSON to JSON) persisted storage library",
+  "description": "Fetch based http requests library for browsers.",
   "licence": "MIT",
   "main": "src/sifrr.storage.js",
   "browser": "dist/sifrr.storage.min.js",
@@ -23,12 +23,9 @@
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
   "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql",
-    "json",
-    "sifrr"
+    "sifrr",
+    "fetch",
+    "ajax"
   ],
   "author": "Sifrr",
   "bugs": {

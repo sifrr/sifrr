@@ -1,7 +1,7 @@
 {
-  "name": "@sifrr/storage",
+  "name": "@sifrr/browser",
   "version": "0.1.0-alpha",
-  "description": "Frontend key-value(JSON to JSON) persisted storage library",
+  "description": "Base library for sifrr in browser",
   "licence": "MIT",
   "main": "src/sifrr.storage.js",
   "browser": "dist/sifrr.storage.min.js",
@@ -23,12 +23,8 @@
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
   "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql",
-    "json",
-    "sifrr"
+    "sifrr",
+    "browser"
   ],
   "author": "Sifrr",
   "bugs": {

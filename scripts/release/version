@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-for dir in ./packages/*/*
-do
-  echo "Changing version in ${dir}:"
-  ./scripts/release/change_version "${dir}/package.json"
-done

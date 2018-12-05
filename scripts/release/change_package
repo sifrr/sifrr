@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 
-const version = require('../../package.json').version;
+const package = require('../../package.json');
 const fs = require('fs');
 let packageFileString = '../.' + process.argv[2], packageFile;
+let packageToMerge = {
+  "version": package.version,
+  "licence": package.licence,
+  "browserslist": package.browserslist,
+  "repository": package.repository,
+  "author": package.author,
+  "bugs": package.bugs,
+  "homepage": package.homepage
+}
 
 try {
   packageFile  = require(packageFileString);
@@ -11,6 +20,6 @@ try {
   process.exit(0);
 }
 
-packageFile.version = version;
+Object.assign(packageFile, packageToMerge);
 fs.writeFileSync(__dirname + '/' + packageFileString, JSON.stringify(packageFile, null, 2) + '\n');
 console.log("Done");
