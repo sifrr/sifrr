@@ -38,7 +38,7 @@ jobs:
           name: Run tests
           command: ./scripts/yarn jtest
       - store_test_results:
-          path: test
+          path: test-results
       - run:
           name: Add git user email and name
           command: |
