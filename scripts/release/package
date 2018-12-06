@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-for dir in ./packages/*/*
-do
-  echo "Changing package.json file in ${dir}:"
-  ./scripts/release/change_package "${dir}/package.json"
-done

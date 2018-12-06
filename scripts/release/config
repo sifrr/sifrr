@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+for dir in ./packages/*/*
+do
+  echo "Changing config files in ${dir}:"
+  ./scripts/release/change_config "${dir}"
+done

@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+const package = require('../../package.json');
+const fs = require('fs');
+const folder = process.argv[2];
+let packageFileString = '../.' + folder + '/package.json', packageFile;
+let temp = folder.split('/');
+let jsFileName = temp[temp.length - 1].replace('-', '.');
+let packageName = '@' + jsFileName.replace('.', '/');
+let packageToMerge = {
+  "name": packageName,
+  "main": `src/${jsFileName}.js`,
+  "browser": `dist/${jsFileName}.js`,
+  "version": package.version,
+  "licence": package.licence,
+  "browserslist": package.browserslist,
+  "repository": package.repository,
+  "author": package.author,
+  "bugs": package.bugs,
+  "homepage": package.homepage
+};
+
+try {
+  packageFile  = require(packageFileString);
+  Object.assign(packageFile, packageToMerge);
+  fs.writeFileSync(__dirname + '/' + packageFileString, JSON.stringify(packageFile, null, 2) + '\n');
+  console.log("Done package.json");
+} catch(e) {
+  console.log('No package file in this folder');
+}
+
+let rollupConfigFileString = '../.' + folder + '/rollup.config.js', rollupConfig;
+const config = `const getConfig = require('../../../rollup.base');
+
+export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase())}');
+
+`;
+fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
+
+console.log("Done rollup.config.js");

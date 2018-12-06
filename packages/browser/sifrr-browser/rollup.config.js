@@ -1,4 +1,4 @@
 const getConfig = require('../../../rollup.base');
 
-export default getConfig('Sifrr.Fetch');
+export default getConfig('Sifrr.Browser');
 
