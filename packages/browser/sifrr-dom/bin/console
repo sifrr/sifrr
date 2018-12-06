@@ -3,4 +3,4 @@
 const repl = require('repl');
 const SifrrDOM = require('../src/sifrr.dom');
 
-repl.start('sifrr-dom> ').context.Sifrr = { Storage: SifrrDOM };
+repl.start('sifrr-dom> ').context.Sifrr = { DOM: SifrrDOM };

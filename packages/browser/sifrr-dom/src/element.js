@@ -1,4 +1,5 @@
 const URLExt = require('./utils/url');
+const fetch = require('@sifrr/fetch');
 
 function HTMLElementClass(link, c) {
   return class extends HTMLElement {

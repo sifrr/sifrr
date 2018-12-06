@@ -3,7 +3,6 @@ class Request {
     this.type = type;
     this._options = options;
     this._url = url;
-    this._checkMultipartPost();
   }
 
   get response() {
@@ -44,12 +43,6 @@ class Request {
       mode: 'cors',
       redirect: 'follow'
     });
-  }
-
-  _checkMultipartPost() {
-    if (this._options.body) {
-      this._options.headers['content-type'] = 'multipart/form-data';
-    }
   }
 }
 

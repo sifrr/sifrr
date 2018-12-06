@@ -1,13 +1,14 @@
-this.Sifrr = this.Sifrr || {};
-this.Sifrr.Fetch = (function () {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Fetch = factory());
+}(this, (function () { 'use strict';
 
   class Request {
     constructor(type, url, options) {
       this.type = type;
       this._options = options;
       this._url = url;
-      this._checkMultipartPost();
     }
     get response() {
       return window.fetch(this.url, this.options).then(resp => {
@@ -45,11 +46,6 @@ this.Sifrr.Fetch = (function () {
         redirect: 'follow'
       });
     }
-    _checkMultipartPost() {
-      if (this._options.body) {
-        this._options.headers['content-type'] = 'multipart/form-data';
-      }
-    }
   }
   var request = Request;
 
@@ -76,4 +72,4 @@ this.Sifrr.Fetch = (function () {
 
   return sifrr_fetch;
 
-}());
+})));

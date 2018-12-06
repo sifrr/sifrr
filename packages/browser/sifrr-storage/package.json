@@ -4,7 +4,7 @@
   "description": "Frontend key-value(JSON to JSON) persisted storage library",
   "licence": "MIT",
   "main": "src/sifrr.storage.js",
-  "browser": "dist/sifrr.storage.min.js",
+  "browser": "dist/sifrr.storage.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

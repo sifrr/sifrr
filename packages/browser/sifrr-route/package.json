@@ -3,8 +3,8 @@
   "version": "0.1.0-alpha",
   "description": "History API based Routing library for sifrr in browser.",
   "licence": "MIT",
-  "main": "src/sifrr.storage.js",
-  "browser": "dist/sifrr.storage.min.js",
+  "main": "src/sifrr.route.js",
+  "browser": "dist/sifrr.route.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

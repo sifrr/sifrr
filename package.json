@@ -12,7 +12,12 @@
     "opera >= 42",
     "firefox >= 53"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "lerna run test",
+    "jtest": "lerna run jtest",
+    "rollup": "lerna run rollup",
+    "publish": "lerna "
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"

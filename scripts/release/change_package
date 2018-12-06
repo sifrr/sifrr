@@ -3,7 +3,13 @@
 const package = require('../../package.json');
 const fs = require('fs');
 let packageFileString = '../.' + process.argv[2], packageFile;
+let temp = process.argv[2].split('/')
+let jsFileName = temp[temp.length - 2].replace('-', '.')
+let packageName = '@' + jsFileName.replace('.', '/')
 let packageToMerge = {
+  "name": packageName,
+  "main": `src/${jsFileName}.js`,
+  "browser": `dist/${jsFileName}.js`,
   "version": package.version,
   "licence": package.licence,
   "browserslist": package.browserslist,

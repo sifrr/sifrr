@@ -11,7 +11,7 @@ export default [
     input: 'src/sifrr.fetch.js',
     output: {
       file: 'dist/sifrr.fetch.js',
-      format: 'iife',
+      format: 'umd',
       name: 'Sifrr.Fetch'
     },
     plugins: [
@@ -29,7 +29,7 @@ export default [
     input: 'src/sifrr.fetch.js',
     output: {
       file: 'dist/sifrr.fetch.min.js',
-      format: 'iife',
+      format: 'umd',
       name: 'Sifrr.Fetch'
     },
     plugins: [

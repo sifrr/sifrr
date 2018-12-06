@@ -3,8 +3,8 @@
   "version": "0.1.0-alpha",
   "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "licence": "MIT",
-  "main": "src/sifrr.storage.js",
-  "browser": "dist/sifrr.storage.min.js",
+  "main": "src/sifrr.dom.js",
+  "browser": "dist/sifrr.dom.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -14,8 +14,6 @@
   "scripts": {
     "test": "mocha --timeout 10000",
     "jtest": "MOCHA_FILE=../../../test-results/sifrr-browser/results.xml mocha -R mocha-junit-reporter --timeout 10000",
-    "browser-test": "mocha --timeout 10000 test/browser-test.js test/storages-test.js",
-    "unit-test": "mocha test/unit-test.js",
     "rollup": "./node_modules/.bin/rollup -c"
   },
   "repository": {
@@ -32,6 +30,9 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
+  "peerDependencies": {
+    "@sifrr/fetch": "0.1.0-alpha"
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
