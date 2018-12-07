@@ -33,7 +33,7 @@ jobs:
             - ~/.cache/yarn
       - run:
           name: Build dist
-          command: ./scripts/repeat_in_browser 'yarn run rollup'
+          command: ./scripts/repeat './packages/browser/*' 'yarn run rollup'
       - run:
           name: Run tests
           command: ./scripts/yarn jtest

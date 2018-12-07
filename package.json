@@ -13,10 +13,10 @@
     "firefox >= 53"
   ],
   "scripts": {
-    "test": "lerna run test",
-    "jtest": "lerna run jtest",
-    "rollup": "lerna run rollup",
-    "publish": "lerna "
+    "test": "./scripts/yarn test",
+    "jtest": "./scripts/yarn jtest",
+    "rollup": "./scripts/yarn rollup",
+    "publish": "./scripts/yarn publish"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,5 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
-  "devDependencies": {
-    "babel": "^6.23.0"
-  }
+  "devDependencies": {}
 }

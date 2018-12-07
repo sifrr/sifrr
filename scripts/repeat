@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+for dir in $1
+do
+  cd "$dir"
+  echo "Running $2 in $PWD"
+  $2
+  cd "$OLDPWD"
+done

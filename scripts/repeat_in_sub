@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-for dir in ./packages/*/*
-do
-  echo "Going to ${dir}"
-  cd ${dir}
-  $1 || echo "Info: No '$1' command in ${dir}"
-  cd ../../../
-done
