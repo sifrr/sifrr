@@ -191,15 +191,15 @@
     static get observedAttributes() {
       return ['data-sifrr-state'].concat(this.observedAttrs || []);
     }
-    static get template() {
-      this._template = this._template || this.getTemplate();
-      return this._template;
-    }
     static get templateUrl() {
       return `/elements/${this.elementName.split('-').join('/')}.html`;
     }
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    }
+    static get template() {
+      this._template = this._template || this.getTemplate();
+      return this._template;
     }
     static getTemplate() {
       return sifrr_fetch.file(this.templateUrl);
@@ -225,11 +225,6 @@
       if (this.shadowRoot) this.shadowRoot.addEventListener('change', vdom.twoWayBind);else this.addEventListener('change', vdom.twoWayBind);
     }
     disconnectedCallback() {}
-    clone(deep = true) {
-      let ret = this.cloneNode(deep);
-      ret.state = this.state;
-      return ret;
-    }
     get state() {
       return this._state || {};
     }
@@ -242,6 +237,7 @@
       if (name) return name == this.constructor.elementName;else return true;
     }
     clearState() {
+      this._lastState = this.state;
       this._state = {};
       vdom.updateState(this);
     }
@@ -251,6 +247,7 @@
   let SifrrDOM = {};
   SifrrDOM.elements = {};
   SifrrDOM.Element = element;
+  SifrrDOM.Vdom = vdom;
   SifrrDOM.register = function (Element) {
     const name = Element.elementName;
     if (!name) {

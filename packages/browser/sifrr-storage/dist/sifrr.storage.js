@@ -4,7 +4,7 @@
   (global.Sifrr = global.Sifrr || {}, global.Sifrr.Storage = factory());
 }(this, (function () { 'use strict';
 
-  class JsonExt {
+  class Json {
     static parse(data) {
       let ans = {};
       if (typeof data == 'string') {
@@ -36,7 +36,7 @@
       }
     }
   }
-  var jsonext = JsonExt;
+  var json = Json;
 
   class Storage {
     constructor(options) {
@@ -143,10 +143,10 @@
       return Promise.resolve(this._clear());
     }
     static stringify(data) {
-      return jsonext.stringify(data);
+      return json.stringify(data);
     }
     static parse(data) {
-      return jsonext.parse(data);
+      return json.parse(data);
     }
   }
   var storage = Storage;
@@ -364,40 +364,6 @@
     _parsedData() {
       return this._table;
     }
-    _compare(value, options) {
-      if (typeof value == 'undefined' || typeof options == 'undefined') {
-        return false;
-      } else if (typeof options['='] != 'undefined') {
-        let values;
-        if (Array.isArray(options['='])) {
-          values = options['='];
-        } else {
-          values = [options['=']];
-        }
-        if (values.includes(value)) return true;
-      } else if (typeof options['>'] != 'undefined') {
-        if (value > options['>']) return true;
-      } else if (typeof options['<'] != 'undefined') {
-        if (value < options['<']) return true;
-      } else if (typeof options['>='] != 'undefined') {
-        if (value >= options['>=']) return true;
-      } else if (typeof options['<='] != 'undefined') {
-        if (value <= options['<=']) return true;
-      } else if (typeof options['~'] != 'undefined') {
-        if (Array.isArray(value)) {
-          if (value.includes(options['~'])) return true;
-        } else if (typeof value == 'string') {
-          if (value.indexOf(options['~']) > -1) return true;
-        }
-      } else {
-        for (const key in options) {
-          if (this._compare(value[key], options[key])) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
     get store() {
       return this._table;
     }
@@ -406,15 +372,6 @@
     }
     set table(value) {
       this._table = value;
-    }
-    where(options) {
-      let results = {};
-      for (const key in this._table) {
-        if (this._compare(this._table[key], options)) {
-          results[key] = this._table[key];
-        }
-      }
-      return new this.constructor({}, results);
     }
     static get type() {
       return 'jsonstorage';
