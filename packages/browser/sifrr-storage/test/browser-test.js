@@ -4,24 +4,24 @@ const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  puppeteer = require('puppeteer'),
-  fileUrl = require('file-url');
+  puppeteer = require('puppeteer');
 
-let browser, page;
+let browser, page, server = require('./public/server');
 
 describe('Sifrr.Storage in browser', () => {
-  let browser, page;
 
   before(async () => {
+    server = server.listen(9999);
     browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     page = await browser.newPage();
     await page.setViewport( { width: 1280, height: 800} );
-    await page.goto(fileUrl('./test/support/test.html'));
+    await page.goto('http://localhost:9999/test.html');
     await page.addScriptTag({ path: './dist/sifrr.storage.min.js' });
   });
 
   after(async () => {
     await browser.close();
+    server.close();
   });
 
   it('Website Should have Sifrr.Storage', async () => {

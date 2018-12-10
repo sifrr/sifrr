@@ -4,30 +4,25 @@ const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  puppeteer = require('puppeteer'),
-  fileUrl = require('file-url');
+  puppeteer = require('puppeteer');
 
-let browser, page;
+let browser, page, server = require('./public/server');
 
 for (let key in Sifrr.Storage.availableStores) {
   describe(`${key} in browser`, () => {
-    let browser, page;
-
     before(async () => {
+      server = server.listen(9999);
       browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
       page = await browser.newPage();
       await page.setViewport( { width: 1280, height: 800} );
-      if (key == 'cookies') {
-        await page.goto('https://www.google.com');
-      } else {
-        await page.goto(fileUrl('./test/support/test.html'));
-      }
+      await page.goto('http://localhost:9999/test.html');
       await page.addScriptTag({ path: './dist/sifrr.storage.js' });
-      await page.addScriptTag({ path: './test/support/support.js' });
+      await page.addScriptTag({ url: 'http://localhost:9999/support.js' });
     });
 
     after(async () => {
       await browser.close();
+      server.close();
     });
 
     it(`Setting priority to ${key} give ${key} instance`, async () => {

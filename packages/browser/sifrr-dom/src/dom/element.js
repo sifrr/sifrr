@@ -66,6 +66,7 @@ class Element extends window.HTMLElement {
   }
 
   clearState() {
+    this._lastState = this.state;
     this._state = {};
     Vdom.updateState(this);
   }

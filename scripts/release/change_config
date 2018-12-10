@@ -17,7 +17,8 @@ let packageToMerge = {
   "repository": package.repository,
   "author": package.author,
   "bugs": package.bugs,
-  "homepage": package.homepage
+  "homepage": package.homepage,
+  "devDependencies": package.devDependencies
 };
 
 try {

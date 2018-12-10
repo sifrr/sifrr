@@ -6,7 +6,7 @@ const chai = require('chai'),
   expect = chai.expect,
   JsonStorage = require('../src/storages/jsonstorage'),
   Storage = require('../src/storages/storage'),
-  dummyData = require('./support/dummy.json');
+  dummyData = require('./fixtures/dummy.json');
 
 describe('Sifrr.Storage', () => {
   describe('#new', () => {
