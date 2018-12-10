@@ -1,4 +1,4 @@
-const JsonExt = require('../utils/jsonext');
+const JsonExt = require('../utils/json');
 
 class Storage {
   constructor(options) {

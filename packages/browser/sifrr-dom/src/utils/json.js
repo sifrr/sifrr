@@ -1,4 +1,4 @@
-class JsonExt {
+class Json {
   static parse(data) {
     let ans = {};
     if (typeof data == 'string') {
@@ -32,4 +32,4 @@ class JsonExt {
   }
 }
 
-module.exports = JsonExt;
+module.exports = Json;
