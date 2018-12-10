@@ -1,6 +1,8 @@
-this.Sifrr = this.Sifrr || {};
-this.Sifrr.Storage = (function () {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Storage = factory());
+}(this, (function () { 'use strict';
 
   class JsonExt {
     static parse(data) {
@@ -491,4 +493,4 @@ this.Sifrr.Storage = (function () {
 
   return sifrr_storage;
 
-}());
+})));

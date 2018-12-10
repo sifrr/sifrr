@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-./scripts/repeat "./packages/*/*" "yarn $@"
+set -ex
+
+./scripts/repeat "./packages/browser/*" "yarn $1"

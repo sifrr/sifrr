@@ -15,7 +15,7 @@
   "scripts": {
     "test": "./scripts/yarn test",
     "jtest": "./scripts/yarn jtest",
-    "rollup": "./scripts/yarn rollup",
+    "rollup": "./scripts/repeat './packages/browser/*' 'yarn run rollup'",
     "publish": "./scripts/yarn publish"
   },
   "repository": {
