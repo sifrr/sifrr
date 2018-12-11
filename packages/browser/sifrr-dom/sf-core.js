@@ -82,19 +82,19 @@ class SFComponent {
       if (node.dom) return node.dom;
       let html;
       switch (node.tag) {
-        case '#text':
-          html = document.createTextNode(node.data);
-          break;
-        case '#comment':
-          html = document.createComment('comment');
-          break;
-        default:
-          html = document.createElement(node.tag);
-          for (let name in node.attrs) {
-            html.setAttribute(name, node.attrs[name].value);
-          }
-          SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
-          break;
+      case '#text':
+        html = document.createTextNode(node.data);
+        break;
+      case '#comment':
+        html = document.createComment('comment');
+        break;
+      default:
+        html = document.createElement(node.tag);
+        for (let name in node.attrs) {
+          html.setAttribute(name, node.attrs[name].value);
+        }
+        SFComponent.toHTML(node.children).forEach(c => html.appendChild(c));
+        break;
       }
       return html;
     }
@@ -105,42 +105,41 @@ class SFComponent {
     } else if (!vdom) {
       return vdom;
     } else {
+      let replacing = SFComponent.evaluateString(vdom.data, state);
+      let ans = {
+        tag: vdom.tag,
+        attrs: {},
+        children: SFComponent.evaluateVDOM(vdom.children, state),
+        state: vdom.state
+      };
       switch (vdom.tag) {
-        case '#text':
-          if (!vdom.state) return vdom;
-          let replacing = SFComponent.evaluateString(vdom.data, state);
-          if (!replacing) return SFComponent.toVDOM("", true, true);
-          if (Array.isArray(replacing) || replacing.nodeType) {
+      case '#text':
+        if (!vdom.state) return vdom;
+        if (!replacing) return SFComponent.toVDOM('', true, true);
+        if (Array.isArray(replacing) || replacing.nodeType) {
+          return SFComponent.toVDOM(replacing, true, true);
+        } else {
+          if (typeof replacing !== 'string') replacing = tryStringify(replacing);
+          if (replacing.indexOf('<') < 0) {
             return SFComponent.toVDOM(replacing, true, true);
           } else {
-            if (typeof replacing !== 'string') replacing = tryStringify(replacing);
-            if (replacing.indexOf('<') < 0) {
-              return SFComponent.toVDOM(replacing, true, true);
-            } else {
-              let x = document.createElement('body');
-              x.innerHTML = replacing;
-              return SFComponent.toVDOM(x.childNodes, true, true);
+            let x = document.createElement('body');
+            x.innerHTML = replacing;
+            return SFComponent.toVDOM(x.childNodes, true, true);
+          }
+        }
+      default:
+        for (let name in vdom.attrs) {
+          if (vdom.attrs[name].state) {
+            ans.attrs[name] = {
+              state: true,
+              value: SFComponent.evaluateString(vdom.attrs[name].value, state)
             }
+          } else {
+            ans.attrs[name] = vdom.attrs[name];
           }
-          break;
-        default:
-          let ans = {
-            tag: vdom.tag,
-            attrs: {},
-            children: SFComponent.evaluateVDOM(vdom.children, state),
-            state: vdom.state
-          }
-          for (let name in vdom.attrs) {
-            if (vdom.attrs[name].state) {
-              ans.attrs[name] = {
-                state: true,
-                value: SFComponent.evaluateString(vdom.attrs[name].value, state)
-              }
-            } else {
-              ans.attrs[name] = vdom.attrs[name];
-            }
-          }
-          return ans;
+        }
+        return ans;
       }
     }
   }

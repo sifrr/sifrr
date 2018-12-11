@@ -61,38 +61,6 @@ describe('JsonStorage', () => {
       assert.equal(x.store['a'], 'b')
     });
   });
-
-  let x = new JsonStorage(options, dummyData);
-
-  describe('#where', () => {
-    it('= option', () => {
-      expect(x.where({ '=': 'd' }).store).to.have.all.keys(['a', 'b', 'c']);
-      expect(x.where({ surname: {'=': 'taparia'} }).store).to.have.all.keys(['aaditya', 'aayush']);
-      expect(x.where({ hello: { why: {'=': 'you'} } }).store).to.have.all.keys(['aaditya', 'random']);
-    });
-
-    it('> option', () => {
-      expect(x.where({ '>': 5 }).store).to.have.all.keys(['customers', 'range']);
-      expect(x.where({ age: { '>': 20 } }).store).to.have.all.keys(['aaditya', 'mayank']);
-    });
-
-    it('< option', () => {
-      expect(x.where({ hello: { length: { '<': 3 } } }).store).to.have.all.keys(['mayank']);
-    });
-
-    it('>= option', () => {
-      expect(x.where({ '>=': 10 }).store).to.have.all.keys(['customers', 'range']);
-    });
-
-    it('<= option', () => {
-      expect(x.where({ hello: { length: { '<=': 3 } } }).store).to.have.all.keys(['mayank', 'aaditya', 'random']);
-    });
-
-    it('~ option', () => {
-      expect(x.where({ '~': 'xy' }).store).to.have.all.keys(['mnop', 'pqrs']);
-      expect(x.where({ hobby: { '~': 'squash' } }).store).to.have.all.keys(['mayank', 'aaditya']);
-    });
-  });
 });
 
 describe('Storage', () => {

@@ -16,7 +16,7 @@ describe('Sifrr.Storage in browser', () => {
     page = await browser.newPage();
     await page.setViewport( { width: 1280, height: 800} );
     await page.goto('http://localhost:9999/test.html');
-    await page.addScriptTag({ path: './dist/sifrr.storage.min.js' });
+    await page.addScriptTag({ url: 'http://localhost:9999/sifrr.storage.min.js' });
   });
 
   after(async () => {

@@ -1,72 +1,100 @@
-class Vdom {
-  static toVDOM(html, dom = false, state = false) {
-    if (NodeList.prototype.isPrototypeOf(html) || Array.isArray(html)) {
-      let ans = [];
-      html.forEach(v => ans.push(SFComponent.toVDOM(v, dom, state)));
-      return ans;
-    } else if (html.nodeType === 3 || typeof html === 'string') {
-      const x = html.nodeValue || html;
-      return {
-        tag: '#text',
-        data: x,
-        state: x.indexOf('${') > -1 || state
+const Vdom = {
+  toVDOM: function(html) {
+    // parent state
+    let state = false, attrState = false;
+
+    // children
+    if (Array.isArray(html)) {
+      let ret = [];
+      while(html.length) {
+        ret.push(Vdom.toVDOM(html.shift()));
       }
+      return ret;
+    }
+
+    // text node and sifrr-node
+    if (html.nodeType === 3) {
+      const x = html.nodeValue;
+      if (x.indexOf('${') > -1) {
+        let sn = window.document.createElement('sifrr-node');
+        sn.appendChild(window.document.createTextNode(x));
+        html.replaceWith(sn);
+        return {
+          tag: 'sifrr-node',
+          data: x,
+          state: true,
+          dom: sn
+        };
+      } else {
+        return {
+          tag: '#text',
+          data: x,
+          state: false,
+          dom: html
+        };
+      }
+    }
+
+    // attributes
+    const attrs = html.attributes || [], l = attrs.length;
+    let attr = [];
+    for(let i = 0; i < l; i++) {
+      let attribute = attrs[i];
+      attr[attribute.name] = {
+        value: attribute.value,
+        state: attribute.value.indexOf('${') > -1
+      };
+      if (attr[attribute.name].state) attrState = true;
+    }
+
+    // children
+    let ans = {
+      tag: html.nodeName,
+      attrs: attr,
+      children: Vdom.toVDOM(Array.prototype.slice.call(html.childNodes)),
+      dom: html
+    };
+    const len = ans.children.length;
+    for (let i = 0; i < len; i++) {
+      if (ans.children[i].state) state = true;
+    }
+
+    // parent
+    ans.state = state;
+    ans.attrState = attrState;
+    return ans;
+  },
+  toHTML: function(node, frag = false) {
+    if (Array.isArray(node)) {
+      if (frag) {
+        let x = document.createDocumentFragment();
+        node.forEach(v => x.appendChild(Vdom.toHTML(v)));
+        return x;
+      } else {
+        return node.map(v => Vdom.toHTML(v));
+      }
+    } else if (!node) {
+      return node;
     } else {
-      let nstate = false;
-      const attrs = html.attributes || {},
-        l = attrs.length,
-        attr = [];
-      for (let i = 0; i < l; i++) {
-        attr[attrs[i].name] = {
-          value: attrs[i].value,
-          state: attrs[i].value.indexOf('${') > -1 || state
+      if (node.dom) return node.dom;
+      let html;
+      switch (node.tag) {
+      case '#text':
+        html = document.createTextNode(node.data);
+        break;
+      case '#comment':
+        html = document.createComment('comment');
+        break;
+      default:
+        html = document.createElement(node.tag);
+        for (let name in node.attrs) {
+          html.setAttribute(name, node.attrs[name].value);
         }
-        if (attr[attrs[i].name].state) nstate = true;
+        Vdom.toHTML(node.children).forEach(c => html.appendChild(c));
+        break;
       }
-      let ans = {
-        tag: html.nodeName,
-        attrs: attr,
-        children: SFComponent.toVDOM(html.childNodes, dom, state)
-      }
-      if (dom) ans.dom = html;
-      ans.children.forEach(c => {
-        if(c.state) nstate = true;
-      });
-      ans.state = state || nstate;
-      return ans;
+      return html;
     }
-  }
-
-  static twoWayBind(e) {
-    const target = e.composedPath() ? e.composedPath()[0] : e.target;
-    target.setAttribute("value", target.value);
-    if (!target.dataset || !target.dataset.bindTo) {
-      return;
-    }
-    let host = target.getRootNode();
-    let sr = host,
-      range, startN, startO, endN, endO;
-    if (!target.value) {
-      range = sr.getSelection().getRangeAt(0).cloneRange();
-      [startN, startO, endN, endO] = [range.startContainer, range.startOffset, range.endContainer, range.endOffset];
-    }
-    host = host.host;
-    let data = {};
-    data[target.dataset.bindTo] = typeof target.value === 'string' ? target.value :
-      target.innerHTML.trim()
-            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-            .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-    host.state = data;
-    if (!target.value) {
-      range.setStart(startN, startO);
-      range.setEnd(endN, endO);
-      sr.getSelection().removeAllRanges();
-      sr.getSelection().addRange(range);
-    }
-  }
-
-  static updateState(element) {
-    // Implement
   }
 }
 

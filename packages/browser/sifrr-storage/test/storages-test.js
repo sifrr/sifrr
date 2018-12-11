@@ -16,7 +16,7 @@ for (let key in Sifrr.Storage.availableStores) {
       page = await browser.newPage();
       await page.setViewport( { width: 1280, height: 800} );
       await page.goto('http://localhost:9999/test.html');
-      await page.addScriptTag({ path: './dist/sifrr.storage.js' });
+      await page.addScriptTag({ url: 'http://localhost:9999/sifrr.storage.min.js' });
       await page.addScriptTag({ url: 'http://localhost:9999/support.js' });
     });
 

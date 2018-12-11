@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <style media="screen">
+      *:not(:defined) {
+        display: none;
+      }
+      *:not(:defined)::before {
+        content: " ";
+        display: block !important;
+        width: 46px;
+        height: 46px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 5px solid #fff;
+        border-color: red transparent blue transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <h1>OK</h1>
+    <sifrr-test data-sifrr-state='{"a": "b"}'>
+      <p>asdjasjasf  asf saf as  </p>
+      <p>af df dsf df f sf </p>
+      sf sdfksdf nsjkf
+    </sifrr-test>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup();
+      Sifrr.Dom.load('sifrr-test');
+    </script>
+  </body>
+</html>
