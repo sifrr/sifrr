@@ -1,0 +1,36 @@
+<template>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <div class="table">
+    <div class="rows">
+      ${this.state.rows()}
+    </div>
+  </div>
+</template>
+<script>
+  class SifrrTable extends Sifrr.Dom.Element {}
+  SifrrTable.defaultState = {
+    "rows": function() {
+      const data = this.data;
+      const l = data.length;
+      let fragment = document.createDocumentFragment();
+      for(let i = 0; i < l; i++ ) {
+        fragment.appendChild(createRow(data[i].id, data[i].label));
+      }
+      return fragment;
+    },
+    "data": [{ id: '1', label: 'ok' }, {id: '2', label: 'bang' }]
+  }
+  const rowTemplate = document.createElement('div');
+  rowTemplate.className = 'row';
+  rowTemplate.innerHTML = "<div class='col-md-1'></div><div class='col-md-4'><a class='lbl'></a></div><div class='col-md-1'><a class='remove'><span class='remove glyphicon glyphicon-remove' aria-hidden='true'></span></a></div><div class='col-md-6'></div>";
+  function createRow(id, label) {
+    const tr = rowTemplate.cloneNode(true),
+      div1 = tr.firstChild,
+      a2 = div1.nextSibling.firstChild;
+    tr.data_id = id;
+    div1.textContent = id;
+    a2.textContent = label;
+    return tr;
+  }
+  Sifrr.Dom.register(SifrrTable);
+</script>

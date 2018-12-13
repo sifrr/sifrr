@@ -1,10 +1,81 @@
+/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/13 14:58:03 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory());
 }(this, (function () { 'use strict';
 
+  class Vdom {
+    constructor(element, html) {
+      this.baseElement = element;
+      this.html = html;
+      this.originalVdom = Vdom.toVdom(html);
+    }
+    updateState() {}
+    newVdom() {}
+    static toVdom(html) {
+      if (Array.isArray(html)) {
+        let ret = [];
+        while (html.length) {
+          ret.push(Vdom.toVdom(html.shift()));
+        }
+        return ret;
+      }
+      if (html.nodeType === 3) {
+        return {
+          tag: '#text',
+          data: html.nodeValue,
+          dom: html
+        };
+      }
+      const attrs = html.attributes || [],
+            l = attrs.length;
+      let attr = {};
+      for (let i = 0; i < l; i++) {
+        attr[attrs[i].name] = attrs[i].value;
+      }
+      return {
+        tag: html.nodeName,
+        attrs: attr,
+        children: Vdom.toVdom(Array.prototype.slice.call(html.childNodes)),
+        dom: html
+      };
+    }
+    static toHtml(vdom) {
+      if (!vdom) {
+        return vdom;
+      }
+      if (Array.isArray(vdom)) {
+        let ret = [];
+        while (vdom.length) {
+          ret.push(Vdom.toHtml(vdom.shift()));
+        }
+        return ret;
+      }
+      if (vdom.dom) return vdom.dom;
+      let html;
+      switch (vdom.tag) {
+        case '#text':
+          html = document.createTextNode(vdom.data);
+          break;
+        case '#comment':
+          html = document.createComment('comment');
+          break;
+        default:
+          html = document.createElement(vdom.tag);
+          for (let name in vdom.attrs) {
+            html.setAttribute(name, vdom.attrs[name]);
+          }
+          html.append(...Vdom.toHtml(vdom.children));
+          break;
+      }
+      return html;
+    }
+  }
+  var vdom = Vdom;
+
   const Parser = {
+    sifrrNode: window.document.createElement('sifrr-node'),
     createStateMap: function (html) {
       let nodes = [],
           attributes = [];
@@ -19,14 +90,31 @@
       if (html.nodeType === 3) {
         const x = html.nodeValue;
         if (x.indexOf('${') > -1) {
-          let sn = window.document.createElement('sifrr-node');
-          sn.appendChild(html.cloneNode());
-          html.replaceWith(sn);
-          nodes.push({
-            tag: 'sifrr-node',
-            data: x,
-            dom: sn
-          });
+          if (html.parentNode.contentEditable == 'true' || html.parentNode.nodeName == 'TEXTAREA' || html.parentNode.nodeName == 'STYLE' || html.parentNode.dataset && html.parentNode.dataset.sifrrHtml == 'true') {
+            nodes.push({
+              tag: html.parentNode.nodeName,
+              data: html.parentNode.innerHTML,
+              dom: html.parentNode
+            });
+            html.parentNode.originalVdom = vdom.toVdom(html.parentNode);
+          } else {
+            let sn = Parser.sifrrNode.cloneNode();
+            const clone = html.cloneNode();
+            sn.appendChild(clone);
+            sn.originalVdom = {
+              children: [{
+                tag: '#text',
+                data: x,
+                dom: clone
+              }]
+            };
+            html.replaceWith(sn);
+            nodes.push({
+              tag: 'sifrr-node',
+              data: x,
+              dom: sn
+            });
+          }
         }
         return { nodes: nodes, attributes: attributes };
       }
@@ -42,28 +130,18 @@
           });
         }
       }
-      if (html.contentEditable == 'true' || html.nodeName == 'TEXTAREA') {
-        nodes.push({
-          tag: html.nodeName,
-          data: html.innerHTML,
-          dom: html
-        });
-      } else {
-        const children = Parser.createStateMap(Array.prototype.slice.call(html.childNodes));
-        Array.prototype.push.apply(nodes, children.nodes);
-        Array.prototype.push.apply(attributes, children.attributes);
-      }
+      const children = Parser.createStateMap(Array.prototype.slice.call(html.childNodes));
+      Array.prototype.push.apply(nodes, children.nodes);
+      Array.prototype.push.apply(attributes, children.attributes);
       return { nodes: nodes, attributes: attributes };
     },
     twoWayBind: function (e) {
       const target = e.path ? e.path[0] : e.target;
       if (!target.dataset.sifrrBind) return;
-      const value = target.value || (e.type == 'blur' ? target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>') : target.innerHTML);
-      let host = target.getRootNode();
-      host = host.host;
+      const value = target.value === undefined ? e.type == 'blur' ? target.innerHTML.trim().replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>') : target.innerHTML : target.value;
       let data = {};
       data[target.dataset.sifrrBind] = value;
-      host.state = data;
+      target.getRootNode().host.state = data;
     },
     updateState: function (element) {
       if (!element.stateMap) {
@@ -82,8 +160,22 @@
     },
     updateNode: function (node, element) {
       const realHTML = node.dom.innerHTML;
-      const newHTML = Parser.evaluateString(node.data, element);
-      if (realHTML != newHTML) node.dom.innerHTML = newHTML;
+      let newHTML = Parser.evaluateString(node.data, element);
+      if (realHTML == newHTML) return;
+      if (!newHTML) newHTML = '';
+      if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
+        node.dom.innerHTML = '';
+        node.dom.append(...newHTML);
+      } else if (newHTML.nodeType) {
+        node.dom.innerHTML = '';
+        node.dom.appendChild(newHTML);
+      } else {
+        if (node.dom.contentEditable == 'true' || node.dom.nodeName == 'TEXTAREA' || node.dom.nodeName == 'STYLE' || node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
+          if (realHTML != newHTML) node.dom.innerHTML = newHTML;
+        } else {
+          if (realHTML != newHTML) node.dom.childNodes[0].textContent = newHTML;
+        }
+      }
     },
     updateAttribute: function (attr, element) {
       attr.dom.setAttribute(attr.name, Parser.evaluateString(attr.value, element));
@@ -91,7 +183,6 @@
     evaluateString: function (string, element) {
       if (string.indexOf('${') < 0) return string;
       string = string.trim();
-      if (string.indexOf('${') === 0) return replacer(string);
       return string.replace(/\${([^{}$]|{([^{}$])*})*}/g, replacer);
       function replacer(match) {
         let g1 = match.slice(2, -1);
@@ -319,6 +410,7 @@
   SifrrDOM.elements = {};
   SifrrDOM.Element = element;
   SifrrDOM.Parser = parser;
+  SifrrDOM.Vdom = vdom;
   SifrrDOM.Loader = loader;
   SifrrDOM.register = function (Element) {
     const name = Element.elementName;
@@ -340,13 +432,13 @@
     }
     return false;
   };
-  SifrrDOM.setup = function (config = {}) {
+  SifrrDOM.setup = function () {
     class SifrrNode extends HTMLElement {
       static get elementName() {
         return 'sifrr-node';
       }
       connectedCallback() {
-        this.style.whiteSpace = 'pre-line';
+        this.style.whiteSpace = 'pre';
       }
     }
     SifrrDOM.register(SifrrNode);
@@ -362,3 +454,4 @@
   return sifrr_dom;
 
 })));
+/*! (c) @aadityataparia */

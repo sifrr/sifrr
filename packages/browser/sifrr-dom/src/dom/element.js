@@ -13,7 +13,7 @@ class Element extends window.HTMLElement {
   }
 
   static get elementName() {
-    return this.name.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
+    return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
   constructor() {

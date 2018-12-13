@@ -3,6 +3,7 @@ let SifrrDOM = {};
 SifrrDOM.elements = {};
 SifrrDOM.Element = require('./dom/element');
 SifrrDOM.Parser = require('./dom/parser');
+SifrrDOM.Vdom = require('./dom/vdom');
 SifrrDOM.Loader = require('./dom/loader');
 SifrrDOM.register = function(Element) {
   const name = Element.elementName;
@@ -24,13 +25,13 @@ SifrrDOM.register = function(Element) {
   }
   return false;
 };
-SifrrDOM.setup = function(config = {}) {
+SifrrDOM.setup = function() {
   class SifrrNode extends HTMLElement {
     static get elementName() {
       return 'sifrr-node';
     }
     connectedCallback() {
-      this.style.whiteSpace = 'pre-line';
+      this.style.whiteSpace = 'pre';
     }
   }
   SifrrDOM.register(SifrrNode);

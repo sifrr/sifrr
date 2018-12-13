@@ -1,3 +1,4 @@
+/*! Sifrr.Fetch v0.1.0-alpha - sifrr project - 2018/12/13 14:58:05 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -73,3 +74,4 @@
   return sifrr_fetch;
 
 })));
+/*! (c) @aadityataparia */

@@ -14,11 +14,11 @@
   <slot></slot>
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>
-  <p>textarea - ${this.state.textarea}</p>
+  <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
   <p data-attr=${this.state.attr}>binded data-attr - ${this.state.attr}</p>
   <input value=${this.state.attr} data-sifrr-bind="attr">
   <input value=${this.state.input} data-sifrr-bind="input">
-  <div>${this.state.elements}</div>
+  <div data-sifrr-html='true'>${this.state.elements}</div>
   <select name="abcd" data-sifrr-bind="select" value="${this.state.select}">
     <option value="volvo">Volvo</option>
     <option value="saab">Saab</option>

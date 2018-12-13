@@ -7,13 +7,18 @@ const commonjs = require('rollup-plugin-commonjs');
 const cleanup = require('rollup-plugin-cleanup');
 
 module.exports = function getRollupConfig(name) {
+  let fileName = name.toLowerCase();
+  let banner = `/*! ${name} v${version} - sifrr project - ${new Date().toLocaleString()} UTC */`;
+  let footer = '/*! (c) @aadityataparia */';
   return [
     {
-      input: `src/${name.toLowerCase()}.js`,
+      input: `src/${fileName}.js`,
       output: {
-        file: `dist/${name.toLowerCase()}.js`,
+        file: `dist/${fileName}.js`,
         format: 'umd',
-        name: name
+        name: name,
+        banner: banner,
+        footer: footer
       },
       plugins: [
         resolve({
@@ -28,11 +33,13 @@ module.exports = function getRollupConfig(name) {
       ]
     },
     {
-      input: `src/${name.toLowerCase()}.js`,
+      input: `src/${fileName}.js`,
       output: {
-        file: `dist/${name.toLowerCase()}.min.js`,
+        file: `dist/${fileName}.min.js`,
         format: 'umd',
-        name: name
+        name: name,
+        banner: banner,
+        footer: footer
       },
       plugins: [
         resolve({
@@ -42,7 +49,12 @@ module.exports = function getRollupConfig(name) {
         babel({
           // exclude: 'node_modules/**',
         }),
-        terser()
+        cleanup(),
+        terser({
+          output: {
+            comments: 'all'
+          }
+        })
       ]
     }
   ]

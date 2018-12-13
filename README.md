@@ -24,3 +24,5 @@ sifrr is a vanilla js API-View framework based on:
 ### Server
 - [sifrr](./packages/server/sifrr)
 - [sifrr-api](./packages/server/sifrr-api)
+
+(c) @aadityataparia
