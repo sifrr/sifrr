@@ -24,10 +24,10 @@ class Element extends window.HTMLElement {
         mode: 'open'
       }).appendChild(template.content.cloneNode(true));
       me.stateMap = Parser.createStateMap(me.shadowRoot);
-      me.shadowRoot.addEventListener('change', Parser.twoWayBind);
+      // me.shadowRoot.addEventListener('change', Parser.twoWayBind);
       Parser.updateState(this);
     });
-    this._state = this.constructor.defaultState || {};
+    this._state = Object.assign({}, this.constructor.defaultState) || {};
     this.tag = this.constructor.elementName;
   }
 
@@ -62,7 +62,7 @@ class Element extends window.HTMLElement {
   }
 
   clearState() {
-    this._lastState = this.state;
+    this._lastState = Object.assign({}, this._state);
     this._state = {};
     Parser.updateState(this);
   }

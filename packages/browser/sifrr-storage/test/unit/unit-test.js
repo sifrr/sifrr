@@ -1,12 +1,10 @@
 let Sifrr = {};
-Sifrr.Storage = require('../src/sifrr.storage');
+Sifrr.Storage = require('../../src/sifrr.storage');
 const chai = require('chai'),
   assert = chai.assert,
-  should = chai.should(),
   expect = chai.expect,
-  JsonStorage = require('../src/storages/jsonstorage'),
-  Storage = require('../src/storages/storage'),
-  dummyData = require('./fixtures/dummy.json');
+  JsonStorage = require('../../src/storages/jsonstorage'),
+  Storage = require('../../src/storages/storage');
 
 describe('Sifrr.Storage', () => {
   describe('#new', () => {

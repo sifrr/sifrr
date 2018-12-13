@@ -1,12 +1,12 @@
 let Sifrr = {};
-Sifrr.Storage = require('../src/sifrr.storage');
+Sifrr.Storage = require('../../src/sifrr.storage');
 const chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
   puppeteer = require('puppeteer');
 
-let browser, page, server = require('./public/server');
+let browser, page, server = require('../public/server');
 
 describe('Sifrr.Storage in browser', () => {
 

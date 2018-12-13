@@ -1,4 +1,3 @@
-
 let SifrrDOM = {};
 SifrrDOM.elements = {};
 SifrrDOM.Element = require('./dom/element');
@@ -29,9 +28,6 @@ SifrrDOM.setup = function() {
   class SifrrNode extends HTMLElement {
     static get elementName() {
       return 'sifrr-node';
-    }
-    connectedCallback() {
-      this.style.whiteSpace = 'pre';
     }
   }
   SifrrDOM.register(SifrrNode);

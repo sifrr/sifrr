@@ -12,10 +12,10 @@
     "firefox >= 53"
   ],
   "scripts": {
-    "test": "mocha --timeout 10000",
-    "jtest": "MOCHA_FILE=../../../test-results/sifrr-browser/results.xml mocha -R mocha-junit-reporter --timeout 10000",
-    "browser-test": "mocha --timeout 10000 test/browser-test.js test/storages-test.js",
-    "unit-test": "mocha test/unit-test.js",
+    "test": "mocha --timeout 10000 test/**/*.js",
+    "jtest": "MOCHA_FILE=../../../test-results/sifrr-browser/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*.js",
+    "browser-test": "mocha --timeout 5000 test/browser/*.js",
+    "unit-test": "mocha test/unit/*.js",
     "rollup": "./node_modules/.bin/rollup -c"
   },
   "repository": {

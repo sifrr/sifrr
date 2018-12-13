@@ -19,13 +19,19 @@ const Parser = {
     if (html.nodeType === 3) {
       const x = html.nodeValue;
       if (x.indexOf('${') > -1) {
-        if (html.parentNode.contentEditable == 'true' || html.parentNode.nodeName == 'TEXTAREA' || html.parentNode.nodeName == 'STYLE' || (html.parentNode.dataset && html.parentNode.dataset.sifrrHtml == 'true')) {
+        if (html.parentNode.contentEditable != 'true' && html.parentNode.dataset && html.parentNode.dataset.sifrrHtml == 'true') {
           nodes.push({
             tag: html.parentNode.nodeName,
             data: html.parentNode.innerHTML,
             dom: html.parentNode
           });
           html.parentNode.originalVdom = Vdom.toVdom(html.parentNode);
+        } else if (html.parentNode.contentEditable == 'true' || html.parentNode.nodeName == 'TEXTAREA' || html.parentNode.nodeName == 'STYLE') {
+          nodes.push({
+            tag: html.parentNode.nodeName,
+            data: x,
+            dom: html.parentNode
+          });
         } else {
           let sn = Parser.sifrrNode.cloneNode();
           const clone = html.cloneNode();
@@ -72,9 +78,7 @@ const Parser = {
   twoWayBind: function(e) {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
-    const value = target.value === undefined ? ( e.type == 'blur' ? target.innerHTML.trim()
-      .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-      .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>') : target.innerHTML ) : target.value;
+    const value = target.value === undefined ? target.innerHTML : target.value;
     let data = {};
     data[target.dataset.sifrrBind] = value;
     target.getRootNode().host.state = data;
@@ -98,9 +102,9 @@ const Parser = {
   updateNode: function(node, element) {
     // make use of VDOM for better diffing!
     const realHTML = node.dom.innerHTML;
-    let newHTML = Parser.evaluateString(node.data, element);
+    const newHTML = Parser.evaluateString(node.data, element);
     if (realHTML == newHTML) return;
-    if (!newHTML) newHTML = '';
+    if (!newHTML) return node.dom.textContent = '';
     if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
       node.dom.innerHTML = '';
       node.dom.append(...newHTML);
@@ -108,15 +112,23 @@ const Parser = {
       node.dom.innerHTML = '';
       node.dom.appendChild(newHTML);
     } else {
-      if (node.dom.contentEditable == 'true' || node.dom.nodeName == 'TEXTAREA' || node.dom.nodeName == 'STYLE' || (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true')) {
-        if (realHTML != newHTML) node.dom.innerHTML = newHTML;
+      if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
+        node.dom.innerHTML = newHTML
+          .replace(/&amp;/g, '&')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+          .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
       } else {
-        if (realHTML != newHTML) node.dom.childNodes[0].textContent = newHTML;
+        if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML;
       }
     }
   },
   updateAttribute: function(attr, element) {
-    attr.dom.setAttribute(attr.name, Parser.evaluateString(attr.value, element));
+    const val = Parser.evaluateString(attr.value, element);
+    attr.dom.setAttribute(attr.name, val);
+
+    // select's value doesn't change on changing value attribute
+    if (attr.dom.nodeName == 'SELECT' && attr.name == 'value') attr.dom.value = val;
   },
   evaluateString: function(string, element) {
     if (string.indexOf('${') < 0) return string;
