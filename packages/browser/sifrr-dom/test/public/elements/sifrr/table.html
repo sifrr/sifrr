@@ -12,17 +12,20 @@
     "rows": function() {
       const data = this.data;
       const l = data.length;
-      let fragment = '';
+      let fragment = document.createDocumentFragment();
       for(let i = 0; i < l; i++ ) {
-        fragment += createRow(data[i]);
+        fragment.appendChild(createRow(data[i]));
       }
       return fragment;
     },
     "data": [{ id: '1', label: 'ok' }, {id: '2', label: 'bang' }]
   }
   Sifrr.Dom.load('sifrr-table-row');
+  const str = document.createElement('sifrr-table-row');
   function createRow(state) {
-    return `<sifrr-table-row data-sifrr-state='${JSON.stringify(state)}'></sifrr-table-row>`;
+    const strr = str.cloneNode(true);
+    strr._state = state;
+    return strr;
   }
   Sifrr.Dom.register(SifrrTable);
 </script>

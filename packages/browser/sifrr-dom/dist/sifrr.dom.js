@@ -168,7 +168,7 @@
       const realHTML = node.dom.innerHTML;
       const newHTML = Parser.evaluateString(node.data, element);
       if (realHTML == newHTML) return;
-      if (!newHTML) return node.dom.textContent = '';
+      if (newHTML === undefined) return node.dom.textContent = '';
       if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
         node.dom.innerHTML = '';
         node.dom.append(...newHTML);
@@ -177,9 +177,9 @@
         node.dom.appendChild(newHTML);
       } else {
         if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
-          node.dom.innerHTML = newHTML.replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+          node.dom.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
         } else {
-          if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML;
+          if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML.toString();
         }
       }
     },
@@ -191,6 +191,7 @@
     evaluateString: function (string, element) {
       if (string.indexOf('${') < 0) return string;
       string = string.trim();
+      if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
       return string.replace(/\${([^{}$]|{([^{}$])*})*}/g, replacer);
       function replacer(match) {
         let g1 = match.slice(2, -1);
@@ -329,16 +330,16 @@
     constructor(elemName) {
       if (this.constructor.all[elemName]) return this.constructor.all[elemName];
       this.elementName = elemName;
-      this.constructor.add(elemName, this);
-    }
-    get template() {
-      return this.html.then(file => file.querySelector('template'));
     }
     get html() {
-      this._html = this._html || sifrr_fetch.file(this.templateUrl).then(file => new window.DOMParser().parseFromString(file, 'text/html'));
-      return this._html;
+      const me = this;
+      this._html = this._html || sifrr_fetch.file(this.htmlUrl).then(file => new window.DOMParser().parseFromString(file, 'text/html'));
+      return this._html.then(html => {
+        Loader.add(me.elementName, html.querySelector('template'));
+        return html;
+      });
     }
-    get templateUrl() {
+    get htmlUrl() {
       return `/elements/${this.elementName.split('-').join('/')}.html`;
     }
     executeScripts() {
@@ -364,24 +365,19 @@
       return ['data-sifrr-state'].concat(this.observedAttrs || []);
     }
     static get template() {
-      this._template = this._template || new loader(this.elementName).template;
-      return this._template;
+      return loader.all[this.elementName];
     }
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     }
     constructor() {
       super();
-      let me = this;
-      this.constructor.template.then(template => {
-        me.attachShadow({
-          mode: 'open'
-        }).appendChild(template.content.cloneNode(true));
-        me.stateMap = parser.createStateMap(me.shadowRoot);
-        parser.updateState(this);
-      });
-      this._state = Object.assign({}, this.constructor.defaultState) || {};
-      this.tag = this.constructor.elementName;
+      this._state = Object.assign({}, this.constructor.defaultState, this._state);
+      this.attachShadow({
+        mode: 'open'
+      }).appendChild(this.constructor.template.content.cloneNode(true));
+      this.stateMap = parser.createStateMap(this.shadowRoot);
+      this.shadowRoot.addEventListener('change', parser.twoWayBind);
     }
     connectedCallback() {
       this.state = json.parse(this.dataset.sifrrState) || {};
@@ -398,7 +394,6 @@
       return this._state;
     }
     set state(v) {
-      this._lastState = Object.assign({}, this.state);
       Object.assign(this._state, v);
       parser.updateState(this);
     }

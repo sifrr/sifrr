@@ -4,19 +4,18 @@ class Loader {
   constructor(elemName) {
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
-    this.constructor.add(elemName, this);
-  }
-
-  get template() {
-    return this.html.then((file) => file.querySelector('template'));
   }
 
   get html() {
-    this._html = this._html || fetch.file(this.templateUrl).then((file) => new window.DOMParser().parseFromString(file, 'text/html'));
-    return this._html;
+    const me = this;
+    this._html = this._html || fetch.file(this.htmlUrl).then((file) => new window.DOMParser().parseFromString(file, 'text/html'));
+    return this._html.then((html) => {
+      Loader.add(me.elementName, html.querySelector('template'));
+      return html;
+    });
   }
 
-  get templateUrl() {
+  get htmlUrl() {
     return `/elements/${this.elementName.split('-').join('/')}.html`;
   }
 

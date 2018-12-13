@@ -8,8 +8,7 @@ class Element extends window.HTMLElement {
   }
 
   static get template() {
-    this._template = this._template || new Loader(this.elementName).template;
-    return this._template;
+    return Loader.all[this.elementName];
   }
 
   static get elementName() {
@@ -18,17 +17,12 @@ class Element extends window.HTMLElement {
 
   constructor() {
     super();
-    let me = this;
-    this.constructor.template.then((template) => {
-      me.attachShadow({
-        mode: 'open'
-      }).appendChild(template.content.cloneNode(true));
-      me.stateMap = Parser.createStateMap(me.shadowRoot);
-      // me.shadowRoot.addEventListener('change', Parser.twoWayBind);
-      Parser.updateState(this);
-    });
-    this._state = Object.assign({}, this.constructor.defaultState) || {};
-    this.tag = this.constructor.elementName;
+    this._state = Object.assign({}, this.constructor.defaultState, this._state);
+    this.attachShadow({
+      mode: 'open'
+    }).appendChild(this.constructor.template.content.cloneNode(true));
+    this.stateMap = Parser.createStateMap(this.shadowRoot);
+    this.shadowRoot.addEventListener('change', Parser.twoWayBind);
   }
 
   connectedCallback() {
@@ -51,7 +45,6 @@ class Element extends window.HTMLElement {
   }
 
   set state(v) {
-    this._lastState = Object.assign({}, this.state);
     Object.assign(this._state, v);
     Parser.updateState(this);
   }

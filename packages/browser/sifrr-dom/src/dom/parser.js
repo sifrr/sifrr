@@ -104,7 +104,7 @@ const Parser = {
     const realHTML = node.dom.innerHTML;
     const newHTML = Parser.evaluateString(node.data, element);
     if (realHTML == newHTML) return;
-    if (!newHTML) return node.dom.textContent = '';
+    if (newHTML === undefined) return node.dom.textContent = '';
     if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
       node.dom.innerHTML = '';
       node.dom.append(...newHTML);
@@ -113,13 +113,13 @@ const Parser = {
       node.dom.appendChild(newHTML);
     } else {
       if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
-        node.dom.innerHTML = newHTML
+        node.dom.innerHTML = newHTML.toString()
           .replace(/&amp;/g, '&')
           .replace(/&nbsp;/g, ' ')
           .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
           .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
       } else {
-        if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML;
+        if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML.toString();
       }
     }
   },
@@ -133,6 +133,7 @@ const Parser = {
   evaluateString: function(string, element) {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
+    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
     return string.replace(/\${([^{}$]|{([^{}$])*})*}/g, replacer);
 
     function replacer(match) {
