@@ -23,7 +23,7 @@
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
   <p data-attr=${this.state.attr}>binded data-attr - ${this.state.attr}</p>
-  <input value=${this.state.attr} data-sifrr-bind="attr">
+  <input value=${this.state.attr} data-sifrr-bind="attr" disabled=${this.state.disabled}>
   <input value=${this.state.input} data-sifrr-bind="input">
   <div data-sifrr-html='true'>${this.state.elements}</div>
   <select name="abcd" data-sifrr-bind="select" value="${this.state.select}">
@@ -47,7 +47,8 @@
     "randomElement": ["this is random text", "this is second random text"],
     "attr": "bang",
     "color": "red",
-    "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>"
+    "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>",
+    "disabled": false
   }
   Sifrr.Dom.register(SifrrTest);
 </script>

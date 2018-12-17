@@ -4,7 +4,9 @@
   "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "licence": "MIT",
   "main": "src/sifrr.dom.js",
-  "browser": "dist/sifrr.dom.js",
+  "browser": {
+    "assert": "nanoassert"
+  },
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -31,7 +33,6 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {},
   "peerDependencies": {
     "@sifrr/fetch": "0.1.0-alpha"
   },

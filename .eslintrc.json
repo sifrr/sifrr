@@ -11,8 +11,8 @@
   "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 2017,
-    "esversion": 2017
+    "ecmaVersion": 2015,
+    "esversion": 2015
   },
   "rules": {
     "indent": [

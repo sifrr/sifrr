@@ -2,7 +2,7 @@ let SifrrDOM = {};
 SifrrDOM.elements = {};
 SifrrDOM.Element = require('./dom/element');
 SifrrDOM.Parser = require('./dom/parser');
-SifrrDOM.Vdom = require('./dom/vdom');
+SifrrDOM.makeEqual = require('./dom/makeequal');
 SifrrDOM.Loader = require('./dom/loader');
 SifrrDOM.register = function(Element) {
   const name = Element.elementName;
@@ -24,10 +24,12 @@ SifrrDOM.register = function(Element) {
   }
   return false;
 };
-SifrrDOM.addSifrrEvent = require('./dom/event');
+SifrrDOM.addEvent = require('./dom/event');
 SifrrDOM.setup = function() {
-  window.document.addEventListener('input', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
-  window.document.addEventListener('blur', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
+  SifrrDOM.addEvent('input');
+  SifrrDOM.addEvent('blur');
+  window.document.$input = SifrrDOM.Parser.twoWayBind;
+  window.document.$blur = SifrrDOM.Parser.twoWayBind;
 };
 SifrrDOM.load = function(elemName) {
   let loader = new SifrrDOM.Loader(elemName);
