@@ -17,16 +17,18 @@ class Element extends window.HTMLElement {
 
   constructor() {
     super();
-    this._state = Object.assign({}, this.constructor.defaultState, this._state);
+    this._state = Object.assign({}, this.constructor.defaultState, JsonExt.parse(this.dataset.sifrrState), this.state);
     this.attachShadow({
       mode: 'open'
-    }).appendChild(this.constructor.template.content.cloneNode(true));
-    this.stateMap = Parser.createStateMap(this.shadowRoot);
+    });
+    const me = this, content = this.constructor.template.content.cloneNode(true);
+    Parser.createStateMap(this, content);
+    me.shadowRoot.appendChild(content);
     this.shadowRoot.addEventListener('change', Parser.twoWayBind);
   }
 
   connectedCallback() {
-    this.state = JsonExt.parse(this.dataset.sifrrState) || {};
+    Parser.updateState(this);
   }
 
   disconnectedCallback() {
@@ -55,9 +57,16 @@ class Element extends window.HTMLElement {
   }
 
   clearState() {
-    this._lastState = Object.assign({}, this._state);
     this._state = {};
     Parser.updateState(this);
+  }
+
+  srqs(args) {
+    return this.shadowRoot.querySelector(args);
+  }
+
+  srqsAll(args) {
+    return this.shadowRoot.querySelectorAll(args);
   }
 }
 

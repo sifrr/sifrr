@@ -12,6 +12,13 @@
   </style>
   okokok____ok ${this.state.text}
   <slot></slot>
+  <a href="#">${
+    if (window) {
+      return 'ok';
+    } else {
+      return 'not ok';
+    }
+  }</a>
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
@@ -25,7 +32,7 @@
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
-  <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea" value="${this.state.textarea}">${this.state.textarea}</textarea>
+  <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">${this.state.textarea}</textarea>
   <div class="" contenteditable data-sifrr-bind="elements">
     ${this.state.elements}
   </div>

@@ -1,14 +1,17 @@
 const Vdom = require('./vdom');
 const Parser = {
   sifrrNode: window.document.createElement('sifrr-node'),
-  createStateMap: function(html) {
+  createStateMap: function(element, shadowRoot = element.shadowRoot) {
+    element.stateMap = Parser._createStateMap(shadowRoot);
+  },
+  _createStateMap: function(html) {
     // Empty map
     let nodes = [], attributes = [];
 
     // children
     if (Array.isArray(html)) {
       while(html.length) {
-        const map = Parser.createStateMap(html.shift());
+        const map = Parser._createStateMap(html.shift());
         Array.prototype.push.apply(nodes, map.nodes);
         Array.prototype.push.apply(attributes, map.attributes);
       }
@@ -17,63 +20,63 @@ const Parser = {
 
     // text node and sifrr-node
     if (html.nodeType === 3) {
-      const x = html.nodeValue;
-      if (x.indexOf('${') > -1) {
-        if (html.parentNode.contentEditable != 'true' && html.parentNode.dataset && html.parentNode.dataset.sifrrHtml == 'true') {
-          nodes.push({
-            tag: html.parentNode.nodeName,
-            data: html.parentNode.innerHTML,
-            dom: html.parentNode
-          });
-          html.parentNode.originalVdom = Vdom.toVdom(html.parentNode);
-        } else if (html.parentNode.contentEditable == 'true' || html.parentNode.nodeName == 'TEXTAREA' || html.parentNode.nodeName == 'STYLE') {
-          nodes.push({
-            tag: html.parentNode.nodeName,
-            data: x,
-            dom: html.parentNode
-          });
-        } else {
-          let sn = Parser.sifrrNode.cloneNode();
-          const clone = html.cloneNode();
-          sn.appendChild(clone);
-          sn.originalVdom = {
-            children: [{
-              tag: '#text',
-              data: x,
-              dom: clone
-            }]
-          };
-          html.replaceWith(sn);
-          nodes.push({
-            tag: 'sifrr-node',
-            data: x,
-            dom: sn
-          });
-        }
-      }
-      return { nodes: nodes, attributes: attributes };
+      return Parser.createTextStateMap(html);
     }
 
     // attributes
-    const attrs = html.attributes || [], l = attrs.length;
+    Array.prototype.push.apply(attributes, Parser.createAttributeStateMap(html));
+
+    // add children state maps
+    const children = Parser._createStateMap(Array.prototype.slice.call(html.childNodes));
+    Array.prototype.push.apply(nodes, children.nodes);
+    Array.prototype.push.apply(attributes, children.attributes);
+
+    // return parent
+    return { nodes: nodes, attributes: attributes };
+  },
+  createTextStateMap: function(textElement) {
+    const x = textElement.nodeValue;
+    let nodes = [];
+    if (x.indexOf('${') > -1) {
+      // Not contenteditable and data-sifrr-html='true'
+      if (textElement.parentNode.contentEditable != 'true' && textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') {
+        nodes.push({
+          tag: textElement.parentNode.nodeName,
+          data: textElement.parentNode.innerHTML,
+          dom: textElement.parentNode
+        });
+        textElement.parentNode.originalVdom = Vdom.toVdom(textElement.parentNode);
+      // contenteditable, textarea and styles
+      } else if (textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
+        nodes.push({
+          tag: textElement.parentNode.nodeName,
+          data: x,
+          dom: textElement.parentNode
+        });
+      } else {
+        nodes.push({
+          tag: '#text',
+          data: x,
+          dom: textElement
+        });
+      }
+    }
+    return { nodes: nodes, attributes: [] };
+  },
+  createAttributeStateMap: function(element) {
+    const attrs = element.attributes || [], l = attrs.length;
+    let attributes = [];
     for(let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.value.indexOf('${') > -1) {
         attributes.push({
           name: attribute.name,
           value: attribute.value,
-          dom: html
+          dom: element
         });
       }
     }
-
-    // children
-    const children = Parser.createStateMap(Array.prototype.slice.call(html.childNodes));
-    Array.prototype.push.apply(nodes, children.nodes);
-    Array.prototype.push.apply(attributes, children.attributes);
-
-    // return parent
-    return { nodes: nodes, attributes: attributes };
+    return attributes;
   },
   twoWayBind: function(e) {
     const target = e.path ? e.path[0] : e.target;
@@ -83,10 +86,11 @@ const Parser = {
     data[target.dataset.sifrrBind] = value;
     target.getRootNode().host.state = data;
   },
-  updateState: function(element) {
+  updateState: async function(element) {
     if (!element.stateMap) {
       return false;
     }
+
     // Update nodes
     const nodes = element.stateMap.nodes, nodesL = nodes.length;
     for (let i = 0; i < nodesL; i++) {
@@ -119,7 +123,11 @@ const Parser = {
           .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
           .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
       } else {
-        if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML.toString();
+        if (node.dom.nodeName == 'TEXTAREA') {
+          if (node.dom.value !== newHTML) node.dom.value = newHTML;
+        } else if (node.dom.textContent !== newHTML) {
+          node.dom.textContent = newHTML.toString();
+        }
       }
     }
   },
@@ -134,25 +142,17 @@ const Parser = {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
     if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
-    return string.replace(/\${([^{}$]|{([^{}$])*})*}/g, replacer);
+    return replacer('`' + string + '`');
 
     function replacer(match) {
-      let g1 = match.slice(2, -1);
-
-      function executeCode() {
-        let f;
-        if (g1.search('return') >= 0) {
-          f = new Function(g1).bind(element);
-        } else {
-          f = new Function('return ' + g1).bind(element);
-        }
-        try {
-          return f();
-        } catch (e) {
-          return match;
-        }
+      if (match[0] == '$') match = match.slice(2, -1);
+      let f;
+      if (match.search('return') >= 0) {
+        f = new Function(match).bind(element);
+      } else {
+        f = new Function('return ' + match).bind(element);
       }
-      return executeCode();
+      return f();
     }
   }
 };

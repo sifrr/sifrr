@@ -1,4 +1,4 @@
-/*! Sifrr.Fetch v0.1.0-alpha - sifrr project - 2018/12/13 14:58:05 UTC */
+/*! Sifrr.Fetch v0.1.0-alpha - sifrr project - 2018/12/13 20:12:13 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -13,18 +13,15 @@
     }
     get response() {
       return window.fetch(this.url, this.options).then(resp => {
-        let contentType = resp.headers.get('content-type'),
-            result;
+        let contentType = resp.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
-          result = resp.json();
-        } else {
-          result = resp.text();
+          resp = resp.json();
         }
         if (resp.ok) {
-          return result;
+          return resp;
         } else {
           let error = Error(resp.statusText);
-          error.response = result;
+          error.response = resp;
           throw error;
         }
       });

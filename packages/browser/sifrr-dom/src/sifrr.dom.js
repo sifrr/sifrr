@@ -24,13 +24,8 @@ SifrrDOM.register = function(Element) {
   }
   return false;
 };
+SifrrDOM.addSifrrEvent = require('./dom/event');
 SifrrDOM.setup = function() {
-  class SifrrNode extends HTMLElement {
-    static get elementName() {
-      return 'sifrr-node';
-    }
-  }
-  SifrrDOM.register(SifrrNode);
   window.document.addEventListener('input', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
   window.document.addEventListener('blur', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
 };

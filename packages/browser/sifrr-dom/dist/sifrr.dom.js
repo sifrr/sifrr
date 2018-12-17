@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/13 15:57:24 UTC */
+/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/13 20:11:22 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -76,70 +76,71 @@
 
   const Parser = {
     sifrrNode: window.document.createElement('sifrr-node'),
-    createStateMap: function (html) {
+    createStateMap: function (element, shadowRoot = element.shadowRoot) {
+      element.stateMap = Parser._createStateMap(shadowRoot);
+    },
+    _createStateMap: function (html) {
       let nodes = [],
           attributes = [];
       if (Array.isArray(html)) {
         while (html.length) {
-          const map = Parser.createStateMap(html.shift());
+          const map = Parser._createStateMap(html.shift());
           Array.prototype.push.apply(nodes, map.nodes);
           Array.prototype.push.apply(attributes, map.attributes);
         }
         return { nodes: nodes, attributes: attributes };
       }
       if (html.nodeType === 3) {
-        const x = html.nodeValue;
-        if (x.indexOf('${') > -1) {
-          if (html.parentNode.contentEditable != 'true' && html.parentNode.dataset && html.parentNode.dataset.sifrrHtml == 'true') {
-            nodes.push({
-              tag: html.parentNode.nodeName,
-              data: html.parentNode.innerHTML,
-              dom: html.parentNode
-            });
-            html.parentNode.originalVdom = vdom.toVdom(html.parentNode);
-          } else if (html.parentNode.contentEditable == 'true' || html.parentNode.nodeName == 'TEXTAREA' || html.parentNode.nodeName == 'STYLE') {
-            nodes.push({
-              tag: html.parentNode.nodeName,
-              data: x,
-              dom: html.parentNode
-            });
-          } else {
-            let sn = Parser.sifrrNode.cloneNode();
-            const clone = html.cloneNode();
-            sn.appendChild(clone);
-            sn.originalVdom = {
-              children: [{
-                tag: '#text',
-                data: x,
-                dom: clone
-              }]
-            };
-            html.replaceWith(sn);
-            nodes.push({
-              tag: 'sifrr-node',
-              data: x,
-              dom: sn
-            });
-          }
-        }
-        return { nodes: nodes, attributes: attributes };
+        return Parser.createTextStateMap(html);
       }
-      const attrs = html.attributes || [],
+      Array.prototype.push.apply(attributes, Parser.createAttributeStateMap(html));
+      const children = Parser._createStateMap(Array.prototype.slice.call(html.childNodes));
+      Array.prototype.push.apply(nodes, children.nodes);
+      Array.prototype.push.apply(attributes, children.attributes);
+      return { nodes: nodes, attributes: attributes };
+    },
+    createTextStateMap: function (textElement) {
+      const x = textElement.nodeValue;
+      let nodes = [];
+      if (x.indexOf('${') > -1) {
+        if (textElement.parentNode.contentEditable != 'true' && textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') {
+          nodes.push({
+            tag: textElement.parentNode.nodeName,
+            data: textElement.parentNode.innerHTML,
+            dom: textElement.parentNode
+          });
+          textElement.parentNode.originalVdom = vdom.toVdom(textElement.parentNode);
+        } else if (textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
+          nodes.push({
+            tag: textElement.parentNode.nodeName,
+            data: x,
+            dom: textElement.parentNode
+          });
+        } else {
+          nodes.push({
+            tag: '#text',
+            data: x,
+            dom: textElement
+          });
+        }
+      }
+      return { nodes: nodes, attributes: [] };
+    },
+    createAttributeStateMap: function (element) {
+      const attrs = element.attributes || [],
             l = attrs.length;
+      let attributes = [];
       for (let i = 0; i < l; i++) {
         const attribute = attrs[i];
         if (attribute.value.indexOf('${') > -1) {
           attributes.push({
             name: attribute.name,
             value: attribute.value,
-            dom: html
+            dom: element
           });
         }
       }
-      const children = Parser.createStateMap(Array.prototype.slice.call(html.childNodes));
-      Array.prototype.push.apply(nodes, children.nodes);
-      Array.prototype.push.apply(attributes, children.attributes);
-      return { nodes: nodes, attributes: attributes };
+      return attributes;
     },
     twoWayBind: function (e) {
       const target = e.path ? e.path[0] : e.target;
@@ -149,7 +150,7 @@
       data[target.dataset.sifrrBind] = value;
       target.getRootNode().host.state = data;
     },
-    updateState: function (element) {
+    updateState: async function (element) {
       if (!element.stateMap) {
         return false;
       }
@@ -179,7 +180,11 @@
         if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
           node.dom.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
         } else {
-          if (node.dom.childNodes[0].textContent !== newHTML) node.dom.childNodes[0].textContent = newHTML.toString();
+          if (node.dom.nodeName == 'TEXTAREA') {
+            if (node.dom.value !== newHTML) node.dom.value = newHTML;
+          } else if (node.dom.textContent !== newHTML) {
+            node.dom.textContent = newHTML.toString();
+          }
         }
       }
     },
@@ -192,23 +197,16 @@
       if (string.indexOf('${') < 0) return string;
       string = string.trim();
       if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
-      return string.replace(/\${([^{}$]|{([^{}$])*})*}/g, replacer);
+      return replacer('`' + string + '`');
       function replacer(match) {
-        let g1 = match.slice(2, -1);
-        function executeCode() {
-          let f;
-          if (g1.search('return') >= 0) {
-            f = new Function(g1).bind(element);
-          } else {
-            f = new Function('return ' + g1).bind(element);
-          }
-          try {
-            return f();
-          } catch (e) {
-            return match;
-          }
+        if (match[0] == '$') match = match.slice(2, -1);
+        let f;
+        if (match.search('return') >= 0) {
+          f = new Function(match).bind(element);
+        } else {
+          f = new Function('return ' + match).bind(element);
         }
-        return executeCode();
+        return f();
       }
     }
   };
@@ -266,18 +264,15 @@
         }
         get response() {
           return window.fetch(this.url, this.options).then(resp => {
-            let contentType = resp.headers.get('content-type'),
-                result;
+            let contentType = resp.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
-              result = resp.json();
-            } else {
-              result = resp.text();
+              resp = resp.json();
             }
             if (resp.ok) {
-              return result;
+              return resp;
             } else {
               let error = Error(resp.statusText);
-              error.response = result;
+              error.response = resp;
               throw error;
             }
           });
@@ -333,8 +328,7 @@
     }
     get html() {
       const me = this;
-      this._html = this._html || sifrr_fetch.file(this.htmlUrl).then(file => new window.DOMParser().parseFromString(file, 'text/html'));
-      return this._html.then(html => {
+      return sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => new window.DOMParser().parseFromString(file, 'text/html')).then(html => {
         Loader.add(me.elementName, html.querySelector('template'));
         return html;
       });
@@ -372,15 +366,18 @@
     }
     constructor() {
       super();
-      this._state = Object.assign({}, this.constructor.defaultState, this._state);
+      this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       this.attachShadow({
         mode: 'open'
-      }).appendChild(this.constructor.template.content.cloneNode(true));
-      this.stateMap = parser.createStateMap(this.shadowRoot);
+      });
+      const me = this,
+            content = this.constructor.template.content.cloneNode(true);
+      parser.createStateMap(this, content);
+      me.shadowRoot.appendChild(content);
       this.shadowRoot.addEventListener('change', parser.twoWayBind);
     }
     connectedCallback() {
-      this.state = json.parse(this.dataset.sifrrState) || {};
+      parser.updateState(this);
     }
     disconnectedCallback() {
       if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);else this.removeEventListener('change', parser.twoWayBind);
@@ -401,12 +398,35 @@
       if (name) return name == this.constructor.elementName;else return true;
     }
     clearState() {
-      this._lastState = Object.assign({}, this._state);
       this._state = {};
       parser.updateState(this);
     }
+    srqs(args) {
+      return this.shadowRoot.querySelector(args);
+    }
+    srqsAll(args) {
+      return this.shadowRoot.querySelectorAll(args);
+    }
   }
   var element = Element;
+
+  const nativeToSyntheticEvent = (event, name) => {
+    let dom = event.target;
+    while (dom !== null) {
+      const eventHandler = dom[`$${name}`];
+      if (eventHandler) {
+        eventHandler();
+        return;
+      }
+      dom = dom.parentNode;
+    }
+  };
+  const SYNTHETIC_EVENTS = {};
+  var event = name => {
+    if (SYNTHETIC_EVENTS[name]) return;
+    document.addEventListener(name, event => nativeToSyntheticEvent(event, name));
+    SYNTHETIC_EVENTS[name] = true;
+  };
 
   let SifrrDOM = {};
   SifrrDOM.elements = {};
@@ -434,13 +454,8 @@
     }
     return false;
   };
+  SifrrDOM.addSifrrEvent = event;
   SifrrDOM.setup = function () {
-    class SifrrNode extends HTMLElement {
-      static get elementName() {
-        return 'sifrr-node';
-      }
-    }
-    SifrrDOM.register(SifrrNode);
     window.document.addEventListener('input', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
     window.document.addEventListener('blur', SifrrDOM.Parser.twoWayBind, { capture: true, passive: true });
   };

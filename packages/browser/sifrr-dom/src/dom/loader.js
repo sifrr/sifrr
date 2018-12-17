@@ -8,11 +8,13 @@ class Loader {
 
   get html() {
     const me = this;
-    this._html = this._html || fetch.file(this.htmlUrl).then((file) => new window.DOMParser().parseFromString(file, 'text/html'));
-    return this._html.then((html) => {
-      Loader.add(me.elementName, html.querySelector('template'));
-      return html;
-    });
+    return fetch.file(this.htmlUrl)
+      .then((resp) => resp.text())
+      .then((file) => new window.DOMParser().parseFromString(file, 'text/html'))
+      .then((html) => {
+        Loader.add(me.elementName, html.querySelector('template'));
+        return html;
+      });
   }
 
   get htmlUrl() {
