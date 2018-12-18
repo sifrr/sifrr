@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/18 0:37:38 UTC */
+/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/18 22:29:13 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -6,6 +6,7 @@
 }(this, (function () { 'use strict';
 
   function makeChildrenEqual(parent, newChildren) {
+    if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
     if (newChildren.length === 0) {
       parent.textContent = '';
       return;
@@ -25,15 +26,15 @@
     let head = parent.firstChild;
     for (let i = 0, item; i < newChildren.length; i++) {
       item = newChildren[i];
-      if (!head) {
+      if (!head && item) {
         parent.appendChild(item);
-        i--;
       } else {
         head = makeEqual(head, item).nextSibling;
       }
     }
   }
   function makeEqual(oldNode, newNode) {
+    if (newNode === null) return oldNode;
     if (oldNode.nodeName !== newNode.nodeName) {
       oldNode.replaceWith(newNode);
       return newNode;
@@ -44,6 +45,7 @@
       }
       return oldNode;
     }
+    oldNode.state = newNode.state;
     let oldAttrs = oldNode.attributes,
         newAttrs = newNode.attributes,
         attrValue,
@@ -59,7 +61,7 @@
       } else {
         fromValue = oldNode.getAttribute(attrName);
         if (fromValue !== attrValue) {
-          if (attrValue === 'null' || attrValue === 'undefined') {
+          if (attrValue === 'null' || attrValue === 'undefined' || attrValue === 'false' || !attrValue) {
             oldNode.removeAttribute(attrName);
           } else {
             oldNode.setAttribute(attrName, attrValue);
@@ -71,12 +73,11 @@
       attr = oldAttrs[j];
       if (attr.specified !== false) {
         attrName = attr.name;
-        if (!newNode.hasAttributeNS(null, attrName)) {
+        if (!newNode.hasAttribute(attrName)) {
           oldNode.removeAttribute(attrName);
         }
       }
     }
-    oldNode.state = newNode.state;
     makeChildrenEqual(oldNode, newNode.childNodes);
     return oldNode;
   }
@@ -86,48 +87,76 @@
   };
 
   const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
+  const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
+  TREE_WALKER.roll = function (n) {
+    let tmp;
+    while (--n) tmp = this.nextNode();
+    return tmp;
+  };
+  class Ref {
+    constructor(idx, ref) {
+      this.idx = idx;
+      this.ref = ref;
+    }
+  }
   const Parser = {
     sifrrNode: window.document.createElement('sifrr-node'),
-    createStateMap: function (element, shadowRoot = element.shadowRoot) {
-      let nodes = [],
-          attributes = [],
-          el;
-      const treeWalker = document.createTreeWalker(shadowRoot, NodeFilter.SHOW_ALL);
-      while (treeWalker.nextNode()) {
-        el = treeWalker.currentNode;
+    collectRefs: function (element, stateMap) {
+      const refs = [];
+      const w = TREE_WALKER;
+      w.currentNode = element;
+      stateMap.map(x => refs.push({
+        dom: w.roll(x.idx),
+        data: x.ref
+      }));
+      return refs;
+    },
+    createStateMap: function (element) {
+      let node;
+      if (element.useShadowRoot) node = element.shadowRoot;else node = element;
+      let indices = [],
+          ref,
+          idx = 0;
+      TREE_WALKER.currentNode = node;
+      do {
+        if (ref = collector(node)) {
+          indices.push(new Ref(idx + 1, ref));
+          idx = 1;
+        } else {
+          idx++;
+        }
+      } while (node = TREE_WALKER.nextNode());
+      function collector(el) {
         if (el.nodeType === window.Node.TEXT_NODE) {
           const textStateMap = Parser.createTextStateMap(el);
-          if (textStateMap) nodes.push(textStateMap);
-        } else if (el.nodeType === window.Node.COMMENT_NODE) {
-          const textStateMap = Parser.createTextStateMap(el);
-          if (textStateMap) nodes.push(textStateMap);
+          if (textStateMap) return textStateMap;
+        } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
+          return {
+            html: false,
+            text: el.nodeValue.trim()
+          };
         } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+          let ref = {};
+          if (el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE') {
+            ref.html = true;
+            ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+          }
           const attrStateMap = Parser.createAttributeStateMap(el);
-          if (attrStateMap) attributes.push(attrStateMap);
+          if (attrStateMap) ref.attributes = attrStateMap;
+          if (Object.keys(ref).length > 0) return ref;
         }
       }
-      element.stateMap = { nodes: nodes, attributes: attributes };
+      return indices;
     },
     createTextStateMap: function (textElement) {
       const x = textElement.nodeValue;
       if (x.indexOf('${') > -1) {
-        if (textElement.parentNode.contentEditable != 'true' && textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') {
-          return {
-            tag: textElement.parentNode.nodeName,
-            data: textElement.parentNode.innerHTML,
-            dom: textElement.parentNode
-          };
-        } else if (textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
-          return {
-            tag: textElement.parentNode.nodeName,
-            data: textElement.parentNode.innerHTML,
-            dom: textElement.parentNode
-          };
+        if (textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true' || textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
+          return;
         } else {
           return {
-            tag: '#text',
-            data: x,
-            dom: textElement
+            html: false,
+            text: x
           };
         }
       }
@@ -142,7 +171,7 @@
           attributes[attribute.name] = attribute.value;
         }
       }
-      if (Object.keys(attributes).length > 0) return { element: element, attributes: attributes };
+      if (Object.keys(attributes).length > 0) return attributes;
     },
     twoWayBind: function (e) {
       const target = e.path ? e.path[0] : e.target;
@@ -153,50 +182,51 @@
       target.getRootNode().host.state = data;
     },
     updateState: function (element) {
-      if (!element.stateMap) {
+      if (!element._refs) {
         return false;
       }
-      const nodes = element.stateMap.nodes,
-            nodesL = nodes.length;
-      for (let i = 0; i < nodesL; i++) {
-        Parser.updateNode(nodes[i], element);
+      const l = element._refs.length;
+      for (let i = 0; i < l; i++) {
+        Parser.updateNode(element._refs[i], element);
       }
-      const attributes = element.stateMap.attributes,
-            attributesL = attributes.length;
-      for (let i = 0; i < attributesL; i++) {
-        Parser.updateAttribute(attributes[i], element);
-      }
+      if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
     },
-    updateNode: function (node, element) {
-      const realHTML = node.dom.innerHTML;
-      const newHTML = Parser.evaluateString(node.data, element);
-      if (realHTML == newHTML) return;
-      if (newHTML === undefined) return node.dom.textContent = '';
-      if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
-        makeChildrenEqual$1(node.dom, newHTML);
-      } else if (newHTML.nodeType) {
-        makeChildrenEqual$1(node.dom, [newHTML]);
-      } else {
-        if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
+    updateNode: function (ref, base) {
+      if (ref.data.attributes) {
+        Parser.updateAttribute(ref, base);
+      }
+      if (ref.data.html === undefined) return;
+      const oldHTML = ref.dom.innerHTML;
+      const newHTML = Parser.evaluateString(ref.data.text, base);
+      if (oldHTML == newHTML) return;
+      if (newHTML === undefined) return ref.dom.textContent = '';
+      if (ref.data.html) {
+        let children;
+        if (Array.isArray(newHTML)) {
+          children = newHTML;
+        } else if (newHTML.nodeType) {
+          children = [newHTML];
+        } else {
           const docFrag = Parser.sifrrNode.cloneNode();
           docFrag.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          makeChildrenEqual$1(node.dom, docFrag.childNodes);
-        } else {
-          if (node.dom.nodeName == 'TEXTAREA') {
-            if (node.dom.value !== newHTML) node.dom.value = newHTML;
-          } else if (node.dom.contentEditable == 'true') {
-            if (node.dom.innerHTML !== newHTML) node.dom.innerHTML = newHTML;
-          } else if (node.dom.textContent !== newHTML) {
-            node.dom.textContent = newHTML.toString();
-          }
+          children = docFrag.childNodes;
         }
+        makeChildrenEqual$1(ref.dom, children);
+      } else {
+        if (ref.dom.textContent == newHTML) return;
+        ref.dom.textContent = newHTML;
       }
     },
-    updateAttribute: function (attribute, base) {
-      const element = attribute.element;
-      for (let key in attribute.attributes) {
-        const val = Parser.evaluateString(attribute.attributes[key], base);
-        element.setAttribute(key, val);
+    updateAttribute: function (ref, base) {
+      const element = ref.dom;
+      for (let key in ref.data.attributes) {
+        const val = Parser.evaluateString(ref.data.attributes[key], base);
+        if (val === 'null' || val === 'undefined' || val === 'false' || !val) {
+          element.removeAttribute(key);
+        } else {
+          const oldVal = element.getAttribute(key);
+          if (oldVal != val) element.setAttribute(key, val);
+        }
         if (element.nodeName == 'SELECT' && key == 'value') element.value = val;
       }
     },
@@ -249,6 +279,15 @@
       } else {
         return JSON.stringify(data);
       }
+    }
+    static deepClone(json) {
+      if (Array.isArray(json)) return Array.prototype.slice.call(json);
+      if (typeof json !== 'object') return json;
+      let clone = {};
+      for (let key in json) {
+        clone[key] = Json.deepClone(json[key]);
+      }
+      return clone;
     }
   }
   var json = Json;
@@ -368,26 +407,32 @@
     static get template() {
       return loader.all[this.elementName];
     }
+    static get stateMap() {
+      this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
+      return this._stateMap;
+    }
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     }
     constructor() {
       super();
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
-      this.attachShadow({
-        mode: 'open'
-      });
-      const me = this,
-            content = this.constructor.template.content.cloneNode(true);
-      parser.createStateMap(this, content);
-      me.shadowRoot.appendChild(content);
-      this.shadowRoot.addEventListener('change', parser.twoWayBind);
+      const content = this.constructor.template.content.cloneNode(true);
+      this._refs = parser.collectRefs(content, this.constructor.stateMap);
+      this.useShadowRoot = this.constructor.template.dataset.noSr ? false : true;
+      if (this.useShadowRoot) {
+        this.attachShadow({
+          mode: 'open'
+        });
+        this.shadowRoot.appendChild(content);
+        this.shadowRoot.addEventListener('change', parser.twoWayBind);
+      } else this.appendChild(content);
     }
     connectedCallback() {
       parser.updateState(this);
     }
     disconnectedCallback() {
-      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);else this.removeEventListener('change', parser.twoWayBind);
+      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);else this.removeEventListener('change', parser.twoWayBind);
     }
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
@@ -417,21 +462,22 @@
   }
   var element = Element;
 
-  const nativeToSyntheticEvent = (event, name) => {
-    let dom = event.target;
-    while (dom !== null) {
+  const nativeToSyntheticEvent = (e, name) => {
+    let dom = e.path ? e.path[0] : e.target;
+    while (dom) {
       const eventHandler = dom[`$${name}`];
       if (eventHandler) {
         eventHandler(event, name);
       }
-      dom = dom.parentNode;
+      dom = dom.parentNode || dom.host;
     }
   };
   const SYNTHETIC_EVENTS = {};
-  var event = name => {
-    if (SYNTHETIC_EVENTS[name]) return;
+  var event_1 = name => {
+    if (SYNTHETIC_EVENTS[name]) return false;
     window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
     SYNTHETIC_EVENTS[name] = true;
+    return true;
   };
 
   let SifrrDOM = {};
@@ -460,12 +506,12 @@
     }
     return false;
   };
-  SifrrDOM.addEvent = event;
+  SifrrDOM.addEvent = event_1;
   SifrrDOM.setup = function () {
     SifrrDOM.addEvent('input');
-    SifrrDOM.addEvent('blur');
+    SifrrDOM.addEvent('change');
     window.document.$input = SifrrDOM.Parser.twoWayBind;
-    window.document.$blur = SifrrDOM.Parser.twoWayBind;
+    window.document.$change = SifrrDOM.Parser.twoWayBind;
   };
   SifrrDOM.load = function (elemName) {
     let loader$$1 = new SifrrDOM.Loader(elemName);

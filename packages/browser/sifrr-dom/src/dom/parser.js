@@ -1,55 +1,85 @@
 const { makeChildrenEqual } = require('./makeequal');
+// based on https://github.com/Freak613/stage0/blob/master/index.js
+const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
+TREE_WALKER.roll = function(n) {
+  let tmp;
+  while(--n) tmp = this.nextNode();
+  return tmp;
+};
+
+class Ref {
+  constructor(idx, ref) {
+    this.idx = idx;
+    this.ref = ref;
+  }
+}
+
 const Parser = {
   sifrrNode: window.document.createElement('sifrr-node'),
-  createStateMap: function(element, shadowRoot = element.shadowRoot) {
-    // Empty map
-    let nodes = [], attributes = [], el;
-    const treeWalker = document.createTreeWalker(
-      shadowRoot,
-      NodeFilter.SHOW_ALL
-    );
+  collectRefs: function(element, stateMap) {
+    const refs = [];
+    const w = TREE_WALKER;
+    w.currentNode = element;
+    stateMap.map(x => refs.push({
+      dom: w.roll(x.idx),
+      data: x.ref
+    }));
+    return refs;
+  },
+  createStateMap: function(element) {
+    let node;
+    if (element.useShadowRoot) node = element.shadowRoot;
+    else node = element;
 
-    while(treeWalker.nextNode()) {
-      el = treeWalker.currentNode;
+    let indices = [], ref, idx = 0;
+    TREE_WALKER.currentNode = node;
+    do {
+      if (ref = collector(node)) {
+        indices.push(new Ref(idx+1, ref));
+        idx = 1;
+      } else {
+        idx++;
+      }
+    } while(node = TREE_WALKER.nextNode());
+
+    // return indices;
+    function collector(el) {
       if (el.nodeType === window.Node.TEXT_NODE) {
         // text node
         const textStateMap = Parser.createTextStateMap(el);
-        if (textStateMap) nodes.push(textStateMap);
-      } else if (el.nodeType === window.Node.COMMENT_NODE) {
+        if (textStateMap) return textStateMap;
+      } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
         // comment
-        const textStateMap = Parser.createTextStateMap(el);
-        if (textStateMap) nodes.push(textStateMap);
+        return {
+          html: false,
+          text: el.nodeValue.trim()
+        };
       } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+        let ref = {};
+        // Html ?
+        if ((el.dataset && el.dataset.sifrrHtml == 'true') || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE') {
+          ref.html = true;
+          ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+        }
         // attributes
         const attrStateMap = Parser.createAttributeStateMap(el);
-        if (attrStateMap) attributes.push(attrStateMap);
+        if (attrStateMap) ref.attributes = attrStateMap;
+
+        if (Object.keys(ref).length > 0) return ref;
       }
     }
-
-    element.stateMap = { nodes: nodes, attributes: attributes };
+    return indices;
   },
   createTextStateMap: function(textElement) {
     const x = textElement.nodeValue;
     if (x.indexOf('${') > -1) {
-      // Not contenteditable and data-sifrr-html='true'
-      if (textElement.parentNode.contentEditable != 'true' && textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') {
-        return {
-          tag: textElement.parentNode.nodeName,
-          data: textElement.parentNode.innerHTML,
-          dom: textElement.parentNode
-        };
-      // contenteditable, textarea and styles
-      } else if (textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
-        return {
-          tag: textElement.parentNode.nodeName,
-          data: textElement.parentNode.innerHTML,
-          dom: textElement.parentNode
-        };
+      // data-sifrr-html='true' or contenteditable or textarea or style
+      if ((textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') || textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
+        return ;
       } else {
         return {
-          tag: '#text',
-          data: x,
-          dom: textElement
+          html: false,
+          text: x
         };
       }
     }
@@ -63,7 +93,7 @@ const Parser = {
         attributes[attribute.name] = attribute.value;
       }
     }
-    if (Object.keys(attributes).length > 0) return { element: element, attributes: attributes };
+    if (Object.keys(attributes).length > 0) return attributes;
   },
   twoWayBind: function(e) {
     const target = e.path ? e.path[0] : e.target;
@@ -74,59 +104,60 @@ const Parser = {
     target.getRootNode().host.state = data;
   },
   updateState: function(element) {
-    if (!element.stateMap) {
+    if (!element._refs) {
       return false;
     }
 
     // Update nodes
-    const nodes = element.stateMap.nodes, nodesL = nodes.length;
-    for (let i = 0; i < nodesL; i++) {
-      Parser.updateNode(nodes[i], element);
+    const l = element._refs.length;
+    for (let i = 0; i < l; i++) {
+      Parser.updateNode(element._refs[i], element);
     }
 
-    // Update attributes
-    const attributes = element.stateMap.attributes, attributesL = attributes.length;
-    for (let i = 0; i < attributesL; i++) {
-      Parser.updateAttribute(attributes[i], element);
-    }
+    if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
   },
-  updateNode: function(node, element) {
-    // make use of VDOM for better diffing!
-    const realHTML = node.dom.innerHTML;
-    const newHTML = Parser.evaluateString(node.data, element);
-    if (realHTML == newHTML) return;
-    if (newHTML === undefined) return node.dom.textContent = '';
-    // Improve this with diffing!
-    if (Array.isArray(newHTML) && newHTML[0] && newHTML[0].nodeType) {
-      makeChildrenEqual(node.dom, newHTML);
-    } else if (newHTML.nodeType) {
-      makeChildrenEqual(node.dom, [newHTML]);
-    } else {
-      if (node.dom.dataset && node.dom.dataset.sifrrHtml == 'true') {
+  updateNode: function(ref, base) {
+    if (ref.data.attributes) {
+      Parser.updateAttribute(ref, base);
+    }
+    if (ref.data.html === undefined) return;
+
+    const oldHTML = ref.dom.innerHTML;
+    const newHTML = Parser.evaluateString(ref.data.text, base);
+    if (oldHTML == newHTML) return;
+    if (newHTML === undefined) return ref.dom.textContent = '';
+
+    if (ref.data.html) {
+      let children;
+      if (Array.isArray(newHTML)) {
+        children = newHTML;
+      } else if (newHTML.nodeType) {
+        children = [newHTML];
+      } else {
         const docFrag = Parser.sifrrNode.cloneNode();
         docFrag.innerHTML = newHTML.toString()
           .replace(/&amp;/g, '&')
           .replace(/&nbsp;/g, ' ')
           .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
           .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-        makeChildrenEqual(node.dom, docFrag.childNodes);
-      } else {
-        if (node.dom.nodeName == 'TEXTAREA') {
-          // Provide two way binding for textarea
-          if (node.dom.value !== newHTML) node.dom.value = newHTML;
-        } else if (node.dom.contentEditable == 'true') {
-          if (node.dom.innerHTML !== newHTML) node.dom.innerHTML = newHTML;
-        } else if (node.dom.textContent !== newHTML) {
-          node.dom.textContent = newHTML.toString();
-        }
+        children = docFrag.childNodes;
       }
+      makeChildrenEqual(ref.dom, children);
+    } else {
+      if (ref.dom.textContent == newHTML) return;
+      ref.dom.textContent = newHTML;
     }
   },
-  updateAttribute: function(attribute, base) {
-    const element = attribute.element;
-    for(let key in attribute.attributes) {
-      const val = Parser.evaluateString(attribute.attributes[key], base);
-      element.setAttribute(key, val);
+  updateAttribute: function(ref, base) {
+    const element = ref.dom;
+    for(let key in ref.data.attributes) {
+      const val = Parser.evaluateString(ref.data.attributes[key], base);
+      if (val === 'null' || val === 'undefined' || val === 'false' || !val) {
+        element.removeAttribute(key);
+      } else {
+        const oldVal = element.getAttribute(key);
+        if (oldVal != val) element.setAttribute(key, val);
+      }
 
       // select's value doesn't change on changing value attribute
       if (element.nodeName == 'SELECT' && key == 'value') element.value = val;

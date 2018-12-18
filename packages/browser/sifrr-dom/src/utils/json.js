@@ -30,6 +30,16 @@ class Json {
       return JSON.stringify(data);
     }
   }
+
+  static deepClone(json) {
+    if (Array.isArray(json)) return Array.prototype.slice.call(json);
+    if (typeof json !== 'object') return json;
+    let clone = {};
+    for (let key in json) {
+      clone[key] = Json.deepClone(json[key]);
+    }
+    return clone;
+  }
 }
 
 module.exports = Json;

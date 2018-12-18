@@ -27,9 +27,9 @@ SifrrDOM.register = function(Element) {
 SifrrDOM.addEvent = require('./dom/event');
 SifrrDOM.setup = function() {
   SifrrDOM.addEvent('input');
-  SifrrDOM.addEvent('blur');
+  SifrrDOM.addEvent('change');
   window.document.$input = SifrrDOM.Parser.twoWayBind;
-  window.document.$blur = SifrrDOM.Parser.twoWayBind;
+  window.document.$change = SifrrDOM.Parser.twoWayBind;
 };
 SifrrDOM.load = function(elemName) {
   let loader = new SifrrDOM.Loader(elemName);

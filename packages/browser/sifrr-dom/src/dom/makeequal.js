@@ -1,4 +1,5 @@
 function makeChildrenEqual(parent, newChildren) {
+  if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
   if (newChildren.length === 0) {
     parent.textContent = '';
     return;
@@ -19,9 +20,8 @@ function makeChildrenEqual(parent, newChildren) {
   let head = parent.firstChild;
   for(let i = 0, item; i < newChildren.length; i++) {
     item = newChildren[i];
-    if (!head) {
+    if (!head && item) {
       parent.appendChild(item);
-      i--;
     } else {
       // make two nodes equal
       head = makeEqual(head, item).nextSibling;
@@ -31,6 +31,8 @@ function makeChildrenEqual(parent, newChildren) {
 
 // taken from https://github.com/choojs/nanomorph/blob/master/lib/morph.js
 function makeEqual(oldNode, newNode) {
+  if (newNode === null) return oldNode;
+
   if (oldNode.nodeName !== newNode.nodeName) {
     oldNode.replaceWith(newNode);
     return newNode;
@@ -42,6 +44,9 @@ function makeEqual(oldNode, newNode) {
     }
     return oldNode;
   }
+
+  // copy sifrr state
+  oldNode.state = newNode.state;
 
   // copy Attributes
   let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attrValue, fromValue, attrName, attr;
@@ -55,7 +60,7 @@ function makeEqual(oldNode, newNode) {
       fromValue = oldNode.getAttribute(attrName);
       if (fromValue !== attrValue) {
         // apparently values are always cast to strings, ah well
-        if (attrValue === 'null' || attrValue === 'undefined') {
+        if (attrValue === 'null' || attrValue === 'undefined' || attrValue === 'false' || !attrValue) {
           oldNode.removeAttribute(attrName);
         } else {
           oldNode.setAttribute(attrName, attrValue);
@@ -69,14 +74,11 @@ function makeEqual(oldNode, newNode) {
     attr = oldAttrs[j];
     if (attr.specified !== false) {
       attrName = attr.name;
-      if (!newNode.hasAttributeNS(null, attrName)) {
+      if (!newNode.hasAttribute(attrName)) {
         oldNode.removeAttribute(attrName);
       }
     }
   }
-
-  // copy sifrr state
-  oldNode.state = newNode.state;
 
   // make children equal
   makeChildrenEqual(oldNode, newNode.childNodes);
