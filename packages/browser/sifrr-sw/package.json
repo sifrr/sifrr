@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/sw",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0-alpha1",
   "description": "Service Worker with customizations.",
   "licence": "MIT",
   "main": "src/sifrr.sw.js",
