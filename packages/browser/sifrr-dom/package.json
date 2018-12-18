@@ -4,9 +4,7 @@
   "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "licence": "MIT",
   "main": "src/sifrr.dom.js",
-  "browser": {
-    "assert": "nanoassert"
-  },
+  "browser": "dist/sifrr.dom.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

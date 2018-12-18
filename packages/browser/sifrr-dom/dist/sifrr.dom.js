@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/18 22:29:13 UTC */
+/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/18 22:54:31 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
