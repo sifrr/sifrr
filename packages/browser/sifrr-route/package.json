@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/route",
-  "version": "0.1.0-alpha2",
+  "version": "0.0.1-alpha",
   "description": "History API based Routing library for sifrr in browser.",
   "licence": "MIT",
   "main": "src/sifrr.route.js",

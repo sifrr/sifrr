@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha2 - sifrr project - 2018/12/19 17:57:57 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/19 20:15:42 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -454,9 +454,11 @@
       const data = refs[i].data,
             dom = refs[i].dom;
       if (Array.isArray(data)) {
-        data.forEach(attr => dom.setAttribute(attr.name, simpleEl.state[attr.text]));
+        data.forEach(attr => {
+          if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        });
       } else {
-        dom.nodeValue = simpleEl.state[data];
+        if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
       }
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/dom",
-  "version": "0.1.0-alpha3",
+  "version": "0.0.1-alpha",
   "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "licence": "MIT",
   "main": "src/sifrr.dom.js",
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "peerDependencies": {
-    "@sifrr/fetch": "0.1.0-alpha"
+    "@sifrr/fetch": "0.0.1-alpha"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

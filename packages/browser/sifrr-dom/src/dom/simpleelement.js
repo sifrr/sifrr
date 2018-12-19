@@ -33,9 +33,11 @@ function updateState(simpleEl) {
   for (let i = 0; i < l; i++) {
     const data = refs[i].data, dom = refs[i].dom;
     if (Array.isArray(data)) {
-      data.forEach((attr) => dom.setAttribute(attr.name, simpleEl.state[attr.text]));
+      data.forEach((attr) => {
+        if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+      });
     } else {
-      dom.nodeValue = simpleEl.state[data];
+      if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
     }
   }
 }
