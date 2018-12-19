@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/browser",
-  "version": "0.1.0-alpha2",
+  "version": "0.0.1-alpha",
   "description": "Base library for sifrr in browser.",
   "licence": "MIT",
   "main": "src/sifrr.browser.js",

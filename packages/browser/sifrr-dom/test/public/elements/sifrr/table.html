@@ -2,19 +2,14 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <table class="table table-hover table-striped test-data">
     <tbody data-sifrr-html="true">
-      <!-- ${this.table()} -->
+      <!-- ${this.arrayToDom('data', this.newdata())} -->
     </tbody>
   </table>
 </template>
 <script>
   class SifrrTable extends Sifrr.Dom.Element {
-    table() {
-      const data = this.state.data, l = data.length;
-      const table = [];
-      for(let i = 0; i < l; i++ ) {
-        table.push(createRow(data[i], this.state.selected));
-      }
-      return table;
+    newdata() {
+      return this.state.data.map((st) => changeState(st, this.state.selected));
     }
   }
   SifrrTable.defaultState = {
@@ -22,17 +17,11 @@
     "selected": null
   }
 
-  const str = document.createElement('tr');
-  str.innerHTML = "<td class='col-md-1'></td><td class='col-md-4'><a class='lbl'></a></td><td class='col-md-1'><a class='remove'><span class='remove glyphicon glyphicon-remove' aria-hidden='true'></span></a></td><td class='col-md-6'></td>";
-  function createRow(state, selected) {
-    const tr = str.cloneNode(true),
-      td1 = tr.firstChild,
-      a2 = td1.nextSibling.firstChild;
-    tr.id = state.id;
-    td1.textContent = state.id;
-    a2.textContent = state.label;
-    if (selected == state.id) tr.classList.add('danger');
-    return tr;
+  SifrrTable.addArrayToDom('data', "<tr class=${class} id=${id}><td class='col-md-1'>${id}</td><td class='col-md-4'><a class='lbl'>${label}</a></td><td class='col-md-1'><a class='remove'><span class='remove glyphicon glyphicon-remove' aria-hidden='true'></span></a></td><td class='col-md-6'></td></tr>");
+  function changeState(state, selected) {
+    if (selected == state.id) state.class = 'danger'
+    else state.class = ''
+    return state;
   }
 
   Sifrr.Dom.register(SifrrTable);

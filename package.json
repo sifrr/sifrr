@@ -3,7 +3,7 @@
   "workspaces": [
     "packages/*/*"
   ],
-  "version": "0.1.0-alpha2",
+  "version": "0.0.1-alpha",
   "description": "sifrr",
   "licence": "MIT",
   "browserslist": [

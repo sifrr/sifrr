@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha2 - sifrr project - 2018/12/19 12:29:59 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/19 20:15:42 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -35,6 +35,10 @@
   }
   function makeEqual(oldNode, newNode) {
     if (newNode === null) return oldNode;
+    if (newNode.type === 'stateChange') {
+      if (oldNode.state !== newNode.state) oldNode.state = newNode.state;
+      return oldNode;
+    }
     if (oldNode.nodeName !== newNode.nodeName) {
       oldNode.replaceWith(newNode);
       return newNode;
@@ -86,80 +90,94 @@
     makeChildrenEqual: makeChildrenEqual
   };
 
-  const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
   const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
-  TREE_WALKER.roll = function (n) {
-    let tmp;
-    while (--n) tmp = this.nextNode();
-    return tmp;
+  TREE_WALKER.roll = function (n, filter = false) {
+    let node = this.currentNode;
+    while (--n) {
+      if (filter && filter(node)) {
+        node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
+      } else node = TREE_WALKER.nextNode();
+    }
+    return node;
   };
+  function collect(element, stateMap = element.stateMap, filter) {
+    const refs = [];
+    TREE_WALKER.currentNode = element;
+    stateMap.map(x => refs.push({
+      dom: TREE_WALKER.roll(x.idx, filter),
+      data: x.ref
+    }));
+    return refs;
+  }
   class Ref {
     constructor(idx, ref) {
       this.idx = idx;
       this.ref = ref;
     }
   }
+  function create(node, fxn, filter = false) {
+    let indices = [],
+        ref,
+        idx = 0;
+    TREE_WALKER.currentNode = node;
+    while (node) {
+      if (ref = fxn(node)) {
+        indices.push(new Ref(idx + 1, ref));
+        idx = 1;
+      } else {
+        idx++;
+      }
+      if (filter && filter(node)) {
+        node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
+      } else node = TREE_WALKER.nextNode();
+    }
+    return indices;
+  }
+  var ref = {
+    walker: TREE_WALKER,
+    collect: collect,
+    create: create,
+    klass: Ref
+  };
+
+  const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
+  function isHtml(el) {
+    return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE';
+  }
+  function collector(el) {
+    if (el.nodeType === window.Node.TEXT_NODE) {
+      const textStateMap = Parser.createTextStateMap(el);
+      if (textStateMap) return textStateMap;
+    } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
+      return {
+        html: false,
+        text: el.nodeValue.trim()
+      };
+    } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+      let ref$$1 = {};
+      if (isHtml(el)) {
+        ref$$1.html = true;
+        ref$$1.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+      }
+      const attrStateMap = Parser.createAttributeStateMap(el);
+      if (attrStateMap) ref$$1.attributes = attrStateMap;
+      if (Object.keys(ref$$1).length > 0) return ref$$1;
+    }
+  }
   const Parser = {
     sifrrNode: window.document.createElement('sifrr-node'),
-    collectRefs: function (element, stateMap) {
-      const refs = [];
-      const w = TREE_WALKER;
-      w.currentNode = element;
-      stateMap.map(x => refs.push({
-        dom: w.roll(x.idx),
-        data: x.ref
-      }));
-      return refs;
-    },
+    collectRefs: (el, stateMap) => ref.collect(el, stateMap, isHtml),
     createStateMap: function (element) {
       let node;
       if (element.useShadowRoot) node = element.shadowRoot;else node = element;
-      let indices = [],
-          ref,
-          idx = 0;
-      TREE_WALKER.currentNode = node;
-      do {
-        if (ref = collector(node)) {
-          indices.push(new Ref(idx + 1, ref));
-          idx = 1;
-        } else {
-          idx++;
-        }
-      } while (node = TREE_WALKER.nextNode());
-      function collector(el) {
-        if (el.nodeType === window.Node.TEXT_NODE) {
-          const textStateMap = Parser.createTextStateMap(el);
-          if (textStateMap) return textStateMap;
-        } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
-          return {
-            html: false,
-            text: el.nodeValue.trim()
-          };
-        } else if (el.nodeType === window.Node.ELEMENT_NODE) {
-          let ref = {};
-          if (el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE') {
-            ref.html = true;
-            ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
-          }
-          const attrStateMap = Parser.createAttributeStateMap(el);
-          if (attrStateMap) ref.attributes = attrStateMap;
-          if (Object.keys(ref).length > 0) return ref;
-        }
-      }
-      return indices;
+      return ref.create(node, collector, isHtml);
     },
     createTextStateMap: function (textElement) {
       const x = textElement.nodeValue;
-      if (x.indexOf('${') > -1) {
-        if (textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true' || textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
-          return;
-        } else {
-          return {
-            html: false,
-            text: x
-          };
-        }
-      }
+      if (x.indexOf('${') > -1) return {
+        html: false,
+        text: x
+      };
     },
     createAttributeStateMap: function (element) {
       const attrs = element.attributes || [],
@@ -191,16 +209,16 @@
       }
       if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
     },
-    updateNode: function (ref, base) {
-      if (ref.data.attributes) {
-        Parser.updateAttribute(ref, base);
+    updateNode: function (ref$$1, base) {
+      if (ref$$1.data.attributes) {
+        Parser.updateAttribute(ref$$1, base);
       }
-      if (ref.data.html === undefined) return;
-      const oldHTML = ref.dom.innerHTML;
-      const newHTML = Parser.evaluateString(ref.data.text, base);
+      if (ref$$1.data.html === undefined) return;
+      const oldHTML = ref$$1.dom.innerHTML;
+      const newHTML = Parser.evaluateString(ref$$1.data.text, base);
       if (oldHTML == newHTML) return;
-      if (newHTML === undefined) return ref.dom.textContent = '';
-      if (ref.data.html) {
+      if (newHTML === undefined) return ref$$1.dom.textContent = '';
+      if (ref$$1.data.html) {
         let children;
         if (Array.isArray(newHTML)) {
           children = newHTML;
@@ -211,16 +229,16 @@
           docFrag.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = docFrag.childNodes;
         }
-        makeChildrenEqual$1(ref.dom, children);
+        makeChildrenEqual$1(ref$$1.dom, children);
       } else {
-        if (ref.dom.textContent == newHTML) return;
-        ref.dom.textContent = newHTML;
+        if (ref$$1.dom.textContent == newHTML) return;
+        ref$$1.dom.textContent = newHTML;
       }
     },
-    updateAttribute: function (ref, base) {
-      const element = ref.dom;
-      for (let key in ref.data.attributes) {
-        const val = Parser.evaluateString(ref.data.attributes[key], base);
+    updateAttribute: function (ref$$1, base) {
+      const element = ref$$1.dom;
+      for (let key in ref$$1.data.attributes) {
+        const val = Parser.evaluateString(ref$$1.data.attributes[key], base);
         if (val === 'null' || val === 'undefined' || val === 'false' || !val) {
           element.removeAttribute(key);
         } else {
@@ -401,6 +419,81 @@
   Loader._all = {};
   var loader = Loader;
 
+  const { collect: collect$1, create: create$1 } = ref;
+  const compilerTemplate = document.createElement('template');
+  function collector$1(node) {
+    if (node.nodeType !== 3) {
+      if (node.attributes !== undefined) {
+        const attrs = Array.from(node.attributes);
+        const ret = [];
+        for (let attr of attrs) {
+          const avalue = attr.value;
+          if (avalue[0] === '$') {
+            ret.push({
+              text: avalue.slice(2, -1),
+              name: attr.name
+            });
+          }
+        }
+        if (ret.length > 0) return ret;
+      }
+      return 0;
+    } else {
+      let nodeData = node.nodeValue;
+      if (nodeData[0] === '$') {
+        node.nodeValue = '';
+        return nodeData.slice(2, -1);
+      }
+      return 0;
+    }
+  }
+  function updateState(simpleEl) {
+    const refs = simpleEl._refs,
+          l = refs.length;
+    for (let i = 0; i < l; i++) {
+      const data = refs[i].data,
+            dom = refs[i].dom;
+      if (Array.isArray(data)) {
+        data.forEach(attr => {
+          if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        });
+      } else {
+        if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
+      }
+    }
+  }
+  function SimpleElement(content, defaultState) {
+    if (typeof content === 'string') {
+      compilerTemplate.innerHTML = content;
+      content = compilerTemplate.content.firstChild;
+    }
+    content.stateMap = create$1(content, collector$1);
+    content._refs = collect$1(content, content.stateMap);
+    Object.defineProperty(content, 'state', {
+      get: () => content._state,
+      set: v => {
+        content._state = Object.assign(content._state || {}, v);
+        updateState(content);
+      }
+    });
+    if (defaultState) content.state = defaultState;
+    content.clone = function () {
+      const clone = content.cloneNode(true);
+      clone._refs = collect$1(clone, content.stateMap);
+      Object.defineProperty(clone, 'state', {
+        get: () => clone._state,
+        set: v => {
+          clone._state = Object.assign(clone._state || {}, v);
+          updateState(clone);
+        }
+      });
+      if (defaultState) clone.state = defaultState;
+      return clone;
+    };
+    return content;
+  }
+  var simpleelement = SimpleElement;
+
   class Element extends window.HTMLElement {
     static get observedAttributes() {
       return ['data-sifrr-state'].concat(this.observedAttrs || []);
@@ -417,6 +510,7 @@
     }
     constructor() {
       super();
+      this._oldState = {};
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
@@ -444,6 +538,7 @@
       return this._state;
     }
     set state(v) {
+      this._oldState = json.deepClone(this._state);
       Object.assign(this._state, v);
       parser.updateState(this);
     }
@@ -459,6 +554,33 @@
     }
     srqsAll(args) {
       return this.shadowRoot.querySelectorAll(args);
+    }
+    static addArrayToDom(key, template) {
+      this._arrayToDom = this._arrayToDom || {};
+      this._arrayToDom[key] = simpleelement(template);
+    }
+    arrayToDom(key, newState = this.state[key]) {
+      this._domL = this._domL || {};
+      const oldL = this._domL[key];
+      const domArray = [];
+      const newL = newState.length;
+      if (!oldL) {
+        for (let i = 0; i < newL; i++) {
+          const el = this.constructor._arrayToDom[key].clone();
+          el.state = newState[i];
+          domArray.push(el);
+        }
+      } else {
+        for (let i = 0; i < newL; i++) {
+          if (i < oldL) domArray.push({ type: 'stateChange', state: newState[i] });else {
+            const el = this.constructor._arrayToDom[key].clone();
+            el.state = newState[i];
+            domArray.push(el);
+          }
+        }
+      }
+      this._domL[key] = newL;
+      return domArray;
     }
   }
   var element = Element;
@@ -517,6 +639,7 @@
     window.document.$input = SifrrDOM.Parser.twoWayBind;
     window.document.$change = SifrrDOM.Parser.twoWayBind;
   };
+  SifrrDOM.SimpleElement = simpleelement;
   SifrrDOM.load = function (elemName, config = { baseUrl: SifrrDOM.config.baseUrl }) {
     let loader$$1 = new SifrrDOM.Loader(elemName, config);
     loader$$1.executeScripts();
