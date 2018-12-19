@@ -1,88 +1,52 @@
 const { makeChildrenEqual } = require('./makeequal');
-// based on https://github.com/Freak613/stage0/blob/master/index.js
-const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
-TREE_WALKER.roll = function(n) {
-  let tmp;
-  while(--n) tmp = this.nextNode();
-  return tmp;
-};
+const Ref = require('./ref');
 
-class Ref {
-  constructor(idx, ref) {
-    this.idx = idx;
-    this.ref = ref;
+function isHtml(el) {
+  return (el.dataset && el.dataset.sifrrHtml == 'true') || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE';
+}
+
+function collector(el) {
+  if (el.nodeType === window.Node.TEXT_NODE) {
+    // text node
+    const textStateMap = Parser.createTextStateMap(el);
+    if (textStateMap) return textStateMap;
+  } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
+    // comment
+    return {
+      html: false,
+      text: el.nodeValue.trim()
+    };
+  } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+    let ref = {};
+    // Html ?
+    if (isHtml(el)) {
+      ref.html = true;
+      ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+    }
+    // attributes
+    const attrStateMap = Parser.createAttributeStateMap(el);
+    if (attrStateMap) ref.attributes = attrStateMap;
+
+    if (Object.keys(ref).length > 0) return ref;
   }
 }
 
 const Parser = {
   sifrrNode: window.document.createElement('sifrr-node'),
-  collectRefs: function(element, stateMap) {
-    const refs = [];
-    const w = TREE_WALKER;
-    w.currentNode = element;
-    stateMap.map(x => refs.push({
-      dom: w.roll(x.idx),
-      data: x.ref
-    }));
-    return refs;
-  },
+  collectRefs: (el, stateMap) => Ref.collect(el, stateMap, isHtml),
   createStateMap: function(element) {
     let node;
     if (element.useShadowRoot) node = element.shadowRoot;
     else node = element;
 
-    let indices = [], ref, idx = 0;
-    TREE_WALKER.currentNode = node;
-    do {
-      if (ref = collector(node)) {
-        indices.push(new Ref(idx+1, ref));
-        idx = 1;
-      } else {
-        idx++;
-      }
-    } while(node = TREE_WALKER.nextNode());
-
-    // return indices;
-    function collector(el) {
-      if (el.nodeType === window.Node.TEXT_NODE) {
-        // text node
-        const textStateMap = Parser.createTextStateMap(el);
-        if (textStateMap) return textStateMap;
-      } else if (el.nodeType === window.Node.COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
-        // comment
-        return {
-          html: false,
-          text: el.nodeValue.trim()
-        };
-      } else if (el.nodeType === window.Node.ELEMENT_NODE) {
-        let ref = {};
-        // Html ?
-        if ((el.dataset && el.dataset.sifrrHtml == 'true') || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE') {
-          ref.html = true;
-          ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
-        }
-        // attributes
-        const attrStateMap = Parser.createAttributeStateMap(el);
-        if (attrStateMap) ref.attributes = attrStateMap;
-
-        if (Object.keys(ref).length > 0) return ref;
-      }
-    }
-    return indices;
+    return Ref.create(node, collector, isHtml);
   },
   createTextStateMap: function(textElement) {
     const x = textElement.nodeValue;
-    if (x.indexOf('${') > -1) {
-      // data-sifrr-html='true' or contenteditable or textarea or style
-      if ((textElement.parentNode.dataset && textElement.parentNode.dataset.sifrrHtml == 'true') || textElement.parentNode.contentEditable == 'true' || textElement.parentNode.nodeName == 'TEXTAREA' || textElement.parentNode.nodeName == 'STYLE') {
-        return ;
-      } else {
-        return {
-          html: false,
-          text: x
-        };
-      }
-    }
+    if (x.indexOf('${') > -1) return {
+      html: false,
+      text: x
+    };
   },
   createAttributeStateMap: function(element) {
     const attrs = element.attributes || [], l = attrs.length;

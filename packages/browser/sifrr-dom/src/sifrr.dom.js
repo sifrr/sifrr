@@ -34,6 +34,7 @@ SifrrDOM.setup = function(config) {
   window.document.$input = SifrrDOM.Parser.twoWayBind;
   window.document.$change = SifrrDOM.Parser.twoWayBind;
 };
+SifrrDOM.SimpleElement = require('./dom/simpleelement');
 SifrrDOM.load = function(elemName, config = { baseUrl: SifrrDOM.config.baseUrl }) {
   let loader = new SifrrDOM.Loader(elemName, config);
   loader.executeScripts();

@@ -1,6 +1,7 @@
 const Parser = require('./parser');
 const JsonExt = require('../utils/json');
 const Loader = require('./loader');
+const SimpleElement = require('./simpleelement');
 
 class Element extends window.HTMLElement {
   static get observedAttributes() {
@@ -22,7 +23,7 @@ class Element extends window.HTMLElement {
 
   constructor() {
     super();
-    // this._oldState = {};
+    this._oldState = {};
     this._state = Object.assign({}, this.constructor.defaultState, JsonExt.parse(this.dataset.sifrrState), this.state);
     const content = this.constructor.template.content.cloneNode(true);
     this._refs = Parser.collectRefs(content, this.constructor.stateMap);
@@ -56,7 +57,7 @@ class Element extends window.HTMLElement {
   }
 
   set state(v) {
-    // this._oldState = JsonExt.deepClone(this._state);
+    this._oldState = JsonExt.deepClone(this._state);
     Object.assign(this._state, v);
     Parser.updateState(this);
   }
@@ -80,39 +81,70 @@ class Element extends window.HTMLElement {
     return this.shadowRoot.querySelectorAll(args);
   }
 
-  // static addArrayToDom(key, fx) {
-  //   this._arrayToDom = this._arrayToDom || {};
-  //   // function takes simple object (no multi level json)
-  //   this._arrayToDom[key] = fx;
-  // }
-  //
-  // static addObjectToDom(key, fx) {
-  //   this._objectToDom = this._objectToDom || {};
-  //   // function take key, value
-  //   this._objectToDom[key] = fx;
-  // }
-  //
-  // arrayToDom(key) {
-  //   const oldState = this._oldState[key];
-  //   const newState = this._state[key], newL = newState.length;
-  //   const domArray = [];
-  //   for (let i = 0; i < newL; i++) {
-  //     if (!oldState || newState[i] !== oldState[i]) domArray.push(this.constructor._arrayToDom[key].call(this, newState[i]));
-  //     else domArray.push(null);
-  //   }
-  //   return domArray;
-  // }
-  //
-  // objectToDom(key) {
-  //   const oldState = this._oldState[key];
-  //   const newState = this._state[key];
-  //   const domArray = [];
-  //   for (let key in newState) {
-  //     if (!oldState || newState[key] !== oldState[key]) domArray.push(this.constructor._objectToDom[key].call(this, key, newState[key]));
-  //     else domArray.push(null);
-  //   }
-  //   return domArray;
-  // }
+  static addArrayToDom(key, template) {
+    this._arrayToDom = this._arrayToDom || {};
+    // state of simple element is array item
+    this._arrayToDom[key] = SimpleElement(template);
+  }
+
+  static addObjectToDom(key, template) {
+    this._objectToDom = this._objectToDom || {};
+    // state of simple element is { key: key, value: value } of object key-value pairs
+    this._objectToDom[key] = SimpleElement(template);
+  }
+
+  arrayToDom(key) {
+    this._domL = this._domL || {};
+    const oldL = this._domL[key];
+    const domArray = [];
+    const newState = this._state[key], newL = newState.length;
+    if (!oldL) {
+      for (let i = 0; i < newL; i++) {
+        const el = this.constructor._arrayToDom[key].clone();
+        el.state = newState[i];
+        domArray.push(el);
+      }
+    } else {
+      for (let i = 0; i < newL; i++) {
+        if (i < oldL) domArray.push({ type: 'stateChange', newState: newState[i] });
+        else {
+          const el = this.constructor._arrayToDom[key].clone();
+          el.state = newState[i];
+          domArray.push(el);
+        }
+      }
+    }
+    this._domL[key] = newL;
+    return domArray;
+  }
+
+  objectToDom(key) {
+    this._domL = this._domL || {};
+    const oldL = this._domL[key];
+    const domArray = [];
+    const newState = this._state[key];
+    let i = 0;
+    if (!oldL) {
+      for (let key in newState) {
+        const el = this.constructor._objectToDom[key].clone();
+        el.state = { key: key, value: newState[key] };
+        domArray.push(el);
+        i++;
+      }
+    } else {
+      for (let key in newState) {
+        if (i < oldL) domArray.push({ type: 'stateChange', newState: { key: key, value: newState[key] } });
+        else {
+          const el = this.constructor._arrayToDom[key].clone();
+          el.state = { key: key, value: newState[key] };
+          domArray.push(el);
+        }
+        i++;
+      }
+    }
+    this._domL[key] = i;
+    return domArray;
+  }
 }
 
 module.exports = Element;
