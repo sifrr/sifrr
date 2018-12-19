@@ -106,10 +106,11 @@ const Parser = {
           .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
         children = docFrag.childNodes;
       }
-      makeChildrenEqual(ref.dom, children);
+      if (children.length < 1) ref.dom.textContent = '';
+      else makeChildrenEqual(ref.dom, children);
     } else {
-      if (ref.dom.textContent == newHTML) return;
-      ref.dom.textContent = newHTML;
+      if (ref.dom.nodeValue == newHTML) return;
+      ref.dom.nodeValue = newHTML;
     }
   },
   updateAttribute: function(ref, base) {

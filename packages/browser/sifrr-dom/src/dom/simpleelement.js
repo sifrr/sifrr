@@ -30,14 +30,15 @@ function collector(node) {
 
 function updateState(simpleEl) {
   const refs = simpleEl._refs, l = refs.length;
+  const newState = simpleEl.state, oldState = simpleEl._oldState;
   for (let i = 0; i < l; i++) {
     const data = refs[i].data, dom = refs[i].dom;
     if (Array.isArray(data)) {
       data.forEach((attr) => {
-        if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        if (oldState[attr.text] != newState[attr.text]) dom.setAttribute(attr.name, newState[attr.text]);
       });
     } else {
-      if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
+      if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
     }
   }
 }
@@ -52,6 +53,7 @@ function SimpleElement(content, defaultState) {
   Object.defineProperty(content, 'state', {
     get: () => content._state,
     set: (v) => {
+      content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
       updateState(content);
     }
@@ -64,6 +66,7 @@ function SimpleElement(content, defaultState) {
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,
       set: (v) => {
+        clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
         updateState(clone);
       }

@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/19 20:15:42 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/19 21:53:38 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -229,10 +229,10 @@
           docFrag.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = docFrag.childNodes;
         }
-        makeChildrenEqual$1(ref$$1.dom, children);
+        if (children.length < 1) ref$$1.dom.textContent = '';else makeChildrenEqual$1(ref$$1.dom, children);
       } else {
-        if (ref$$1.dom.textContent == newHTML) return;
-        ref$$1.dom.textContent = newHTML;
+        if (ref$$1.dom.nodeValue == newHTML) return;
+        ref$$1.dom.nodeValue = newHTML;
       }
     },
     updateAttribute: function (ref$$1, base) {
@@ -450,15 +450,17 @@
   function updateState(simpleEl) {
     const refs = simpleEl._refs,
           l = refs.length;
+    const newState = simpleEl.state,
+          oldState = simpleEl._oldState;
     for (let i = 0; i < l; i++) {
       const data = refs[i].data,
             dom = refs[i].dom;
       if (Array.isArray(data)) {
         data.forEach(attr => {
-          if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+          if (oldState[attr.text] != newState[attr.text]) dom.setAttribute(attr.name, newState[attr.text]);
         });
       } else {
-        if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
+        if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
       }
     }
   }
@@ -472,6 +474,7 @@
     Object.defineProperty(content, 'state', {
       get: () => content._state,
       set: v => {
+        content._oldState = Object.assign({}, content._state);
         content._state = Object.assign(content._state || {}, v);
         updateState(content);
       }
@@ -483,6 +486,7 @@
       Object.defineProperty(clone, 'state', {
         get: () => clone._state,
         set: v => {
+          clone._oldState = Object.assign({}, clone._state);
           clone._state = Object.assign(clone._state || {}, v);
           updateState(clone);
         }
@@ -510,7 +514,6 @@
     }
     constructor() {
       super();
-      this._oldState = {};
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
@@ -538,7 +541,6 @@
       return this._state;
     }
     set state(v) {
-      this._oldState = json.deepClone(this._state);
       Object.assign(this._state, v);
       parser.updateState(this);
     }

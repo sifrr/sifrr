@@ -23,7 +23,7 @@ class Element extends window.HTMLElement {
 
   constructor() {
     super();
-    this._oldState = {};
+    // this._oldState = {};
     this._state = Object.assign({}, this.constructor.defaultState, JsonExt.parse(this.dataset.sifrrState), this.state);
     const content = this.constructor.template.content.cloneNode(true);
     this._refs = Parser.collectRefs(content, this.constructor.stateMap);
@@ -57,7 +57,7 @@ class Element extends window.HTMLElement {
   }
 
   set state(v) {
-    this._oldState = JsonExt.deepClone(this._state);
+    // this._oldState = JsonExt.deepClone(this._state);
     Object.assign(this._state, v);
     Parser.updateState(this);
   }
