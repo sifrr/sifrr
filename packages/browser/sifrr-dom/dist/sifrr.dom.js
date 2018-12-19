@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.1.0-alpha - sifrr project - 2018/12/18 22:54:31 UTC */
+/*! Sifrr.Dom v0.1.0-alpha2 - sifrr project - 2018/12/19 12:29:59 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -368,9 +368,10 @@
   });
 
   class Loader {
-    constructor(elemName) {
+    constructor(elemName, config = {}) {
       if (this.constructor.all[elemName]) return this.constructor.all[elemName];
       this.elementName = elemName;
+      this.config = config;
     }
     get html() {
       const me = this;
@@ -380,7 +381,7 @@
       });
     }
     get htmlUrl() {
-      return `/elements/${this.elementName.split('-').join('/')}.html`;
+      return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
     }
     executeScripts() {
       return this.html.then(file => {
@@ -507,14 +508,17 @@
     return false;
   };
   SifrrDOM.addEvent = event_1;
-  SifrrDOM.setup = function () {
+  SifrrDOM.setup = function (config) {
+    SifrrDOM.config = Object.assign({
+      baseUrl: '/'
+    }, config);
     SifrrDOM.addEvent('input');
     SifrrDOM.addEvent('change');
     window.document.$input = SifrrDOM.Parser.twoWayBind;
     window.document.$change = SifrrDOM.Parser.twoWayBind;
   };
-  SifrrDOM.load = function (elemName) {
-    let loader$$1 = new SifrrDOM.Loader(elemName);
+  SifrrDOM.load = function (elemName, config = { baseUrl: SifrrDOM.config.baseUrl }) {
+    let loader$$1 = new SifrrDOM.Loader(elemName, config);
     loader$$1.executeScripts();
   };
   var sifrr_dom = SifrrDOM;

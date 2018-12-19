@@ -1,9 +1,10 @@
 const fetch = require('@sifrr/fetch');
 
 class Loader {
-  constructor(elemName) {
+  constructor(elemName, config = {}) {
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
+    this.config = config;
   }
 
   get html() {
@@ -18,7 +19,7 @@ class Loader {
   }
 
   get htmlUrl() {
-    return `/elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   executeScripts() {
