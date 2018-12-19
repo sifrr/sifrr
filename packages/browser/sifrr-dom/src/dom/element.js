@@ -87,17 +87,11 @@ class Element extends window.HTMLElement {
     this._arrayToDom[key] = SimpleElement(template);
   }
 
-  static addObjectToDom(key, template) {
-    this._objectToDom = this._objectToDom || {};
-    // state of simple element is { key: key, value: value } of object key-value pairs
-    this._objectToDom[key] = SimpleElement(template);
-  }
-
-  arrayToDom(key) {
+  arrayToDom(key, newState = this.state[key]) {
     this._domL = this._domL || {};
     const oldL = this._domL[key];
     const domArray = [];
-    const newState = this._state[key], newL = newState.length;
+    const newL = newState.length;
     if (!oldL) {
       for (let i = 0; i < newL; i++) {
         const el = this.constructor._arrayToDom[key].clone();
@@ -106,7 +100,7 @@ class Element extends window.HTMLElement {
       }
     } else {
       for (let i = 0; i < newL; i++) {
-        if (i < oldL) domArray.push({ type: 'stateChange', newState: newState[i] });
+        if (i < oldL) domArray.push({ type: 'stateChange', state: newState[i] });
         else {
           const el = this.constructor._arrayToDom[key].clone();
           el.state = newState[i];
@@ -115,34 +109,6 @@ class Element extends window.HTMLElement {
       }
     }
     this._domL[key] = newL;
-    return domArray;
-  }
-
-  objectToDom(key) {
-    this._domL = this._domL || {};
-    const oldL = this._domL[key];
-    const domArray = [];
-    const newState = this._state[key];
-    let i = 0;
-    if (!oldL) {
-      for (let key in newState) {
-        const el = this.constructor._objectToDom[key].clone();
-        el.state = { key: key, value: newState[key] };
-        domArray.push(el);
-        i++;
-      }
-    } else {
-      for (let key in newState) {
-        if (i < oldL) domArray.push({ type: 'stateChange', newState: { key: key, value: newState[key] } });
-        else {
-          const el = this.constructor._arrayToDom[key].clone();
-          el.state = { key: key, value: newState[key] };
-          domArray.push(el);
-        }
-        i++;
-      }
-    }
-    this._domL[key] = i;
     return domArray;
   }
 }

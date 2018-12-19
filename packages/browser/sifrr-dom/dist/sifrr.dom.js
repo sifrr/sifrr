@@ -35,6 +35,10 @@
   }
   function makeEqual(oldNode, newNode) {
     if (newNode === null) return oldNode;
+    if (newNode.type === 'stateChange') {
+      if (oldNode.state !== newNode.state) oldNode.state = newNode.state;
+      return oldNode;
+    }
     if (oldNode.nodeName !== newNode.nodeName) {
       oldNode.replaceWith(newNode);
       return newNode;
@@ -421,26 +425,24 @@
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
         const attrs = Array.from(node.attributes);
+        const ret = [];
         for (let attr of attrs) {
           const avalue = attr.value;
           if (avalue[0] === '$') {
-            return {
-              type: 'attr',
+            ret.push({
               text: avalue.slice(2, -1),
               name: attr.name
-            };
+            });
           }
         }
+        if (ret.length > 0) return ret;
       }
       return 0;
     } else {
       let nodeData = node.nodeValue;
       if (nodeData[0] === '$') {
         node.nodeValue = '';
-        return {
-          type: 'text',
-          text: nodeData.slice(2, -1)
-        };
+        return nodeData.slice(2, -1);
       }
       return 0;
     }
@@ -451,10 +453,10 @@
     for (let i = 0; i < l; i++) {
       const data = refs[i].data,
             dom = refs[i].dom;
-      if (data.type == 'attr') {
-        dom.setAttribute(data.name, simpleEl.state[data.text]);
-      } else if (data.type == 'text') {
-        dom.nodeValue = simpleEl.state[data.text];
+      if (Array.isArray(data)) {
+        data.forEach(attr => dom.setAttribute(attr.name, simpleEl.state[attr.text]));
+      } else {
+        dom.nodeValue = simpleEl.state[data];
       }
     }
   }
@@ -555,16 +557,11 @@
       this._arrayToDom = this._arrayToDom || {};
       this._arrayToDom[key] = simpleelement(template);
     }
-    static addObjectToDom(key, template) {
-      this._objectToDom = this._objectToDom || {};
-      this._objectToDom[key] = simpleelement(template);
-    }
-    arrayToDom(key) {
+    arrayToDom(key, newState = this.state[key]) {
       this._domL = this._domL || {};
       const oldL = this._domL[key];
       const domArray = [];
-      const newState = this._state[key],
-            newL = newState.length;
+      const newL = newState.length;
       if (!oldL) {
         for (let i = 0; i < newL; i++) {
           const el = this.constructor._arrayToDom[key].clone();
@@ -573,7 +570,7 @@
         }
       } else {
         for (let i = 0; i < newL; i++) {
-          if (i < oldL) domArray.push({ type: 'stateChange', newState: newState[i] });else {
+          if (i < oldL) domArray.push({ type: 'stateChange', state: newState[i] });else {
             const el = this.constructor._arrayToDom[key].clone();
             el.state = newState[i];
             domArray.push(el);
@@ -581,32 +578,6 @@
         }
       }
       this._domL[key] = newL;
-      return domArray;
-    }
-    objectToDom(key) {
-      this._domL = this._domL || {};
-      const oldL = this._domL[key];
-      const domArray = [];
-      const newState = this._state[key];
-      let i = 0;
-      if (!oldL) {
-        for (let key in newState) {
-          const el = this.constructor._objectToDom[key].clone();
-          el.state = { key: key, value: newState[key] };
-          domArray.push(el);
-          i++;
-        }
-      } else {
-        for (let key in newState) {
-          if (i < oldL) domArray.push({ type: 'stateChange', newState: { key: key, value: newState[key] } });else {
-            const el = this.constructor._arrayToDom[key].clone();
-            el.state = { key: key, value: newState[key] };
-            domArray.push(el);
-          }
-          i++;
-        }
-      }
-      this._domL[key] = i;
       return domArray;
     }
   }

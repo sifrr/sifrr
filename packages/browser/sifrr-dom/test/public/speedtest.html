@@ -130,15 +130,12 @@
         };
       } else if (target.matches('#swaprows')) {
         //console.log("swapRows");
-        let state = sft.state;
-        if (state.data.length > 998) {
-          const randa = _random(999),
-            randb = (randa + 100) % 999;
-          let a = state.data[randa];
-          state.data[randa] = state.data[randb];
-          state.data[randb] = a;
-          sft.state = state;
-          console.log(`swaped ${randa} & ${randb}`);
+        let data = sft.state.data;
+        if (data.length > 998) {
+          let a = data[1];
+          data[1] = data[998];
+          data[998] = a;
+          sft.state = { data: data };
         }
       } else if (target.matches('.remove')) {
         let id = getParentId(target);
@@ -152,7 +149,6 @@
         sft.state = { data: state };
       } else if (target.matches('.lbl')) {
         let id = getParentId(target);
-        // console.log("select",id);
         sft.state = { selected: id };
       }
       stopMeasure();

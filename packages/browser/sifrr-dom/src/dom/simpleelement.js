@@ -5,26 +5,24 @@ function collector(node) {
   if (node.nodeType !== 3) {
     if (node.attributes !== undefined) {
       const attrs = Array.from(node.attributes);
+      const ret = [];
       for(let attr of attrs) {
         const avalue = attr.value;
         if (avalue[0] === '$') {
-          return {
-            type: 'attr',
+          ret.push({
             text: avalue.slice(2, -1),
             name: attr.name
-          };
+          });
         }
       }
+      if (ret.length > 0) return ret;
     }
     return 0;
   } else {
     let nodeData = node.nodeValue;
     if (nodeData[0] === '$') {
       node.nodeValue = '';
-      return {
-        type: 'text',
-        text: nodeData.slice(2, -1)
-      };
+      return nodeData.slice(2, -1);
     }
     return 0;
   }
@@ -34,10 +32,10 @@ function updateState(simpleEl) {
   const refs = simpleEl._refs, l = refs.length;
   for (let i = 0; i < l; i++) {
     const data = refs[i].data, dom = refs[i].dom;
-    if (data.type == 'attr') {
-      dom.setAttribute(data.name, simpleEl.state[data.text]);
-    } else if (data.type == 'text') {
-      dom.nodeValue = simpleEl.state[data.text];
+    if (Array.isArray(data)) {
+      data.forEach((attr) => dom.setAttribute(attr.name, simpleEl.state[attr.text]));
+    } else {
+      dom.nodeValue = simpleEl.state[data];
     }
   }
 }

@@ -32,6 +32,10 @@ function makeChildrenEqual(parent, newChildren) {
 // taken from https://github.com/choojs/nanomorph/blob/master/lib/morph.js
 function makeEqual(oldNode, newNode) {
   if (newNode === null) return oldNode;
+  if (newNode.type === 'stateChange') {
+    if (oldNode.state !== newNode.state) oldNode.state = newNode.state;
+    return oldNode;
+  }
 
   if (oldNode.nodeName !== newNode.nodeName) {
     oldNode.replaceWith(newNode);
