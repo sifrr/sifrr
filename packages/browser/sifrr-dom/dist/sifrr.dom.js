@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/20 1:50:40 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/20 16:22:43 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -526,7 +526,7 @@
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
-      this.useShadowRoot = this.constructor.template.dataset.noSr ? false : true;
+      this.useShadowRoot = this.constructor.template.dataset.noShadowRoot === 'false' ? false : this.constructor.useShadowRoot;
       if (this.useShadowRoot) {
         this.attachShadow({
           mode: 'open'
@@ -630,6 +630,7 @@
   SifrrDOM.makeEqual = makeequal;
   SifrrDOM.Loader = loader;
   SifrrDOM.register = function (Element) {
+    Element.useShadowRoot = SifrrDOM.config.useShadowRoot;
     const name = Element.elementName;
     if (!name) {
       window.console.warn('Error creating Custom Element: No name given.', Element);
@@ -652,7 +653,8 @@
   SifrrDOM.addEvent = event_1;
   SifrrDOM.setup = function (config) {
     SifrrDOM.config = Object.assign({
-      baseUrl: '/'
+      baseUrl: '/',
+      useShadowRoot: true
     }, config);
     SifrrDOM.addEvent('input');
     SifrrDOM.addEvent('change');

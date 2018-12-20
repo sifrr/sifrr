@@ -5,6 +5,7 @@ SifrrDOM.Parser = require('./dom/parser');
 SifrrDOM.makeEqual = require('./dom/makeequal');
 SifrrDOM.Loader = require('./dom/loader');
 SifrrDOM.register = function(Element) {
+  Element.useShadowRoot = SifrrDOM.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
     window.console.warn('Error creating Custom Element: No name given.', Element);
@@ -27,7 +28,8 @@ SifrrDOM.register = function(Element) {
 SifrrDOM.addEvent = require('./dom/event');
 SifrrDOM.setup = function(config) {
   SifrrDOM.config = Object.assign({
-    baseUrl: '/'
+    baseUrl: '/',
+    useShadowRoot: true
   }, config);
   SifrrDOM.addEvent('input');
   SifrrDOM.addEvent('change');
