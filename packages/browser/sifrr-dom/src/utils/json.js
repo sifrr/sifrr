@@ -31,9 +31,23 @@ class Json {
     }
   }
 
+  static shallowEqual(a, b) {
+    for(let key in a) {
+      if(!(key in b) || a[key] != b[key]) {
+        return false;
+      }
+    }
+    for(let key in b) {
+      if(!(key in a) || a[key] != b[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static deepClone(json) {
-    if (Array.isArray(json)) return Array.prototype.slice.call(json);
-    if (typeof json !== 'object') return json;
+    if (Array.isArray(json)) return json.map((i) => Json.deepClone(i));
+    if (typeof json !== 'object' || json === null) return json;
     let clone = {};
     for (let key in json) {
       clone[key] = Json.deepClone(json[key]);

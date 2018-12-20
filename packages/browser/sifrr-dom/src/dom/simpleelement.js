@@ -1,17 +1,18 @@
 const { collect, create } = require('./ref');
 const compilerTemplate = document.createElement('template');
 
+// Based on https://github.com/Freak613/stage0/blob/master/index.js
 function collector(node) {
   if (node.nodeType !== 3) {
     if (node.attributes !== undefined) {
-      const attrs = Array.from(node.attributes);
+      const attrs = Array.from(node.attributes), l = attrs.length;
       const ret = [];
-      for(let attr of attrs) {
-        const avalue = attr.value;
+      for(let i = 0; i < l; i++) {
+        const avalue = attrs[i].value;
         if (avalue[0] === '$') {
           ret.push({
-            text: avalue.slice(2, -1),
-            name: attr.name
+            name: attrs[i].name,
+            text: avalue.slice(2, -1)
           });
         }
       }
@@ -30,14 +31,17 @@ function collector(node) {
 
 function updateState(simpleEl) {
   const refs = simpleEl._refs, l = refs.length;
+  const newState = simpleEl.state, oldState = simpleEl._oldState;
   for (let i = 0; i < l; i++) {
     const data = refs[i].data, dom = refs[i].dom;
     if (Array.isArray(data)) {
-      data.forEach((attr) => {
-        if (dom.getAttribute(attr.name) != simpleEl.state[attr.text]) dom.setAttribute(attr.name, simpleEl.state[attr.text]);
-      });
+      const l = data.length;
+      for (let i = 0; i < l; i++) {
+        const attr = data[i];
+        if (oldState[attr.text] != newState[attr.text]) dom.setAttribute(attr.name, newState[attr.text]);
+      }
     } else {
-      if (dom.nodeValue != simpleEl.state[data]) dom.nodeValue = simpleEl.state[data];
+      if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
     }
   }
 }
@@ -52,18 +56,20 @@ function SimpleElement(content, defaultState) {
   Object.defineProperty(content, 'state', {
     get: () => content._state,
     set: (v) => {
+      content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
       updateState(content);
     }
   });
   if (defaultState) content.state = defaultState;
 
-  content.clone = function() {
-    const clone = content.cloneNode(true);
+  content.sifrrClone = function(deep) {
+    const clone = content.cloneNode(deep);
     clone._refs = collect(clone, content.stateMap);
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,
       set: (v) => {
+        clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
         updateState(clone);
       }
