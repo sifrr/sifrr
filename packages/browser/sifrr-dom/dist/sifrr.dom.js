@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/20 16:22:43 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/20 19:00:05 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -528,7 +528,7 @@
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
-      this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : this.constructor.useShadowRoot;
+      this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
       if (this.useShadowRoot) {
         this.attachShadow({
           mode: 'open'
