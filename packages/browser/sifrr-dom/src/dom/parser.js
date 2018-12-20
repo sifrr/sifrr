@@ -34,7 +34,7 @@ function createStateMap(el) {
     // attributes
     const attrs = el.attributes || [], l = attrs.length;
     const attrStateMap = {};
-    for(let i = 0; i < l; i++) {
+    for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.value.indexOf('${') > -1) {
         attrStateMap[attribute.name] = attribute.value;
@@ -64,25 +64,24 @@ const Parser = {
     const l = element._refs.length;
     for (let i = 0; i < l; i++) {
 
-      const ref = element._refs[i];
+      const data = element.constructor.stateMap[i].ref;
+      const dom = element._refs[i];
 
       // update attributes
-      if (ref.data.attributes) {
-        for(let key in ref.data.attributes) {
-          const val = Parser.evaluateString(ref.data.attributes[key], element);
-          updateAttribute(ref.dom, key, val);
+      if (data.attributes) {
+        for(let key in data.attributes) {
+          const val = Parser.evaluateString(data.attributes[key], element);
+          updateAttribute(dom, key, val);
         }
       }
 
-      if (ref.data.html === undefined) continue;
+      if (data.html === undefined) continue;
 
       // update element
-      const oldHTML = ref.dom.innerHTML;
-      const newHTML = Parser.evaluateString(ref.data.text, element);
-      if (oldHTML == newHTML) continue;
-      if (newHTML === undefined) { ref.dom.textContent = ''; continue; }
+      const newHTML = Parser.evaluateString(data.text, element);
+      if (newHTML === undefined) { dom.textContent = ''; continue; }
 
-      if (ref.data.html) {
+      if (data.html) {
         // html node
         let children;
         if (Array.isArray(newHTML)) {
@@ -98,12 +97,12 @@ const Parser = {
             .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = docFrag.childNodes;
         }
-        if (children.length < 1) ref.dom.textContent = '';
-        else makeChildrenEqual(ref.dom, children);
+        if (children.length < 1) dom.textContent = '';
+        else makeChildrenEqual(dom, children);
       } else {
         // text node
-        if (ref.dom.nodeValue != newHTML) {
-          ref.dom.nodeValue = newHTML;
+        if (dom.nodeValue != newHTML) {
+          dom.nodeValue = newHTML;
         }
       }
 

@@ -14,10 +14,7 @@ TREE_WALKER.roll = function(n, filter = false) {
 function collect(element, stateMap = element.stateMap, filter) {
   const refs = [];
   TREE_WALKER.currentNode = element;
-  stateMap.map(x => refs.push({
-    dom: TREE_WALKER.roll(x.idx, filter),
-    data: x.ref
-  }));
+  stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
   return refs;
 }
 

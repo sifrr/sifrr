@@ -7,7 +7,7 @@ function collector(node) {
     if (node.attributes !== undefined) {
       const attrs = Array.from(node.attributes), l = attrs.length;
       const ret = [];
-      for(let i = 0; i < l; i++) {
+      for (let i = 0; i < l; i++) {
         const avalue = attrs[i].value;
         if (avalue[0] === '$') {
           ret.push({
@@ -30,10 +30,10 @@ function collector(node) {
 }
 
 function updateState(simpleEl) {
-  const refs = simpleEl._refs, l = refs.length;
+  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
   const newState = simpleEl.state, oldState = simpleEl._oldState;
   for (let i = 0; i < l; i++) {
-    const data = refs[i].data, dom = refs[i].dom;
+    const data = refs[i].ref, dom = doms[i];
     if (Array.isArray(data)) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
@@ -65,6 +65,7 @@ function SimpleElement(content, defaultState) {
 
   content.sifrrClone = function(deep) {
     const clone = content.cloneNode(deep);
+    clone.stateMap = content.stateMap;
     clone._refs = collect(clone, content.stateMap);
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,

@@ -121,7 +121,7 @@ class Element extends window.HTMLElement {
           // else
           domArray.push({ type: 'stateChange', state: newState[i] });
         } else {
-          const el = this.constructor._arrayToDom[key].clone();
+          const el = this.constructor._arrayToDom[key].sifrrClone(true);
           el.state = newState[i];
           domArray.push(el);
         }
