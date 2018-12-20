@@ -31,47 +31,13 @@
   <div id="spinner">
 
   </div>
-  <div id='main'>
-    <div class="container">
-      <div class="jumbotron">
-        <div class="row">
-          <div class="col-md-6">
-            <h1>Sifrr</h1>
-          </div>
-          <div class="col-md-6">
-            <div class="row">
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='run'>Create 1,000 rows</button>
-              </div>
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='runlots'>Create 10,000 rows</button>
-              </div>
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='add'>Append 1,000 rows</button>
-              </div>
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='update'>Update every 10th row</button>
-              </div>
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='clear'>Clear</button>
-              </div>
-              <div class="col-sm-6 smallpad">
-                <button type='button' class='btn btn-primary btn-block' id='swaprows'>Swap Rows</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <sifrr-table></sifrr-table>
-      <span class="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
-    </div>
-  </div>
+  <main-element></main-element>
   <script src="/sifrr.dom.js" charset="utf-8"></script>
   <script type="text/javascript">
     Sifrr.Dom.setup();
     Sifrr.Dom.addEvent('click');
-    Sifrr.Dom.load('sifrr-table');
-    const sft = document.querySelector('sifrr-table');
+    Sifrr.Dom.load('main-element');
+    const sft = document.querySelector('main-element');
     var startMeasure = function(name) {
       startTime = performance.now();
       lastMeasure = name;
@@ -88,7 +54,7 @@
       }
     }
     let selected = null, from = 1;
-    document.getElementById("main").$click = e => {
+    document.$click = e => {
       let target = e.path ? e.path[0] : e.target;
       startMeasure(target.id || target.className);
       if (target.matches('#add')) {
@@ -139,21 +105,26 @@
           sft.state = { data: data };
         }
       } else if (target.matches('.remove')) {
-        let id = getParentId(target);
+        let id = Number(getParentId(target));
         // console.log("delete",id);
-        let state = sft.state.data;
-        for(let i = state.length-1; i >= 0; i--){
-          if (state[i].id == id) {
-            state.splice(i, 1);
+        let data = sft.state.data;
+        for(let i = data.length-1; i >= 0; i--){
+          if (data[i].id == id) {
+            data.splice(i, 1);
           }
         }
-        sft.state = { data: state };
+        sft.state = { data: data };
       } else if (target.matches('.lbl')) {
-        let id = getParentId(target);
-        const data = sft.state.data;
-        if (selected !== null) data[selected]['class'] = null;
-        selected = id - from + 1000;
-        data[selected]['class'] = 'danger';
+        let id = Number(getParentId(target));
+        // console.log("select", id);
+        let data = sft.state.data;
+        for(let i = data.length-1; i >= 0; i--){
+          if (data[i].id == id) {
+            data[i]['class'] = 'danger';
+          } else {
+            data[i]['class'] = null;
+          }
+        }
         sft.state = { data: data };
       }
       stopMeasure();
@@ -180,6 +151,7 @@
     }
 
     function getParentId(elem) {
+      while(!elem.dataset.id) elem = elem.parentNode;
       return elem.dataset.id;
     }
   </script>

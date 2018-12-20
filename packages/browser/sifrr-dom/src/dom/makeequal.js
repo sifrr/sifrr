@@ -1,3 +1,5 @@
+const { updateAttribute } = require('./update');
+
 function makeChildrenEqual(parent, newChildren) {
   if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
   if (newChildren.length === 0) {
@@ -29,7 +31,6 @@ function makeChildrenEqual(parent, newChildren) {
   }
 }
 
-// taken from https://github.com/choojs/nanomorph/blob/master/lib/morph.js
 function makeEqual(oldNode, newNode) {
   if (newNode === null) return oldNode;
   if (newNode.type === 'stateChange') {
@@ -53,31 +54,19 @@ function makeEqual(oldNode, newNode) {
   oldNode.state = newNode.state;
 
   // copy Attributes
-  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attrValue, fromValue, attrName, attr;
+  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
   for (var i = newAttrs.length - 1; i >= 0; --i) {
     attr = newAttrs[i];
-    attrName = attr.name;
-    attrValue = attr.value;
-    if (!oldNode.hasAttribute(attrName)) {
-      oldNode.setAttribute(attrName, attrValue);
-    } else {
-      fromValue = oldNode.getAttribute(attrName);
-      if (fromValue !== attrValue) {
-        // apparently values are always cast to strings, ah well
-        if (attrValue === 'null' || attrValue === 'undefined' || attrValue === 'false' || !attrValue) {
-          oldNode.removeAttribute(attrName);
-        } else {
-          oldNode.setAttribute(attrName, attrValue);
-        }
-      }
-    }
+    const attrName = attr.name;
+    const attrValue = attr.value;
+    updateAttribute(oldNode, attrName, attrValue);
   }
 
   // Remove any extra attributes
   for (var j = oldAttrs.length - 1; j >= 0; --j) {
     attr = oldAttrs[j];
     if (attr.specified !== false) {
-      attrName = attr.name;
+      const attrName = attr.name;
       if (!newNode.hasAttribute(attrName)) {
         oldNode.removeAttribute(attrName);
       }

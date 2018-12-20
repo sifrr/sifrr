@@ -5,7 +5,11 @@ const SimpleElement = require('./simpleelement');
 
 class Element extends window.HTMLElement {
   static get observedAttributes() {
-    return ['data-sifrr-state'].concat(this.observedAttrs || []);
+    return ['data-sifrr-state'].concat(this.observedAttrs());
+  }
+
+  static observedAttrs() {
+    return [];
   }
 
   static get template() {
@@ -39,25 +43,35 @@ class Element extends window.HTMLElement {
 
   connectedCallback() {
     Parser.updateState(this);
+    this.onConnect();
   }
+
+  onConnect() {}
 
   disconnectedCallback() {
     if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
     else this.removeEventListener('change', Parser.twoWayBind);
+    this.onDisconnect();
   }
+
+  onDisconnect() {}
 
   attributeChangedCallback(attrName, oldVal, newVal) {
     if (attrName === 'data-sifrr-state') {
       this.state = JsonExt.parse(newVal);
     }
+    this.onAttributeChange();
   }
 
+  onAttributeChange() {}
+
   get state() {
+    // return JsonExt.deepClone(this._state);
     return this._state;
   }
 
   set state(v) {
-    // this._oldState = JsonExt.deepClone(this._state);
+    this._oldState = this.state;
     Object.assign(this._state, v);
     Parser.updateState(this);
   }
@@ -68,7 +82,7 @@ class Element extends window.HTMLElement {
   }
 
   clearState() {
-    // this._oldState = JsonExt.deepClone(this._state);
+    // this._oldState = this.state;
     this._state = {};
     Parser.updateState(this);
   }
@@ -91,17 +105,21 @@ class Element extends window.HTMLElement {
     this._domL = this._domL || {};
     const oldL = this._domL[key];
     const domArray = [];
+    // const oldState = this._oldState[key];
     const newL = newState.length;
     if (!oldL) {
       for (let i = 0; i < newL; i++) {
-        const el = this.constructor._arrayToDom[key].clone();
+        const el = this.constructor._arrayToDom[key].sifrrClone(true);
         el.state = newState[i];
         domArray.push(el);
       }
     } else {
       for (let i = 0; i < newL; i++) {
-        if (i < oldL) domArray.push({ type: 'stateChange', state: newState[i] });
-        else {
+        if (i < oldL) {
+          // if (JsonExt.shallowEqual(oldState[i], newState[i])) domArray.push(null);
+          // else
+          domArray.push({ type: 'stateChange', state: newState[i] });
+        } else {
           const el = this.constructor._arrayToDom[key].clone();
           el.state = newState[i];
           domArray.push(el);
