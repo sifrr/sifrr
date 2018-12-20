@@ -194,14 +194,6 @@
       if (element.useShadowRoot) node = element.shadowRoot;else node = element;
       return ref.create(node, createStateMap, isHtml);
     },
-    twoWayBind: function (e) {
-      const target = e.path ? e.path[0] : e.target;
-      if (!target.dataset.sifrrBind) return;
-      const value = target.value === undefined ? target.innerHTML : target.value;
-      let data = {};
-      data[target.dataset.sifrrBind] = value;
-      target.getRootNode().host.state = data;
-    },
     updateState: function (element) {
       if (!element._refs) {
         return false;
@@ -215,11 +207,13 @@
             updateAttribute$2(ref$$1.dom, key, val);
           }
         }
-        if (ref$$1.data.html === undefined) return;
+        if (ref$$1.data.html === undefined) continue;
         const oldHTML = ref$$1.dom.innerHTML;
         const newHTML = Parser.evaluateString(ref$$1.data.text, element);
-        if (oldHTML == newHTML) return;
-        if (newHTML === undefined) return ref$$1.dom.textContent = '';
+        if (oldHTML == newHTML) continue;
+        if (newHTML === undefined) {
+          ref$$1.dom.textContent = '';continue;
+        }
         if (ref$$1.data.html) {
           let children;
           if (Array.isArray(newHTML)) {
@@ -233,10 +227,20 @@
           }
           if (children.length < 1) ref$$1.dom.textContent = '';else makeChildrenEqual$1(ref$$1.dom, children);
         } else {
-          if (ref$$1.dom.nodeValue != newHTML) ref$$1.dom.nodeValue = newHTML;
+          if (ref$$1.dom.nodeValue != newHTML) {
+            ref$$1.dom.nodeValue = newHTML;
+          }
         }
       }
       if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
+    },
+    twoWayBind: function (e) {
+      const target = e.path ? e.path[0] : e.target;
+      if (!target.dataset.sifrrBind) return;
+      const value = target.value === undefined ? target.innerHTML : target.value;
+      let state = {};
+      state[target.dataset.sifrrBind] = value;
+      target.getRootNode().host.state = state;
     },
     evaluateString: function (string, element) {
       if (string.indexOf('${') < 0) return string;
@@ -246,7 +250,7 @@
       function replacer(match) {
         if (match[0] == '$') match = match.slice(2, -1);
         let f;
-        if (match.search('return') >= 0) {
+        if (match.indexOf('return ') >= 0) {
           f = new Function(match).bind(element);
         } else {
           f = new Function('return ' + match).bind(element);
@@ -526,7 +530,7 @@
       this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
-      this.useShadowRoot = this.constructor.template.dataset.noShadowRoot === 'false' ? false : this.constructor.useShadowRoot;
+      this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : this.constructor.useShadowRoot;
       if (this.useShadowRoot) {
         this.attachShadow({
           mode: 'open'

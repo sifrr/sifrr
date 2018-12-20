@@ -31,7 +31,7 @@ class Element extends window.HTMLElement {
     this._state = Object.assign({}, this.constructor.defaultState, JsonExt.parse(this.dataset.sifrrState), this.state);
     const content = this.constructor.template.content.cloneNode(true);
     this._refs = Parser.collectRefs(content, this.constructor.stateMap);
-    this.useShadowRoot = this.constructor.template.dataset.noShadowRoot === 'false' ? false : this.constructor.useShadowRoot;
+    this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : this.constructor.useShadowRoot;
     if (this.useShadowRoot) {
       this.attachShadow({
         mode: 'open'

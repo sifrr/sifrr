@@ -56,39 +56,31 @@ const Parser = {
 
     return Ref.create(node, createStateMap, isHtml);
   },
-  twoWayBind: function(e) {
-    const target = e.path ? e.path[0] : e.target;
-    if (!target.dataset.sifrrBind) return;
-    const value = target.value === undefined ? target.innerHTML : target.value;
-    let data = {};
-    data[target.dataset.sifrrBind] = value;
-    target.getRootNode().host.state = data;
-  },
   updateState: function(element) {
     if (!element._refs) {
       return false;
     }
-
     // Update nodes
     const l = element._refs.length;
     for (let i = 0; i < l; i++) {
 
       const ref = element._refs[i];
-      if (ref.data.attributes) {
-        // update attributes
 
+      // update attributes
+      if (ref.data.attributes) {
         for(let key in ref.data.attributes) {
           const val = Parser.evaluateString(ref.data.attributes[key], element);
           updateAttribute(ref.dom, key, val);
         }
       }
-      if (ref.data.html === undefined) return;
+
+      if (ref.data.html === undefined) continue;
 
       // update element
       const oldHTML = ref.dom.innerHTML;
       const newHTML = Parser.evaluateString(ref.data.text, element);
-      if (oldHTML == newHTML) return;
-      if (newHTML === undefined) return ref.dom.textContent = '';
+      if (oldHTML == newHTML) continue;
+      if (newHTML === undefined) { ref.dom.textContent = ''; continue; }
 
       if (ref.data.html) {
         // html node
@@ -110,12 +102,22 @@ const Parser = {
         else makeChildrenEqual(ref.dom, children);
       } else {
         // text node
-        if (ref.dom.nodeValue != newHTML) ref.dom.nodeValue = newHTML;
+        if (ref.dom.nodeValue != newHTML) {
+          ref.dom.nodeValue = newHTML;
+        }
       }
 
     }
 
     if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
+  },
+  twoWayBind: function(e) {
+    const target = e.path ? e.path[0] : e.target;
+    if (!target.dataset.sifrrBind) return;
+    const value = target.value === undefined ? target.innerHTML : target.value;
+    let state = {};
+    state[target.dataset.sifrrBind] = value;
+    target.getRootNode().host.state = state;
   },
   evaluateString: function(string, element) {
     if (string.indexOf('${') < 0) return string;
@@ -126,7 +128,7 @@ const Parser = {
     function replacer(match) {
       if (match[0] == '$') match = match.slice(2, -1);
       let f;
-      if (match.search('return') >= 0) {
+      if (match.indexOf('return ') >= 0) {
         f = new Function(match).bind(element);
       } else {
         f = new Function('return ' + match).bind(element);

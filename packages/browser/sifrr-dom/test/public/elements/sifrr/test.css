@@ -1,0 +1,6 @@
+slot::slotted(p) {
+  display: block;
+  text-decoration: none;
+  border: 1px solid blue;
+  background: none;
+}
