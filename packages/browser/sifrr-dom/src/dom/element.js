@@ -50,7 +50,6 @@ class Element extends window.HTMLElement {
 
   disconnectedCallback() {
     if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
-    else this.removeEventListener('change', Parser.twoWayBind);
     this.onDisconnect();
   }
 
@@ -87,12 +86,14 @@ class Element extends window.HTMLElement {
     Parser.updateState(this);
   }
 
-  srqs(args) {
-    return this.shadowRoot.querySelector(args);
+  qs(args, sr = true) {
+    if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);
+    else return this.querySelector(args);
   }
 
-  srqsAll(args) {
-    return this.shadowRoot.querySelectorAll(args);
+  qsAll(args, sr = true) {
+    if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
+    else return this.querySelectorAll(args);
   }
 
   static addArrayToDom(key, template) {

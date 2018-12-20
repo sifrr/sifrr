@@ -541,7 +541,7 @@
     }
     onConnect() {}
     disconnectedCallback() {
-      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);else this.removeEventListener('change', parser.twoWayBind);
+      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
       this.onDisconnect();
     }
     onDisconnect() {}
@@ -567,11 +567,11 @@
       this._state = {};
       parser.updateState(this);
     }
-    srqs(args) {
-      return this.shadowRoot.querySelector(args);
+    qs(args, sr = true) {
+      if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
     }
-    srqsAll(args) {
-      return this.shadowRoot.querySelectorAll(args);
+    qsAll(args, sr = true) {
+      if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
     }
     static addArrayToDom(key, template) {
       this._arrayToDom = this._arrayToDom || {};
