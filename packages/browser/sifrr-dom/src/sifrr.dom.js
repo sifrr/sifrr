@@ -1,11 +1,13 @@
-let SifrrDOM = {};
-SifrrDOM.elements = {};
-SifrrDOM.Element = require('./dom/element');
-SifrrDOM.Parser = require('./dom/parser');
-SifrrDOM.makeEqual = require('./dom/makeequal');
-SifrrDOM.Loader = require('./dom/loader');
-SifrrDOM.register = function(Element) {
-  Element.useShadowRoot = SifrrDOM.config.useShadowRoot;
+const UrlExt = require('./utils/url');
+
+let SifrrDom = {};
+SifrrDom.elements = {};
+SifrrDom.Element = require('./dom/element');
+SifrrDom.Parser = require('./dom/parser');
+SifrrDom.makeEqual = require('./dom/makeequal');
+SifrrDom.Loader = require('./dom/loader');
+SifrrDom.register = function(Element) {
+  Element.useShadowRoot = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
     window.console.warn('Error creating Custom Element: No name given.', Element);
@@ -16,7 +18,7 @@ SifrrDOM.register = function(Element) {
   } else {
     try {
       window.customElements.define(name, Element);
-      SifrrDOM.elements[name] = Element;
+      SifrrDom.elements[name] = Element;
       return true;
     } catch (error) {
       window.console.warn(`Error creating Custom Element: ${name} - ${error}`);
@@ -25,21 +27,24 @@ SifrrDOM.register = function(Element) {
   }
   return false;
 };
-SifrrDOM.addEvent = require('./dom/event');
-SifrrDOM.setup = function(config) {
-  SifrrDOM.config = Object.assign({
+SifrrDom.addEvent = require('./dom/event');
+SifrrDom.setup = function(config) {
+  SifrrDom.config = Object.assign({
     baseUrl: '/',
     useShadowRoot: true
   }, config);
-  SifrrDOM.addEvent('input');
-  SifrrDOM.addEvent('change');
-  window.document.$input = SifrrDOM.Parser.twoWayBind;
-  window.document.$change = SifrrDOM.Parser.twoWayBind;
+  SifrrDom.addEvent('input');
+  SifrrDom.addEvent('change');
+  window.document.$input = SifrrDom.Parser.twoWayBind;
+  window.document.$change = SifrrDom.Parser.twoWayBind;
 };
-SifrrDOM.SimpleElement = require('./dom/simpleelement');
-SifrrDOM.load = function(elemName, config = { baseUrl: SifrrDOM.config.baseUrl }) {
-  let loader = new SifrrDOM.Loader(elemName, config);
+SifrrDom.SimpleElement = require('./dom/simpleelement');
+SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
+  let loader = new SifrrDom.Loader(elemName, config);
   loader.executeScripts();
 };
+SifrrDom.relativeTo = function(elemName, relativeUrl) {
+  return UrlExt.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
+}
 
-module.exports = SifrrDOM;
+module.exports = SifrrDom;

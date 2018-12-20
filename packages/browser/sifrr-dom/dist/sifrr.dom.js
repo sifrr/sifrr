@@ -5,17 +5,37 @@
   (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory());
 }(this, (function () { 'use strict';
 
+  class URLExt {
+    static absolute(base, relative) {
+      let stack = base.split('/'),
+          parts = relative.split('/');
+      stack.pop();
+      for (let i = 0; i < parts.length; i++) {
+        if (parts[i] == '.') continue;
+        if (parts[i] == '..') stack.pop();else stack.push(parts[i]);
+      }
+      return stack.join('/');
+    }
+    static getRoutes(url) {
+      if (url[0] != '/') {
+        url = '/' + url;
+      }
+      let qIndex = url.indexOf('?');
+      if (qIndex != -1) {
+        url = url.substring(0, qIndex);
+      }
+      return url.split('/');
+    }
+  }
+  var url = URLExt;
+
   function updateAttribute(element, name, newValue) {
-    if (!element.hasAttribute(name)) {
-      element.setAttribute(name, newValue);
-    } else {
-      const fromValue = element.getAttribute(name);
-      if (fromValue !== newValue) {
-        if (newValue === 'null' || newValue === 'undefined' || newValue === 'false' || !newValue) {
-          element.removeAttribute(name);
-        } else {
-          element.setAttribute(name, newValue);
-        }
+    const fromValue = element.getAttribute(name);
+    if (fromValue != newValue) {
+      if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+        element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, newValue);
       }
     }
     if (element.nodeName == 'SELECT' && name == 'value') element.value = newValue;
@@ -393,6 +413,7 @@
       if (this.constructor.all[elemName]) return this.constructor.all[elemName];
       this.elementName = elemName;
       this.config = config;
+      this.constructor.urls[elemName] = this.htmlUrl;
     }
     get html() {
       const me = this;
@@ -420,6 +441,7 @@
     }
   }
   Loader._all = {};
+  Loader.urls = {};
   var loader = Loader;
 
   const { collect: collect$1, create: create$1 } = ref;
@@ -625,14 +647,14 @@
     return true;
   };
 
-  let SifrrDOM = {};
-  SifrrDOM.elements = {};
-  SifrrDOM.Element = element;
-  SifrrDOM.Parser = parser;
-  SifrrDOM.makeEqual = makeequal;
-  SifrrDOM.Loader = loader;
-  SifrrDOM.register = function (Element) {
-    Element.useShadowRoot = SifrrDOM.config.useShadowRoot;
+  let SifrrDom = {};
+  SifrrDom.elements = {};
+  SifrrDom.Element = element;
+  SifrrDom.Parser = parser;
+  SifrrDom.makeEqual = makeequal;
+  SifrrDom.Loader = loader;
+  SifrrDom.register = function (Element) {
+    Element.useShadowRoot = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
     if (!name) {
       window.console.warn('Error creating Custom Element: No name given.', Element);
@@ -643,7 +665,7 @@
     } else {
       try {
         window.customElements.define(name, Element);
-        SifrrDOM.elements[name] = Element;
+        SifrrDom.elements[name] = Element;
         return true;
       } catch (error) {
         window.console.warn(`Error creating Custom Element: ${name} - ${error}`);
@@ -652,23 +674,26 @@
     }
     return false;
   };
-  SifrrDOM.addEvent = event_1;
-  SifrrDOM.setup = function (config) {
-    SifrrDOM.config = Object.assign({
+  SifrrDom.addEvent = event_1;
+  SifrrDom.setup = function (config) {
+    SifrrDom.config = Object.assign({
       baseUrl: '/',
       useShadowRoot: true
     }, config);
-    SifrrDOM.addEvent('input');
-    SifrrDOM.addEvent('change');
-    window.document.$input = SifrrDOM.Parser.twoWayBind;
-    window.document.$change = SifrrDOM.Parser.twoWayBind;
+    SifrrDom.addEvent('input');
+    SifrrDom.addEvent('change');
+    window.document.$input = SifrrDom.Parser.twoWayBind;
+    window.document.$change = SifrrDom.Parser.twoWayBind;
   };
-  SifrrDOM.SimpleElement = simpleelement;
-  SifrrDOM.load = function (elemName, config = { baseUrl: SifrrDOM.config.baseUrl }) {
-    let loader$$1 = new SifrrDOM.Loader(elemName, config);
+  SifrrDom.SimpleElement = simpleelement;
+  SifrrDom.load = function (elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
+    let loader$$1 = new SifrrDom.Loader(elemName, config);
     loader$$1.executeScripts();
   };
-  var sifrr_dom = SifrrDOM;
+  SifrrDom.relativeTo = function (elemName, relativeUrl) {
+    return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
+  };
+  var sifrr_dom = SifrrDom;
 
   return sifrr_dom;
 

@@ -4,6 +4,7 @@
       color: ${this.state.color};
     }
   </style>
+  <link rel="stylesheet" href="${Sifrr.Dom.relativeTo('sifrr-test', './test.css')}">
   okokok____ok ${this.state.text}
   <slot></slot>
   <a href="#">${
@@ -17,7 +18,7 @@
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
   <p data-attr=${this.state.attr}>binded data-attr - ${this.state.attr}</p>
-  <input value=${this.state.attr} data-sifrr-bind="attr" disabled=${this.state.disabled}>
+  <input value=${this.state.attr} data-sifrr-bind="attr" disabled="${this.state.disabled}">
   <input value=${this.state.input} data-sifrr-bind="input">
   <div data-sifrr-html='true' data-attr=${this.state.attr}>${this.state.elements}</div>
   <select name="abcd" data-sifrr-bind="select" value="${this.state.select}">

@@ -5,6 +5,7 @@ class Loader {
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     this.config = config;
+    this.constructor.urls[elemName] = this.htmlUrl;
   }
 
   get html() {
@@ -41,5 +42,6 @@ class Loader {
 }
 
 Loader._all = {};
+Loader.urls = {};
 
 module.exports = Loader;
