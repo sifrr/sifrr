@@ -70,7 +70,6 @@ const Parser = {
     // Update nodes
     const l = element._refs.length;
     for (let i = 0; i < l; i++) {
-
       const data = element.constructor.stateMap[i].ref;
       const dom = element._refs[i];
 
@@ -105,7 +104,7 @@ const Parser = {
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = docFrag.childNodes;
         }
-        if (children.length < 1) dom.textContent = '';
+        if (children.length < 1) while (dom.firstChild) dom.removeChild(dom.firstChild);
         else makeChildrenEqual(dom, children);
       } else {
         // text node

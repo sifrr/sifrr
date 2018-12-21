@@ -237,7 +237,7 @@
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
             children = docFrag.childNodes;
           }
-          if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
+          if (children.length < 1) while (dom.firstChild) dom.removeChild(dom.firstChild);else makeChildrenEqual$1(dom, children);
         } else {
           if (dom.nodeValue != newHTML) {
             dom.nodeValue = newHTML;
