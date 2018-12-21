@@ -33,7 +33,7 @@
     const fromValue = element.getAttribute(name);
     if (fromValue != newValue) {
       if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-        element.removeAttribute(name);
+        if (!element.hasAttribute(name)) element.removeAttribute(name);
       } else {
         element.setAttribute(name, newValue);
       }
@@ -84,9 +84,7 @@
       return newNode;
     }
     if (oldNode.nodeType === window.Node.TEXT_NODE || oldNode.nodeType === window.Node.COMMENT_NODE) {
-      if (oldNode.nodeValue !== newNode.nodeValue) {
-        oldNode.nodeValue = newNode.nodeValue;
-      }
+      if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
       return oldNode;
     }
     oldNode.state = newNode.state;
@@ -94,19 +92,11 @@
         newAttrs = newNode.attributes,
         attr;
     for (var i = newAttrs.length - 1; i >= 0; --i) {
-      attr = newAttrs[i];
-      const attrName = attr.name;
-      const attrValue = attr.value;
-      updateAttribute$1(oldNode, attrName, attrValue);
+      updateAttribute$1(oldNode, newAttrs[i].name, newAttrs[i].value);
     }
     for (var j = oldAttrs.length - 1; j >= 0; --j) {
       attr = oldAttrs[j];
-      if (attr.specified !== false) {
-        const attrName = attr.name;
-        if (!newNode.hasAttribute(attrName)) {
-          oldNode.removeAttribute(attrName);
-        }
-      }
+      if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
     }
     makeChildrenEqual(oldNode, newNode.childNodes);
     return oldNode;
@@ -165,14 +155,15 @@
 
   const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
   const { updateAttribute: updateAttribute$2 } = update;
+  const { collect: collect$1, create: create$1 } = ref;
   const SIFRR_NODE = window.document.createElement('sifrr-node'),
         TEXT_NODE = 3,
         COMMENT_NODE = 8,
         ELEMENT_NODE = 1;
   function isHtml(el) {
-    return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE';
+    return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
   }
-  function createStateMap(el) {
+  function creator(el) {
     if (el.nodeType === TEXT_NODE) {
       const x = el.nodeValue;
       if (x.indexOf('${') > -1) return {
@@ -205,11 +196,11 @@
     return 0;
   }
   const Parser = {
-    collectRefs: (el, stateMap) => ref.collect(el, stateMap, isHtml),
+    collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
     createStateMap: function (element) {
       let node;
       if (element.useShadowRoot) node = element.shadowRoot;else node = element;
-      return ref.create(node, createStateMap, isHtml);
+      return create$1(node, creator, isHtml);
     },
     updateState: function (element) {
       if (!element._refs) {
@@ -227,15 +218,15 @@
         }
         if (data.html === undefined) continue;
         const newHTML = Parser.evaluateString(data.text, element);
-        if (newHTML === undefined) {
+        if (!newHTML) {
           dom.textContent = '';continue;
         }
         if (data.html) {
-          let children;
+          let children = [];
           if (Array.isArray(newHTML)) {
             children = newHTML;
           } else if (newHTML.nodeType) {
-            children = [newHTML];
+            children.push(newHTML);
           } else {
             const docFrag = SIFRR_NODE.cloneNode();
             docFrag.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
@@ -444,9 +435,9 @@
   Loader.urls = {};
   var loader = Loader;
 
-  const { collect: collect$1, create: create$1 } = ref;
+  const { collect: collect$2, create: create$2 } = ref;
   const compilerTemplate = document.createElement('template');
-  function collector(node) {
+  function creator$1(node) {
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
         const attrs = Array.from(node.attributes),
@@ -498,8 +489,8 @@
       compilerTemplate.innerHTML = content;
       content = compilerTemplate.content.firstChild;
     }
-    content.stateMap = create$1(content, collector);
-    content._refs = collect$1(content, content.stateMap);
+    content.stateMap = create$2(content, creator$1);
+    content._refs = collect$2(content, content.stateMap);
     Object.defineProperty(content, 'state', {
       get: () => content._state,
       set: v => {
@@ -512,7 +503,7 @@
     content.sifrrClone = function (deep) {
       const clone = content.cloneNode(deep);
       clone.stateMap = content.stateMap;
-      clone._refs = collect$1(clone, content.stateMap);
+      clone._refs = collect$2(clone, content.stateMap);
       Object.defineProperty(clone, 'state', {
         get: () => clone._state,
         set: v => {
@@ -547,7 +538,7 @@
     }
     constructor() {
       super();
-      this._state = Object.assign({}, this.constructor.defaultState, json.parse(this.dataset.sifrrState), this.state);
+      this._state = Object.assign({}, this.constructor.defaultState, this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
       this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
@@ -560,7 +551,7 @@
       } else this.appendChild(content);
     }
     connectedCallback() {
-      parser.updateState(this);
+      if (!this.hasAttribute('data-sifrr-state')) parser.updateState(this);
       this.onConnect();
     }
     onConnect() {}
@@ -629,23 +620,50 @@
   }
   var element = Element;
 
+  const SYNTHETIC_EVENTS = {};
   const nativeToSyntheticEvent = (e, name) => {
-    let dom = e.path ? e.path[0] : e.target;
-    while (dom) {
-      const eventHandler = dom[`$${name}`];
-      if (eventHandler) {
-        eventHandler(event, name);
+    return Promise.resolve((() => {
+      let dom = e.path ? e.path[0] : e.target;
+      while (dom) {
+        const eventHandler = dom[`$${name}`];
+        if (eventHandler) {
+          eventHandler(e);
+        }
+        cssMatchEvent(e, name, dom);
+        dom = dom.parentNode || dom.host;
       }
-      dom = dom.parentNode || dom.host;
+    })());
+  };
+  const cssMatchEvent = (e, name, dom) => {
+    function callEach(fxns) {
+      fxns.forEach(fxn => fxn(e));
+    }
+    for (let css in SYNTHETIC_EVENTS[name]) {
+      if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document') callEach(SYNTHETIC_EVENTS[name][css]);
     }
   };
-  const SYNTHETIC_EVENTS = {};
-  var event_1 = name => {
-    if (SYNTHETIC_EVENTS[name]) return false;
-    window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
-    SYNTHETIC_EVENTS[name] = true;
-    return true;
+  const Event = {
+    add: name => {
+      if (SYNTHETIC_EVENTS[name]) return false;
+      window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
+      SYNTHETIC_EVENTS[name] = {};
+      return true;
+    },
+    addListener: (name, css, fxn) => {
+      const fxns = SYNTHETIC_EVENTS[name][css] || [];
+      if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
+      SYNTHETIC_EVENTS[name][css] = fxns;
+      return true;
+    },
+    removeListener: (name, css, fxn) => {
+      const fxns = SYNTHETIC_EVENTS[name][css] || [],
+            i = fxns.indexOf(fxn);
+      if (i >= 0) fxns.splice(i, 1);
+      SYNTHETIC_EVENTS[name][css] = fxns;
+      return true;
+    }
   };
+  var event = Event;
 
   let SifrrDom = {};
   SifrrDom.elements = {};
@@ -653,6 +671,8 @@
   SifrrDom.Parser = parser;
   SifrrDom.makeEqual = makeequal;
   SifrrDom.Loader = loader;
+  SifrrDom.SimpleElement = simpleelement;
+  SifrrDom.Event = event;
   SifrrDom.register = function (Element) {
     Element.useShadowRoot = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
@@ -674,24 +694,22 @@
     }
     return false;
   };
-  SifrrDom.addEvent = event_1;
   SifrrDom.setup = function (config) {
     SifrrDom.config = Object.assign({
       baseUrl: '/',
       useShadowRoot: true
     }, config);
-    SifrrDom.addEvent('input');
-    SifrrDom.addEvent('change');
-    window.document.$input = SifrrDom.Parser.twoWayBind;
-    window.document.$change = SifrrDom.Parser.twoWayBind;
+    SifrrDom.Event.add('input');
+    SifrrDom.Event.add('change');
+    SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
+    SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   };
-  SifrrDom.SimpleElement = simpleelement;
   SifrrDom.load = function (elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
     let loader$$1 = new SifrrDom.Loader(elemName, config);
     loader$$1.executeScripts();
   };
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
-    return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
+    if (typeof elemName === 'string') return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
   };
   var sifrr_dom = SifrrDom;
 

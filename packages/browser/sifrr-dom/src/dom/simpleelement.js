@@ -1,8 +1,8 @@
 const { collect, create } = require('./ref');
 const compilerTemplate = document.createElement('template');
 
-// Based on https://github.com/Freak613/stage0/blob/master/index.js
-function collector(node) {
+// Inspired from https://github.com/Freak613/stage0/blob/master/index.js
+function creator(node) {
   if (node.nodeType !== 3) {
     if (node.attributes !== undefined) {
       const attrs = Array.from(node.attributes), l = attrs.length;
@@ -51,7 +51,7 @@ function SimpleElement(content, defaultState) {
     compilerTemplate.innerHTML = content;
     content = compilerTemplate.content.firstChild;
   }
-  content.stateMap = create(content, collector);
+  content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {
     get: () => content._state,

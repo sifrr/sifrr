@@ -4,7 +4,7 @@ function updateAttribute(element, name, newValue) {
   if (fromValue != newValue) {
     // values are always cast to strings
     if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-      element.removeAttribute(name);
+      if (!element.hasAttribute(name)) element.removeAttribute(name);
     } else {
       element.setAttribute(name, newValue);
     }

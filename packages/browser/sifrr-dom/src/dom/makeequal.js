@@ -1,5 +1,6 @@
 const { updateAttribute } = require('./update');
 
+// Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function makeChildrenEqual(parent, newChildren) {
   if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
   if (newChildren.length === 0) {
@@ -44,9 +45,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   if (oldNode.nodeType === window.Node.TEXT_NODE || oldNode.nodeType === window.Node.COMMENT_NODE) {
-    if (oldNode.nodeValue !== newNode.nodeValue) {
-      oldNode.nodeValue = newNode.nodeValue;
-    }
+    if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
     return oldNode;
   }
 
@@ -56,21 +55,13 @@ function makeEqual(oldNode, newNode) {
   // copy Attributes
   let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
   for (var i = newAttrs.length - 1; i >= 0; --i) {
-    attr = newAttrs[i];
-    const attrName = attr.name;
-    const attrValue = attr.value;
-    updateAttribute(oldNode, attrName, attrValue);
+    updateAttribute(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
 
   // Remove any extra attributes
   for (var j = oldAttrs.length - 1; j >= 0; --j) {
     attr = oldAttrs[j];
-    if (attr.specified !== false) {
-      const attrName = attr.name;
-      if (!newNode.hasAttribute(attrName)) {
-        oldNode.removeAttribute(attrName);
-      }
-    }
+    if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
   }
 
   // make children equal

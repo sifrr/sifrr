@@ -1,6 +1,6 @@
 # sifrr-dom
 
-Sifrr's DOM library for creating user interfaces for websites.
+A < 5KB Frontend Framework library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
 
 ### Size
 | Type | Size     |
@@ -13,7 +13,7 @@ Sifrr's DOM library for creating user interfaces for websites.
 ### Directly in Browser using standalone distribution
 Add script tag in your website.
 ```html
-<script src="https://unpkg.com/@sifrr/dom@0.1.0-alpha/dist/sifrr.dom.min.js"></script>
+<script src="https://unpkg.com/@sifrr/dom@0.1.0-alpha1/dist/sifrr.dom.min.js"></script>
 ```
 
 #### Compatibility table for standalone distribution (Needs support for JavaScript Custom Elements and Shadow DOM)

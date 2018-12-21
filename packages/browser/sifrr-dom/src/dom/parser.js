@@ -1,16 +1,20 @@
 const { makeChildrenEqual } = require('./makeequal');
 const { updateAttribute } = require('./update');
-const Ref = require('./ref');
+const { collect, create } = require('./ref');
 const SIFRR_NODE = window.document.createElement('sifrr-node'),
   TEXT_NODE = 3,
   COMMENT_NODE = 8,
   ELEMENT_NODE = 1;
 
 function isHtml(el) {
-  return (el.dataset && el.dataset.sifrrHtml == 'true') || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE';
+  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
+    el.contentEditable == 'true' ||
+    el.nodeName == 'TEXTAREA' ||
+    el.nodeName == 'STYLE' ||
+    (el.dataset && el.dataset.sifrrRepeat);
 }
 
-function createStateMap(el) {
+function creator(el) {
   if (el.nodeType === TEXT_NODE) {
     // text node
     const x = el.nodeValue;
@@ -48,13 +52,13 @@ function createStateMap(el) {
 }
 
 const Parser = {
-  collectRefs: (el, stateMap) => Ref.collect(el, stateMap, isHtml),
+  collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
   createStateMap: function(element) {
     let node;
     if (element.useShadowRoot) node = element.shadowRoot;
     else node = element;
 
-    return Ref.create(node, createStateMap, isHtml);
+    return create(node, creator, isHtml);
   },
   updateState: function(element) {
     if (!element._refs) {
@@ -79,15 +83,15 @@ const Parser = {
 
       // update element
       const newHTML = Parser.evaluateString(data.text, element);
-      if (newHTML === undefined) { dom.textContent = ''; continue; }
+      if (!newHTML) { dom.textContent = ''; continue; }
 
       if (data.html) {
         // html node
-        let children;
+        let children = [];
         if (Array.isArray(newHTML)) {
           children = newHTML;
         } else if (newHTML.nodeType) {
-          children = [newHTML];
+          children.push(newHTML);
         } else {
           const docFrag = SIFRR_NODE.cloneNode();
           docFrag.innerHTML = newHTML.toString()

@@ -28,7 +28,7 @@ class Element extends window.HTMLElement {
   constructor() {
     super();
     // this._oldState = {};
-    this._state = Object.assign({}, this.constructor.defaultState, JsonExt.parse(this.dataset.sifrrState), this.state);
+    this._state = Object.assign({}, this.constructor.defaultState, this.state);
     const content = this.constructor.template.content.cloneNode(true);
     this._refs = Parser.collectRefs(content, this.constructor.stateMap);
     this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
@@ -42,7 +42,7 @@ class Element extends window.HTMLElement {
   }
 
   connectedCallback() {
-    Parser.updateState(this);
+    if(!this.hasAttribute('data-sifrr-state')) Parser.updateState(this);
     this.onConnect();
   }
 
