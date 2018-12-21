@@ -178,8 +178,11 @@
     } else if (el.nodeType === ELEMENT_NODE) {
       const ref$$1 = {};
       if (isHtml(el)) {
-        ref$$1.html = true;
-        ref$$1.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+        const innerHTML = el.innerHTML;
+        if (innerHTML.indexOf('${') >= 0) {
+          ref$$1.html = true;
+          ref$$1.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+        }
       }
       const attrs = el.attributes || [],
             l = attrs.length;
@@ -197,12 +200,12 @@
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
-    createStateMap: function (element) {
+    createStateMap: element => {
       let node;
       if (element.useShadowRoot) node = element.shadowRoot;else node = element;
       return create$1(node, creator, isHtml);
     },
-    updateState: function (element) {
+    updateState: element => {
       if (!element._refs) {
         return false;
       }
@@ -229,7 +232,9 @@
             children.push(newHTML);
           } else {
             const docFrag = SIFRR_NODE.cloneNode();
-            docFrag.innerHTML = newHTML.toString().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>').replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+            docFrag.innerHTML = newHTML.toString()
+            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
             children = docFrag.childNodes;
           }
           if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
@@ -239,9 +244,9 @@
           }
         }
       }
-      if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
+      element.onStateChange();
     },
-    twoWayBind: function (e) {
+    twoWayBind: e => {
       const target = e.path ? e.path[0] : e.target;
       if (!target.dataset.sifrrBind) return;
       const value = target.value === undefined ? target.innerHTML : target.value;
@@ -249,7 +254,7 @@
       state[target.dataset.sifrrBind] = value;
       target.getRootNode().host.state = state;
     },
-    evaluateString: function (string, element) {
+    evaluateString: (string, element) => {
       if (string.indexOf('${') < 0) return string;
       string = string.trim();
       if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
@@ -575,6 +580,7 @@
       Object.assign(this._state, v);
       parser.updateState(this);
     }
+    onStateChange() {}
     isSifrr(name = null) {
       if (name) return name == this.constructor.elementName;else return true;
     }
@@ -661,6 +667,9 @@
       if (i >= 0) fxns.splice(i, 1);
       SYNTHETIC_EVENTS[name][css] = fxns;
       return true;
+    },
+    trigger: (el, name, options) => {
+      el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
     }
   };
   var event = Event;

@@ -75,6 +75,8 @@ class Element extends window.HTMLElement {
     Parser.updateState(this);
   }
 
+  onStateChange() {}
+
   isSifrr(name = null) {
     if (name) return name == this.constructor.elementName;
     else return true;

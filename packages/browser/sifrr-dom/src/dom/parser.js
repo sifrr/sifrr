@@ -32,8 +32,11 @@ function creator(el) {
     const ref = {};
     // Html ?
     if (isHtml(el)) {
-      ref.html = true;
-      ref.text = el.innerHTML.replace(/<!--(.*)-->/g, '$1');
+      const innerHTML = el.innerHTML;
+      if (innerHTML.indexOf('${') >= 0) {
+        ref.html = true;
+        ref.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+      }
     }
     // attributes
     const attrs = el.attributes || [], l = attrs.length;
@@ -53,14 +56,14 @@ function creator(el) {
 
 const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
-  createStateMap: function(element) {
+  createStateMap: (element) => {
     let node;
     if (element.useShadowRoot) node = element.shadowRoot;
     else node = element;
 
     return create(node, creator, isHtml);
   },
-  updateState: function(element) {
+  updateState: (element) => {
     if (!element._refs) {
       return false;
     }
@@ -94,11 +97,12 @@ const Parser = {
           children.push(newHTML);
         } else {
           const docFrag = SIFRR_NODE.cloneNode();
+          // Replace html characters taken from input/contenteditable/textarea
           docFrag.innerHTML = newHTML.toString()
-            .replace(/&amp;/g, '&')
-            .replace(/&nbsp;/g, ' ')
+            // All closing tags
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-            .replace(/(&lt;)(input|link|img|br|hr|col|keygen)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+            // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = docFrag.childNodes;
         }
         if (children.length < 1) dom.textContent = '';
@@ -112,9 +116,9 @@ const Parser = {
 
     }
 
-    if (typeof this.onStateUpdate === 'function') this.onStateUpdate();
+    element.onStateChange();
   },
-  twoWayBind: function(e) {
+  twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
     const value = target.value === undefined ? target.innerHTML : target.value;
@@ -122,7 +126,7 @@ const Parser = {
     state[target.dataset.sifrrBind] = value;
     target.getRootNode().host.state = state;
   },
-  evaluateString: function(string, element) {
+  evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
     if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);

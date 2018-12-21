@@ -43,6 +43,9 @@ const Event = {
     if (i >= 0) fxns.splice(i, 1);
     SYNTHETIC_EVENTS[name][css] = fxns;
     return true;
+  },
+  trigger: (el, name, options) => {
+    el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
   }
 };
 
