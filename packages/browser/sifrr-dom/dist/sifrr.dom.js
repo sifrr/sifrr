@@ -53,13 +53,9 @@
     }
     let l = parent.childNodes.length;
     if (l > newChildren.length) {
-      let i = l,
-          tail = parent.lastChild,
-          tmp;
+      let i = l;
       while (i > newChildren.length) {
-        tmp = tail.previousSibling;
-        parent.removeChild(tail);
-        tail = tmp;
+        parent.removeChild(parent.lastChild);
         i--;
       }
     }
@@ -714,8 +710,10 @@
     SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   };
   SifrrDom.load = function (elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
-    let loader$$1 = new SifrrDom.Loader(elemName, config);
-    loader$$1.executeScripts();
+    return Promise.resolve((() => {
+      let loader$$1 = new SifrrDom.Loader(elemName, config);
+      loader$$1.executeScripts();
+    })());
   };
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
     if (typeof elemName === 'string') return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);

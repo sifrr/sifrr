@@ -10,11 +10,9 @@ function makeChildrenEqual(parent, newChildren) {
   // Lesser children now
   let l = parent.childNodes.length;
   if (l > newChildren.length) {
-    let i = l, tail = parent.lastChild, tmp;
+    let i = l;
     while(i > newChildren.length) {
-      tmp = tail.previousSibling;
-      parent.removeChild(tail);
-      tail = tmp;
+      parent.removeChild(parent.lastChild);
       i--;
     }
   }
