@@ -185,7 +185,7 @@
       const attrStateMap = {};
       for (let i = 0; i < l; i++) {
         const attribute = attrs[i];
-        if (attribute.value.indexOf('${') > -1) {
+        if (attribute.value.indexOf('${') >= 0) {
           attrStateMap[attribute.name] = attribute.value;
         }
       }
@@ -240,7 +240,7 @@
           }
         }
       }
-      element.onStateChange();
+      element.onStateChange(element.state);
     },
     twoWayBind: e => {
       const target = e.path ? e.path[0] : e.target;
@@ -420,7 +420,7 @@
     executeScripts() {
       return this.html.then(file => {
         file.querySelectorAll('script').forEach(script => {
-          let fxn = new Function(script.text).bind(window);
+          const fxn = new Function(script.text).bind(window);
           fxn();
         });
       });
@@ -488,8 +488,9 @@
   function SimpleElement(content, defaultState) {
     if (typeof content === 'string') {
       compilerTemplate.innerHTML = content;
-      content = compilerTemplate.content.firstChild;
+      content = compilerTemplate.content.firstElementChild || compilerTemplate.content.firstChild;
     }
+    if (content.isSifrr && content.isSifrr()) return content;
     content.stateMap = create$2(content, creator$1);
     content._refs = collect$2(content, content.stateMap);
     Object.defineProperty(content, 'state', {
@@ -513,7 +514,7 @@
           updateState(clone);
         }
       });
-      if (defaultState) clone.state = defaultState;
+      if (content.state) clone.state = content.state;
       return clone;
     };
     return content;
@@ -572,13 +573,17 @@
       return this._state;
     }
     set state(v) {
-      this._oldState = this.state;
       Object.assign(this._state, v);
       parser.updateState(this);
     }
     onStateChange() {}
     isSifrr(name = null) {
-      if (name) return name == this.constructor.elementName;else return true;
+      if (name) return name === this.constructor.elementName;else return true;
+    }
+    sifrrClone(deep) {
+      const clone = this.cloneNode(deep);
+      clone.state = this.state;
+      return clone;
     }
     clearState() {
       this._state = {};
@@ -710,10 +715,10 @@
     SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   };
   SifrrDom.load = function (elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
-    return Promise.resolve((() => {
+    return new Promise(res => {
       let loader$$1 = new SifrrDom.Loader(elemName, config);
-      loader$$1.executeScripts();
-    })());
+      loader$$1.executeScripts().then(() => res());
+    });
   };
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
     if (typeof elemName === 'string') return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);

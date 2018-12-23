@@ -43,7 +43,7 @@ function creator(el) {
     const attrStateMap = {};
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.value.indexOf('${') > -1) {
+      if (attribute.value.indexOf('${') >= 0) {
         attrStateMap[attribute.name] = attribute.value;
       }
     }
@@ -115,7 +115,7 @@ const Parser = {
 
     }
 
-    element.onStateChange();
+    element.onStateChange(element.state);
   },
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;

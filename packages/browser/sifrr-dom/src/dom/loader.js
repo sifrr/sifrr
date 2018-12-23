@@ -26,7 +26,7 @@ class Loader {
   executeScripts() {
     return this.html.then((file) => {
       file.querySelectorAll('script').forEach((script) => {
-        let fxn = new Function(script.text).bind(window);
+        const fxn = new Function(script.text).bind(window);
         fxn();
       });
     });

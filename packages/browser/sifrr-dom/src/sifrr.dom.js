@@ -51,10 +51,10 @@ SifrrDom.setup = function(config) {
 
 // Load Element HTML and execute script in it
 SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
-  return Promise.resolve((() => {
+  return new Promise((res) => {
     let loader = new SifrrDom.Loader(elemName, config);
-    loader.executeScripts();
-  })());
+    loader.executeScripts().then(() => res());
+  });
 };
 
 // Relative path to element html

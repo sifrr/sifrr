@@ -70,7 +70,7 @@ class Element extends window.HTMLElement {
   }
 
   set state(v) {
-    this._oldState = this.state;
+    // this._oldState = this.state;
     Object.assign(this._state, v);
     Parser.updateState(this);
   }
@@ -78,8 +78,14 @@ class Element extends window.HTMLElement {
   onStateChange() {}
 
   isSifrr(name = null) {
-    if (name) return name == this.constructor.elementName;
+    if (name) return name === this.constructor.elementName;
     else return true;
+  }
+
+  sifrrClone(deep) {
+    const clone = this.cloneNode(deep);
+    clone.state = this.state;
+    return clone;
   }
 
   clearState() {
@@ -100,7 +106,7 @@ class Element extends window.HTMLElement {
 
   static addArrayToDom(key, template) {
     this._arrayToDom = this._arrayToDom || {};
-    // state of simple element is array item
+    // state of simple element is single array item, if sifrr element then use as it is, else use Simple element
     this._arrayToDom[key] = SimpleElement(template);
   }
 
@@ -108,7 +114,6 @@ class Element extends window.HTMLElement {
     this._domL = this._domL || {};
     const oldL = this._domL[key];
     const domArray = [];
-    // const oldState = this._oldState[key];
     const newL = newState.length;
     if (!oldL) {
       for (let i = 0; i < newL; i++) {
@@ -119,8 +124,6 @@ class Element extends window.HTMLElement {
     } else {
       for (let i = 0; i < newL; i++) {
         if (i < oldL) {
-          // if (JsonExt.shallowEqual(oldState[i], newState[i])) domArray.push(null);
-          // else
           domArray.push({ type: 'stateChange', state: newState[i] });
         } else {
           const el = this.constructor._arrayToDom[key].sifrrClone(true);

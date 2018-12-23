@@ -49,8 +49,9 @@ function updateState(simpleEl) {
 function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     compilerTemplate.innerHTML = content;
-    content = compilerTemplate.content.firstChild;
+    content = compilerTemplate.content.firstElementChild || compilerTemplate.content.firstChild;
   }
+  if (content.isSifrr && content.isSifrr()) return content;
   content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {
@@ -75,7 +76,7 @@ function SimpleElement(content, defaultState) {
         updateState(clone);
       }
     });
-    if (defaultState) clone.state = defaultState;
+    if (content.state) clone.state = content.state;
     return clone;
   };
 
