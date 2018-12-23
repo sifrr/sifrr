@@ -1,10 +1,10 @@
 {
-  "name": "@sifrr/sw",
+  "name": "@sifrr/serviceworker",
   "version": "0.0.1-alpha",
   "description": "Service Worker with customizations.",
   "licence": "MIT",
-  "main": "src/sifrr.sw.js",
-  "browser": "dist/sifrr.sw.js",
+  "main": "src/sifrr.serviceworker.js",
+  "browser": "dist/sifrr.serviceworker.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "test": "mocha --timeout 10000 test/**/*.js",
-    "jtest": "MOCHA_FILE=../../../test-results/sifrr-sw/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*.js",
+    "jtest": "MOCHA_FILE=../../../test-results/sifrr-serviceworker/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*.js",
     "browser-test": "mocha --timeout 5000 test/browser/*.js",
     "unit-test": "mocha test/unit/*.js",
     "rollup": "./node_modules/.bin/rollup -c"

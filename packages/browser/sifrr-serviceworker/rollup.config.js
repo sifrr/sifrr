@@ -1,4 +1,4 @@
 const getConfig = require('../../../rollup.base');
 
-export default getConfig('Sifrr.Sw');
+export default getConfig('Sifrr.Serviceworker');
 
