@@ -4,7 +4,7 @@
     "packages/*/*"
   ],
   "version": "0.0.1-alpha",
-  "description": "sifrr",
+  "description": "a vanilla js fullstack framework",
   "licence": "MIT",
   "browserslist": [
     "chrome >= 55",

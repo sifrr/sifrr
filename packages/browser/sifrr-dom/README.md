@@ -1,6 +1,6 @@
 # sifrr-dom
 
-A < 5KB Frontend Framework library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
+A < 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
 
 ### Size
 | Type | Size     |
