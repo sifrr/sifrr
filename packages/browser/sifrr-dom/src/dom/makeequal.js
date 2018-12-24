@@ -43,7 +43,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   if (oldNode.nodeType === window.Node.TEXT_NODE || oldNode.nodeType === window.Node.COMMENT_NODE) {
-    if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
+    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
     return oldNode;
   }
 
