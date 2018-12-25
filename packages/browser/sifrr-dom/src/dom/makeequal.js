@@ -3,11 +3,6 @@ const { shallowEqual } = require('../utils/json');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function makeChildrenEqual(parent, newChildren) {
-  if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
-  if (newChildren.length === 0) {
-    parent.textContent = '';
-    return;
-  }
   // Lesser children now
   let l = parent.childNodes.length;
   if (l > newChildren.length) {

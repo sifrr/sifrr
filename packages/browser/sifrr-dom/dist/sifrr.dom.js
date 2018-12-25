@@ -114,11 +114,6 @@
   const { updateAttribute: updateAttribute$1 } = update;
   const { shallowEqual } = json;
   function makeChildrenEqual(parent, newChildren) {
-    if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
-    if (newChildren.length === 0) {
-      parent.textContent = '';
-      return;
-    }
     let l = parent.childNodes.length;
     if (l > newChildren.length) {
       let i = l;
@@ -286,27 +281,27 @@
           }
         }
         if (data.html === undefined) continue;
-        const newHTML = Parser.evaluateString(data.text, element);
-        if (!newHTML) {
+        const newValue = Parser.evaluateString(data.text, element);
+        if (!newValue) {
           dom.textContent = '';continue;
         }
         if (data.html) {
-          let children = [];
-          if (Array.isArray(newHTML)) {
-            children = newHTML;
-          } else if (newHTML.nodeType) {
-            children.push(newHTML);
+          let children;
+          if (Array.isArray(newValue)) {
+            children = newValue;
+          } else if (newValue.nodeType) {
+            children = [newValue];
           } else {
             const docFrag = SIFRR_NODE.cloneNode();
-            docFrag.innerHTML = newHTML.toString()
+            docFrag.innerHTML = newValue.toString()
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-            children = docFrag.childNodes;
+            children = Array.prototype.slice.call(docFrag.childNodes);
           }
-          if (children.length < 1) while (dom.firstChild) dom.removeChild(dom.firstChild);else makeChildrenEqual$1(dom, children);
+          if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
         } else {
-          if (dom.nodeValue != newHTML) {
-            dom.nodeValue = newHTML;
+          if (dom.nodeValue != newValue) {
+            dom.nodeValue = newValue;
           }
         }
       }

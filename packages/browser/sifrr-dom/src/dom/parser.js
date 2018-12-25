@@ -84,32 +84,32 @@ const Parser = {
       if (data.html === undefined) continue;
 
       // update element
-      const newHTML = Parser.evaluateString(data.text, element);
-      if (!newHTML) { dom.textContent = ''; continue; }
+      const newValue = Parser.evaluateString(data.text, element);
+      if (!newValue) { dom.textContent = ''; continue; }
 
       if (data.html) {
         // html node
-        let children = [];
-        if (Array.isArray(newHTML)) {
-          children = newHTML;
-        } else if (newHTML.nodeType) {
-          children.push(newHTML);
+        let children;
+        if (Array.isArray(newValue)) {
+          children = newValue;
+        } else if (newValue.nodeType) {
+          children = [newValue];
         } else {
           const docFrag = SIFRR_NODE.cloneNode();
-          // Replace html characters taken from input/contenteditable/textarea
-          docFrag.innerHTML = newHTML.toString()
+          // Replace html tags in input from input/contenteditable/textarea
+          docFrag.innerHTML = newValue.toString()
             // All closing tags
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
             // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = docFrag.childNodes;
+          children = Array.prototype.slice.call(docFrag.childNodes);
         }
-        if (children.length < 1) while (dom.firstChild) dom.removeChild(dom.firstChild);
+        if (children.length < 1) dom.textContent = '';
         else makeChildrenEqual(dom, children);
       } else {
         // text node
-        if (dom.nodeValue != newHTML) {
-          dom.nodeValue = newHTML;
+        if (dom.nodeValue != newValue) {
+          dom.nodeValue = newValue;
         }
       }
 
