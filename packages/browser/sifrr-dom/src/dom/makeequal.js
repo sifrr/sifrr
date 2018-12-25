@@ -48,7 +48,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   // copy sifrr state
-  oldNode.state = newNode.state;
+  if (newNode.state) oldNode.state = newNode.state;
 
   // copy Attributes
   let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;

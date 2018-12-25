@@ -83,7 +83,7 @@
       if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
       return oldNode;
     }
-    oldNode.state = newNode.state;
+    if (newNode.state) oldNode.state = newNode.state;
     let oldAttrs = oldNode.attributes,
         newAttrs = newNode.attributes,
         attr;
