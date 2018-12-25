@@ -1,4 +1,4 @@
-const CACHE_VERSION = '0';
+const CACHE_VERSION = '1';
 const POLICIES = {
   'default': {
     type: 'NETWORK_FIRST',
@@ -8,43 +8,45 @@ const POLICIES = {
 
 const FALLBACK_CACHE = 'fallbacks';
 const FALLBACKS = {
-  'default': './index.html'
+  'default': './404.html'
 };
 
 const PRECACHE_URLS = [];
 
-self.addEventListener('install', event => {
-  self.skipWaiting(); // replace sw ASAP
-  event.waitUntil(precache(PRECACHE_URLS, FALLBACKS));
-});
+function setupSifrrSW() {
+  self.addEventListener('install', event => {
+    self.skipWaiting(); // replace sw ASAP
+    event.waitUntil(precache(PRECACHE_URLS, FALLBACKS));
+  });
 
-self.addEventListener('activate', event => {
-  let currentCaches = [FALLBACK_CACHE + '-v' + CACHE_VERSION];
-  for (let [key, value] of Object.entries(POLICIES)) {
-    currentCaches.push(value.cache + '-v' + CACHE_VERSION);
-  }
-  caches.keys().then(cacheNames => {
-    return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-  }).then(cachesToDelete => {
-    return Promise.all(cachesToDelete.map(cacheToDelete => {
-      return caches.delete(cacheToDelete);
-    }));
-  }).then(() => self.clients.claim());
-}); // remove old caches versions and add new ones
+  self.addEventListener('activate', () => {
+    let currentCaches = [FALLBACK_CACHE + '-v' + CACHE_VERSION];
+    for (let [, value] of Object.entries(POLICIES)) {
+      currentCaches.push(value.cache + '-v' + CACHE_VERSION);
+    }
+    caches.keys().then(cacheNames => {
+      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
+    }).then(cachesToDelete => {
+      return Promise.all(cachesToDelete.map(cacheToDelete => {
+        return caches.delete(cacheToDelete);
+      }));
+    }).then(() => self.clients.claim());
+  }); // remove old caches versions and add new ones
 
-self.addEventListener('fetch', event => {
-  let request = event.request;
-  let otherReq = request.clone();
-  let oreq = request.clone();
-  if (request.method === 'GET') {
-    event.respondWith(respondWithPolicy(request).then(response => {
-      if (!response.ok && response.status > 0 && findRegex(oreq.url, FALLBACKS)) {
-        throw Error('response status ' + response.status);
-      }
-      return response;
-    }).catch(rsn => respondWithFallback(otherReq)));
-  }
-});
+  self.addEventListener('fetch', event => {
+    let request = event.request;
+    let otherReq = request.clone();
+    let oreq = request.clone();
+    if (request.method === 'GET') {
+      event.respondWith(respondWithPolicy(request).then(response => {
+        if (!response.ok && response.status > 0 && findRegex(oreq.url, FALLBACKS)) {
+          throw Error('response status ' + response.status);
+        }
+        return response;
+      }).catch(() => respondWithFallback(otherReq)));
+    }
+  });
+}
 
 function findRegex (url, obj) {
   for (let [key, value] of Object.entries(obj)) {
@@ -99,7 +101,7 @@ function precache (urls, fbs) {
     let req = requestFromURL(u);
     return promises.push(fromNetwork(req, findRegex(u, POLICIES).cache));
   });
-  for (let [key, value] of Object.entries(fbs)) {
+  for (let [, value] of Object.entries(fbs)) {
     let req = requestFromURL(value);
     promises.push(fromNetwork(req, FALLBACK_CACHE));
   }
@@ -117,3 +119,5 @@ function fromCache (request, cache) {
 function fromNetwork (request, cache) {
   return caches.open(cache + '-v' + CACHE_VERSION).then(cache => fetch(request).then(response => cache.put(request, response.clone()).then(() => response)));
 }
+
+module.exports = setupSifrrSW();
