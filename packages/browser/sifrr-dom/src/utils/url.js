@@ -1,5 +1,5 @@
-class URLExt {
-  static absolute(base, relative) {
+const URLExt = {
+  absolute: (base, relative) => {
     let stack = base.split('/'),
       parts = relative.split('/');
     stack.pop();
@@ -12,9 +12,8 @@ class URLExt {
         stack.push(parts[i]);
     }
     return stack.join('/');
-  }
-
-  static getRoutes(url) {
+  },
+  getRoutes: (url) => {
     if (url[0] != '/') {
       url = '/' + url;
     }
@@ -24,6 +23,6 @@ class URLExt {
     }
     return url.split('/');
   }
-}
+};
 
 module.exports = URLExt;

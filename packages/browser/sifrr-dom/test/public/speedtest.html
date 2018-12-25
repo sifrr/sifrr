@@ -16,17 +16,18 @@
     Sifrr.Dom.Event.add('click');
     Sifrr.Dom.load('main-element');
     const sft = document.querySelector('main-element');
-    var startMeasure = function(name) {
+    let startTime, lastMeasure;
+    let startMeasure = function(name) {
       startTime = performance.now();
       lastMeasure = name;
     }
-    var stopMeasure = function() {
-      var last = lastMeasure;
+    let stopMeasure = function() {
+      let last = lastMeasure;
       if (lastMeasure) {
         window.setTimeout(function() {
           lastMeasure = null;
-          var stop = performance.now();
-          var duration = 0;
+          let stop = performance.now();
+          let duration = 0;
           console.log(last + " took " + (stop - startTime));
         }, 0);
       }
@@ -122,7 +123,8 @@
       for (let i = 0; i < count; i++)
         data.push({
           id: i + from,
-          label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)]
+          label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)],
+          class: null
         });
       from = from + count;
       return data;

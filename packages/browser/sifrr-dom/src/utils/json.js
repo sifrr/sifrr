@@ -1,5 +1,5 @@
-class Json {
-  static parse(data) {
+const Json = {
+  parse: (data) => {
     let ans = {};
     if (typeof data == 'string') {
       try {
@@ -7,31 +7,29 @@ class Json {
       } catch(e) {
         return data;
       }
-      return this.parse(ans);
+      return Json.parse(ans);
     } else if (Array.isArray(data)) {
       ans = [];
       data.forEach((v, i) => {
-        ans[i] = this.parse(v);
+        ans[i] = Json.parse(v);
       });
     } else if (typeof data == 'object') {
       for (const k in data) {
-        ans[k] = this.parse(data[k]);
+        ans[k] = Json.parse(data[k]);
       }
     } else {
       return data;
     }
     return ans;
-  }
-
-  static stringify(data) {
+  },
+  stringify: (data) => {
     if (typeof data == 'string') {
       return data;
     } else {
       return JSON.stringify(data);
     }
-  }
-
-  static shallowEqual(a, b) {
+  },
+  shallowEqual: (a, b) => {
     for(let key in a) {
       if(!(key in b) || a[key] != b[key]) {
         return false;
@@ -43,9 +41,8 @@ class Json {
       }
     }
     return true;
-  }
-
-  static deepClone(json) {
+  },
+  deepClone: (json) => {
     if (Array.isArray(json)) return json.map((i) => Json.deepClone(i));
     if (typeof json !== 'object' || json === null) return json;
     let clone = {};
@@ -54,6 +51,6 @@ class Json {
     }
     return clone;
   }
-}
+};
 
 module.exports = Json;

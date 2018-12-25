@@ -5,8 +5,8 @@
   (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory());
 }(this, (function () { 'use strict';
 
-  class URLExt {
-    static absolute(base, relative) {
+  const URLExt = {
+    absolute: (base, relative) => {
       let stack = base.split('/'),
           parts = relative.split('/');
       stack.pop();
@@ -15,8 +15,8 @@
         if (parts[i] == '..') stack.pop();else stack.push(parts[i]);
       }
       return stack.join('/');
-    }
-    static getRoutes(url) {
+    },
+    getRoutes: url => {
       if (url[0] != '/') {
         url = '/' + url;
       }
@@ -26,25 +26,93 @@
       }
       return url.split('/');
     }
-  }
+  };
   var url = URLExt;
 
   function updateAttribute(element, name, newValue) {
-    const fromValue = element.getAttribute(name);
-    if (fromValue != newValue) {
-      if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-        if (!element.hasAttribute(name)) element.removeAttribute(name);
-      } else {
-        element.setAttribute(name, newValue);
+    if (name === 'class') {
+      const fromValue = element.className;
+      if (fromValue != newValue) {
+        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+          element.className = '';
+        } else {
+          element.className = newValue;
+        }
       }
+    } else {
+      const fromValue = element.getAttribute(name);
+      if (fromValue != newValue) {
+        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+          if (fromValue) element.removeAttribute(name);
+        } else {
+          element.setAttribute(name, newValue);
+        }
+      }
+      if (element.nodeName == 'SELECT' && name == 'value') element.value = newValue;
     }
-    if (element.nodeName == 'SELECT' && name == 'value') element.value = newValue;
   }
   var update = {
     updateAttribute: updateAttribute
   };
 
+  const Json = {
+    parse: data => {
+      let ans = {};
+      if (typeof data == 'string') {
+        try {
+          ans = JSON.parse(data);
+        } catch (e) {
+          return data;
+        }
+        return Json.parse(ans);
+      } else if (Array.isArray(data)) {
+        ans = [];
+        data.forEach((v, i) => {
+          ans[i] = Json.parse(v);
+        });
+      } else if (typeof data == 'object') {
+        for (const k in data) {
+          ans[k] = Json.parse(data[k]);
+        }
+      } else {
+        return data;
+      }
+      return ans;
+    },
+    stringify: data => {
+      if (typeof data == 'string') {
+        return data;
+      } else {
+        return JSON.stringify(data);
+      }
+    },
+    shallowEqual: (a, b) => {
+      for (let key in a) {
+        if (!(key in b) || a[key] != b[key]) {
+          return false;
+        }
+      }
+      for (let key in b) {
+        if (!(key in a) || a[key] != b[key]) {
+          return false;
+        }
+      }
+      return true;
+    },
+    deepClone: json => {
+      if (Array.isArray(json)) return json.map(i => Json.deepClone(i));
+      if (typeof json !== 'object' || json === null) return json;
+      let clone = {};
+      for (let key in json) {
+        clone[key] = Json.deepClone(json[key]);
+      }
+      return clone;
+    }
+  };
+  var json = Json;
+
   const { updateAttribute: updateAttribute$1 } = update;
+  const { shallowEqual } = json;
   function makeChildrenEqual(parent, newChildren) {
     if (!Array.isArray(newChildren)) newChildren = Array.prototype.slice.call(newChildren);
     if (newChildren.length === 0) {
@@ -72,7 +140,9 @@
   function makeEqual(oldNode, newNode) {
     if (newNode === null) return oldNode;
     if (newNode.type === 'stateChange') {
-      if (oldNode.state !== newNode.state) oldNode.state = newNode.state;
+      if (!shallowEqual(oldNode.state, newNode.state)) {
+        oldNode.state = newNode.state;
+      }
       return oldNode;
     }
     if (oldNode.nodeName !== newNode.nodeName) {
@@ -269,62 +339,6 @@
   };
   var parser = Parser;
 
-  class Json {
-    static parse(data) {
-      let ans = {};
-      if (typeof data == 'string') {
-        try {
-          ans = JSON.parse(data);
-        } catch (e) {
-          return data;
-        }
-        return this.parse(ans);
-      } else if (Array.isArray(data)) {
-        ans = [];
-        data.forEach((v, i) => {
-          ans[i] = this.parse(v);
-        });
-      } else if (typeof data == 'object') {
-        for (const k in data) {
-          ans[k] = this.parse(data[k]);
-        }
-      } else {
-        return data;
-      }
-      return ans;
-    }
-    static stringify(data) {
-      if (typeof data == 'string') {
-        return data;
-      } else {
-        return JSON.stringify(data);
-      }
-    }
-    static shallowEqual(a, b) {
-      for (let key in a) {
-        if (!(key in b) || a[key] != b[key]) {
-          return false;
-        }
-      }
-      for (let key in b) {
-        if (!(key in a) || a[key] != b[key]) {
-          return false;
-        }
-      }
-      return true;
-    }
-    static deepClone(json) {
-      if (Array.isArray(json)) return json.map(i => Json.deepClone(i));
-      if (typeof json !== 'object' || json === null) return json;
-      let clone = {};
-      for (let key in json) {
-        clone[key] = Json.deepClone(json[key]);
-      }
-      return clone;
-    }
-  }
-  var json = Json;
-
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function createCommonjsModule(fn, module) {
@@ -478,7 +492,9 @@
         const l = data.length;
         for (let i = 0; i < l; i++) {
           const attr = data[i];
-          if (oldState[attr.text] != newState[attr.text]) dom.setAttribute(attr.name, newState[attr.text]);
+          if (oldState[attr.text] !== newState[attr.text]) {
+            if (attr.name === 'class') dom.className = newState[attr.text] || '';else dom.setAttribute(attr.name, newState[attr.text]);
+          }
         }
       } else {
         if (oldState[data] != newState[data]) dom.nodeValue = newState[data];

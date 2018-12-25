@@ -38,7 +38,10 @@ function updateState(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        if (oldState[attr.text] != newState[attr.text]) dom.setAttribute(attr.name, newState[attr.text]);
+        if (oldState[attr.text] !== newState[attr.text]) {
+          if (attr.name === 'class') dom.className = newState[attr.text] || '';
+          else dom.setAttribute(attr.name, newState[attr.text]);
+        }
       }
     } else {
       if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
