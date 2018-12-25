@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.1.0-alpha2 - sifrr project - 2018/12/18 23:17:44 UTC */
+/*! Sifrr.Storage v0.0.1-alpha - sifrr project - 2018/12/25 17:58:27 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -453,3 +453,4 @@
 
 })));
 /*! (c) @aadityataparia */
+//# sourceMappingURL=sifrr.storage.js.map

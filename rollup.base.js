@@ -18,7 +18,8 @@ module.exports = function getRollupConfig(name) {
         format: 'umd',
         name: name,
         banner: banner,
-        footer: footer
+        footer: footer,
+        sourcemap: true
       },
       plugins: [
         resolve({
@@ -39,7 +40,8 @@ module.exports = function getRollupConfig(name) {
         format: 'umd',
         name: name,
         banner: banner,
-        footer: footer
+        footer: footer,
+        sourcemap: true
       },
       plugins: [
         resolve({
@@ -57,5 +59,5 @@ module.exports = function getRollupConfig(name) {
         })
       ]
     }
-  ]
+  ];
 };

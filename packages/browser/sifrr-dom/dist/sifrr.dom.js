@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/20 19:00:05 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/25 17:57:50 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -745,3 +745,4 @@
 
 })));
 /*! (c) @aadityataparia */
+//# sourceMappingURL=sifrr.dom.js.map
