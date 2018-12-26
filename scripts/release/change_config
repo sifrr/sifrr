@@ -24,7 +24,8 @@ let packageToMerge = {
     "jtest": `MOCHA_FILE=../../../test-results/${packageFolder}/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*.js`,
     "browser-test": "mocha --timeout 5000 test/browser/*.js",
     "unit-test": "mocha test/unit/*.js",
-    "rollup": "./node_modules/.bin/rollup -c"
+    "rollup": "./node_modules/.bin/rollup -c",
+    "test-server": "cd test/public && ../../node_modules/.bin/rollup -c && node server.js 1111"
   }
 };
 
@@ -41,7 +42,6 @@ let rollupConfigFileString = '../.' + folder + '/rollup.config.js', rollupConfig
 const config = `const getConfig = require('../../../rollup.base');
 
 export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase())}');
-
 `;
 fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
 

@@ -16,7 +16,8 @@
     "jtest": "MOCHA_FILE=../../../test-results/sifrr-serviceworker/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*.js",
     "browser-test": "mocha --timeout 5000 test/browser/*.js",
     "unit-test": "mocha test/unit/*.js",
-    "rollup": "./node_modules/.bin/rollup -c"
+    "rollup": "./node_modules/.bin/rollup -c",
+    "test-server": "cd test/public && ../../node_modules/.bin/rollup -c && node server.js 1111"
   },
   "repository": {
     "type": "git",

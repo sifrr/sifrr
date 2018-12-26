@@ -1,123 +1,128 @@
-const CACHE_VERSION = '1';
-const POLICIES = {
-  'default': {
-    type: 'NETWORK_FIRST',
-    cache: 'other'
+class SW {
+  constructor(options) {
+    this.options = Object.assign({
+      version: 1,
+      fallbackCacheName: 'fallbacks',
+      defaultCacheName: 'default',
+      policies: {},
+      fallbacks: {},
+      precacheUrls: []
+    }, options);
+    this.options.policies.default = Object.assign(this.options.policies.default || {}, {
+      policy: 'NETWORK_FIRST',
+      cacheName: this.options.defaultCacheName
+    });
+    this.options.fallbacks.default = this.options.fallbacks.default || '/offline.html';
   }
-};
 
-const FALLBACK_CACHE = 'fallbacks';
-const FALLBACKS = {
-  'default': './404.html'
-};
-
-const PRECACHE_URLS = [];
-
-function setupSifrrSW() {
-  self.addEventListener('install', event => {
-    self.skipWaiting(); // replace sw ASAP
-    event.waitUntil(precache(PRECACHE_URLS, FALLBACKS));
-  });
-
-  self.addEventListener('activate', () => {
-    let currentCaches = [FALLBACK_CACHE + '-v' + CACHE_VERSION];
-    for (let [, value] of Object.entries(POLICIES)) {
-      currentCaches.push(value.cache + '-v' + CACHE_VERSION);
+  precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
+    const me = this;
+    let promises = [];
+    urls.forEach(u => {
+      let req = me.requestFromURL(u);
+      return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName || me.options.defaultCacheName));
+    });
+    for (let value of Object.values(fbs)) {
+      let req = this.requestFromURL(value);
+      promises.push(this.responseFromNetwork(req, this.options.fallbackCacheName));
     }
-    caches.keys().then(cacheNames => {
-      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-    }).then(cachesToDelete => {
-      return Promise.all(cachesToDelete.map(cacheToDelete => {
-        return caches.delete(cacheToDelete);
-      }));
-    }).then(() => self.clients.claim());
-  }); // remove old caches versions and add new ones
+    return Promise.all(promises);
+  }
 
-  self.addEventListener('fetch', event => {
-    let request = event.request;
-    let otherReq = request.clone();
-    let oreq = request.clone();
-    if (request.method === 'GET') {
-      event.respondWith(respondWithPolicy(request).then(response => {
-        if (!response.ok && response.status > 0 && findRegex(oreq.url, FALLBACKS)) {
-          throw Error('response status ' + response.status);
-        }
-        return response;
-      }).catch(() => respondWithFallback(otherReq)));
+  setup() {
+    let me = this;
+    self.addEventListener('install', event => {
+      // replace old sw ASAP
+      self.skipWaiting();
+      event.waitUntil(me.precache());
+    });
+
+    self.addEventListener('activate', () => {
+      const version = '-v' + me.options.version;
+      // remove old version caches
+      caches.keys().then(cacheNames => {
+        return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
+      }).then(cachesToDelete => {
+        return Promise.all(cachesToDelete.map(cacheToDelete => {
+          return caches.delete(cacheToDelete);
+        }));
+      }).then(() => self.clients.claim());
+    });
+
+    self.addEventListener('fetch', event => {
+      const request = event.request;
+      const otherReq = request.clone();
+      const oreq = request.clone();
+      if (request.method === 'GET') {
+        event.respondWith(me.respondWithPolicy(request).then(response => {
+          if (!response.ok && response.status > 0 && me.findRegex(oreq.url, me.options.fallbacks)) {
+            throw Error('response status ' + response.status);
+          }
+          return response;
+        }).catch(() => me.respondWithFallback(otherReq)));
+      }
+    });
+  }
+
+  respondWithFallback(request) {
+    const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
+    return this.responseFromCache(fallback, this.options.fallbackCacheName);
+  }
+
+  respondWithPolicy(request) {
+    const newreq = request.clone();
+    const config = this.findRegex(request.url, this.options.policies);
+    const policy = config.policy || 'NETWORK_FIRST';
+    const cacheName = config.cacheName || this.options.defaultCacheName;
+
+    let resp;
+    switch (policy) {
+    case 'NETWORK_ONLY':
+      resp = this.responseFromNetwork(newreq, cacheName, false);
+      break;
+    case 'CACHE_FIRST', 'CACHE_ONLY':
+      resp = this.responseFromCache(newreq, cacheName)
+        .catch(() => this.responseFromNetwork(request, cacheName));
+      break;
+    case 'NETWORK_FIRST':
+      resp = this.responseFromNetwork(newreq, cacheName)
+        .catch(() => this.responseFromCache(request, cacheName));
+      break;
+    default:
+      resp = this.responseFromNetwork(newreq, cacheName)
+        .catch(() => this.responseFromCache(request, cacheName));
+      break;
     }
-  });
-}
-
-function findRegex (url, obj) {
-  for (let [key, value] of Object.entries(obj)) {
-    const regex = new RegExp(key);
-    if (url.match(regex)) return value;
+    return resp;
   }
-  return obj['default'];
-}
 
-function respondWithPolicy (request) {
-  let new_request = request.clone();
-  const { type, cache } = findRegex(request.url, POLICIES) || {
-    type: 'default',
-    cache: 'extra'
-  };
-  let resp;
-  switch (type) {
-  case 'NETWORK_ONLY':
-    resp = fromNetwork(new_request, cache);
-    break;
-  case 'CACHE_ONLY':
-    resp = fromCache(new_request, cache);
-    break;
-  case 'CACHE_FIRST':
-    resp = fromCache(new_request, cache).catch(() => fromNetwork(request, cache));
-    break;
-  case 'NETWORK_FIRST':
-    resp = fromNetwork(new_request, cache).catch(() => fromCache(request, cache));
-    break;
-  default:
-    resp = fromNetwork(new_request, cache).catch(() => fromCache(request, cache));
-    break;
+  responseFromNetwork(request, cache, putInCache = true) {
+    return caches.open(cache + '-v' + this.options.version).then(cache => fetch(request).then(response => {
+      if (putInCache) cache.put(request, response.clone());
+      return response;
+    }));
   }
-  return resp;
-}
 
-function respondWithFallback (request) {
-  const fallback = findRegex(request.url, FALLBACKS);
-  const fb = new Request(fallback);
-  return fromCache(fb, FALLBACK_CACHE);
-}
-
-function requestFromURL (url) {
-  return new Request(url, {
-    method: 'GET'
-  });
-}
-
-function precache (urls, fbs) {
-  let promises = [];
-  urls.forEach(u => {
-    let req = requestFromURL(u);
-    return promises.push(fromNetwork(req, findRegex(u, POLICIES).cache));
-  });
-  for (let [, value] of Object.entries(fbs)) {
-    let req = requestFromURL(value);
-    promises.push(fromNetwork(req, FALLBACK_CACHE));
+  responseFromCache(request, cache) {
+    return caches.open(cache + '-v' + this.options.version).then(cache => cache.match(request)).then(resp => {
+      if (resp) return resp;
+      else throw 'Cache not found for ' + request.url;
+    });
   }
-  return Promise.all(promises);
+
+  requestFromURL(url, method = 'GET') {
+    return new Request(url, {
+      method: method
+    });
+  }
+
+  findRegex(url, policies) {
+    for (let [key, value] of Object.entries(policies)) {
+      const regex = new RegExp(key);
+      if (regex.test(url)) return value;
+    }
+    return policies['default'];
+  }
 }
 
-function fromCache (request, cache) {
-  fromNetwork(request.clone(), cache);
-  return caches.open(cache + '-v' + CACHE_VERSION).then(cache => cache.match(request)).then(resp => {
-    if (resp) return resp;
-    else throw 'Cache not found for ' + request.url;
-  });
-}
-
-function fromNetwork (request, cache) {
-  return caches.open(cache + '-v' + CACHE_VERSION).then(cache => fetch(request).then(response => cache.put(request, response.clone()).then(() => response)));
-}
-
-module.exports = setupSifrrSW();
+module.exports = SW;
