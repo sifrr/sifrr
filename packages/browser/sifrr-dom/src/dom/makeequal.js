@@ -13,7 +13,7 @@ function makeChildrenEqual(parent, newChildren) {
       i--;
     }
   // More Children now
-  } else if (newL > oldL) {
+  } else if (oldL < newL) {
     let i = oldL;
     while(i < newL) {
       parent.appendChild(newChildren[i]);

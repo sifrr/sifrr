@@ -1,6 +1,6 @@
 const SW = require('../../dist/sifrr.serviceworker');
-module.exports = new SW({
-  version: 1,
+const sw = new SW({
+  version: 2,
   fallbackCacheName: 'ffff',
   defaultCacheName: 'dddd',
   policies: {
@@ -23,4 +23,8 @@ module.exports = new SW({
     'default': '/404.html'
   },
   precache_urls: ['/precache.js', './cacheonly.js']
-}).setup();
+});
+
+sw.setup();
+sw.setupPushNotification('default title', { body: 'default body' });
+module.exports = sw;

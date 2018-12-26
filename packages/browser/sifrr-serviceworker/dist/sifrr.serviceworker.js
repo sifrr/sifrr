@@ -64,6 +64,18 @@
         }
       });
     }
+    setupPushNotification(defaultTitle = '', defaultOptions = { 'body': '' }, onNotificationClick) {
+      self.addEventListener('push', function (event) {
+        let data = {};
+        if (event.data) {
+          data = event.data.json();
+        }
+        const title = data.title || defaultTitle;
+        const options = Object.assign(defaultOptions, data);
+        event.waitUntil(self.registration.showNotification(title, options));
+      });
+      self.addEventListener('notificationclick', onNotificationClick);
+    }
     respondWithFallback(request) {
       const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
       return this.responseFromCache(fallback, this.options.fallbackCacheName);

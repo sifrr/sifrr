@@ -1,4 +1,4 @@
-# sifrr-storage
+# sifrr-storage &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage)
 
 Browser key-value(JSON) storage library with cow powers.
 
@@ -33,7 +33,20 @@ Add script tag in your website.
 
 ### Using npm
 Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json` file.
-Compatible with webpack/rollup etc, with plugin to convert commonjs files.
+
+example, put in your frontend js module (compatible with webpack/rollup/etc):
+#### Commonjs
+```js
+window.Sifrr = window.Sifrr || {};
+window.Sifrr.Storage = require('@sifrr/storage');
+```
+
+#### ES modules
+```js
+import Storage from '@sifrr/storage';
+window.Sifrr = window.Sifrr || {};
+window.Sifrr.Storage = Storage;
+```
 
 ## API
 

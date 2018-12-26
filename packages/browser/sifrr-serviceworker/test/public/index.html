@@ -11,11 +11,34 @@
     <script src="networkfirst.js" charset="utf-8"></script>
     <script src="networkonly.js" charset="utf-8"></script>
     <script type="text/javascript">
+      function base64UrlToUint8Array(base64UrlData) {
+        const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
+        const base64 = (base64UrlData + padding)
+          .replace(/\-/g, '+')
+          .replace(/_/g, '/');
+        const rawData = atob(base64);
+        const buffer = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          buffer[i] = rawData.charCodeAt(i);
+        }
+        return buffer;
+      }
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
             // Registration was successful
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: base64UrlToUint8Array('BA5yK_1yHG2nmv1yJoVJY51zvXauoquAbPV2EwgdAkmiiUZEQeWpSKHv5DqGJkm_WU47GHBPfDkDR6qkG7s4BUM')
+            })
+            .then(function(subscription) {
+              console.log(JSON.stringify(subscription));
+              console.log('User is subscribed.');
+            })
+            .catch(function(err) {
+              console.log('Failed to subscribe the user: ', err);
+            });
           }, function(err) {
             // registration failed :(
             console.log('ServiceWorker registration failed: ', err);

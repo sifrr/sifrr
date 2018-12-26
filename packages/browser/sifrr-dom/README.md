@@ -1,4 +1,4 @@
-# sifrr-dom
+# sifrr-dom &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
 A < 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
 
@@ -24,4 +24,17 @@ Add script tag in your website.
 
 ### Using npm
 Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `package.json` file.
-Compatible with webpack/rollup etc, with plugin to convert commonjs files.
+
+example, put in your frontend js module (compatible with webpack/rollup/etc):
+#### Commonjs
+```js
+window.Sifrr = window.Sifrr || {};
+window.Sifrr.Dom = require('@sifrr/dom');
+```
+
+#### ES modules
+```js
+import DOM from '@sifrr/dom';
+window.Sifrr = window.Sifrr || {};
+window.Sifrr.Dom = DOM;
+```

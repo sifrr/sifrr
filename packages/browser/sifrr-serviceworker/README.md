@@ -1,4 +1,4 @@
-# sifrr-sw
+# sifrr-serviceworker &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/serviceworker.svg)](https://www.npmjs.com/package/@sifrr/serviceworker)
 
 Customizable Service Worker.
 
@@ -14,29 +14,58 @@ Customizable Service Worker.
 Copy contents of `sifrr.serviceworker.min.js` or `sifrr.serviceworker.js` in your serviceworker file.
 And add this at the end of file.
 ```js
-new Sifrr.Serviceworker(/* config */).setup();
+const sw = new Sifrr.ServiceWorker(/* config */);
+sw.setup(); // setup service worker caching
+sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event listener
 ```
 
-### Using npm
-Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json` file.
+#### Compatibility table for standalone distribution (Needs support for Service worker API)
+- chrome >= 55
+- safari >= 10.1
+- opera >= 42
+- firefox >= 53
 
-example of `sw.js` to be bundled (using webpack or rollup or any other bundler):
+### Using npm
+Do `npm i @sifrr/serviceworker` or `yarn add @sifrr/serviceworker` or add the package to your `package.json` file.
+
+example of `sw.js` to be bundled (compatible with webpack/rollup/etc):
 #### Commonjs
 ```js
 const SW = require('@sifrr/serviceworker');
-module.exports = new SW(/* config */).setup();
+const sw = new SW(/* config */);
+sw.setup(); // setup service worker caching
+sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event listener
+module.exports = sw;
 ```
 
 #### ES modules
 ```js
 import SW from '@sifrr/serviceworker'
-export default new SW(/* config */).setup();
+const sw = new SW(/* config */);
+sw.setup(); // setup service worker caching
+sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event listener
+export default sw;
+```
+
+then in your main js file add:
+```js
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
 ```
 
 ## Config
 Default config:
 ```js
-let config = {
+{
   version: 1,
   fallbackCacheName: 'fallbacks',
   defaultCacheName: 'default',
@@ -75,3 +104,57 @@ When a request is sent, if the url matches the regex string then it will be fetc
 - `NETWORK_FIRST`: Try to resolve request from network, if fails then resolve from cache.
 - `CACHE_ONLY`: Only to resolve request from cache.
 - `CACHE_FIRST`: Try to resolve request from cache, if fails then resolve from network.
+
+## Push Notification
+1. Setup push notification listener in serviceworker using
+  `sw.setupPushNotification(defaultTitle, defaultOptions, onNotificationClick)`,
+  where `defaultTitle` is default push notification title, `defaultOptions` are default push notification options and `onNotificationClick` is fxn that will be executed when user clicks on notification.
+
+2. In your main JS file use serviceWorkerRegistration object to handle pushNotifications.
+Simple Example:
+```js
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
+      // `registration` is serviceWorkerRegistration object
+      // SW registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: Uint8ArrayFromPushNotificationServerPublicKey
+      })
+      .then(function(subscription) {
+        // Subscription was successful
+        console.log('User is subscribed.');
+      })
+      .catch(function(err) {
+        // Subscription failed
+        console.log('Failed to subscribe the user: ', err);
+      });
+    }, function(err) {
+      // SW registration failed
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
+```
+
+3. Send payload from server as a JSON string with title and other options.
+Example:
+```json
+{
+  "title": "You app name",
+  "body": "Notification Body",
+  "actions": [
+    { "action": "yes", "title": "Yes", "icon": "images/yes.png" },
+    { "action": "no", "title": "No", "icon": "images/no.png" }
+  ],
+  ...
+}
+```
+
+### Tutorials
+- https://developers.google.com/web/fundamentals/codelabs/push-notifications/
+- https://developers.google.com/web/fundamentals/push-notifications/display-a-notification
+- https://web-push-book.gauntface.com/demos/notification-examples/
+- https://stackoverflow.com/questions/38503481/web-push-notification-for-chrome
