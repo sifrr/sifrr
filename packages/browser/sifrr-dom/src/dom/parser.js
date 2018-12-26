@@ -1,10 +1,7 @@
 const { makeChildrenEqual } = require('./makeequal');
 const { updateAttribute } = require('./update');
 const { collect, create } = require('./ref');
-const SIFRR_NODE = window.document.createElement('sifrr-node'),
-  TEXT_NODE = 3,
-  COMMENT_NODE = 8,
-  ELEMENT_NODE = 1;
+const { SIFRR_NODE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||

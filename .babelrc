@@ -3,7 +3,7 @@
     ["env", {
       "targets": {
         "chrome": 55,
-        "safari": "10.1",
+        "safari": 11,
         "opera": 42,
         "firefox": 53
       },

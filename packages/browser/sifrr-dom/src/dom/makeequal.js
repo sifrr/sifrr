@@ -1,28 +1,32 @@
 const { updateAttribute } = require('./update');
 const { shallowEqual } = require('../utils/json');
+const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function makeChildrenEqual(parent, newChildren) {
   // Lesser children now
-  let l = parent.childNodes.length;
-  if (l > newChildren.length) {
-    let i = l;
-    while(i > newChildren.length) {
+  const oldL = parent.childNodes.length, newL = newChildren.length;
+  if (oldL > newL) {
+    let i = oldL;
+    while(i > newL) {
       parent.removeChild(parent.lastChild);
       i--;
     }
+  // More Children now
+  } else if (newL > oldL) {
+    let i = oldL;
+    while(i < newL) {
+      parent.appendChild(newChildren[i]);
+      i++;
+    }
   }
 
-  // More children now
-  let head = parent.firstChild;
-  for(let i = 0, item; i < newChildren.length; i++) {
+  const l = Math.min(newL, oldL);
+  // Make old children equal to new children
+  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
     item = newChildren[i];
-    if (!head && item) {
-      parent.appendChild(item);
-    } else {
-      // make two nodes equal
-      head = makeEqual(head, item).nextSibling;
-    }
+    // make two nodes equal
+    head = makeEqual(head, item).nextSibling;
   }
 }
 
@@ -40,7 +44,7 @@ function makeEqual(oldNode, newNode) {
     return newNode;
   }
 
-  if (oldNode.nodeType === window.Node.TEXT_NODE || oldNode.nodeType === window.Node.COMMENT_NODE) {
+  if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
     if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
     return oldNode;
   }
@@ -50,12 +54,12 @@ function makeEqual(oldNode, newNode) {
 
   // copy Attributes
   let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
-  for (var i = newAttrs.length - 1; i >= 0; --i) {
+  for (let i = newAttrs.length - 1; i >= 0; --i) {
     updateAttribute(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
 
   // Remove any extra attributes
-  for (var j = oldAttrs.length - 1; j >= 0; --j) {
+  for (let j = oldAttrs.length - 1; j >= 0; --j) {
     attr = oldAttrs[j];
     if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
   }

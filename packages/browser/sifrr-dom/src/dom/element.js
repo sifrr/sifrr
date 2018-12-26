@@ -106,30 +106,22 @@ class Element extends window.HTMLElement {
 
   static addArrayToDom(key, template) {
     this._arrayToDom = this._arrayToDom || {};
-    // state of simple element is single array item, if sifrr element then use as it is, else use Simple element
+    // state of simple element is single array item, compatible with sifrr element
     this._arrayToDom[key] = SimpleElement(template);
   }
 
   arrayToDom(key, newState = this.state[key]) {
     this._domL = this._domL || {};
-    const oldL = this._domL[key];
+    const oldL = this._domL[key] || 0;
     const domArray = [];
     const newL = newState.length;
-    if (!oldL) {
-      for (let i = 0; i < newL; i++) {
+    for (let i = 0; i < newL; i++) {
+      if (i < oldL) {
+        domArray.push({ type: 'stateChange', state: newState[i] });
+      } else {
         const el = this.constructor._arrayToDom[key].sifrrClone(true);
         el.state = newState[i];
         domArray.push(el);
-      }
-    } else {
-      for (let i = 0; i < newL; i++) {
-        if (i < oldL) {
-          domArray.push({ type: 'stateChange', state: newState[i] });
-        } else {
-          const el = this.constructor._arrayToDom[key].sifrrClone(true);
-          el.state = newState[i];
-          domArray.push(el);
-        }
       }
     }
     this._domL[key] = newL;

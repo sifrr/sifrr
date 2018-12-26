@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/25 17:57:50 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/26 3:18:44 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -111,25 +111,36 @@
   };
   var json = Json;
 
+  var constants = {
+    SIFRR_NODE: window.document.createElement('template'),
+    TEXT_NODE: 3,
+    COMMENT_NODE: 8,
+    ELEMENT_NODE: 1
+  };
+
   const { updateAttribute: updateAttribute$1 } = update;
   const { shallowEqual } = json;
+  const { TEXT_NODE, COMMENT_NODE } = constants;
   function makeChildrenEqual(parent, newChildren) {
-    let l = parent.childNodes.length;
-    if (l > newChildren.length) {
-      let i = l;
-      while (i > newChildren.length) {
+    const oldL = parent.childNodes.length,
+          newL = newChildren.length;
+    if (oldL > newL) {
+      let i = oldL;
+      while (i > newL) {
         parent.removeChild(parent.lastChild);
         i--;
       }
-    }
-    let head = parent.firstChild;
-    for (let i = 0, item; i < newChildren.length; i++) {
-      item = newChildren[i];
-      if (!head && item) {
-        parent.appendChild(item);
-      } else {
-        head = makeEqual(head, item).nextSibling;
+    } else if (newL > oldL) {
+      let i = oldL;
+      while (i < newL) {
+        parent.appendChild(newChildren[i]);
+        i++;
       }
+    }
+    const l = Math.min(newL, oldL);
+    for (let i = 0, item, head = parent.firstChild; i < l; i++) {
+      item = newChildren[i];
+      head = makeEqual(head, item).nextSibling;
     }
   }
   function makeEqual(oldNode, newNode) {
@@ -144,7 +155,7 @@
       oldNode.replaceWith(newNode);
       return newNode;
     }
-    if (oldNode.nodeType === window.Node.TEXT_NODE || oldNode.nodeType === window.Node.COMMENT_NODE) {
+    if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
       if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
       return oldNode;
     }
@@ -152,10 +163,10 @@
     let oldAttrs = oldNode.attributes,
         newAttrs = newNode.attributes,
         attr;
-    for (var i = newAttrs.length - 1; i >= 0; --i) {
+    for (let i = newAttrs.length - 1; i >= 0; --i) {
       updateAttribute$1(oldNode, newAttrs[i].name, newAttrs[i].value);
     }
-    for (var j = oldAttrs.length - 1; j >= 0; --j) {
+    for (let j = oldAttrs.length - 1; j >= 0; --j) {
       attr = oldAttrs[j];
       if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
     }
@@ -217,21 +228,18 @@
   const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
   const { updateAttribute: updateAttribute$2 } = update;
   const { collect: collect$1, create: create$1 } = ref;
-  const SIFRR_NODE = window.document.createElement('sifrr-node'),
-        TEXT_NODE = 3,
-        COMMENT_NODE = 8,
-        ELEMENT_NODE = 1;
+  const { SIFRR_NODE, TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE } = constants;
   function isHtml(el) {
     return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
   }
   function creator(el) {
-    if (el.nodeType === TEXT_NODE) {
+    if (el.nodeType === TEXT_NODE$1) {
       const x = el.nodeValue;
       if (x.indexOf('${') > -1) return {
         html: false,
         text: x
       };
-    } else if (el.nodeType === COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
+    } else if (el.nodeType === COMMENT_NODE$1 && el.nodeValue.trim()[0] == '$') {
       return {
         html: false,
         text: el.nodeValue.trim()
@@ -446,7 +454,7 @@
   var loader = Loader;
 
   const { collect: collect$2, create: create$2 } = ref;
-  const compilerTemplate = document.createElement('template');
+  const { SIFRR_NODE: SIFRR_NODE$1 } = constants;
   function creator$1(node) {
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
@@ -498,8 +506,8 @@
   }
   function SimpleElement(content, defaultState) {
     if (typeof content === 'string') {
-      compilerTemplate.innerHTML = content;
-      content = compilerTemplate.content.firstElementChild || compilerTemplate.content.firstChild;
+      SIFRR_NODE$1.innerHTML = content;
+      content = SIFRR_NODE$1.content.firstElementChild || SIFRR_NODE$1.content.firstChild;
     }
     if (content.isSifrr && content.isSifrr()) return content;
     content.stateMap = create$2(content, creator$1);
@@ -612,24 +620,16 @@
     }
     arrayToDom(key, newState = this.state[key]) {
       this._domL = this._domL || {};
-      const oldL = this._domL[key];
+      const oldL = this._domL[key] || 0;
       const domArray = [];
       const newL = newState.length;
-      if (!oldL) {
-        for (let i = 0; i < newL; i++) {
+      for (let i = 0; i < newL; i++) {
+        if (i < oldL) {
+          domArray.push({ type: 'stateChange', state: newState[i] });
+        } else {
           const el = this.constructor._arrayToDom[key].sifrrClone(true);
           el.state = newState[i];
           domArray.push(el);
-        }
-      } else {
-        for (let i = 0; i < newL; i++) {
-          if (i < oldL) {
-            domArray.push({ type: 'stateChange', state: newState[i] });
-          } else {
-            const el = this.constructor._arrayToDom[key].sifrrClone(true);
-            el.state = newState[i];
-            domArray.push(el);
-          }
         }
       }
       this._domL[key] = newL;

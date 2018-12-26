@@ -21,6 +21,7 @@ module.exports = function getRollupConfig(name) {
         footer: footer,
         sourcemap: true
       },
+      preferConst: true,
       plugins: [
         resolve({
           browser: true
@@ -43,6 +44,7 @@ module.exports = function getRollupConfig(name) {
         footer: footer,
         sourcemap: true
       },
+      preferConst: true,
       plugins: [
         resolve({
           browser: true
