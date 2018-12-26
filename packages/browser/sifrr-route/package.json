@@ -34,6 +34,7 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
   "devDependencies": {
+    "@sifrr/dom": "file:/Users/aaditya-taparia/Personal/sifrr/packages/browser/sifrr-dom",
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",

@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/26 3:18:44 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/26 20:57:42 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -419,7 +419,7 @@
 
   class Loader {
     constructor(elemName, config = {}) {
-      if (this.constructor.all[elemName]) return this.constructor.all[elemName];
+      if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
       this.elementName = elemName;
       this.config = config;
       this.constructor.urls[elemName] = this.htmlUrl;
@@ -427,7 +427,7 @@
     get html() {
       const me = this;
       return sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => new window.DOMParser().parseFromString(file, 'text/html')).then(html => {
-        Loader.add(me.elementName, html.querySelector('template'));
+        Loader.add(me.elementName, { instance: me, template: html.querySelector('template') });
         return html;
       });
     }
@@ -548,7 +548,7 @@
       return [];
     }
     static get template() {
-      return loader.all[this.elementName];
+      return loader.all[this.elementName].template;
     }
     static get stateMap() {
       this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
@@ -585,7 +585,7 @@
       if (attrName === 'data-sifrr-state') {
         this.state = json.parse(newVal);
       }
-      this.onAttributeChange();
+      this.onAttributeChange(attrName, oldVal, newVal);
     }
     onAttributeChange() {}
     get state() {
@@ -645,7 +645,7 @@
       while (dom) {
         const eventHandler = dom[`$${name}`];
         if (eventHandler) {
-          eventHandler(e);
+          eventHandler(e, dom);
         }
         cssMatchEvent(e, name, dom);
         dom = dom.parentNode || dom.host;
@@ -654,7 +654,7 @@
   };
   const cssMatchEvent = (e, name, dom) => {
     function callEach(fxns) {
-      fxns.forEach(fxn => fxn(e));
+      fxns.forEach(fxn => fxn(e, dom));
     }
     for (let css in SYNTHETIC_EVENTS[name]) {
       if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document') callEach(SYNTHETIC_EVENTS[name][css]);
@@ -731,8 +731,9 @@
       loader$$1.executeScripts().then(() => res());
     });
   };
+  SifrrDom.Url = url;
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
-    if (typeof elemName === 'string') return url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
+    if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
   };
   var sifrr_dom = SifrrDom;
 

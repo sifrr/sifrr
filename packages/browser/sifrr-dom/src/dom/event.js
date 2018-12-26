@@ -7,7 +7,7 @@ const nativeToSyntheticEvent = (e, name) => {
     while(dom) {
       const eventHandler = dom[`$${name}`];
       if (eventHandler) {
-        eventHandler(e);
+        eventHandler(e, dom);
       }
       cssMatchEvent(e, name, dom);
       dom = dom.parentNode || dom.host;
@@ -17,7 +17,7 @@ const nativeToSyntheticEvent = (e, name) => {
 
 const cssMatchEvent = (e, name, dom) => {
   function callEach(fxns) {
-    fxns.forEach((fxn) => fxn(e));
+    fxns.forEach((fxn) => fxn(e, dom));
   }
   for (let css in SYNTHETIC_EVENTS[name]) {
     if ((typeof dom.matches === 'function' && dom.matches(css)) ||

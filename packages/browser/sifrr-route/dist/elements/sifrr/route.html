@@ -1,0 +1,120 @@
+<template>
+  <style>
+    :host {
+      display: none;
+    }
+    :host(.active) {
+      display: block;
+      opacity: 0;
+      animation: slide 0.3s ease forwards;
+    }
+    @keyframes slide {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <slot></slot>
+</template>
+<script>
+  Sifrr.Dom.Event.add('click');
+  const SifrrRoutes = [];
+  class SifrrRoute extends Sifrr.Dom.Element {
+    static observedAttrs() {
+      return ['data-sifrr-route'];
+    }
+
+    onConnect() {
+      this.loaded = false;
+      SifrrRoutes.push(this);
+    }
+
+    onDisconnect() {
+      SiffRoutes.splice(SiffRoutes.indexOf(this), 1);
+    }
+
+    onAttributeChange(attrName) {
+      if (attrName == 'data-sifrr-route') {
+        this.refresh();
+      }
+    }
+
+    refresh() {
+      const location = window.location.pathname;
+      const route = this.dataset.sifrrRoute;
+      const parsed = parseRoute(route, location);
+      parsed.match ? this.activate() : this.deactivate();
+      this.state = parsed.data;
+    }
+
+    activate() {
+      if (!this.loaded) {
+        this.loaded = true;
+        if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
+          const tags = this.dataset.sifrrElements.split(',');
+          tags
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .forEach((tag) => {
+              Sifrr.Dom.load(tag);
+              console.log(tag);
+            });
+        }
+      }
+      this.classList.add('active');
+    }
+
+    deactivate() {
+      this.classList.remove('active');
+    }
+
+    static refreshAll() {
+      SifrrRoutes.forEach((sfr) => {
+        sfr.refresh();
+      });
+      this.onRouteChange();
+    }
+
+    static onRouteChange() {}
+  }
+
+  Sifrr.Dom.register(SifrrRoute);
+  document.addEventListener('click', (e) => {
+    const target = e.path ? e.path[0] : e.target;
+    if (target.matches('a') && target.host == window.location.host) {
+      e.preventDefault();
+      const state = {
+        location: target.pathname
+      };
+      const title = "New title";
+      document.title = title;
+      history.pushState(state, title, target.pathname);
+      SifrrRoute.refreshAll();
+    }
+  });
+
+  window.onpopstate = function(event) {
+    SifrrRoute.refreshAll();
+  };
+
+  function parseRoute(route, path) {
+    let reg = new RegExp('^' + route.replace(/\*\*/, '.{0,}').replace(/\*/g, '[^\/]{0,}').replace(/:[^\/]{0,}/g, '[^\/]{0,}'));
+    let pathSplit = Sifrr.Dom.Url.getRoutes(path);
+    let data = {
+      star: []
+    };
+    for (const [i, r] of Sifrr.Dom.Url.getRoutes(route).entries()) {
+      if (r[0] == ':') {
+        data[r.substr(1)] = pathSplit[i];
+      } else if (r == '*') {
+        data.star.push(pathSplit[i]);
+      }
+    }
+    return {
+      match: path.match(reg),
+      data: data
+    }
+  }
+</script>

@@ -3,8 +3,6 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-  </head>
-  <body>
     <style media="screen">
       *:not(:defined) * {
         display: none;
@@ -12,11 +10,11 @@
       *:not(:defined)::before {
         content: " ";
         display: block !important;
-        width: 46px;
-        height: 46px;
+        width: 24px;
+        height: 24px;
         margin: 1px;
         border-radius: 50%;
-        border: 5px solid #fff;
+        border: 2px solid #fff;
         border-color: red transparent blue transparent;
         animation: lds-dual-ring 1.2s linear infinite;
       }
@@ -29,17 +27,24 @@
         }
       }
     </style>
-    <h1>OK</h1>
-    <sifrr-test data-sifrr-state='{"a": "b"}'>
-      <p>asdjasjasf  asf saf as  </p>
-      <p>af df dsf df f sf </p>
-      sf sdfksdf nsjkf
-    </sifrr-test>
-    <script src="/sifrr.dom.js" charset="utf-8"></script>
-    <script>
-      state = {a: 'b'}
-      Sifrr.Dom.setup();
-      Sifrr.Dom.load('sifrr-test');
-    </script>
+  </head>
+  <body>
+    <h1><a href="/">OK</a></h1>
+    <a href="/abcd">/abcd</a>
+    <a href="/efgh">/efgh</a>
+    <sifrr-route data-sifrr-route='*'>
+      <p>a</p>
+      <p>Visible everywhere</p>
+      <p>e</p>
+    </sifrr-route>
+
+    <sifrr-route data-sifrr-route='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
+      <p>/abcd</p>
+      <sifrr-test></sifrr-test>
+    </sifrr-route>
+    <sifrr-route data-sifrr-route='/efgh'>
+      /efgh
+    </sifrr-route>
+    <script src="index.bundled.js" charset="utf-8"></script>
   </body>
 </html>

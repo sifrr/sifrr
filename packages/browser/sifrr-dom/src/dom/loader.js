@@ -2,7 +2,7 @@ const fetch = require('@sifrr/fetch');
 
 class Loader {
   constructor(elemName, config = {}) {
-    if (this.constructor.all[elemName]) return this.constructor.all[elemName];
+    if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
     this.elementName = elemName;
     this.config = config;
     this.constructor.urls[elemName] = this.htmlUrl;
@@ -14,7 +14,7 @@ class Loader {
       .then((resp) => resp.text())
       .then((file) => new window.DOMParser().parseFromString(file, 'text/html'))
       .then((html) => {
-        Loader.add(me.elementName, html.querySelector('template'));
+        Loader.add(me.elementName, { instance: me, template: html.querySelector('template')});
         return html;
       });
   }

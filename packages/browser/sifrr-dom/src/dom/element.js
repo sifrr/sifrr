@@ -13,7 +13,7 @@ class Element extends window.HTMLElement {
   }
 
   static get template() {
-    return Loader.all[this.elementName];
+    return Loader.all[this.elementName].template;
   }
 
   static get stateMap() {
@@ -59,7 +59,7 @@ class Element extends window.HTMLElement {
     if (attrName === 'data-sifrr-state') {
       this.state = JsonExt.parse(newVal);
     }
-    this.onAttributeChange();
+    this.onAttributeChange(attrName, oldVal, newVal);
   }
 
   onAttributeChange() {}

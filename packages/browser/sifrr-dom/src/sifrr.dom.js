@@ -57,9 +57,10 @@ SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }
   });
 };
 
+SifrrDom.Url = UrlExt;
 // Relative path to element html
 SifrrDom.relativeTo = function(elemName, relativeUrl) {
-  if (typeof elemName === 'string') return UrlExt.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
+  if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
 };
 
 module.exports = SifrrDom;
