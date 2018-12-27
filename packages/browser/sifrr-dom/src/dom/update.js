@@ -21,8 +21,8 @@ function updateAttribute(element, name, newValue) {
       }
     }
 
-    // select's value doesn't change on changing value attribute
-    if (element.nodeName == 'SELECT' && name == 'value') element.value = newValue;
+    // select/input's value doesn't change on changing value attribute
+    if ((element.nodeName == 'SELECT' || element.nodeName == 'INPUT') && name == 'value') element.value = newValue;
   }
 }
 

@@ -1,4 +1,5 @@
 const UrlExt = require('./utils/url');
+const JsonExt = require('./utils/json');
 
 // Empty SifrrDom
 let SifrrDom = {};
@@ -58,6 +59,7 @@ SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }
 };
 
 SifrrDom.Url = UrlExt;
+SifrrDom.Json = JsonExt;
 // Relative path to element html
 SifrrDom.relativeTo = function(elemName, relativeUrl) {
   if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);

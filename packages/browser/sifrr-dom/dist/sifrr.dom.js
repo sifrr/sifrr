@@ -29,32 +29,6 @@
   };
   var url = URLExt;
 
-  function updateAttribute(element, name, newValue) {
-    if (name === 'class') {
-      const fromValue = element.className;
-      if (fromValue != newValue) {
-        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-          element.className = '';
-        } else {
-          element.className = newValue;
-        }
-      }
-    } else {
-      const fromValue = element.getAttribute(name);
-      if (fromValue != newValue) {
-        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-          if (fromValue) element.removeAttribute(name);
-        } else {
-          element.setAttribute(name, newValue);
-        }
-      }
-      if (element.nodeName == 'SELECT' && name == 'value') element.value = newValue;
-    }
-  }
-  var update = {
-    updateAttribute: updateAttribute
-  };
-
   const Json = {
     parse: data => {
       let ans = {};
@@ -110,6 +84,32 @@
     }
   };
   var json = Json;
+
+  function updateAttribute(element, name, newValue) {
+    if (name === 'class') {
+      const fromValue = element.className;
+      if (fromValue != newValue) {
+        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+          element.className = '';
+        } else {
+          element.className = newValue;
+        }
+      }
+    } else {
+      const fromValue = element.getAttribute(name);
+      if (fromValue != newValue) {
+        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+          if (fromValue) element.removeAttribute(name);
+        } else {
+          element.setAttribute(name, newValue);
+        }
+      }
+      if ((element.nodeName == 'SELECT' || element.nodeName == 'INPUT') && name == 'value') element.value = newValue;
+    }
+  }
+  var update = {
+    updateAttribute: updateAttribute
+  };
 
   var constants = {
     SIFRR_NODE: window.document.createElement('template'),
@@ -737,6 +737,7 @@
     });
   };
   SifrrDom.Url = url;
+  SifrrDom.Json = json;
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
     if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
   };
