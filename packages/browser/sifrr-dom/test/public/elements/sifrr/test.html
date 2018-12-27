@@ -14,7 +14,7 @@
       return 'not ok';
     }
   }</a>
-  <p>${state = {x: 'yaaa'}; return JSON.stringify(state)}</p>
+  <p>${JSON.stringify(state)}</p>
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
@@ -31,26 +31,29 @@
   <div class="small" data-sifrr-html="true">
     <!-- ${this.arrayToDom('data')} -->
   </div>
+  <div class="html" data-sifrr-html="true">
+    ${this.state.html}
+  </div>
   <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">${this.state.textarea}</textarea>
   <div class="" contenteditable data-sifrr-bind="elements">
   </div>
 </template>
 <script type="text/javascript">
-  Sifrr.Dom.load('sifrr-small').then(() => {
-    class SifrrTest extends Sifrr.Dom.Element {}
-    SifrrTest.defaultState = {
-      "text": "I\'m a shadow-element using Shadow DOM!",
-      "input": "whatever",
-      "select": "mercedes",
-      "textarea": "whatever",
-      "randomElement": ["this is random text", "this is second random text"],
-      "attr": "bang",
-      "color": "red",
-      "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>",
-      "disabled": false,
-      "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }]
-    }
-    SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
-    Sifrr.Dom.register(SifrrTest);
-  });
+  Sifrr.Dom.load('sifrr-small');
+  class SifrrTest extends Sifrr.Dom.Element {}
+  SifrrTest.defaultState = {
+    "text": "I\'m a shadow-element using Shadow DOM!",
+    "input": "whatever",
+    "select": "mercedes",
+    "textarea": "whatever",
+    "randomElement": ["this is random text", "this is second random text"],
+    "attr": "bang",
+    "color": "red",
+    "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>",
+    "disabled": false,
+    "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }],
+    "html": "<p>xxxxx</p>"
+  }
+  SifrrTest.addArrayToDom('data', '<sifrr-small></sifrr-small>');
+  Sifrr.Dom.register(SifrrTest);
 </script>

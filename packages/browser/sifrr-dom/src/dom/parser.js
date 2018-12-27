@@ -99,7 +99,7 @@ const Parser = {
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
             // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = Array.prototype.slice.call(docFrag.childNodes);
+          children = Array.prototype.slice.call(docFrag.content.childNodes);
         }
         if (children.length < 1) dom.textContent = '';
         else makeChildrenEqual(dom, children);

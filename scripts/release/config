@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for dir in ./packages/*/*
+for dir in ./packages/browser/*
 do
   echo "Changing config files in ${dir}:"
   ./scripts/release/change_config "${dir}"

@@ -25,6 +25,8 @@ class Element extends window.HTMLElement {
     return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
+  static onStateChange() {}
+
   constructor() {
     super();
     // this._oldState = {};
@@ -42,7 +44,7 @@ class Element extends window.HTMLElement {
   }
 
   connectedCallback() {
-    if(!this.hasAttribute('data-sifrr-state')) Parser.updateState(this);
+    if(!this.hasAttribute('data-sifrr-state')) this.updateState();
     this.onConnect();
   }
 
@@ -72,7 +74,12 @@ class Element extends window.HTMLElement {
   set state(v) {
     // this._oldState = this.state;
     Object.assign(this._state, v);
+    this.updateState();
+  }
+
+  updateState() {
     Parser.updateState(this);
+    this.constructor.onStateChange(this);
   }
 
   onStateChange() {}
@@ -91,7 +98,7 @@ class Element extends window.HTMLElement {
   clearState() {
     // this._oldState = this.state;
     this._state = {};
-    Parser.updateState(this);
+    this.updateState();
   }
 
   qs(args, sr = true) {
