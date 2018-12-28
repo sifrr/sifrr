@@ -32,6 +32,7 @@
     <h1><a href="/">OK</a></h1>
     <a href="/abcd">/abcd</a>
     <a href="/efgh">/efgh</a>
+    <a href="/new/def/ghi/klm/mnop/sdf/klm">route state check</a>
     <sifrr-route data-sifrr-route='*'>
       <p>a</p>
       <p>Visible everywhere</p>
@@ -45,6 +46,9 @@
     <sifrr-route data-sifrr-route='/efgh'>
       /efgh
     </sifrr-route>
-    <script src="index.bundled.js" charset="utf-8"></script>
+    <sifrr-route id="routed" data-sifrr-route='/:x/*/**/mnop/**'>
+      Route state check
+    </sifrr-route>
+    <script src="/index.bundled.js" charset="utf-8"></script>
   </body>
 </html>
