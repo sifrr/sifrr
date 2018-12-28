@@ -1,27 +1,28 @@
-let Sifrr = {};
-Sifrr.Storage = require('../../src/sifrr.storage');
-const chai = require('chai'),
+const path = require('path'),
+  chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  puppeteer = require('puppeteer');
+  puppeteer = require('puppeteer'),
+  server = require('../../../../../test-server'),
+  SifrrStorage = require('../../src/sifrr.storage');
+const port = 9999;
+const PATH = `http://localhost:${port}`;
 
-let browser, page, server = require('../public/server');
+let browser, page, ser;
 
 describe('Sifrr.Storage in browser', () => {
-
   before(async () => {
-    server = server.listen(9999);
+    ser = server.listen(port, path.join(__dirname, '../public'));
     browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     page = await browser.newPage();
     await page.setViewport( { width: 1280, height: 800} );
-    await page.goto('http://localhost:9999/test.html');
-    await page.addScriptTag({ url: 'http://localhost:9999/sifrr.storage.min.js' });
+    await page.goto(`${PATH}/index.html`);
   });
 
   after(async () => {
     await browser.close();
-    server.close();
+    ser.close();
   });
 
   it('Website Should have Sifrr.Storage', async () => {
@@ -32,7 +33,7 @@ describe('Sifrr.Storage in browser', () => {
         return e;
       }
     });
-    expect(result).to.have.all.keys(Object.keys(Sifrr.Storage.availableStores));
+    expect(result).to.have.all.keys(Object.keys(SifrrStorage.availableStores));
   });
 
   it('Website Should have LocalStorage', async () => {

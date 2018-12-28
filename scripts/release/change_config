@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const pkg = require('../../pkg.json');
+const pkg = require('../../package.json');
 const fs = require('fs');
 const folder = process.argv[2];
-let pkgFileString = '../.' + folder + '/pkg.json', pkgFile;
+let pkgFileString = '../.' + folder + '/package.json', pkgFile;
 let pkgFolder = folder.split('/')[folder.split('/').length - 1];
 let jsFileName = pkgFolder.replace('-', '.');
 let pkgName = '@' + jsFileName.replace('.', '/');
@@ -20,12 +20,14 @@ let pkgToMerge = {
   'homepage': pkg.homepage,
   'devDependencies': pkg.devDependencies,
   'scripts': {
-    'test': 'mocha --timeout 10000 test/**/*-test.js',
-    'jtest': `MOCHA_FILE=../../../test-results/${pkgFolder}/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*-test.js`,
-    'browser-test': 'mocha --timeout 5000 test/browser/*-test.js',
-    'unit-test': 'mocha test/unit/*-test.js',
+    'test': 'mocha --timeout 10000 test/**/*.test.js',
+    'jtest': `MOCHA_FILE=../../../test-results/${pkgFolder}/results.xml yarn test -R mocha-junit-reporter`,
+    'browser-test': 'mocha --timeout 5000 test/browser/*.test.js',
+    'unit-test': 'mocha test/unit/*.test.js',
     'rollup': './node_modules/.bin/rollup -c',
-    'test-server': 'cd test/public && ../../node_modules/.bin/rollup -c && node server.js 1111'
+    'test-rollup': 'cd test/public && ../../node_modules/.bin/rollup -c',
+    'test-server-only': `node ../../../test-server.js -d ${folder}/test/public -p 1111`,
+    'test-server': 'yarn test-rollup && yarn test-server-only'
   },
   'files': [
     'bin',
@@ -38,9 +40,9 @@ try {
   pkgFile  = require(pkgFileString);
   Object.assign(pkgFile, pkgToMerge);
   fs.writeFileSync(__dirname + '/' + pkgFileString, JSON.stringify(pkgFile, null, 2) + '\n');
-  console.log('Done pkg.json');
+  console.log('Done: package.json');
 } catch(e) {
-  console.log('No pkg file in this folder');
+  console.log('No package file in this folder');
 }
 
 let rollupConfigFileString = '../.' + folder + '/rollup.config.js';
@@ -50,4 +52,4 @@ export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase
 `;
 fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
 
-console.log('Done rollup.config.js');
+console.log('Done: rollup.config.js');

@@ -1,28 +1,29 @@
-let Sifrr = {};
-Sifrr.Storage = require('../../src/sifrr.storage');
-const chai = require('chai'),
+const path = require('path'),
+  chai = require('chai'),
   assert = chai.assert,
   should = chai.should(),
   expect = chai.expect,
-  puppeteer = require('puppeteer');
+  puppeteer = require('puppeteer'),
+  server = require('../../../../../test-server'),
+  SifrrStorage = require('../../src/sifrr.storage');
+const port = 9999;
+const PATH = `http://localhost:${port}`;
 
-let browser, page, server = require('../public/server');
+let browser, page, ser;
 
-for (let key in Sifrr.Storage.availableStores) {
+for (let key in SifrrStorage.availableStores) {
   describe(`${key} in browser`, () => {
     before(async () => {
-      server = server.listen(9999);
+      ser = server.listen(port, path.join(__dirname, '../public'));
       browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
       page = await browser.newPage();
       await page.setViewport( { width: 1280, height: 800} );
-      await page.goto('http://localhost:9999/test.html');
-      await page.addScriptTag({ url: 'http://localhost:9999/sifrr.storage.min.js' });
-      await page.addScriptTag({ url: 'http://localhost:9999/support.js' });
+      await page.goto(`${PATH}/test.html`);
     });
 
     after(async () => {
       await browser.close();
-      server.close();
+      ser.close();
     });
 
     it(`Setting priority to ${key} give ${key} instance`, async () => {

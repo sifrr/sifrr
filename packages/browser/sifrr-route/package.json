@@ -12,12 +12,14 @@
     "firefox >= 53"
   ],
   "scripts": {
-    "test": "mocha --timeout 10000 test/**/*-test.js",
-    "jtest": "MOCHA_FILE=../../../test-results/sifrr-route/results.xml mocha -R mocha-junit-reporter --timeout 10000 test/**/*-test.js",
-    "browser-test": "mocha --timeout 5000 test/browser/*-test.js",
-    "unit-test": "mocha test/unit/*-test.js",
+    "test": "mocha --timeout 10000 test/**/*.test.js",
+    "jtest": "MOCHA_FILE=../../../test-results/sifrr-route/results.xml yarn test -R mocha-junit-reporter",
+    "browser-test": "mocha --timeout 5000 test/browser/*.test.js",
+    "unit-test": "mocha test/unit/*.test.js",
     "rollup": "./node_modules/.bin/rollup -c",
-    "test-server": "cd test/public && ../../node_modules/.bin/rollup -c && node server.js 1111"
+    "test-rollup": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ../../../test-server.js -d ./packages/browser/sifrr-route/test/public -p 1111",
+    "test-server": "yarn test-rollup && yarn test-server-only"
   },
   "repository": {
     "type": "git",
