@@ -79,6 +79,7 @@ class Element extends window.HTMLElement {
 
   updateState() {
     Parser.updateState(this);
+    this.onStateChange();
     this.constructor.onStateChange(this);
   }
 

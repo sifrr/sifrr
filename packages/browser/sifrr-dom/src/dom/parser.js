@@ -109,10 +109,7 @@ const Parser = {
           dom.nodeValue = newValue;
         }
       }
-
     }
-
-    element.onStateChange(element.state);
   },
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
