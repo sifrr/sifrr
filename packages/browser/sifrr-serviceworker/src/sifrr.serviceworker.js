@@ -29,11 +29,11 @@ class SW {
     return Promise.all(promises);
   }
 
-  setup() {
+  setup(skipWaiting = true) {
     let me = this;
     self.addEventListener('install', event => {
       // replace old sw ASAP
-      self.skipWaiting();
+      if (skipWaiting) self.skipWaiting();
       event.waitUntil(me.precache());
     });
 
