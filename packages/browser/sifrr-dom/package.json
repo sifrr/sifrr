@@ -60,5 +60,6 @@
     "bin",
     "dist",
     "src"
-  ]
+  ],
+  "module": "dist/sifrr.dom.module.js"
 }

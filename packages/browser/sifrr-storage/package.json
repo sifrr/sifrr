@@ -63,5 +63,6 @@
     "bin",
     "dist",
     "src"
-  ]
+  ],
+  "module": "dist/sifrr.storage.module.js"
 }

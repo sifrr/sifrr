@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/29 15:19:47 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -368,6 +368,7 @@
   }
 
   var sifrr_fetch = createCommonjsModule(function (module, exports) {
+    /*! Sifrr.Fetch v0.0.1-alpha - sifrr project */
     (function (global, factory) {
       module.exports = factory();
     })(commonjsGlobal, function () {
@@ -434,6 +435,7 @@
       var sifrr_fetch = SifrrFetch;
       return sifrr_fetch;
     });
+    /*! (c) @aadityataparia */
   });
 
   class Loader {

@@ -8,7 +8,7 @@ const cleanup = require('rollup-plugin-cleanup');
 
 module.exports = function getRollupConfig(name) {
   let fileName = name.toLowerCase();
-  let banner = `/*! ${name} v${version} - sifrr project - ${new Date().toLocaleString()} UTC */`;
+  let banner = `/*! ${name} v${version} - sifrr project */`;
   let footer = '/*! (c) @aadityataparia */';
   return [
     {
@@ -29,7 +29,7 @@ module.exports = function getRollupConfig(name) {
         commonjs(),
         eslint(),
         babel({
-          // exclude: 'node_modules/**',
+          exclude: 'node_modules/**',
         }),
         cleanup()
       ]
@@ -51,13 +51,29 @@ module.exports = function getRollupConfig(name) {
         }),
         commonjs(),
         babel({
-          // exclude: 'node_modules/**',
+          exclude: 'node_modules/**',
         }),
         cleanup(),
         terser({
           output: {
             comments: 'all'
           }
+        })
+      ]
+    },
+    {
+      input: `src/${fileName}.js`,
+      output: {
+        file: `dist/${fileName}.module.js`,
+        format: 'es',
+        banner: banner,
+        footer: footer,
+      },
+      preferConst: true,
+      plugins: [
+        commonjs(),
+        babel({
+          exclude: 'node_modules/**',
         })
       ]
     }

@@ -11,6 +11,7 @@ let pkgToMerge = {
   'name': pkgName,
   'main': `src/${jsFileName}.js`,
   'browser': `dist/${jsFileName}.js`,
+  'module': `dist/${jsFileName}.module.js`,
   'version': pkg.version,
   'licence': pkg.licence,
   'browserslist': pkg.browserslist,

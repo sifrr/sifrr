@@ -59,5 +59,6 @@
     "bin",
     "dist",
     "src"
-  ]
+  ],
+  "module": "dist/sifrr.fetch.module.js"
 }

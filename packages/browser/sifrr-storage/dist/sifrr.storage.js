@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.1-alpha - sifrr project - 2018/12/29 15:24:36 UTC */
+/*! Sifrr.Storage v0.0.1-alpha - sifrr project */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
