@@ -19,7 +19,8 @@
     "PATH": false,
     "loadBrowser": false,
     "page": false,
-    "browser": false
+    "browser": false,
+    "Sifrr": true
   },
   "extends": "eslint:recommended",
   "parserOptions": {

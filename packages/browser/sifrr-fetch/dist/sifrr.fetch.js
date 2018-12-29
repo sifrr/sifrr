@@ -14,10 +14,10 @@
     get response() {
       return window.fetch(this.url, this.options).then(resp => {
         let contentType = resp.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          resp = resp.json();
-        }
         if (resp.ok) {
+          if (contentType && contentType.includes('application/json')) {
+            resp = resp.json();
+          }
           return resp;
         } else {
           let error = Error(resp.statusText);
@@ -35,14 +35,15 @@
       }
     }
     get options() {
-      return Object.assign(this._options, {
+      const options = Object.assign({
         method: this.type,
-        headers: Object.assign({
-          'accept': 'application/json'
-        }, this._options.headers || {}),
         mode: 'cors',
         redirect: 'follow'
-      });
+      }, this._options);
+      options.headers = Object.assign({
+        'accept': 'application/json'
+      }, this._options.headers || {});
+      return options;
     }
   }
   var request = Request;
