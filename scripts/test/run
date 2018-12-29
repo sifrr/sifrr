@@ -29,7 +29,7 @@ const mochaOptions = {
   timeout: 10000
 };
 const useJunitReporter = process.argv.indexOf('-j') > 0 || process.argv.indexOf('--junit') > 0;
-const junitXmlFile = path.join(__dirname, `../../test-results/${path.dirname(dir)}/results.xml`);
+const junitXmlFile = path.join(__dirname, `../../test-results/${dir.split(path.sep).pop()}/results.xml`);
 
 if (useJunitReporter) {
   mochaOptions.reporter = 'mocha-junit-reporter';
