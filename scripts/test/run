@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* global fs:false, path:false, chai:false, assert:false, expect:false, should:false, puppeteer:false, server:false, port:false, PATH:false, loadBrowser:false */
 
 const Mocha = require('mocha');
 const exec = require('../exec').exec;
@@ -22,7 +21,7 @@ global.loadBrowser = async function() {
   global.browser = browser;
   global.page = page;
   return true;
-}
+};
 
 const dir = path.join(__dirname, '../../', process.argv[2]);
 

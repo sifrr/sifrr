@@ -6,13 +6,26 @@
     "mocha": true
   },
   "globals": {
-    "ENV": true
+    "ENV": true,
+    "fs": false,
+    "path": false,
+    "chai": false,
+    "assert": false,
+    "expect": false,
+    "should": false,
+    "puppeteer": false,
+    "server": false,
+    "port": false,
+    "PATH": false,
+    "loadBrowser": false,
+    "page": false,
+    "browser": false
   },
   "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 2015,
-    "esversion": 2015
+    "ecmaVersion": 2017,
+    "esversion": 2017
   },
   "rules": {
     "indent": [

@@ -94,9 +94,9 @@
     }
   });
 
-  window.onpopstate = function(event) {
+  window.addEventListener('popstate', (event) => {
     SifrrRoute.refreshAll();
-  };
+  });
 
   function parseRoute(route, path) {
     const reg = new RegExp('^' + route.replace(/\*\*/, '(.{0,})').replace(/\*/g, '([^\/]{0,})').replace(/:[^\/]{0,}/g, '([^\/]{0,})') + '$');

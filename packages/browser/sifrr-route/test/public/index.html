@@ -1,54 +1,60 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <style media="screen">
-      *:not(:defined) * {
-        display: none;
-      }
-      *:not(:defined)::before {
-        content: " ";
-        display: block !important;
-        width: 24px;
-        height: 24px;
-        margin: 1px;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        border-color: red transparent blue transparent;
-        animation: lds-dual-ring 1.2s linear infinite;
-      }
-      @keyframes lds-dual-ring {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h1><a href="/">OK</a></h1>
-    <a href="/abcd">/abcd</a>
-    <a href="/efgh">/efgh</a>
-    <a href="/new/def/ghi/klm/mnop/sdf/klm">route state check</a>
-    <sifrr-route data-sifrr-route='**'>
-      <p>a</p>
-      <p>Visible everywhere</p>
-      <p>e</p>
-    </sifrr-route>
 
-    <sifrr-route data-sifrr-route='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
-      <p>/abcd</p>
-      <sifrr-test></sifrr-test>
-    </sifrr-route>
-    <sifrr-route data-sifrr-route='/efgh'>
-      /efgh
-    </sifrr-route>
-    <sifrr-route id="routed" data-sifrr-route='/:x/*/**/mnop/*/:k'>
-      Route state check
-    </sifrr-route>
-    <script src="/index.bundled.js" charset="utf-8"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <style media="screen">
+    *:not(:defined) * {
+      display: none;
+    }
+
+    *:not(:defined)::before {
+      content: " ";
+      display: block !important;
+      width: 24px;
+      height: 24px;
+      margin: 1px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      border-color: red transparent blue transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1><a href="/">OK</a></h1>
+  <a href="/abcd">/abcd</a>
+  <a href="/efgh">/efgh</a>
+  <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm">route state check</a>
+  <sifrr-route id='everywhere' data-sifrr-route='**'>
+    <p>a</p>
+    <p>Visible everywhere</p>
+    <p>e</p>
+  </sifrr-route>
+
+  <sifrr-route id='abcd' data-sifrr-route='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
+    <p>/abcd</p>
+    <sifrr-test></sifrr-test>
+  </sifrr-route>
+  <sifrr-route id='efgh' data-sifrr-route='/efgh'>
+    /efgh
+  </sifrr-route>
+  <sifrr-route id="complex" data-sifrr-route='/:x/*/**/mnop/*/:k'>
+    Route state check
+  </sifrr-route>
+  <script src="/index.bundled.js" charset="utf-8"></script>
+</body>
+
 </html>
