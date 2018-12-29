@@ -1,28 +1,13 @@
-const path = require('path'),
-  chai = require('chai'),
-  assert = chai.assert,
-  should = chai.should(),
-  expect = chai.expect,
-  puppeteer = require('puppeteer'),
-  server = require('../../../../../test-server'),
-  SifrrStorage = require('../../src/sifrr.storage');
-const port = 9999;
-const PATH = `http://localhost:${port}`;
-
-let browser, page, ser;
+const SifrrStorage = require('../../src/sifrr.storage');
 
 describe('Sifrr.Storage in browser', () => {
   before(async () => {
-    ser = server.listen(port, path.join(__dirname, '../public'));
-    browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    page = await browser.newPage();
-    await page.setViewport( { width: 1280, height: 800} );
+    await loadBrowser();
     await page.goto(`${PATH}/index.html`);
   });
 
   after(async () => {
     await browser.close();
-    ser.close();
   });
 
   it('Website Should have Sifrr.Storage', async () => {

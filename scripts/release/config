@@ -3,5 +3,5 @@
 for dir in ./packages/browser/*
 do
   echo "Changing config files in ${dir}:"
-  ./scripts/release/change_config "${dir}"
+  ./scripts/release/change_config "${dir}" "$@"
 done

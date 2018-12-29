@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+for dir in ./packages/browser/*
+do
+  echo "Running test in ${dir}:"
+  ./scripts/test/run "${dir}" "$@"
+done

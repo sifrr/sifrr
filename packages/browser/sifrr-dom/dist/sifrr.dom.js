@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/26 20:57:42 UTC */
+/*! Sifrr.Dom v0.0.1-alpha - sifrr project - 2018/12/29 15:19:47 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -118,9 +118,16 @@
     ELEMENT_NODE: 1
   };
 
-  const { updateAttribute: updateAttribute$1 } = update;
-  const { shallowEqual } = json;
-  const { TEXT_NODE, COMMENT_NODE } = constants;
+  const {
+    updateAttribute: updateAttribute$1
+  } = update;
+  const {
+    shallowEqual
+  } = json;
+  const {
+    TEXT_NODE,
+    COMMENT_NODE
+  } = constants;
   function makeChildrenEqual(parent, newChildren) {
     const oldL = parent.childNodes.length,
           newL = newChildren.length;
@@ -225,10 +232,22 @@
     klass: Ref
   };
 
-  const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
-  const { updateAttribute: updateAttribute$2 } = update;
-  const { collect: collect$1, create: create$1 } = ref;
-  const { SIFRR_NODE, TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE } = constants;
+  const {
+    makeChildrenEqual: makeChildrenEqual$1
+  } = makeequal;
+  const {
+    updateAttribute: updateAttribute$2
+  } = update;
+  const {
+    collect: collect$1,
+    create: create$1
+  } = ref;
+  const {
+    SIFRR_NODE,
+    TEXT_NODE: TEXT_NODE$1,
+    COMMENT_NODE: COMMENT_NODE$1,
+    ELEMENT_NODE
+  } = constants;
   function isHtml(el) {
     return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
   }
@@ -291,7 +310,8 @@
         if (data.html === undefined) continue;
         const newValue = Parser.evaluateString(data.text, element);
         if (!newValue) {
-          dom.textContent = '';continue;
+          dom.textContent = '';
+          continue;
         }
         if (data.html) {
           let children;
@@ -313,7 +333,6 @@
           }
         }
       }
-      element.onStateChange(element.state);
     },
     twoWayBind: e => {
       const target = e.path ? e.path[0] : e.target;
@@ -427,7 +446,10 @@
     get html() {
       const me = this;
       return sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => new window.DOMParser().parseFromString(file, 'text/html')).then(html => {
-        Loader.add(me.elementName, { instance: me, template: html.querySelector('template') });
+        Loader.add(me.elementName, {
+          instance: me,
+          template: html.querySelector('template')
+        });
         return html;
       });
     }
@@ -453,8 +475,13 @@
   Loader.urls = {};
   var loader = Loader;
 
-  const { collect: collect$2, create: create$2 } = ref;
-  const { SIFRR_NODE: SIFRR_NODE$1 } = constants;
+  const {
+    collect: collect$2,
+    create: create$2
+  } = ref;
+  const {
+    SIFRR_NODE: SIFRR_NODE$1
+  } = constants;
   function creator$1(node) {
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
@@ -540,108 +567,117 @@
   }
   var simpleelement = SimpleElement;
 
-  class Element extends window.HTMLElement {
-    static get observedAttributes() {
-      return ['data-sifrr-state'].concat(this.observedAttrs());
-    }
-    static observedAttrs() {
-      return [];
-    }
-    static get template() {
-      return loader.all[this.elementName].template;
-    }
-    static get stateMap() {
-      this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
-      return this._stateMap;
-    }
-    static get elementName() {
-      return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    }
-    static onStateChange() {}
-    constructor() {
-      super();
-      this._state = Object.assign({}, this.constructor.defaultState, this.state);
-      const content = this.constructor.template.content.cloneNode(true);
-      this._refs = parser.collectRefs(content, this.constructor.stateMap);
-      this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
-      if (this.useShadowRoot) {
-        this.attachShadow({
-          mode: 'open'
-        });
-        this.shadowRoot.appendChild(content);
-        this.shadowRoot.addEventListener('change', parser.twoWayBind);
-      } else this.appendChild(content);
-    }
-    connectedCallback() {
-      if (!this.hasAttribute('data-sifrr-state')) this.updateState();
-      this.onConnect();
-    }
-    onConnect() {}
-    disconnectedCallback() {
-      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-      this.onDisconnect();
-    }
-    onDisconnect() {}
-    attributeChangedCallback(attrName, oldVal, newVal) {
-      if (attrName === 'data-sifrr-state') {
-        this.state = json.parse(newVal);
+  function elementClassFactory(BaseClass = window.HTMLElement) {
+    return class Element extends BaseClass {
+      static extends(BaseClass) {
+        return elementClassFactory(BaseClass);
       }
-      this.onAttributeChange(attrName, oldVal, newVal);
-    }
-    onAttributeChange() {}
-    get state() {
-      return this._state;
-    }
-    set state(v) {
-      Object.assign(this._state, v);
-      this.updateState();
-    }
-    updateState() {
-      parser.updateState(this);
-      this.constructor.onStateChange(this);
-    }
-    onStateChange() {}
-    isSifrr(name = null) {
-      if (name) return name === this.constructor.elementName;else return true;
-    }
-    sifrrClone(deep) {
-      const clone = this.cloneNode(deep);
-      clone.state = this.state;
-      return clone;
-    }
-    clearState() {
-      this._state = {};
-      this.updateState();
-    }
-    qs(args, sr = true) {
-      if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
-    }
-    qsAll(args, sr = true) {
-      if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
-    }
-    static addArrayToDom(key, template) {
-      this._arrayToDom = this._arrayToDom || {};
-      this._arrayToDom[key] = simpleelement(template);
-    }
-    arrayToDom(key, newState = this.state[key]) {
-      this._domL = this._domL || {};
-      const oldL = this._domL[key] || 0;
-      const domArray = [];
-      const newL = newState.length;
-      for (let i = 0; i < newL; i++) {
-        if (i < oldL) {
-          domArray.push({ type: 'stateChange', state: newState[i] });
-        } else {
-          const el = this.constructor._arrayToDom[key].sifrrClone(true);
-          el.state = newState[i];
-          domArray.push(el);
+      static get observedAttributes() {
+        return ['data-sifrr-state'].concat(this.observedAttrs());
+      }
+      static observedAttrs() {
+        return [];
+      }
+      static get template() {
+        return loader.all[this.elementName].template;
+      }
+      static get stateMap() {
+        this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
+        return this._stateMap;
+      }
+      static get elementName() {
+        return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      }
+      static onStateChange() {}
+      constructor() {
+        super();
+        this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        const content = this.constructor.template.content.cloneNode(true);
+        this._refs = parser.collectRefs(content, this.constructor.stateMap);
+        this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
+        if (this.useShadowRoot) {
+          this.attachShadow({
+            mode: 'open'
+          });
+          this.shadowRoot.appendChild(content);
+          this.shadowRoot.addEventListener('change', parser.twoWayBind);
+        } else this.appendChild(content);
+      }
+      connectedCallback() {
+        if (!this.hasAttribute('data-sifrr-state')) this.updateState();
+        this.onConnect();
+      }
+      onConnect() {}
+      disconnectedCallback() {
+        if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+        this.onDisconnect();
+      }
+      onDisconnect() {}
+      attributeChangedCallback(attrName, oldVal, newVal) {
+        if (attrName === 'data-sifrr-state') {
+          this.state = json.parse(newVal);
         }
+        this.onAttributeChange(attrName, oldVal, newVal);
       }
-      this._domL[key] = newL;
-      return domArray;
-    }
+      onAttributeChange() {}
+      get state() {
+        return this._state;
+      }
+      set state(v) {
+        Object.assign(this._state, v);
+        this.updateState();
+      }
+      updateState() {
+        parser.updateState(this);
+        this.onStateChange();
+        this.constructor.onStateChange(this);
+      }
+      onStateChange() {}
+      isSifrr(name = null) {
+        if (name) return name === this.constructor.elementName;else return true;
+      }
+      sifrrClone(deep) {
+        const clone = this.cloneNode(deep);
+        clone.state = this.state;
+        return clone;
+      }
+      clearState() {
+        this._state = {};
+        this.updateState();
+      }
+      qs(args, sr = true) {
+        if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
+      }
+      qsAll(args, sr = true) {
+        if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
+      }
+      static addArrayToDom(key, template) {
+        this._arrayToDom = this._arrayToDom || {};
+        this._arrayToDom[key] = simpleelement(template);
+      }
+      arrayToDom(key, newState = this.state[key]) {
+        this._domL = this._domL || {};
+        const oldL = this._domL[key] || 0;
+        const domArray = [];
+        const newL = newState.length;
+        for (let i = 0; i < newL; i++) {
+          if (i < oldL) {
+            domArray.push({
+              type: 'stateChange',
+              state: newState[i]
+            });
+          } else {
+            const el = this.constructor._arrayToDom[key].sifrrClone(true);
+            el.state = newState[i];
+            domArray.push(el);
+          }
+        }
+        this._domL[key] = newL;
+        return domArray;
+      }
+    };
   }
-  var element = Element;
+  var element = elementClassFactory();
 
   const SYNTHETIC_EVENTS = {};
   const nativeToSyntheticEvent = (e, name) => {
@@ -668,7 +704,10 @@
   const Event = {
     add: name => {
       if (SYNTHETIC_EVENTS[name]) return false;
-      window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
+      window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), {
+        capture: true,
+        passive: true
+      });
       SYNTHETIC_EVENTS[name] = {};
       return true;
     },
@@ -686,7 +725,10 @@
       return true;
     },
     trigger: (el, name, options) => {
-      el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
+      el.dispatchEvent(new window.Event(name, Object.assign({
+        bubbles: true,
+        composed: true
+      }, options)));
     }
   };
   var event = Event;
@@ -730,7 +772,9 @@
     SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
     SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   };
-  SifrrDom.load = function (elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
+  SifrrDom.load = function (elemName, config = {
+    baseUrl: SifrrDom.config.baseUrl
+  }) {
     return new Promise(res => {
       let loader$$1 = new SifrrDom.Loader(elemName, config);
       loader$$1.executeScripts().then(() => res());

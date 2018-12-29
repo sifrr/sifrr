@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+/* global fs:false, path:false, chai:false, assert:false, expect:false, should:false, puppeteer:false, server:false, port:false, PATH:false, loadBrowser:false */
+
+const Mocha = require('mocha');
+const exec = require('../exec').exec;
+
+global.fs = require('fs');
+global.path = require('path');
+global.chai = require('chai');
+global.assert = chai.assert;
+global.expect = chai.expect;
+global.should = chai.should();
+global.puppeteer = require('puppeteer');
+global.server = require('../../test-server');
+global.port = 9999;
+global.PATH = `http://localhost:${port}`;
+global.loadBrowser = async function() {
+  // set browser and page global variables
+  let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  let page = await browser.newPage();
+  await page.setViewport( { width: 1280, height: 800} );
+  global.browser = browser;
+  global.page = page;
+  return true;
+}
+
+const dir = path.join(__dirname, '../../', process.argv[2]);
+
+const mochaOptions = {
+  timeout: 10000
+};
+const useJunitReporter = process.argv.indexOf('-j') > 0 || process.argv.indexOf('--junit') > 0;
+const junitXmlFile = path.join(__dirname, `../../test-results/${path.dirname(dir)}/results.xml`);
+
+if (useJunitReporter) {
+  mochaOptions.reporter = 'mocha-junit-reporter';
+  mochaOptions.reporterOptions = {
+    mochaFile: junitXmlFile
+  };
+}
+
+const mocha = new Mocha(mochaOptions);
+
+// check if run only unit test
+const runUnitTests = process.argv.indexOf('-u') > 0 || process.argv.indexOf('--unit') > 0;
+const unitTestDir = path.join(dir, './test/unit');
+
+// check if run only browser tests
+const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
+const browserTestDir = path.join(dir, './test/browser');
+
+let ser = false;
+
+if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
+  // Add unit test.js files to the mocha instance
+  loadDir(unitTestDir);
+}
+
+if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
+  const testPublicPath = path.join(dir, './test/public');
+
+  // Run yarn rollup if there is a rollup config in public folder
+  if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
+
+  // Start server if there is a public folder
+  if (fs.existsSync(path.join(testPublicPath))) ser = server.listen(port, testPublicPath);
+
+  // Add browser test.js files to the mocha instance
+  loadDir(browserTestDir);
+}
+
+mocha.run(function(failures) {
+  // close server if open
+  if (ser) ser.close();
+
+  process.exitCode = failures ? 1 : 0;  // exit with non-zero status if there were failures
+});
+
+function loadDir(dir) {
+  fs.readdirSync(dir).filter(function(file) {
+    // Only keep the `test.js` suffixed files
+    return file.substr(-7) === 'test.js';
+  }).forEach(function(file) {
+    mocha.addFile(
+      path.join(dir, file)
+    );
+  });
+}

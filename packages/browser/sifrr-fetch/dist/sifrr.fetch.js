@@ -1,4 +1,4 @@
-/*! Sifrr.Fetch v0.0.1-alpha - sifrr project - 2018/12/26 2:38:14 UTC */
+/*! Sifrr.Fetch v0.0.1-alpha - sifrr project - 2018/12/29 15:19:50 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :

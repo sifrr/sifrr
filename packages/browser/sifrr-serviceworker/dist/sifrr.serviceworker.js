@@ -1,4 +1,4 @@
-/*! Sifrr.Serviceworker v0.0.1-alpha - sifrr project - 2018/12/26 15:18:15 UTC */
+/*! Sifrr.Serviceworker v0.0.1-alpha - sifrr project - 2018/12/29 15:19:52 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -34,10 +34,10 @@
       }
       return Promise.all(promises);
     }
-    setup() {
+    setup(skipWaiting = true) {
       let me = this;
       self.addEventListener('install', event => {
-        self.skipWaiting();
+        if (skipWaiting) self.skipWaiting();
         event.waitUntil(me.precache());
       });
       self.addEventListener('activate', () => {
@@ -64,7 +64,9 @@
         }
       });
     }
-    setupPushNotification(defaultTitle = '', defaultOptions = { 'body': '' }, onNotificationClick) {
+    setupPushNotification(defaultTitle = '', defaultOptions = {
+      'body': ''
+    }, onNotificationClick) {
       self.addEventListener('push', function (event) {
         let data = {};
         if (event.data) {

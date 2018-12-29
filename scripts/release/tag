@@ -4,6 +4,6 @@ const version = require('../../package.json').version;
 const exec = require('../exec').exec;
 const tag = 'v' + version;
 
-const deleteSameTag = exec(`(git tag -d ${tag} && git push origin :refs/tags/${tag}) || echo 'No tag yet'`);
-const createTag = exec(`git tag -a ${tag} -m "Release of ${tag}"`);
-const pushTag = exec(`git push origin ${tag}`);
+exec(`(git tag -d ${tag} && git push origin :refs/tags/${tag}) || echo 'No tag yet'`);
+exec(`git tag -a ${tag} -m "Release of ${tag}"`);
+exec(`git push origin ${tag}`);

@@ -1,6 +1,6 @@
 {
   "presets": [
-    ["env", {
+    ["@babel/env", {
       "targets": {
         "chrome": 55,
         "safari": 11,
@@ -11,6 +11,6 @@
     }]
   ],
   "plugins": [
-    "external-helpers"
+    "@babel/plugin-external-helpers"
   ]
 }

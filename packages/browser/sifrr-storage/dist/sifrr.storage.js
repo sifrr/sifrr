@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.1-alpha - sifrr project - 2018/12/26 2:38:19 UTC */
+/*! Sifrr.Storage v0.0.1-alpha - sifrr project - 2018/12/29 15:24:36 UTC */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -52,7 +52,8 @@
           return [key];
         } else if (key.constructor === jsonConstructor) {
           return key;
-        }{
+        }
+        {
           throw Error('Invalid Key');
         }
       } else if (typeof key == 'string') {
@@ -170,9 +171,15 @@
       for (let key in data) {
         let promise = this._tx('readonly', 'get', key).then(oldResult => {
           if (oldResult && oldResult.key == key) {
-            return this._tx('readwrite', 'put', { 'key': key, 'value': data[key] });
+            return this._tx('readwrite', 'put', {
+              'key': key,
+              'value': data[key]
+            });
           } else {
-            return this._tx('readwrite', 'add', { 'key': key, 'value': data[key] });
+            return this._tx('readwrite', 'add', {
+              'key': key,
+              'value': data[key]
+            });
           }
         });
         promises.push(promise);
@@ -206,7 +213,9 @@
         const request = this.store.open(table, 1);
         request.onupgradeneeded = event => {
           let db = event.target.result;
-          db.createObjectStore(table, { keyPath: 'key' });
+          db.createObjectStore(table, {
+            keyPath: 'key'
+          });
         };
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
@@ -338,8 +347,7 @@
     get table() {
       let result = this.store,
           ans = {};
-      result = result.split('; ');
-      result.forEach(value => {
+      result.split('; ').forEach(value => {
         let [k, v] = value.split('=');
         if (v) ans[k] = this.constructor.parse(v);
       });
@@ -390,7 +398,9 @@
 
   class SifrrStorage {
     constructor(options) {
-      if (typeof options == 'string') options = { priority: [options] };else options = options || {};
+      if (typeof options == 'string') options = {
+        priority: [options]
+      };else options = options || {};
       this._options = Object.assign(this.constructor.defaultOptions, options);
       return this.storage;
     }

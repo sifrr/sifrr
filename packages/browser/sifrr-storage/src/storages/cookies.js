@@ -11,8 +11,7 @@ class Cookies extends Storage {
 
   get table() {
     let result = this.store, ans = {};
-    result = result.split('; ');
-    result.forEach((value) => {
+    result.split('; ').forEach((value) => {
       let [k, v] = value.split('=');
       if (v) ans[k] = this.constructor.parse(v);
     });
