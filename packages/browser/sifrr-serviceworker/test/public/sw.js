@@ -14,15 +14,22 @@ const sw = new SW({
     'networkonly': {
       policy: 'NETWORK_ONLY'
     },
+    'server': {
+      policy: 'NETWORK_ONLY'
+    },
     'cacheonly': {
+      policy: 'CACHE_ONLY',
+      cacheName: 'bangbang2'
+    },
+    'precache': {
       policy: 'CACHE_ONLY',
       cacheName: 'bangbang2'
     },
   },
   fallbacks: {
-    'default': '/404.html'
+    'networkonly': '/offline.html'
   },
-  precache_urls: ['/precache.js', './cacheonly.js']
+  precacheUrls: ['/precache.js', '/cacheonly.js']
 });
 
 sw.setup();

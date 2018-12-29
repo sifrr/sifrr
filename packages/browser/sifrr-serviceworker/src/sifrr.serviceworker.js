@@ -12,7 +12,6 @@ class SW {
       policy: 'NETWORK_FIRST',
       cacheName: this.options.defaultCacheName
     });
-    this.options.fallbacks.default = this.options.fallbacks.default || '/offline.html';
   }
 
   precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
@@ -59,7 +58,7 @@ class SW {
             throw Error('response status ' + response.status);
           }
           return response;
-        }).catch(() => me.respondWithFallback(otherReq)));
+        }).catch((e) => me.respondWithFallback(otherReq, e)));
       }
     });
   }
@@ -80,9 +79,13 @@ class SW {
     self.addEventListener('notificationclick', onNotificationClick);
   }
 
-  respondWithFallback(request) {
+  respondWithFallback(request, error) {
     const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
-    return this.responseFromCache(fallback, this.options.fallbackCacheName);
+    if (fallback !== undefined) {
+      return this.responseFromCache(fallback, this.options.fallbackCacheName);
+    } else {
+      throw error;
+    }
   }
 
   respondWithPolicy(request) {
@@ -96,7 +99,8 @@ class SW {
     case 'NETWORK_ONLY':
       resp = this.responseFromNetwork(newreq, cacheName, false);
       break;
-    case 'CACHE_FIRST', 'CACHE_ONLY':
+    case 'CACHE_FIRST':
+    case 'CACHE_ONLY':
       resp = this.responseFromCache(newreq, cacheName)
         .catch(() => this.responseFromNetwork(request, cacheName));
       break;
