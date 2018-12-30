@@ -1,0 +1,7 @@
+<template use-shadow-root="false">
+  <td>${this.state.x}</td>
+</template>
+<script type="text/javascript">
+  class SifrrSmaller extends Sifrr.Dom.Element.extends(HTMLTableRowElement) {}
+  Sifrr.Dom.register(SifrrSmaller, { extends: 'tr' });
+</script>

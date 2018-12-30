@@ -12,18 +12,12 @@ function isHtml(el) {
 }
 
 function creator(el) {
-  if (el.nodeType === TEXT_NODE) {
+  if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
     const x = el.nodeValue;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x
-    };
-  } else if (el.nodeType === COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
-    // comment
-    return {
-      html: false,
-      text: el.nodeValue.trim()
+      text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const ref = {};
@@ -53,13 +47,7 @@ function creator(el) {
 
 const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
-  createStateMap: (element) => {
-    let node;
-    if (element.useShadowRoot) node = element.shadowRoot;
-    else node = element;
-
-    return create(node, creator, isHtml);
-  },
+  createStateMap: (element) => create(element, creator, isHtml),
   updateState: (element) => {
     if (!element._refs) {
       return false;

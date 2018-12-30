@@ -16,7 +16,7 @@ SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
 // Register Custom Element Function
-SifrrDom.register = function(Element) {
+SifrrDom.register = function(Element, options) {
   Element.useShadowRoot = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
@@ -27,7 +27,7 @@ SifrrDom.register = function(Element) {
     window.console.warn(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
     try {
-      window.customElements.define(name, Element);
+      window.customElements.define(name, Element, options);
       SifrrDom.elements[name] = Element;
       return true;
     } catch (error) {

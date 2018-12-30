@@ -71,6 +71,7 @@ module.exports = function getRollupConfig(name) {
       },
       preferConst: true,
       plugins: [
+        resolve(),
         commonjs(),
         babel({
           exclude: 'node_modules/**',

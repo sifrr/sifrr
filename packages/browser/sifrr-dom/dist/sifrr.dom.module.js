@@ -1,6 +1,4 @@
 /*! Sifrr.Dom v0.0.1-alpha - sifrr project */
-import fetch from '@sifrr/fetch';
-
 const URLExt = {
   absolute: (base, relative) => {
     let stack = base.split('/'),
@@ -305,18 +303,12 @@ function isHtml(el) {
 }
 
 function creator(el) {
-  if (el.nodeType === TEXT_NODE$1) {
+  if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
     // text node
     const x = el.nodeValue;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x
-    };
-  } else if (el.nodeType === COMMENT_NODE$1 && el.nodeValue.trim()[0] == '$') {
-    // comment
-    return {
-      html: false,
-      text: el.nodeValue.trim()
+      text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const ref$$1 = {}; // Html ?
@@ -352,11 +344,7 @@ function creator(el) {
 
 const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
-  createStateMap: element => {
-    let node;
-    if (element.useShadowRoot) node = element.shadowRoot;else node = element;
-    return create$1(node, creator, isHtml);
-  },
+  createStateMap: element => create$1(element, creator, isHtml),
   updateState: element => {
     if (!element._refs) {
       return false;
@@ -441,6 +429,86 @@ const Parser = {
 };
 var parser = Parser;
 
+/*! Sifrr.Fetch v0.0.1-alpha - sifrr project */
+class Request {
+  constructor(type, url, options) {
+    this.type = type;
+    this._options = options;
+    this._url = url;
+  }
+
+  get response() {
+    return window.fetch(this.url, this.options).then(resp => {
+      let contentType = resp.headers.get('content-type');
+
+      if (resp.ok) {
+        if (contentType && contentType.includes('application/json')) {
+          resp = resp.json();
+        }
+
+        return resp;
+      } else {
+        let error = Error(resp.statusText);
+        error.response = resp;
+        throw error;
+      }
+    });
+  }
+
+  get url() {
+    const params = this._options.params;
+
+    if (params && Object.keys(params).length > 0) {
+      return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
+    } else {
+      return this._url;
+    }
+  }
+
+  get options() {
+    const options = Object.assign({
+      method: this.type,
+      mode: 'cors',
+      redirect: 'follow'
+    }, this._options);
+    options.headers = Object.assign({
+      'accept': 'application/json'
+    }, this._options.headers || {});
+    return options;
+  }
+
+}
+
+var request = Request;
+
+class SifrrFetch {
+  static get(url, options = {}) {
+    return new request('GET', url, options).response;
+  }
+
+  static post(url, options = {}) {
+    return new request('POST', url, options).response;
+  }
+
+  static put(url, options = {}) {
+    return new request('PUT', url, options).response;
+  }
+
+  static delete(url, options = {}) {
+    return new request('DELETE', url, options).response;
+  }
+
+  static file(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers.accept = options.headers.accept || '*/*';
+    return new request('GET', url, options).response;
+  }
+
+}
+
+var sifrr_fetch = SifrrFetch;
+/*! (c) @aadityataparia */
+
 class Loader {
   constructor(elemName, config = {}) {
     if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
@@ -451,7 +519,7 @@ class Loader {
 
   get html() {
     const me = this;
-    return fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => new window.DOMParser().parseFromString(file, 'text/html')).then(html => {
+    return sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => new window.DOMParser().parseFromString(file, 'text/html')).then(html => {
       Loader.add(me.elementName, {
         instance: me,
         template: html.querySelector('template')
@@ -596,146 +664,167 @@ function SimpleElement(content, defaultState) {
 
 var simpleelement = SimpleElement;
 
-class Element extends window.HTMLElement {
-  static get observedAttributes() {
-    return ['data-sifrr-state'].concat(this.observedAttrs());
-  }
-
-  static observedAttrs() {
-    return [];
-  }
-
-  static get template() {
-    return loader.all[this.elementName].template;
-  }
-
-  static get stateMap() {
-    this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
-    return this._stateMap;
-  }
-
-  static get elementName() {
-    return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-  }
-
-  static onStateChange() {}
-
-  constructor() {
-    super(); // this._oldState = {};
-
-    this._state = Object.assign({}, this.constructor.defaultState, this.state);
-    const content = this.constructor.template.content.cloneNode(true);
-    this._refs = parser.collectRefs(content, this.constructor.stateMap); // this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
-    // if (this.useShadowRoot) {
-
-    this.attachShadow({
-      mode: 'open'
-    });
-    this.shadowRoot.appendChild(content);
-    this.shadowRoot.addEventListener('change', parser.twoWayBind); // } else this.appendChild(content);
-  }
-
-  connectedCallback() {
-    if (!this.hasAttribute('data-sifrr-state')) this.updateState();
-    this.onConnect();
-  }
-
-  onConnect() {}
-
-  disconnectedCallback() {
-    if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-    this.onDisconnect();
-  }
-
-  onDisconnect() {}
-
-  attributeChangedCallback(attrName, oldVal, newVal) {
-    if (attrName === 'data-sifrr-state') {
-      this.state = json.parse(newVal);
+function elementClassFactory(baseClass) {
+  return class extends baseClass {
+    static extends(htmlElementClass) {
+      return elementClassFactory(htmlElementClass);
     }
 
-    this.onAttributeChange(attrName, oldVal, newVal);
-  }
+    static get observedAttributes() {
+      return ['data-sifrr-state'].concat(this.observedAttrs());
+    }
 
-  onAttributeChange() {}
+    static observedAttrs() {
+      return [];
+    }
 
-  get state() {
-    // return JsonExt.deepClone(this._state);
-    return this._state;
-  }
+    static get template() {
+      return loader.all[this.elementName].template;
+    }
 
-  set state(v) {
-    // this._oldState = this.state;
-    Object.assign(this._state, v);
-    this.updateState();
-  }
+    static get stateMap() {
+      this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
+      return this._stateMap;
+    }
 
-  updateState() {
-    parser.updateState(this);
-    this.onStateChange();
-    this.constructor.onStateChange(this);
-  }
+    static get elementName() {
+      return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    }
 
-  onStateChange() {}
+    static onStateChange() {}
 
-  isSifrr(name = null) {
-    if (name) return name === this.constructor.elementName;else return true;
-  }
+    static useSR() {
+      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useShadowRoot;
+    }
 
-  sifrrClone(deep) {
-    const clone = this.cloneNode(deep);
-    clone._refs = parser.collectRefs(clone.shadowRoot, this.constructor.stateMap);
-    clone.state = this.defaultState;
-    return clone;
-  }
+    constructor() {
+      super(); // this._oldState = {};
 
-  clearState() {
-    // this._oldState = this.state;
-    this._state = {};
-    this.updateState();
-  }
+      if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
+      const content = this.constructor.template.content.cloneNode(true);
+      this._refs = parser.collectRefs(content, this.constructor.stateMap);
 
-  qs(args, sr = true) {
-    if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
-  }
-
-  qsAll(args, sr = true) {
-    if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
-  }
-
-  static addArrayToDom(key, template) {
-    this._arrayToDom = this._arrayToDom || {}; // state of simple element is single array item, compatible with sifrr element
-
-    this._arrayToDom[key] = simpleelement(template);
-  }
-
-  arrayToDom(key, newState = this.state[key]) {
-    this._domL = this._domL || {};
-    const oldL = this._domL[key] || 0;
-    const domArray = [];
-    const newL = newState.length;
-    const temp = this.constructor._arrayToDom[key];
-
-    for (let i = 0; i < newL; i++) {
-      if (i < oldL) {
-        domArray.push({
-          type: 'stateChange',
-          state: newState[i]
+      if (this.constructor.useSR()) {
+        this.attachShadow({
+          mode: 'open'
         });
+        this.shadowRoot.appendChild(content);
+        this.shadowRoot.addEventListener('change', parser.twoWayBind);
       } else {
-        const el = temp.sifrrClone(true);
-        el.state = newState[i];
-        domArray.push(el);
+        this.__content = content;
       }
     }
 
-    this._domL[key] = newL;
-    return domArray;
-  }
+    connectedCallback() {
+      if (!this.constructor.useSR()) this.appendChild(this.__content) && delete this.__content;
+      if (!this.hasAttribute('data-sifrr-state') && this._state) this.updateState();
+      this.onConnect();
+    }
 
+    onConnect() {}
+
+    disconnectedCallback() {
+      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+      this.onDisconnect();
+    }
+
+    onDisconnect() {}
+
+    attributeChangedCallback(attrName, oldVal, newVal) {
+      if (attrName === 'data-sifrr-state') {
+        this.state = json.parse(newVal);
+      }
+
+      this.onAttributeChange(attrName, oldVal, newVal);
+    }
+
+    onAttributeChange() {}
+
+    get state() {
+      // return JsonExt.deepClone(this._state);
+      return this._state;
+    }
+
+    set state(v) {
+      // this._oldState = this.state;
+      Object.assign(this._state, v);
+      this.updateState();
+    }
+
+    updateState() {
+      parser.updateState(this);
+      this.onStateChange();
+      this.constructor.onStateChange(this);
+    }
+
+    onStateChange() {}
+
+    isSifrr(name = null) {
+      if (name) return name === this.constructor.elementName;else return true;
+    }
+
+    sifrrClone(deep) {
+      const clone = this.cloneNode(deep);
+      clone._refs = parser.collectRefs(clone.shadowRoot, this.constructor.stateMap);
+      clone.state = this.defaultState;
+      return clone;
+    }
+
+    clearState() {
+      // this._oldState = this.state;
+      this._state = {};
+      this.updateState();
+    }
+
+    qs(args, sr = true) {
+      if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
+    }
+
+    qsAll(args, sr = true) {
+      if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
+    }
+
+    static addArrayToDom(key, template) {
+      this._arrayToDom = this._arrayToDom || {}; // state of simple element is single array item, compatible with sifrr element
+
+      this._arrayToDom[this.elementName] = this._arrayToDom[this.elementName] || {};
+      this._arrayToDom[this.elementName][key] = simpleelement(template);
+    }
+
+    arrayToDom(key, newState = this.state[key]) {
+      this._domL = this._domL || {};
+      const oldL = this._domL[key] || 0;
+      const domArray = [];
+      const newL = newState.length;
+      let temp;
+
+      try {
+        temp = this.constructor._arrayToDom[this.constructor.elementName][key];
+      } catch (e) {
+        return window.console.log(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
+      }
+
+      for (let i = 0; i < newL; i++) {
+        if (i < oldL) {
+          domArray.push({
+            type: 'stateChange',
+            state: newState[i]
+          });
+        } else {
+          const el = temp.sifrrClone(true);
+          el.state = newState[i];
+          domArray.push(el);
+        }
+      }
+
+      this._domL[key] = newL;
+      return domArray;
+    }
+
+  };
 }
 
-var element = Element;
+var element = elementClassFactory(window.HTMLElement);
 
 // Taken from https://github.com/Freak6133/stage0/blob/master/syntheticEvents.js
 const SYNTHETIC_EVENTS = {};
@@ -810,7 +899,7 @@ SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
 SifrrDom.Event = event; // Register Custom Element Function
 
-SifrrDom.register = function (Element) {
+SifrrDom.register = function (Element, options) {
   Element.useShadowRoot = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
 
@@ -822,7 +911,7 @@ SifrrDom.register = function (Element) {
     window.console.warn(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
     try {
-      window.customElements.define(name, Element);
+      window.customElements.define(name, Element, options);
       SifrrDom.elements[name] = Element;
       return true;
     } catch (error) {
