@@ -1,4 +1,5 @@
 const fetch = require('@sifrr/fetch');
+const { TEMPLATE } = require('./constants');
 
 class Loader {
   constructor(elemName, config = {}) {
@@ -12,8 +13,10 @@ class Loader {
     const me = this;
     return fetch.file(this.htmlUrl)
       .then((resp) => resp.text())
-      .then((file) => new window.DOMParser().parseFromString(file, 'text/html'))
-      .then((html) => {
+      .then((file) => {
+        TEMPLATE.innerHTML = file;
+        return TEMPLATE.content;
+      }).then((html) => {
         Loader.add(me.elementName, { instance: me, template: html.querySelector('template')});
         return html;
       });

@@ -98,9 +98,9 @@
           sft.state = { data: data };
         }
       } else if (target.matches('.remove')) {
-        let id = Number(getParentId(target));
+        const id = getParent(target).state.id;
         // console.log("delete",id);
-        let data = sft.state.data;
+        const data = sft.state.data;
         for(let i = data.length-1; i >= 0; i--){
           if (data[i].id == id) {
             data.splice(i, 1);
@@ -108,17 +108,11 @@
         }
         sft.state = { data: data };
       } else if (target.matches('.lbl')) {
-        let id = Number(getParentId(target));
+        const el = getParent(target);
         // console.log("select", id);
-        let data = sft.state.data;
-        for(let i = data.length-1; i >= 0; i--){
-          if (data[i].id == id) {
-            data[i]['class'] = 'danger';
-          } else {
-            data[i]['class'] = null;
-          }
-        }
-        sft.state = { data: data };
+        if (selected) selected.className = ''
+        el.className = 'danger';
+        selected = el;
       }
       stopMeasure();
     };
@@ -137,16 +131,15 @@
       for (let i = 0; i < count; i++)
         data.push({
           id: i + from,
-          label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)],
-          class: null
+          label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)]
         });
       from = from + count;
       return data;
     }
 
-    function getParentId(elem) {
-      while(!elem.dataset.id) elem = elem.parentNode;
-      return elem.dataset.id;
+    function getParent(elem) {
+      while(elem.nodeName !== "TR") elem = elem.parentNode;
+      return elem;
     }
   </script>
 </body>

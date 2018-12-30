@@ -39,6 +39,8 @@
   </div>
 </template>
 <script>
+  Sifrr.Dom.load('sifrr-small');
+  Sifrr.Dom.load('sifrr-smaller');
   class MainElement extends Sifrr.Dom.Element {
     newdata() {
       return this.state.data.map((st) => changeState(st, this.state.selected));
@@ -48,7 +50,9 @@
     "data": []
   }
 
-  MainElement.addArrayToDom('data', "<tr class=${class} data-id=${id}><td class='col-md-1'>${id}</td><td class='col-md-4'><a class='lbl'>${label}</a></td><td class='col-md-1'><a class='remove'><span class='remove glyphicon glyphicon-remove' aria-hidden='true'></span></a></td><td class='col-md-6'></td></tr>");
+  customElements.whenDefined('sifrr-smaller').then(() => {
+    MainElement.addArrayToDom('data', document.createElement('tr', { is: 'sifrr-smaller' }));
 
-  Sifrr.Dom.register(MainElement);
+    Sifrr.Dom.register(MainElement);
+  })
 </script>

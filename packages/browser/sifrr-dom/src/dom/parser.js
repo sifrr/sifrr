@@ -1,7 +1,7 @@
 const { makeChildrenEqual } = require('./makeequal');
 const { updateAttribute } = require('./update');
 const { collect, create } = require('./ref');
-const { SIFRR_NODE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const { TEMPLATE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
@@ -80,14 +80,13 @@ const Parser = {
         } else if (newValue.nodeType) {
           children = [newValue];
         } else {
-          const docFrag = SIFRR_NODE.cloneNode();
           // Replace html tags in input from input/contenteditable/textarea
-          docFrag.innerHTML = newValue.toString()
+          TEMPLATE.innerHTML = newValue.toString()
             // All closing tags
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
             // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = Array.prototype.slice.call(docFrag.content.childNodes);
+          children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
         }
         if (children.length < 1) dom.textContent = '';
         else makeChildrenEqual(dom, children);

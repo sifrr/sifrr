@@ -41,8 +41,8 @@ function elementClassFactory(baseClass) {
       // this._oldState = {};
       if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
       const content = this.constructor.template.content.cloneNode(true);
-      this._refs = Parser.collectRefs(content, this.constructor.stateMap);
       if (this.constructor.useSR()) {
+        this._refs = Parser.collectRefs(content, this.constructor.stateMap);
         this.attachShadow({
           mode: 'open'
         });
@@ -54,7 +54,10 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if(!this.constructor.useSR()) this.appendChild(this.__content) && delete this.__content;
+      if(!this.constructor.useSR()) {
+        this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
+        this.appendChild(this.__content);
+      }
       if(!this.hasAttribute('data-sifrr-state') && this._state) this.updateState();
       this.onConnect();
     }
@@ -84,6 +87,7 @@ function elementClassFactory(baseClass) {
 
     set state(v) {
       // this._oldState = this.state;
+      this._state = this._state || {};
       Object.assign(this._state, v);
       this.updateState();
     }
@@ -103,8 +107,6 @@ function elementClassFactory(baseClass) {
 
     sifrrClone(deep) {
       const clone = this.cloneNode(deep);
-      clone._refs = Parser.collectRefs(clone.shadowRoot, this.constructor.stateMap);
-      clone.state = this.defaultState;
       return clone;
     }
 
@@ -115,12 +117,12 @@ function elementClassFactory(baseClass) {
     }
 
     qs(args, sr = true) {
-      if (this.useShadowRoot && sr) return this.shadowRoot.querySelector(args);
+      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelector(args);
       else return this.querySelector(args);
     }
 
     qsAll(args, sr = true) {
-      if (this.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
+      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
       else return this.querySelectorAll(args);
     }
 
