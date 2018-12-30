@@ -34,24 +34,24 @@
 </head>
 
 <body>
-  <h1><a href="/">OK</a></h1>
-  <a href="/abcd">/abcd</a>
-  <a href="/efgh">/efgh</a>
-  <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm">route state check</a>
-  <sifrr-route id='everywhere' data-sifrr-route='**'>
+  <h1><a href="/" title="Home">OK</a></h1>
+  <a href="/abcd" title="abcd">/abcd</a>
+  <a href="/efgh" title="efgh">/efgh</a>
+  <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
+  <sifrr-route id='everywhere' data-sifrr-path='**'>
     <p>a</p>
     <p>Visible everywhere</p>
     <p>e</p>
   </sifrr-route>
 
-  <sifrr-route id='abcd' data-sifrr-route='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
+  <sifrr-route id='abcd' data-sifrr-path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
     <p>/abcd</p>
     <sifrr-test></sifrr-test>
   </sifrr-route>
-  <sifrr-route id='efgh' data-sifrr-route='/efgh'>
+  <sifrr-route id='efgh' data-sifrr-path='/efgh'>
     /efgh
   </sifrr-route>
-  <sifrr-route id="complex" data-sifrr-route='/:x/*/**/mnop/*/:k'>
+  <sifrr-route id="complex" data-sifrr-path='/:x/*/**/mnop/*/:k'>
     Route state check
   </sifrr-route>
   <script src="/index.bundled.js" charset="utf-8"></script>

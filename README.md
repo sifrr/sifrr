@@ -8,7 +8,7 @@ sifrr is a vanilla js fullstack framework.
 |:-------------|:-------------|:-------------|:----------|:------|
 | [sifrr-dom](./packages/browser/sifrr-dom) | A < 5KB DOM library using Custom Elements, one way/two way data binding which is faster than react | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) | [WIP] | [WIP] |
 | [sifrr-fetch](./packages/browser/sifrr-fetch) | Wrapper library for Browser fetch API | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch) | [In Readme](./packages/browser/sifrr-fetch) | [OK](./packages/browser/sifrr-fetch/test) |
-| [sifrr-route](./packages/browser/sifrr-route) | Routing for sifrr-dom | [WIP] | [WIP] | [OK](./packages/browser/sifrr-route/test) |
+| [sifrr-route](./packages/browser/sifrr-route) | Routing for sifrr-dom | v0.0.1-alpha | [WIP] | [OK](./packages/browser/sifrr-route/test) |
 | [sifrr-serviceworker](./packages/browser/sifrr-serviceworker) | Service worker wrapper library | [![npm version](https://img.shields.io/npm/v/@sifrr/serviceworker.svg)](https://www.npmjs.com/package/@sifrr/serviceworker) | [In Readme](./packages/browser/sifrr-serviceworker) | [OK](./packages/browser/sifrr-serviceworker/test) |
 | [sifrr-storage](./packages/browser/sifrr-storage) | Browser persisted storage library | [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage) | [In Readme](./packages/browser/sifrr-storage) | [OK](./packages/browser/sifrr-storage/test) |
 

@@ -35,6 +35,12 @@ describe('sifrr-route', () => {
     expect(await isActive('#abcd')).to.be.true;
   });
 
+  it('changes title when clicked on an a', async () => {
+    await page.goto(`${PATH}/`);
+    await page.click('a[href="/abcd"]');
+    expect(await page.title()).to.be.equal('abcd');
+  });
+
   it('doesn\'t reload when clicked on an a', async () => {
     await page.goto(`${PATH}/`);
     await page.$eval('#complexlink', el => el.textContent = 'new text');
