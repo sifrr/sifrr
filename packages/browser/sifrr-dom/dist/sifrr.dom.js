@@ -593,14 +593,11 @@
       this._state = Object.assign({}, this.constructor.defaultState, this.state);
       const content = this.constructor.template.content.cloneNode(true);
       this._refs = parser.collectRefs(content, this.constructor.stateMap);
-      this.useShadowRoot = this.constructor.template.dataset.sr === 'false' ? false : !!window.document.head.attachShadow && this.constructor.useShadowRoot;
-      if (this.useShadowRoot) {
-        this.attachShadow({
-          mode: 'open'
-        });
-        this.shadowRoot.appendChild(content);
-        this.shadowRoot.addEventListener('change', parser.twoWayBind);
-      } else this.appendChild(content);
+      this.attachShadow({
+        mode: 'open'
+      });
+      this.shadowRoot.appendChild(content);
+      this.shadowRoot.addEventListener('change', parser.twoWayBind);
     }
     connectedCallback() {
       if (!this.hasAttribute('data-sifrr-state')) this.updateState();
@@ -637,7 +634,8 @@
     }
     sifrrClone(deep) {
       const clone = this.cloneNode(deep);
-      clone.state = this.state;
+      clone._refs = parser.collectRefs(clone.shadowRoot, this.constructor.stateMap);
+      clone.state = this.defaultState;
       return clone;
     }
     clearState() {
@@ -659,6 +657,7 @@
       const oldL = this._domL[key] || 0;
       const domArray = [];
       const newL = newState.length;
+      const temp = this.constructor._arrayToDom[key];
       for (let i = 0; i < newL; i++) {
         if (i < oldL) {
           domArray.push({
@@ -666,7 +665,7 @@
             state: newState[i]
           });
         } else {
-          const el = this.constructor._arrayToDom[key].sifrrClone(true);
+          const el = temp.sifrrClone(true);
           el.state = newState[i];
           domArray.push(el);
         }

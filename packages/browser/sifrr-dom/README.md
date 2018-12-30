@@ -16,7 +16,7 @@ Add script tag in your website.
 <script src="https://unpkg.com/@sifrr/dom@0.1.0-alpha1/dist/sifrr.dom.min.js"></script>
 ```
 
-#### Compatibility table for standalone distribution (Needs support for JavaScript Custom Elements and Shadow DOM)
+#### Compatibility table for standalone distribution (Needs support for JavaScript Custom Elements, Shadow DOM, Fetch API)
 - chrome >= 55
 - safari >= 10.1
 - opera >= 42
