@@ -2,8 +2,9 @@
   "name": "@sifrr/fetch",
   "version": "0.0.1-alpha",
   "description": "Fetch based http requests library for browsers.",
-  "licence": "MIT",
+  "license": "MIT",
   "main": "src/sifrr.fetch.js",
+  "module": "dist/sifrr.fetch.module.js",
   "browser": "dist/sifrr.fetch.js",
   "browserslist": [
     "chrome >= 55",
@@ -59,6 +60,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "module": "dist/sifrr.fetch.module.js"
+  ]
 }

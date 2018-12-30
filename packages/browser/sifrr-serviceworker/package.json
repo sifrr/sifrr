@@ -2,8 +2,9 @@
   "name": "@sifrr/serviceworker",
   "version": "0.0.1-alpha",
   "description": "Service Worker with customizations.",
-  "licence": "MIT",
+  "license": "MIT",
   "main": "src/sifrr.serviceworker.js",
+  "module": "dist/sifrr.serviceworker.module.js",
   "browser": "dist/sifrr.serviceworker.js",
   "browserslist": [
     "chrome >= 55",
@@ -59,6 +60,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "module": "dist/sifrr.serviceworker.module.js"
+  ]
 }

@@ -2,8 +2,9 @@
   "name": "@sifrr/route",
   "version": "0.0.1-alpha",
   "description": "History API based Routing library for sifrr in browser.",
-  "licence": "MIT",
+  "license": "MIT",
   "main": "src/sifrr.route.js",
+  "module": "dist/sifrr.route.module.js",
   "browser": "dist/sifrr.route.js",
   "browserslist": [
     "chrome >= 55",
@@ -58,6 +59,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "module": "dist/sifrr.route.module.js"
+  ]
 }

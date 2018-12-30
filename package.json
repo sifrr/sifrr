@@ -5,7 +5,7 @@
   ],
   "version": "0.0.1-alpha",
   "description": "a vanilla js fullstack framework",
-  "licence": "MIT",
+  "license": "MIT",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

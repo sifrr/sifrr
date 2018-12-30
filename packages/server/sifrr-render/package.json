@@ -1,36 +1,22 @@
 {
-  "name": "@sifrr/storage",
+  "name": "@sifrr/render",
   "version": "0.0.1-alpha",
-  "description": "Frontend key-value(JSON to JSON) persisted storage library",
-  "license": "MIT",
-  "main": "src/sifrr.storage.js",
-  "module": "dist/sifrr.storage.module.js",
-  "browser": "dist/sifrr.storage.js",
-  "browserslist": [
-    "chrome >= 55",
-    "safari >= 10.1",
-    "opera >= 42",
-    "firefox >= 53"
-  ],
+  "description": "Sifrr-Dom server side rendering.",
+  "main": "src/sifrr.render.js",
+  "module": "dist/sifrr.render.module.js",
   "scripts": {
-    "test": "../../../scripts/test/run ./packages/browser/sifrr-storage",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ../../../test-server.js -d ./packages/browser/sifrr-storage/test/public -p 1111",
-    "test-server": "yarn test-build && yarn test-server-only"
+    "test": "../../../scripts/test/run ./packages/server/sifrr-render",
+    "build": "./node_modules/.bin/rollup -c"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
   "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql",
-    "json",
     "sifrr",
-    "storage"
+    "server",
+    "render",
+    "dom"
   ],
   "author": "Sifrr",
   "bugs": {
