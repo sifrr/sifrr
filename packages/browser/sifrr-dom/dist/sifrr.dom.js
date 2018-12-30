@@ -394,7 +394,7 @@
           });
         }
         get url() {
-          let params = delete this._options.params;
+          const params = this._options.params;
           if (params && Object.keys(params).length > 0) {
             return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
           } else {

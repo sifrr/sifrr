@@ -2,3 +2,5 @@
 node_modules
 yarn-error*
 test-results
+.nyc_output
+coverage

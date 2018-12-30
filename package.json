@@ -26,12 +26,13 @@
     "sifrr"
   ],
   "author": "Sifrr",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {},
+  "dependencies": {
+    "puppeteer-to-istanbul": "^1.2.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
