@@ -15,7 +15,15 @@ global.port = 9999;
 global.PATH = `http://localhost:${port}`;
 global.loadBrowser = async function() {
   // set browser and page global variables
-  let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  let browser = await puppeteer.launch({
+    // to make it work in circleci
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ],
+    headless: true,
+    devtools: false
+  });
   let page = await browser.newPage();
   await page.setViewport( { width: 1280, height: 800} );
   global.browser = browser;
