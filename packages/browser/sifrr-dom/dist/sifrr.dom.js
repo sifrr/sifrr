@@ -663,10 +663,10 @@
         this._state = {};
         this.updateState();
       }
-      qs(args, sr = true) {
+      $(args, sr = true) {
         if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
       }
-      qsAll(args, sr = true) {
+      $$(args, sr = true) {
         if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
       }
       static addArrayToDom(key, template) {
