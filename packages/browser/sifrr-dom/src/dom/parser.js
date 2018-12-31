@@ -20,27 +20,29 @@ function creator(el) {
       text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
-    const ref = {};
+    const sm = {};
     // Html ?
     if (isHtml(el)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
-        ref.html = true;
-        ref.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+        sm.html = true;
+        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
       }
     }
     // attributes
     const attrs = el.attributes || [], l = attrs.length;
-    const attrStateMap = {};
+    const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.value.indexOf('${') >= 0) {
+      if (attribute.name[0] === '$') {
+        attrStateMap.events[attribute.name] = attribute.value;
+      } else if (attribute.value.indexOf('${') >= 0) {
         attrStateMap[attribute.name] = attribute.value;
       }
     }
-    if (Object.keys(attrStateMap).length > 0) ref.attributes = attrStateMap;
+    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
 
-    if (Object.keys(ref).length > 0) return ref;
+    if (Object.keys(sm).length > 0) return sm;
   }
   return 0;
 }
@@ -61,8 +63,14 @@ const Parser = {
       // update attributes
       if (data.attributes) {
         for(let key in data.attributes) {
-          const val = Parser.evaluateString(data.attributes[key], element);
-          updateAttribute(dom, key, val);
+          if (key === 'events') {
+            for(let event in data.attributes.events) {
+              dom[event] = Parser.evaluateString(data.attributes.events[event], element);
+            }
+          } else {
+            const val = Parser.evaluateString(data.attributes[key], element);
+            updateAttribute(dom, key, val);
+          }
         }
       }
 

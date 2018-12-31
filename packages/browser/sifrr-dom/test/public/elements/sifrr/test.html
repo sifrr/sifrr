@@ -43,12 +43,16 @@
   <div class="" contenteditable data-sifrr-bind="elements">
     ${this.state.elements}
   </div>
-  <sifrr-small></sifrr-small>
+  <sifrr-small $click="${this.sifrrSmallClick}"></sifrr-small>
 </template>
 <script type="text/javascript">
   Sifrr.Dom.load('sifrr-small');
   Sifrr.Dom.load('sifrr-smaller');
-  class SifrrTest extends Sifrr.Dom.Element {}
+  class SifrrTest extends Sifrr.Dom.Element {
+    sifrrSmallClick(e, target) {
+      console.log(target)
+    }
+  }
   SifrrTest.defaultState = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
@@ -62,7 +66,10 @@
     "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }],
     "html": "<p>xxxxx</p>"
   }
-  SifrrTest.addArrayToDom('data', '<sifrr-small></sifrr-small>');
-  SifrrTest.addArrayToDom('data2', '<tr is="sifrr-smaller"></tr>');
-  Sifrr.Dom.register(SifrrTest);
+  customElements.whenDefined('sifrr-small').then(() => {
+    SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
+    SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-smaller' }));
+
+    Sifrr.Dom.register(SifrrTest);
+  });
 </script>
