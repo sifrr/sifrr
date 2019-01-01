@@ -350,7 +350,7 @@ function creator(el) {
 const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
   createStateMap: element => create$1(element, creator, isHtml),
-  updateState: element => {
+  update: element => {
     if (!element._refs) {
       return false;
     } // Update nodes
@@ -733,12 +733,12 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if (!this.constructor.useSR()) {
+      if (this.__content) {
         this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
       }
 
-      if (!this.hasAttribute('data-sifrr-state') && this._state) this.updateState();
+      if (!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       this.onConnect();
     }
 
@@ -770,11 +770,11 @@ function elementClassFactory(baseClass) {
       // this._oldState = this.state;
       this._state = this._state || {};
       Object.assign(this._state, v);
-      this.updateState();
+      this.update();
     }
 
-    updateState() {
-      parser.updateState(this);
+    update() {
+      parser.update(this);
       this.onStateChange();
       this.constructor.onStateChange(this);
     }
@@ -793,7 +793,7 @@ function elementClassFactory(baseClass) {
     clearState() {
       // this._oldState = this.state;
       this._state = {};
-      this.updateState();
+      this.update();
     }
 
     $(args, sr = true) {

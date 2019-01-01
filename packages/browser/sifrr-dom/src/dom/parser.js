@@ -50,7 +50,7 @@ function creator(el) {
 const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
   createStateMap: (element) => create(element, creator, isHtml),
-  updateState: (element) => {
+  update: (element) => {
     if (!element._refs) {
       return false;
     }
