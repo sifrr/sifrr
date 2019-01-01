@@ -452,16 +452,19 @@
     }
     get html() {
       const me = this;
-      return sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
+      if (this.constructor.all[this.elementName]) return this.constructor.all[this.elementName].html;
+      const html = sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
         TEMPLATE$1.innerHTML = file;
         return TEMPLATE$1.content;
       }).then(html => {
-        Loader.add(me.elementName, {
-          instance: me,
-          template: html.querySelector('template')
-        });
+        Loader._all[me.elementName].template = html.querySelector('template');
         return html;
       });
+      Loader.add(me.elementName, {
+        instance: me,
+        html: html
+      });
+      return html;
     }
     get htmlUrl() {
       return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
