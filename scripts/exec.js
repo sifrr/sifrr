@@ -1,30 +1,19 @@
 #!/usr/bin/env node
 
-const exec = require('child_process').execSync;
 const execa = require('child_process').exec;
 
-function execSync(command) {
-  exec(command, (err, stdout, stderr) => {
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-    if (err !== null) {
-      console.log(`exec error: ${err}`);
-    }
-  });
-}
-
 function execAsync(command) {
-  return execa(command, (err, stdout, stderr) => {
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-    if (err !== null) {
-      console.log(`exec error: ${err}`);
-    }
+  return new Promise((res, rej) => {
+    execa(command, (err, stdout, stderr) => {
+      if (stdout) process.stdout.write(`stdout: ${stdout}`);
+      if (stderr) process.stdout.write(`stderr: ${stderr}`);
+      if (err !== null) {
+        process.stdout.write(`exec error: ${err}`);
+        rej(err);
+      }
+      res({ stdout, stderr });
+    });
   });
 }
 
-module.exports = {
-  execSync: execSync,
-  exec: execSync,
-  execAsync: execAsync
-}
+module.exports =  execAsync;
