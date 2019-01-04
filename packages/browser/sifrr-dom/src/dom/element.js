@@ -54,7 +54,7 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if(this.__content) {
+      if(!this.constructor.useSR()) {
         this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
       }
@@ -66,6 +66,7 @@ function elementClassFactory(baseClass) {
 
     disconnectedCallback() {
       if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
+      if (!this.constructor.useSR()) this.textContent = '';
       this.onDisconnect();
     }
 

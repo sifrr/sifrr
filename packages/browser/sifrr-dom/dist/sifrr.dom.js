@@ -548,6 +548,11 @@
     if (typeof content === 'string') {
       TEMPLATE$2.innerHTML = content;
       content = TEMPLATE$2.content.firstElementChild || TEMPLATE$2.content.firstChild;
+      const oldDisplay = content.style.display;
+      content.style.display = 'none';
+      window.document.body.appendChild(content);
+      content.remove();
+      content.style.display = oldDisplay;
     }
     if (content.nodeName.indexOf('-') !== -1 || content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0 || content.isSifrr && content.isSifrr()) return content;
     content.stateMap = create$2(content, creator$1);
@@ -621,7 +626,7 @@
         }
       }
       connectedCallback() {
-        if (this.__content) {
+        if (!this.constructor.useSR()) {
           this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
           this.appendChild(this.__content);
         }
@@ -631,6 +636,7 @@
       onConnect() {}
       disconnectedCallback() {
         if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+        if (!this.constructor.useSR()) this.textContent = '';
         this.onDisconnect();
       }
       onDisconnect() {}

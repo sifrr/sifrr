@@ -357,12 +357,12 @@ parses array to dom nodes in bindings
   CustomTag.defaultState = {
     data: [{ id: '1' }, { id: '2' }] // Each state will be passed to elements created by arrayToDom
   }
-  // addArrayToDom takes two arguments, uniqueKey which is used by arrayToDom and
-  // element that will be used added by arrayToDom for each array element
-  // If element is a sifrr element, use document.createElement
-  // If you want to give your custom html, you can give either a domElement or
-  // html string with only one parent element '<div><p>${id}</p></div>', '<p>${id}</p><p>${id}</p>' won't work because of two parent elements (only first p will be rendered)
-  // Note that in custom html, binding id ${id} instead of ${this.state.id}
+  // addArrayToDom takes two arguments, first - uniqueKey which is used by arrayToDom and
+  // second - element that will be added by arrayToDom for each array element
+  // You can give either a domElement or html string with only one parent element '<div><p>${id}</p></div>',
+  // '<p>${id}</p><p>${id}</p>' won't work because of two parent elements (only first p will be rendered)
+  // this element can be sifrr element also
+  // Note that in custom html, binding is ${id} and in sifrr-element it is ${this.state.id}
   CustomTag.addArrayToDom('uniqueKey', document.createElement('custom-array'));
   Sifrr.Dom.register(CustomTag);
 </script>
@@ -382,6 +382,20 @@ then, `<custom-tag></custom-tag>` will render:
     </custom-array>
   <div>
 <custom-tag>
+```
+
+#### Extending another decalred html element
+Sifrr element can extend other html elements also, eg:
+CustomTag extends HTMLButtonElement here, note that register call has { extends: 'button' } as second argument
+```js
+class CustomTag extends Sifrr.Dom.Element.extends(HTMLButtonElement) {}
+Sifrr.Dom.register(SifrrSmaller, {
+  extends: 'button'
+});
+```
+then you can use custom-tag as button in html like:
+```html
+<button is="custom-tag"></button>
 ```
 
 #### slots

@@ -51,7 +51,7 @@
   }
 
   customElements.whenDefined('sifrr-smaller').then(() => {
-    MainElement.addArrayToDom('data', document.createElement('tr', { is: 'sifrr-smaller' }));
+    MainElement.addArrayToDom('data', '<tr is="sifrr-smaller"></tr>');
 
     Sifrr.Dom.register(MainElement);
   });

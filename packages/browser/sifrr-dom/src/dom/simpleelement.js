@@ -53,6 +53,11 @@ function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     TEMPLATE.innerHTML = content;
     content = TEMPLATE.content.firstElementChild || TEMPLATE.content.firstChild;
+    const oldDisplay = content.style.display;
+    content.style.display = 'none';
+    window.document.body.appendChild(content);
+    content.remove();
+    content.style.display = oldDisplay;
   }
   if (content.nodeName.indexOf('-') !== -1 ||
     (content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
