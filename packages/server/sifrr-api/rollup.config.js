@@ -1,3 +1,3 @@
 const getConfig = require('../../../rollup.base');
 
-export default getConfig('Sifrr.Api');
+export default getConfig('Sifrr.Api', false);

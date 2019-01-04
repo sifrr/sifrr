@@ -362,7 +362,7 @@ parses array to dom nodes in bindings
   // If element is a sifrr element, use document.createElement
   // If you want to give your custom html, you can give either a domElement or
   // html string with only one parent element '<div><p>${id}</p></div>', '<p>${id}</p><p>${id}</p>' won't work because of two parent elements (only first p will be rendered)
-  // Note that in custom html, bunding id ${id} instead of ${this.state.id}
+  // Note that in custom html, binding id ${id} instead of ${this.state.id}
   CustomTag.addArrayToDom('uniqueKey', document.createElement('custom-array'));
   Sifrr.Dom.register(CustomTag);
 </script>
@@ -385,11 +385,11 @@ then, `<custom-tag></custom-tag>` will render:
 ```
 
 #### slots
-- Slots work same as it would in web components, but note that bindings in slot elements don't work
+- Slots work same as it would in web components, but note that bindings in slot elements won't work
 
 ## More readings
 - https://developers.google.com/web/fundamentals/web-components/customelements
 
 ## Special thanks to:
-- https://github.com/Freak613/stage0 for optimization ideas and simpleElement API
-- https://github.com/krausest/js-framework-benchmark for testing speed
+- https://github.com/Freak613/stage0 for optimization ideas
+- https://github.com/krausest/js-framework-benchmark for benchmarking performance
