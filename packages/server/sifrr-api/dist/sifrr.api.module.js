@@ -296,13 +296,16 @@ function commonjsRequire () {
 
 function loadRoutes(app, dir, filter = []) {
   fs.readdirSync(dir).filter(file => path.extname(file) === '.js' && filter.indexOf(file) < 0).forEach(file => {
-    const routes = commonjsRequire(path.join(__dirname, file));
+    const routes = commonjsRequire(path.join(dir, file));
+    let basePath = routes.basePath || '';
+    if (basePath[0] && basePath[0] !== '/') basePath = '/' + basePath;
+    delete routes.basePath;
 
     for (let method in routes) {
       const methodRoutes = routes[method];
 
       for (let r in methodRoutes) {
-        app[method](r, methodRoutes[r]);
+        app[method](basePath + r, methodRoutes[r]);
       }
     }
   });
@@ -382,7 +385,7 @@ function reqToGraphqlArgs(req, {
   allowed = []
 } = {}) {
   let args = {};
-  Object.assign(args, req.body, req.params);
+  Object.assign(args, req.query, req.body, req.params);
   if (allowed.length > 0) args = filter$1(args, arg => allowed.indexOf(arg) >= 0);
 
   for (let arg in args) {

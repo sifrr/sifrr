@@ -8,7 +8,7 @@ function filter(json, fxn) {
 
 function reqToGraphqlArgs(req, { allowed = [] } = {}) {
   let args = {};
-  Object.assign(args, req.body, req.params);
+  Object.assign(args, req.query, req.body, req.params);
 
   if (allowed.length > 0) args = filter(args, (arg) => allowed.indexOf(arg) >= 0);
 
