@@ -15,8 +15,9 @@ sifrr is a vanilla js fullstack framework.
 ### Server
 | Package | Description | Package Status | Documentation Status | Tests |
 |:-------------|:-------------|:-------------|:-----------|:---------:|
-| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [WIP] | [WIP] | [WIP] |
+| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [WIP] | [WIP] |
 | [sifrr-render](./packages/server/sifrr-render) | Server side rendering for sifrr-dom | [WIP] | [WIP] | [WIP] |
+| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr Cli for creating webapps | [WIP] | [WIP] | [WIP] |
 
 #### Packages that have tests have a working example of that package in `tests/public` folder.
 
