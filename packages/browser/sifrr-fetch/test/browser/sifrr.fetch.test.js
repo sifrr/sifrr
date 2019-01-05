@@ -33,7 +33,13 @@ function stubRequests() {
         request.respond({
           status: 200,
           contentType: 'application/json',
-          body: `{"a": "${request.postData() || request.method()}"}`
+          body: JSON.stringify({ a: request.postData() || request.method() })
+        });
+      } else if (request.url().indexOf('graphql') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ body: JSON.parse(request.postData()) })
         });
       }
       break;
@@ -85,6 +91,11 @@ describe('sifrr-fetch', () => {
   it('deletes request', async () => {
     const resp = await getResponse('delete', '/test');
     expect(resp).to.deep.equal({ a: 'DELETE' });
+  });
+
+  it('graphqls request', async () => {
+    const resp = await getResponse('graphql', '/graphql', { query: 'query { hello }', variables: { var: 'var' } });
+    expect(resp.body).to.deep.equal({ query: 'query { hello }', variables: { var: 'var' } });
   });
 
   it('gets text if content type is not application/json', async () => {
