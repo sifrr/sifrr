@@ -572,7 +572,7 @@ class Loader {
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   executeScripts() {
@@ -978,7 +978,7 @@ SifrrDom.register = function (Element, options) {
 
 SifrrDom.setup = function (config) {
   SifrrDom.config = Object.assign({
-    baseUrl: '/',
+    baseUrl: '',
     useShadowRoot: true
   }, config);
   SifrrDom.Event.add('input');

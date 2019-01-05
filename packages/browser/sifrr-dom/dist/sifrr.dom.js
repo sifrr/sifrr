@@ -487,7 +487,7 @@
       return html;
     }
     get htmlUrl() {
-      return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
+      return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
     }
     executeScripts() {
       return this.html.then(file => {
@@ -818,7 +818,7 @@
   };
   SifrrDom.setup = function (config) {
     SifrrDom.config = Object.assign({
-      baseUrl: '/',
+      baseUrl: '',
       useShadowRoot: true
     }, config);
     SifrrDom.Event.add('input');

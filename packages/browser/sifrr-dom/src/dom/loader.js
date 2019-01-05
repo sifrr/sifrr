@@ -26,7 +26,7 @@ class Loader {
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   executeScripts() {

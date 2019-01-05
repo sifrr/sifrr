@@ -54,11 +54,12 @@ window.Sifrr.Dom = DOM;
 ```js
 // index.js
 
-// Sets up Configs for Sifrr Dom
+// Default Setup Config for Sifrr Dom
 const config = {
-  baseUrl: '/', // base url for sifrr elements
+  baseUrl: '', // base url for sifrr elements, should start with '/' and should not end with '/'
   useShadowRoot: true // use shadow root by default or not
 }
+// Set up Sifrr-Dom
 Sifrr.Dom.setup(config);
 ```
 
@@ -100,7 +101,7 @@ Sifrr.Dom.setup(config);
 // index.js
 
 const config = {
-  baseUrl: '/'
+  baseUrl: ''
 }
 Sifrr.Dom.load('custom-tag', config); // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
 // If no baseUrl is given in config, baseUrl from setup config is used

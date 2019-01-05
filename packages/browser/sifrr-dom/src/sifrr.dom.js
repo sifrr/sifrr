@@ -41,7 +41,7 @@ SifrrDom.register = function(Element, options) {
 // Initialize SifrrDom
 SifrrDom.setup = function(config) {
   SifrrDom.config = Object.assign({
-    baseUrl: '/',
+    baseUrl: '',
     useShadowRoot: true
   }, config);
   SifrrDom.Event.add('input');
