@@ -6,9 +6,9 @@ const tag = 'v' + version;
 
 async function main() {
   await exec(`(git tag -d ${tag} && git push origin :refs/tags/${tag}) || echo 'No tag yet'`);
-  console.log('---------');
+  process.stdout.write('---------');
   await exec(`git tag -a ${tag} -m "Release of ${tag}"`);
-  console.log('---------');
+  process.stdout.write('---------');
   await exec(`git push origin ${tag}`);
 }
 

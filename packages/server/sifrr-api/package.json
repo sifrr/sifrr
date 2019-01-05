@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/api",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1-alpha2",
   "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
   "main": "src/sifrr.api.js",
   "module": "dist/sifrr.api.module.js",

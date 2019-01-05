@@ -12,7 +12,7 @@ let pkgToMerge = {
   'main': `src/${jsFileName}.js`,
   'module': `dist/${jsFileName}.module.js`,
   'version': pkg.version,
-  'license': pkg.licence,
+  'license': pkg.license,
   'repository': pkg.repository,
   'author': pkg.author,
   'bugs': pkg.bugs,
@@ -33,9 +33,9 @@ try {
   pkgFile  = require(pkgFileString);
   Object.assign(pkgFile, pkgToMerge);
   fs.writeFileSync(__dirname + '/' + pkgFileString, JSON.stringify(pkgFile, null, 2) + '\n');
-  console.log('Done: package.json');
+  process.stdout.write('Done: package.json');
 } catch(e) {
-  console.log('No package file in this folder');
+  process.stdout.write('No package file in this folder');
 }
 
 let rollupConfigFileString = '../.' + folder + '/rollup.config.js';
@@ -45,4 +45,4 @@ export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase
 `;
 fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
 
-console.log('Done: rollup.config.js');
+process.stdout.write('Done: rollup.config.js');

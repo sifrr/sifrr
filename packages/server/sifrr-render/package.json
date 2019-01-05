@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/render",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1-alpha2",
   "description": "Sifrr-Dom server side rendering.",
   "main": "src/sifrr.render.js",
   "module": "dist/sifrr.render.module.js",
