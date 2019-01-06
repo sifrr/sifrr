@@ -1,4 +1,5 @@
 const express = require('express'),
+  compression = require('compression'),
   serveStatic = require('serve-static'),
   path = require('path');
 
@@ -20,10 +21,11 @@ const server = express();
 // export server for importing
 const sss = {
   listen: function(port, directory = dir) {
+    server.use(compression());
     server.use(serveStatic(directory));
     server.use(serveStatic(path.join(directory, '../../dist')));
     server.use((req, res) => res.sendFile(path.join(directory, './index.html')));
-    return server.listen(port, () => console.log(`Listening on port ${port} and directory '${directory}'`));
+    return server.listen(port, () => global.console.log(`Listening on port ${port} and directory '${directory}'`));
   }
 };
 

@@ -78,6 +78,14 @@ Sifrr.Fetch.file(url, options).then((response) => {
 options are Fetch API options some extra keys:
 - **params** `json object` key, value pairs will be added to url as ?key=value
 
+- POST GRAPHQL request
+```js
+Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' }, ...otherOptions }).then((response) => {
+  // response is JSON if response has `content-type: application/json` header
+  // else it is a Fetch API response object.
+});
+```
+
 ## References
 - https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
 - Response object https://developer.mozilla.org/en-US/docs/Web/API/Response

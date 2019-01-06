@@ -22,7 +22,7 @@ class Request {
   }
 
   get url() {
-    let params = delete this._options.params;
+    const params = this._options.params;
     if (params && Object.keys(params).length > 0) {
       return this._url + '?' + Object.keys(params).map(k =>
         encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
@@ -41,6 +41,9 @@ class Request {
     options.headers = Object.assign({
       'accept': 'application/json'
     }, this._options.headers || {});
+    if (typeof options.body === 'object') {
+      options.body = JSON.stringify(options.body);
+    }
     return options;
   }
 }

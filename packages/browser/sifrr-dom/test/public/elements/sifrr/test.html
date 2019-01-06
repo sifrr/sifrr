@@ -28,19 +28,31 @@
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
-  <div class="small" data-sifrr-html="true">
+  <div data-sifrr-html="true">
     <!-- ${this.arrayToDom('data')} -->
   </div>
+  <table class="table table-hover table-striped test-data">
+    <tbody data-sifrr-html="true">
+      <!-- ${this.arrayToDom('data2', this.state.data)} -->
+    </tbody>
+  </table>
   <div class="html" data-sifrr-html="true">
     ${this.state.html}
   </div>
   <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">${this.state.textarea}</textarea>
   <div class="" contenteditable data-sifrr-bind="elements">
+    ${this.state.elements}
   </div>
+  <sifrr-small $click="${this.sifrrSmallClick}"></sifrr-small>
 </template>
 <script type="text/javascript">
   Sifrr.Dom.load('sifrr-small');
-  class SifrrTest extends Sifrr.Dom.Element {}
+  Sifrr.Dom.load('sifrr-smaller');
+  class SifrrTest extends Sifrr.Dom.Element {
+    sifrrSmallClick(e, target) {
+      console.log(target)
+    }
+  }
   SifrrTest.defaultState = {
     "text": "I\'m a shadow-element using Shadow DOM!",
     "input": "whatever",
@@ -54,6 +66,10 @@
     "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }],
     "html": "<p>xxxxx</p>"
   }
-  SifrrTest.addArrayToDom('data', '<sifrr-small></sifrr-small>');
-  Sifrr.Dom.register(SifrrTest);
+  customElements.whenDefined('sifrr-small').then(() => {
+    SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
+    SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-smaller' }));
+
+    Sifrr.Dom.register(SifrrTest);
+  });
 </script>

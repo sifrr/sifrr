@@ -35,12 +35,44 @@ describe('sifrr-route', () => {
     expect(await isActive('#abcd')).to.be.true;
   });
 
-  it('doesn\'t reload when clicked on an a', async () => {
+  it('changes title when clicked on an a', async () => {
+    await page.goto(`${PATH}/`);
+    await page.click('a[href="/abcd"]');
+    expect(await page.title()).to.be.equal('abcd');
+  });
+
+  it('doesn\'t reload when clicked on an a without target', async () => {
     await page.goto(`${PATH}/`);
     await page.$eval('#complexlink', el => el.textContent = 'new text');
     await page.click('a[href="/abcd"]');
     expect(page.url()).to.equal(`${PATH}/abcd`);
     expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+  });
+
+  it('reloads when clicked on an a with target not equal to _self', async () => {
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_self"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_blank"]');
+    expect(page.url()).to.not.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_top"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.not.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_parent"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.not.equal('new text');
   });
 
   it('changes routes when clicked on back/forward button', async () => {
@@ -76,5 +108,12 @@ describe('sifrr-route', () => {
         'ghi/klm'
       ]
     });
+  });
+
+  it('passes state to data-sifrr-route-state=true', async () => {
+    await page.click('#complexlink');
+    const routeState = await page.$eval('#complex', el => el.state);
+    const childState = await page.$eval('#complex sifrr-test', el => el.state);
+    expect(childState.route).to.deep.equal(routeState);
   });
 });

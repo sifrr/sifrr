@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const exec = require('../exec').exec;
+const exec = require('child_process').execSync;
 
 global.fs = require('fs');
 global.path = require('path');
@@ -15,13 +15,22 @@ global.port = 9999;
 global.PATH = `http://localhost:${port}`;
 global.loadBrowser = async function() {
   // set browser and page global variables
-  let browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  let browser = await puppeteer.launch({
+    // to make it work in circleci
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ],
+    headless: true,
+    devtools: false
+  });
   let page = await browser.newPage();
   await page.setViewport( { width: 1280, height: 800} );
   global.browser = browser;
   global.page = page;
   return true;
 };
+global.pti = require('puppeteer-to-istanbul');
 
 const dir = path.join(__dirname, '../../', process.argv[2]);
 

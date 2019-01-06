@@ -1,6 +1,18 @@
+function stubRequests() {
+  page.on('request', request => {
+    if (page.__offline) {
+      request.abort();
+    } else {
+      request.continue();
+    }
+  });
+}
+
 describe('sifrr-serviceworker', () => {
   before(async () => {
     await loadBrowser();
+    // await page.setRequestInterception(true);
+    // stubRequests();
   });
 
   after(async () => {
@@ -11,7 +23,7 @@ describe('sifrr-serviceworker', () => {
     await page.goto(`${PATH}/`);
     // wait for service worker ready
     await page.evaluate('navigator.serviceWorker.ready');
-    const resp = await page.goto(`${PATH}/`);
+    const resp = await page.goto(`${PATH}/index.html`);
 
     assert.equal(resp.fromServiceWorker(), true);
   });
@@ -73,9 +85,9 @@ describe('sifrr-serviceworker', () => {
     const resp2 = await page.goto(`${PATH}/networkfirst.js`);
     const respText2 = await resp2.text();
 
-    assert.equal(respText1, respText2);
-
     await page.setOfflineMode(false);
+
+    assert.equal(respText1, respText2);
   });
 
   it('throws error for network_only files when offline', async () => {
@@ -87,7 +99,8 @@ describe('sifrr-serviceworker', () => {
     const resp2 = await page.goto(`${PATH}/networkonly.js`);
     const respText2 = await resp2.text();
 
-    // assert.notEqual(respText1, respText2);
     await page.setOfflineMode(false);
+
+    // assert.notEqual(respText1, respText2);
   });
 });

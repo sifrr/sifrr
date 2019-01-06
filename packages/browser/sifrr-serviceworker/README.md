@@ -37,6 +37,7 @@ sw.setup(); // setup service worker caching
 sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event listener
 module.exports = sw;
 ```
+example: [sw.js](./test/public/sw.js)
 
 #### ES modules
 ```js
@@ -63,6 +64,7 @@ if ('serviceWorker' in navigator) {
 ```
 
 ## Config
+
 Default config:
 ```js
 {
@@ -75,9 +77,7 @@ Default config:
       cacheName: 'default'
     }
   },
-  fallbacks: {
-    'default': '/offline.html'
-  },
+  fallbacks: {},
   precacheUrls: []
 }
 ```

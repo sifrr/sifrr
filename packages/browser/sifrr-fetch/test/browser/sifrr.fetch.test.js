@@ -16,6 +16,12 @@ function stubRequests() {
         });
       } else if (request.url().indexOf('error') >= 0) {
         request.respond({ status: 404 });
+      } else if (request.url().indexOf('param=value') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'bang,application/json',
+          body: '{"param": "value"}'
+        });
       } else {
         request.continue();
       }
@@ -27,7 +33,13 @@ function stubRequests() {
         request.respond({
           status: 200,
           contentType: 'application/json',
-          body: `{"a": "${request.method()}"}`
+          body: JSON.stringify({ a: request.postData() || request.method() })
+        });
+      } else if (request.url().indexOf('graphql') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ body: JSON.parse(request.postData()) })
         });
       }
       break;
@@ -37,12 +49,12 @@ function stubRequests() {
   });
 }
 
-async function getResponse(type, url, text = false) {
-  return await page.evaluate(async (type, url, text) => {
-    const ret = Sifrr.Fetch[type](url);
+async function getResponse(type, url, options, text = false) {
+  return await page.evaluate(async (type, url, options, text) => {
+    const ret = Sifrr.Fetch[type](url, options);
     if (text) return ret.then((resp) => resp.text());
     else return ret.catch((e) => e.message);
-  }, type, url, text);
+  }, type, url, options, text);
 }
 
 
@@ -51,10 +63,13 @@ describe('sifrr-fetch', () => {
     await loadBrowser();
     await page.setRequestInterception(true);
     stubRequests();
+    await page.coverage.startJSCoverage();
     await page.goto(`${PATH}/`);
   });
 
   after(async () => {
+    const jsCoverage = await page.coverage.stopJSCoverage();
+    pti.write(jsCoverage);
     await browser.close();
   });
 
@@ -68,9 +83,9 @@ describe('sifrr-fetch', () => {
     expect(resp).to.deep.equal({ a: 'PUT' });
   });
 
-  it('posts request', async () => {
-    const resp = await getResponse('post', '/test');
-    expect(resp).to.deep.equal({ a: 'POST' });
+  it('posts request and post body', async () => {
+    const resp = await getResponse('post', '/test', { body: 'post body' });
+    expect(resp).to.deep.equal({ a: 'post body' });
   });
 
   it('deletes request', async () => {
@@ -78,18 +93,28 @@ describe('sifrr-fetch', () => {
     expect(resp).to.deep.equal({ a: 'DELETE' });
   });
 
+  it('graphqls request', async () => {
+    const resp = await getResponse('graphql', '/graphql', { query: 'query { hello }', variables: { var: 'var' } });
+    expect(resp.body).to.deep.equal({ query: 'query { hello }', variables: { var: 'var' } });
+  });
+
   it('gets text if content type is not application/json', async () => {
-    const resp = await getResponse('get', '/file', true);
+    const resp = await getResponse('get', '/file', {}, true);
     expect(resp).to.deep.equal('abcd');
   });
 
   it('gets file request', async () => {
-    const resp = await getResponse('file', '/file', true);
+    const resp = await getResponse('file', '/file', {}, true);
     expect(resp).to.deep.equal('abcd');
   });
 
   it('throws error if response is not ok', async () => {
     expect(await getResponse('get', '/error')).to.equal('Not Found');
+  });
+
+  it('params are passed to fetch request', async () => {
+    const resp = await getResponse('get', '/params', { params: { param: 'value' } });
+    expect(resp).to.deep.equal({ param: 'value' });
   });
 });
 

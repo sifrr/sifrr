@@ -20,6 +20,7 @@
     "loadBrowser": false,
     "page": false,
     "browser": false,
+    "pti": false,
     "Sifrr": true
   },
   "extends": "eslint:recommended",

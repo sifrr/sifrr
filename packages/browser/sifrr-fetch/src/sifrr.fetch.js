@@ -17,6 +17,21 @@ class SifrrFetch {
     return new Request('DELETE', url, options).response;
   }
 
+  static graphql(url, options = {}) {
+    const { query, variables = {} } = options;
+    delete options.query;
+    delete options.variables;
+    options.headers = options.headers || {};
+    options.headers.accept = options.headers.accept || '*/*';
+    options.headers['Content-Type'] = 'application/json';
+    options.headers['Accept'] = 'application/json';
+    options.body = {
+      query,
+      variables
+    };
+    return new Request('POST', url, options).response;
+  }
+
   static file(url, options = {}) {
     options.headers = options.headers || {};
     options.headers.accept = options.headers.accept || '*/*';

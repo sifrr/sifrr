@@ -1,4 +1,5 @@
 const fetch = require('@sifrr/fetch');
+const { TEMPLATE } = require('./constants');
 
 class Loader {
   constructor(elemName, config = {}) {
@@ -10,17 +11,22 @@ class Loader {
 
   get html() {
     const me = this;
-    return fetch.file(this.htmlUrl)
+    if (this.constructor.all[this.elementName]) return this.constructor.all[this.elementName].html;
+    const html = fetch.file(this.htmlUrl)
       .then((resp) => resp.text())
-      .then((file) => new window.DOMParser().parseFromString(file, 'text/html'))
-      .then((html) => {
-        Loader.add(me.elementName, { instance: me, template: html.querySelector('template')});
+      .then((file) => {
+        TEMPLATE.innerHTML = file;
+        return TEMPLATE.content;
+      }).then((html) => {
+        Loader._all[me.elementName].template = html.querySelector('template');
         return html;
       });
+    Loader.add(me.elementName, { instance: me, html: html });
+    return html;
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl || '/'}elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   executeScripts() {

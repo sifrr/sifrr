@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+./scripts/release/config_browser
+./scripts/release/config_server

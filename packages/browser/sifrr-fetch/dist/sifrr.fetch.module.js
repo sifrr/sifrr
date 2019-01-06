@@ -25,7 +25,7 @@ class Request {
   }
 
   get url() {
-    let params = delete this._options.params;
+    const params = this._options.params;
 
     if (params && Object.keys(params).length > 0) {
       return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
@@ -43,6 +43,11 @@ class Request {
     options.headers = Object.assign({
       'accept': 'application/json'
     }, this._options.headers || {});
+
+    if (typeof options.body === 'object') {
+      options.body = JSON.stringify(options.body);
+    }
+
     return options;
   }
 
@@ -65,6 +70,24 @@ class SifrrFetch {
 
   static delete(url, options = {}) {
     return new request('DELETE', url, options).response;
+  }
+
+  static graphql(url, options = {}) {
+    const {
+      query,
+      variables = {}
+    } = options;
+    delete options.query;
+    delete options.variables;
+    options.headers = options.headers || {};
+    options.headers.accept = options.headers.accept || '*/*';
+    options.headers['Content-Type'] = 'application/json';
+    options.headers['Accept'] = 'application/json';
+    options.body = {
+      query,
+      variables
+    };
+    return new request('POST', url, options).response;
   }
 
   static file(url, options = {}) {

@@ -1,7 +1,7 @@
 const { makeChildrenEqual } = require('./makeequal');
 const { updateAttribute } = require('./update');
 const { collect, create } = require('./ref');
-const { SIFRR_NODE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const { TEMPLATE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
@@ -12,55 +12,45 @@ function isHtml(el) {
 }
 
 function creator(el) {
-  if (el.nodeType === TEXT_NODE) {
+  if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
     const x = el.nodeValue;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x
-    };
-  } else if (el.nodeType === COMMENT_NODE && el.nodeValue.trim()[0] == '$') {
-    // comment
-    return {
-      html: false,
-      text: el.nodeValue.trim()
+      text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
-    const ref = {};
+    const sm = {};
     // Html ?
     if (isHtml(el)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
-        ref.html = true;
-        ref.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+        sm.html = true;
+        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
       }
     }
     // attributes
     const attrs = el.attributes || [], l = attrs.length;
-    const attrStateMap = {};
+    const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.value.indexOf('${') >= 0) {
+      if (attribute.name[0] === '$') {
+        attrStateMap.events[attribute.name] = attribute.value;
+      } else if (attribute.value.indexOf('${') >= 0) {
         attrStateMap[attribute.name] = attribute.value;
       }
     }
-    if (Object.keys(attrStateMap).length > 0) ref.attributes = attrStateMap;
+    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
 
-    if (Object.keys(ref).length > 0) return ref;
+    if (Object.keys(sm).length > 0) return sm;
   }
   return 0;
 }
 
 const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
-  createStateMap: (element) => {
-    let node;
-    if (element.useShadowRoot) node = element.shadowRoot;
-    else node = element;
-
-    return create(node, creator, isHtml);
-  },
-  updateState: (element) => {
+  createStateMap: (element) => create(element, creator, isHtml),
+  update: (element) => {
     if (!element._refs) {
       return false;
     }
@@ -73,8 +63,14 @@ const Parser = {
       // update attributes
       if (data.attributes) {
         for(let key in data.attributes) {
-          const val = Parser.evaluateString(data.attributes[key], element);
-          updateAttribute(dom, key, val);
+          if (key === 'events') {
+            for(let event in data.attributes.events) {
+              dom[event] = Parser.evaluateString(data.attributes.events[event], element);
+            }
+          } else {
+            const val = Parser.evaluateString(data.attributes[key], element);
+            updateAttribute(dom, key, val);
+          }
         }
       }
 
@@ -92,14 +88,13 @@ const Parser = {
         } else if (newValue.nodeType) {
           children = [newValue];
         } else {
-          const docFrag = SIFRR_NODE.cloneNode();
           // Replace html tags in input from input/contenteditable/textarea
-          docFrag.innerHTML = newValue.toString()
+          TEMPLATE.innerHTML = newValue.toString()
             // All closing tags
             .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
             // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
             .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = Array.prototype.slice.call(docFrag.content.childNodes);
+          children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
         }
         if (children.length < 1) dom.textContent = '';
         else makeChildrenEqual(dom, children);

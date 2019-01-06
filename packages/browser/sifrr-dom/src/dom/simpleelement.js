@@ -1,5 +1,5 @@
 const { collect, create } = require('./ref');
-const { SIFRR_NODE } = require('./constants');
+const { TEMPLATE } = require('./constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 function creator(node) {
@@ -51,10 +51,17 @@ function updateState(simpleEl) {
 
 function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
-    SIFRR_NODE.innerHTML = content;
-    content = SIFRR_NODE.content.firstElementChild || SIFRR_NODE.content.firstChild;
+    TEMPLATE.innerHTML = content;
+    content = TEMPLATE.content.firstElementChild || TEMPLATE.content.firstChild;
+    const oldDisplay = content.style.display;
+    content.style.display = 'none';
+    window.document.body.appendChild(content);
+    content.remove();
+    content.style.display = oldDisplay;
   }
-  if (content.isSifrr && content.isSifrr()) return content;
+  if (content.nodeName.indexOf('-') !== -1 ||
+    (content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
+    (content.isSifrr && content.isSifrr())) return content;
   content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {
