@@ -369,7 +369,7 @@
   }
 
   var sifrr_fetch = createCommonjsModule(function (module, exports) {
-    /*! Sifrr.Fetch v0.0.1-alpha - sifrr project */
+    /*! Sifrr.Fetch v0.0.1-alpha2 - sifrr project */
     (function (global, factory) {
       module.exports = factory();
     })(commonjsGlobal, function () {

@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.1-alpha - sifrr project */
+/*! Sifrr.Storage v0.0.1-alpha2 - sifrr project */
 class Json {
   static parse(data) {
     let ans = {};

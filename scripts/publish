@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+./scripts/release/config
+./scripts/yarn build
+./scripts/repeat "./packages/browser/*" "npm publish --access=public"
+./scripts/repeat "./packages/server/*" "npm publish --access=public"

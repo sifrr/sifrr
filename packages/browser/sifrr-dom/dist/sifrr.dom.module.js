@@ -439,7 +439,7 @@ const Parser = {
 };
 var parser = Parser;
 
-/*! Sifrr.Fetch v0.0.1-alpha - sifrr project */
+/*! Sifrr.Fetch v0.0.1-alpha2 - sifrr project */
 class Request {
   constructor(type, url, options) {
     this.type = type;
