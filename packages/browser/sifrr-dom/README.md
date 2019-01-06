@@ -346,7 +346,7 @@ parses array to dom nodes in bindings
 <!-- ${baseUrl}/elements/custom/tag.html -->
 
 <template>
-<!-- arrayToDom takes two arguments, first is unique key and other is array data to parse
+<!-- arrayToDom takes two arguments, first is unique key and other is array data to parse -->
   <div data-sifrr-html="true">
     <!-- ${this.arrayToDom('uniqueKey', this.state.data)} -->
   <div>
@@ -385,7 +385,7 @@ then, `<custom-tag></custom-tag>` will render:
 <custom-tag>
 ```
 
-#### Extending another decalred html element
+#### Extending another declared html element
 Sifrr element can extend other html elements also, eg:
 CustomTag extends HTMLButtonElement here, note that register call has { extends: 'button' } as second argument
 ```js

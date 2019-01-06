@@ -41,12 +41,38 @@ describe('sifrr-route', () => {
     expect(await page.title()).to.be.equal('abcd');
   });
 
-  it('doesn\'t reload when clicked on an a', async () => {
+  it('doesn\'t reload when clicked on an a without target', async () => {
     await page.goto(`${PATH}/`);
     await page.$eval('#complexlink', el => el.textContent = 'new text');
     await page.click('a[href="/abcd"]');
     expect(page.url()).to.equal(`${PATH}/abcd`);
     expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+  });
+
+  it('reloads when clicked on an a with target not equal to _self', async () => {
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_self"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_blank"]');
+    expect(page.url()).to.not.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_top"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.not.equal('new text');
+
+    await page.goto(`${PATH}/`);
+    await page.$eval('#complexlink', el => el.textContent = 'new text');
+    await page.click('a[target="_parent"]');
+    expect(page.url()).to.equal(`${PATH}/target`);
+    expect(await page.$eval('#complexlink', el => el.textContent)).to.not.equal('new text');
   });
 
   it('changes routes when clicked on back/forward button', async () => {

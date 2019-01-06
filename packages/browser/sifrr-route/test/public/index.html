@@ -35,6 +35,10 @@
 
 <body>
   <h1><a href="/" title="Home">OK</a></h1>
+  <a href="/target" target="_blank" title="Home">Outside</a>
+  <a href="/target" target="_parent" title="Home">Parent</a>
+  <a href="/target" target="_top" title="Home">Top</a>
+  <a href="/target" target="_self" title="Home">Self</a>
   <a href="/abcd" title="abcd">/abcd</a>
   <a href="/efgh" title="efgh">/efgh</a>
   <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
@@ -43,10 +47,9 @@
     <p>Visible everywhere</p>
     <p>e</p>
   </sifrr-route>
-
   <sifrr-route id='abcd' data-sifrr-path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
     <p>/abcd</p>
-    <sifrr-test data-sifrr-route-state="true"></sifrr-test>
+    <sifrr-test data-sifrr-state='{"route":{}}'></sifrr-test>
   </sifrr-route>
   <sifrr-route id='efgh' data-sifrr-path='/efgh'>
     /efgh

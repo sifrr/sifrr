@@ -1,4 +1,4 @@
-<template version="0.0.1-alpha">
+<template version="0.0.1-alpha2">
   <style>
     :host {
       display: none;
@@ -142,18 +142,17 @@
 
   document.addEventListener('click', (e) => {
     const target = e.path ? e.path[0] : e.target;
-    if (target.matches('a') && target.host == window.location.host) {
-      e.preventDefault();
-      const title = target.getAttribute('title') || 'Title';
-      const state = {
-        location: target.pathname,
-        title: title
-      };
-      // replace title with default title for your webapp, maybe your app name
-      document.title = title;
-      history.pushState(state, title, target.pathname);
-      SifrrRoute.refreshAll();
-    }
+    if (!target.matches('a') || target.host !== window.location.host || (target.target && target.target !== '_self')) return;
+    e.preventDefault();
+    const title = target.getAttribute('title') || 'Title';
+    const state = {
+      location: target.pathname,
+      title: title
+    };
+    // replace title with default title for your webapp, maybe your app name
+    document.title = title;
+    history.pushState(state, title, target.pathname);
+    SifrrRoute.refreshAll();
   });
 
   window.addEventListener('popstate', (event) => {

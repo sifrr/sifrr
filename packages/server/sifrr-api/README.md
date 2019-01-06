@@ -1,6 +1,6 @@
-# sifrr-api
+# sifrr-api &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)
 
-Opinioted way of creating normal apis or GraphQL apis using these amazing libraries:
+Opinionated way of creating normal apis or GraphQL apis using these amazing libraries:
 
 - [graphql](https://github.com/graphql/graphql-js)
 - [sequelize](https://github.com/sequelize/sequelize)
@@ -156,7 +156,7 @@ Takes (expressApp, RoutesFolderPath, filter) and adds all routes in files in Rou
 // ./routes/user.js
 
 module.exports = {
-  // basePath is optional, by default it is '', it can a basePath like '/v1' or an array of basePaths like ['/v1', '/v2']
+  // basePath is optional, by default it is '', it can be a basePath like '/v1' or an array of basePaths like ['/v1', '/v2']
   // Each basePath should start from '/' and should not end with '/'
   basePath: ['/v1', '/v2'],
   post: {
@@ -222,7 +222,7 @@ expressToGq.use((req, res, ctx) => {
 });
 
 // use it in express routes
-// don't wrap reqToGraphqlArgs in brackets
+// don't wrap reqToGraphqlArgs in brackets, it adds brackets if required by itself
 const app = express();
 app.use('/user/:id', (req, res) => {
   expressToGq.resolve(req, res, `
