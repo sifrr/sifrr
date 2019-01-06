@@ -100,8 +100,13 @@
     refresh() {
       const location = window.location.pathname;
       const parsed = this.routeRegex.test(location);
-      parsed.match ? this.activate() : this.deactivate();
-      this.state = parsed.data;
+      if (parsed.match) {
+        this.activate()
+        this.state = parsed.data;
+        this.$$('[data-sifrr-route-state=true]', false).forEach((el) => {
+          el.dataset.sifrrState = JSON.stringify({ route: parsed.data });
+        });
+      } else this.deactivate();
     }
 
     activate() {

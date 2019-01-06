@@ -83,4 +83,11 @@ describe('sifrr-route', () => {
       ]
     });
   });
+
+  it('passes state to data-sifrr-route-state=true', async () => {
+    await page.click('#complexlink');
+    const routeState = await page.$eval('#complex', el => el.state);
+    const childState = await page.$eval('#complex sifrr-test', el => el.state);
+    expect(childState.route).to.deep.equal(routeState);
+  });
 });

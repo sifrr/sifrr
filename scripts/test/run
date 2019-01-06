@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const exec = require('../exec').exec;
+const exec = require('child_process').execSync;
 
 global.fs = require('fs');
 global.path = require('path');
