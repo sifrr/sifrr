@@ -1,5 +1,5 @@
-# sifrr &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sifrr/sifrr/blob/master/LICENSE) [![CircleCI](https://circleci.com/gh/sifrr/sifrr.svg?style=shield)](https://circleci.com/gh/sifrr/sifrr) [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) [![No PRs yet](https://img.shields.io/badge/PRs-Not%20yet-red.svg)][![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield)
-()
+# sifrr &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sifrr/sifrr/blob/master/LICENSE) [![CircleCI](https://circleci.com/gh/sifrr/sifrr.svg?style=shield)](https://circleci.com/gh/sifrr/sifrr) [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) [![No PRs yet](https://img.shields.io/badge/PRs-Not%20yet-red.svg)]() [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield)
+
 
 sifrr is a vanilla js fullstack framework.
 
@@ -19,9 +19,7 @@ sifrr is a vanilla js fullstack framework.
 | [sifrr-api](./packages/server/sifrr-api) | Nodejs intelligent API framework with graphQL | [WIP] | [WIP] | [WIP] |
 | [sifrr-render](./packages/server/sifrr-render) | Server side rendering for sifrr-dom | [WIP] | [WIP] | [WIP] |
 
-
-(c) [@aadityataparia](https://github.com/aadityataparia)
-
-
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_large)
+
+(c) [@aadityataparia](https://github.com/aadityataparia)
