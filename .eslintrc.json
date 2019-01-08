@@ -21,7 +21,10 @@
     "page": false,
     "browser": false,
     "pti": false,
-    "Sifrr": true
+    "Sifrr": true,
+    "version": true,
+    "exec": true,
+    "seqCMD": true
   },
   "extends": "eslint:recommended",
   "parserOptions": {
