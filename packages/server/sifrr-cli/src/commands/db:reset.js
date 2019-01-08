@@ -1,10 +1,5 @@
 module.exports = () => {
-  const path = require('path');
-  const exec = require('child_process').execSync;
-
   const configFile = require(path.resolve('./.sequelizerc')).config;
-  const seqCMD = 'PATH=$(npm bin):$PATH sequelize';
-
   const config = require(path.resolve(configFile))[ENV];
 
   global.console.log(`Using ${config.dialect} in ${ENV} environment`);
