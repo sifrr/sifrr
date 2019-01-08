@@ -1,4 +1,4 @@
-/*! Sifrr.Fetch v0.0.1-alpha - sifrr project */
+/*! Sifrr.Fetch v0.0.1-alpha2 - sifrr project */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -6,7 +6,7 @@
 }(this, (function () { 'use strict';
 
   class Request {
-    constructor(type, url, options) {
+    constructor(type, url, options = {}) {
       this.type = type;
       this._options = options;
       this._url = url;
@@ -72,7 +72,6 @@
       delete options.query;
       delete options.variables;
       options.headers = options.headers || {};
-      options.headers.accept = options.headers.accept || '*/*';
       options.headers['Content-Type'] = 'application/json';
       options.headers['Accept'] = 'application/json';
       options.body = {

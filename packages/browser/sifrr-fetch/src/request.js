@@ -1,5 +1,5 @@
 class Request {
-  constructor(type, url, options) {
+  constructor(type, url, options = {}) {
     this.type = type;
     this._options = options;
     this._url = url;

@@ -5,19 +5,18 @@ const Sequelize = require('sequelize');
 class Model extends Sequelize.Model {
   static init(options) {
     this.gqAssociations[this.gqName] = {};
+    this.gqQuery[this.gqName] = {};
+    this.gqMutations[this.gqName] = {};
+    this.gqResolvers[this.gqName] = {};
     const ret = super.init(this.schema, options);
-    ret.addResolvers();
+    ret.onInit();
     return ret;
-  }
-
-  static get gqName() {
-    return this.name;
   }
 
   static belongsToMany(model, options) {
     const name = options.as || model.gqName + 's';
     this[name] = super.belongsToMany(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), type: [model.gqName], model: model };
+    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), type: `[${model.gqName}]`, model: model };
     return this[name];
   }
 
@@ -31,7 +30,7 @@ class Model extends Sequelize.Model {
   static hasMany(model, options) {
     const name = options.as || model.gqName + 's';
     this[name] = super.hasMany(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), type: [model.gqName], model: model };
+    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), type: `[${model.gqName}]`, model: model };
     return this[name];
   }
 
@@ -42,32 +41,27 @@ class Model extends Sequelize.Model {
     return this[name];
   }
 
-  static addMutation(name, options /* = { args, resolver, returnType } */) {
-    // args = 'id:Int, name:String'
-    this.gqMutations[this.gqName] = this.gqMutations[this.gqName] || {};
-    this.gqMutations[this.gqName][name] = options;
+  static addResolver(name, options /* = { resolver } */) {
+    if (typeof options === 'function') this.gqResolvers[this.gqName][name] = { resolver: options };
+    else this.gqResolvers[this.gqName][name] = options;
   }
 
-  static removeMutation(name) {
-    delete this.gqMutations[this.gqName][name];
+  static addMutation(name, options /* = { args, resolver, returnType } */) {
+    // args = 'id:Int, name:String'
+    this.gqMutations[this.gqName][name] = options;
   }
 
   static addQuery(name, options /* = { args, resolver, returnType } */) {
     // args = 'id:Int, name:String'
-    this.gqQuery[this.gqName] = this.gqQuery[this.gqName] || {};
     this.gqQuery[this.gqName][name] = options;
   }
 
-  static removeQuery(name) {
-    delete this.gqQuery[this.gqName][name];
+  static get gqName() {
+    return this.name;
   }
 
   static get gqSchema() {
-    return this.sequelizeToGqSchema(this);
-  }
-
-  static extraGqSchemaFields() {
-    return '';
+    return this.sequelizeToGqSchema();
   }
 
   static get gqAttrs() {
@@ -81,17 +75,24 @@ class Model extends Sequelize.Model {
   static get resolvers() {
     const q = { Query: this.gqQuery[this.gqName], Mutation: this.gqMutations[this.gqName] };
 
-    // Associations
     q[this.gqName] = {};
+
+    // Associations
     for (let a in this.gqAssociations[this.gqName]) {
       const assoc = this.gqAssociations[this.gqName][a];
+      q[this.gqName][a] = assoc.resolver;
+    }
+
+    // Extra
+    for (let a in this.gqResolvers[this.gqName]) {
+      const assoc = this.gqResolvers[this.gqName][a];
       q[this.gqName][a] = assoc.resolver;
     }
 
     return q;
   }
 
-  static addResolvers() {}
+  static onInit() {}
 
   // Default mutation Resolvers
   static getQueryResolver(_, args, ctx, info) {
@@ -133,20 +134,21 @@ class Model extends Sequelize.Model {
   // Takes arguments from graphql-sequelize or arg: {type: 'type' or ['type']} and coverts them to string 'id:Int, arg:type',
   // if arg is in required, it will add ! at the end, if arg is in ignore it won't add it
   static argsToString(args, { required = [], allowed = [], separator = ', ' } = {}) {
-    if (allowed.length > 0) args = filter(args, (arg) => allowed.indexOf(arg) >= 0);
+    if (allowed.length > 0) args = filter(args, (arg) => allowed.indexOf(arg) >= 0 || required.indexOf(arg) >= 0);
 
     let str = '';
     for (let arg in args) {
-      if (args[arg].constructor.name === 'GraphQLList') {
-        str += `${arg}:[${args[arg].type.ofType.name}]${required.indexOf(arg) >= 0 ? '!' : ''}`;
-      } else if (args[arg].constructor.name === 'GraphQLNonNull') {
+      const bang = required.indexOf(arg) >= 0 ? '!' : '';
+      if (args[arg].type.constructor.name === 'GraphQLList') {
+        str += `${arg}:[${args[arg].type.ofType.name}]${bang}`;
+      } else if (args[arg].type.constructor.name === 'GraphQLNonNull') {
         str += `${arg}:${args[arg].type.ofType.name}!`;
       } else {
         try {
-          str += `${arg}:${args[arg].type.name || args[arg].type.ofType.name}${required.indexOf(arg) >= 0 ? '!' : ''}`;
+          str += `${arg}:${args[arg].type.name || args[arg].type.ofType.name}${bang}`;
         } catch(e) {
-          if (Array.isArray(args[arg].type)) str+= `${arg}:[${args[arg].type}]${required.indexOf(arg) >= 0 ? '!' : ''}`;
-          else str+= `${arg}:${args[arg].type}${required.indexOf(arg) >= 0 ? '!' : ''}`;
+          if (Array.isArray(args[arg].type)) str+= `${arg}:[${args[arg].type[0]}]${bang}`;
+          else str+= `${arg}:${args[arg].type}${bang}`;
         }
       }
       str += separator;
@@ -154,16 +156,21 @@ class Model extends Sequelize.Model {
     return str;
   }
 
-  static sequelizeToGqSchema(model, { required = [], allowed = [] } = {}) {
-    // Fields
-    const args = attributeFields(model);
-    const assocs = model.gqAssociations[model.gqName];
-    let sq = `type ${model.gqName} {
+  static sequelizeToGqSchema({ required = [], allowed = [], extra = [] } = {}) {
+    // Fields - arguments and associations
+    const args = attributeFields(this);
+    const assocs = this.gqAssociations[this.gqName];
+    const me = this;
+    if (allowed.length > 0) {
+      Object.keys(filter(assocs, (assoc) => allowed.indexOf(assoc) < 0)).forEach((a) => {
+        // Remove resolvers for not allowed associations
+        delete me.gqAssociations[me.gqName][a];
+      });
+    }
+    let sq = `type ${this.gqName} {
       ${this.argsToString(args, { required, allowed, separator: '\n' })}
       ${this.argsToString(assocs, { required, allowed, separator: '\n' })}
-    `;
-    if (this.extraGqSchemaFields()) sq += this.extraGqSchemaFields() + '\n';
-    sq += `}
+      ${extra ? extra.join('\n') + '\n' : ''}}
     `;
     return sq;
   }
@@ -193,5 +200,6 @@ function filter(json, fxn) {
 Model.gqAssociations = {};
 Model.gqMutations = {};
 Model.gqQuery = {};
+Model.gqResolvers = {};
 
 module.exports = Model;

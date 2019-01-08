@@ -45,7 +45,7 @@ function create(node, fxn, filter = false) {
 
 module.exports = {
   walker: TREE_WALKER,
-  collect: collect,
-  create: create,
-  klass: Ref
+  collect,
+  create,
+  Ref
 };

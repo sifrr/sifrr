@@ -92,35 +92,36 @@ type User {
   ....
 }
 ```
-it's default value is `Model.sequelizeToGqSchema(this)`
-- `Model.sequelizeToGqSchema(Model, { required: [], allowed: [] })` takes sifrr api model and generates graphql type definition automatically based on schema, gqName, associations. It will add `!` at the end if attribute is non-null type in schema or given in required argument. If provided allowed, only allowed attributes/associations will be added to schema.
-- `Model.addResolvers()` This function is called during init. So add any query/mutation resolvers here, there are a few built-in resolvers available, but query and mutations should be added explicitly.
-  - `Model.addQuery(name, { args, resolver, returnType })` Adds graphql query of name = name. args are query arguments, resolver is a graphql resolver that is used for resolving the query, and returnType is string which tells which type of data this query will return. eg.
-  ```js
-  this.addQuery('getUser', {
-    args: 'id: Int!, name: String', // string
-    resolver: (_, args, ctx, info) => { return data },
-    returnType: 'User' // string
-  });
+it's default value is `Model.sequelizeToGqSchema()`
+- `Model.sequelizeToGqSchema({ required: [], allowed: [], extra: [] })` generates graphql type definition automatically based on Model's schema, gqName, associations. It will add `!` at the end if attribute is non-null type in schema or given in required argument. If provided allowed, only allowed attributes/associations will be added to schema. extra example = [ 'id: Int', 'name: String' ]
+- `Model.onInit()` This function is called on init. So add any query/mutation resolvers here, there are a few built-in resolvers available, but query and mutations should be added explicitly.
+- `Model.addResolver(name, { resolver })` Add resolvers for extra fields you added in gqSchema.
+- `Model.addQuery(name, { args, resolver, returnType })` Adds graphql query of name = name. args are query arguments, resolver is a graphql resolver that is used for resolving the query, and returnType is string which tells which type of data this query will return. eg.
+```js
+this.addQuery('getUser', {
+  args: 'id: Int!, name: String', // string
+  resolver: (_, args, ctx, info) => { return data },
+  returnType: 'User' // string
+});
 
-  // This will add this to graphql schema in createSchemaFromModels function and add the resolver
-  // Query {
-  //   getUser(id: Int!, name: String): User
-  // }
-  ```
-  - `Model.addMutation(name, { args, resolver, returnType })` takes same arguments as addQuery, but adds a graphql mutation instead of query. eg.
-  ```js
-  this.addQuery('createUser', {
-    args: 'name: String', // string
-    resolver: (_, args, ctx, info) => { return data },
-    returnType: 'User' // string
-  });
+// This will add this to graphql schema in createSchemaFromModels function and add the resolver
+// Query {
+//   getUser(id: Int!, name: String): User
+// }
+```
+- `Model.addMutation(name, { args, resolver, returnType })` takes same arguments as addQuery, but adds a graphql mutation instead of query. eg.
+```js
+this.addQuery('createUser', {
+  args: 'name: String', // string
+  resolver: (_, args, ctx, info) => { return data },
+  returnType: 'User' // string
+});
 
-  // This will add this to graphql schema in createSchemaFromModels function and add the resolver
-  // Mutation {
-  //   createUser(name: String): User
-  // }
-  ```
+// This will add this to graphql schema in createSchemaFromModels function and add the resolver
+// Mutation {
+//   createUser(name: String): User
+// }
+```
 - Predefined resolvers:
   - `Model.getQueryResolver`
     Gets data from table, this is essentially `resolver(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize), with with one upgrade. You can pass `association__column` in where argument to query based on that association. Returns `[Model.gqName]` type result. eg.
