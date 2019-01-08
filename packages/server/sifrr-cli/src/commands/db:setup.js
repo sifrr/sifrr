@@ -1,3 +1,5 @@
+/* eslint no-case-declarations: 0 */
+
 module.exports = () => {
   const configFile = require(path.resolve('./.sequelizerc')).config;
   const config = require(path.resolve(configFile))[ENV];
@@ -27,7 +29,7 @@ module.exports = () => {
   case 'postgres':
     const conn = `postgres://${config.username}:${config.password}@${config.host}/postgres`;
     const pg = require('pg');
-    pg.connect(conn, (err, client, done) => {
+    pg.connect(conn, (err, client) => {
       client.query(`CREATE DATABASE IF NOT EXISTS ${config.database};`, (err) => {
         if (err) throw err;
         global.console.log(`Database ${config.database} setted up.`);
@@ -38,7 +40,7 @@ module.exports = () => {
 
   case 'mssql':
     const sql = require('mssql');
-    sql.connect(`mssql://${config.username}:${config.password}@${config.host}`).then(_ => {
+    sql.connect(`mssql://${config.username}:${config.password}@${config.host}`).then(() => {
       sql.query(`CREATE DATABASE IF NOT EXISTS ${config.database};`).then(() => {
         global.console.log(`Database ${config.database} setted up.`);
         exec(`${seqCMD} db:migrate`);
@@ -51,8 +53,8 @@ module.exports = () => {
   case 'sqlite':
     const sqlite = require('sqlite3');
     if (config.storage) exec(`rm ${config.storage}`);
-    const db = new sqlite3.Database(config.storage || ':memory:',
-      sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+    new sqlite.Database(config.storage || ':memory:',
+      sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE,
       (err) => {
         if (err) throw err;
         global.console.log(`Database ${config.database} setted up.`);
