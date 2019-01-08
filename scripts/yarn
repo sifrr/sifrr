@@ -3,3 +3,4 @@
 set -ex
 
 ./scripts/repeat "./packages/browser/*" "yarn $1" "${@:2}"
+./scripts/repeat "./packages/server/*" "yarn $1" "${@:2}"

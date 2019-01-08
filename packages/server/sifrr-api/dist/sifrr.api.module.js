@@ -1,4 +1,4 @@
-/*! Sifrr.Api v0.0.1-alpha - sifrr project */
+/*! Sifrr.Api v0.0.1-alpha2 - sifrr project */
 import graphqlSequelize from 'graphql-sequelize';
 import sequelize from 'sequelize';
 import graphql from 'graphql';
