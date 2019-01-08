@@ -13,7 +13,7 @@ module.exports = () => {
       host: config.host,
       user: config.username,
       password: config.password,
-      multipleStatements: true
+      port: config.port
     });
 
     con.connect(function(err) {
@@ -26,20 +26,42 @@ module.exports = () => {
         exec(`${seqCMD} db:migrate`);
       });
     });
-
     break;
 
   case 'postgres':
-    // implement for this dialect
-    global.console.log(config.dialect);
+    const conn = `postgres://${config.username}:${config.password}@${config.host}/postgres`;
+    const pg = require('pg');
+    pg.connect(conn, (err, client, done) => {
+      client.query(`CREATE DATABASE IF NOT EXISTS ${config.database};`, (err) => {
+        if (err) throw err;
+        global.console.log(`Database ${config.database} setted up.`);
+        exec(`${seqCMD} db:migrate`);
+      });
+    });
     break;
+
   case 'mssql':
-    // implement for this dialect
-    global.console.log(config.dialect);
+    const sql = require('mssql');
+    sql.connect(`mssql://${config.username}:${config.password}@${config.host}`).then(_ => {
+      sql.query(`CREATE DATABASE IF NOT EXISTS ${config.database};`).then(() => {
+        global.console.log(`Database ${config.database} setted up.`);
+        exec(`${seqCMD} db:migrate`);
+      }).catch((err) => {
+        throw err;
+      });
+    });
     break;
+
   case 'sqlite':
-    // implement for this dialect
-    global.console.log(config.dialect);
+    const sqlite = require('sqlite3');
+    if (config.storage) exec(`rm ${config.storage}`);
+    const db = new sqlite3.Database(config.storage || ':memory:',
+      sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+      (err) => {
+        if (err) throw err;
+        global.console.log(`Database ${config.database} setted up.`);
+        exec(`${seqCMD} db:migrate`);
+      });
     break;
   }
 };
