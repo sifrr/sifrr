@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+const exec = require('child_process').execSync;
+
+const seqCMD = 'PATH=$(npm bin):$PATH sequelize';
+
+// Check for sequelize-cli
+let isSequelizeCliInstalled;
+try {
+  exec(`${seqCMD} --version`, { stdio: 'ignore' });
+  isSequelizeCliInstalled = true;
+} catch(e) {
+  isSequelizeCliInstalled = false;
+}
+
+

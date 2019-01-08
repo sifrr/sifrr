@@ -3,4 +3,4 @@
 const repl = require('repl');
 const SW = require('../src/sifrr.serviceworker');
 
-repl.start('bs> ').context.Sifrr = { SW: SW };
+repl.start('sifrr-sw> ').context.Sifrr = { SW: SW };
