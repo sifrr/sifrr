@@ -6,7 +6,7 @@
 }(this, (function () { 'use strict';
 
   class Request {
-    constructor(type, url, options) {
+    constructor(type, url, options = {}) {
       this.type = type;
       this._options = options;
       this._url = url;
@@ -72,7 +72,6 @@
       delete options.query;
       delete options.variables;
       options.headers = options.headers || {};
-      options.headers.accept = options.headers.accept || '*/*';
       options.headers['Content-Type'] = 'application/json';
       options.headers['Accept'] = 'application/json';
       options.body = {

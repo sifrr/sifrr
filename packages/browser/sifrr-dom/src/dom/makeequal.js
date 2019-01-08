@@ -71,6 +71,6 @@ function makeEqual(oldNode, newNode) {
 }
 
 module.exports = {
-  makeEqual: makeEqual,
-  makeChildrenEqual: makeChildrenEqual
+  makeEqual,
+  makeChildrenEqual
 };

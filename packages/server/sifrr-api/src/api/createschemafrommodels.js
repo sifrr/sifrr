@@ -1,6 +1,6 @@
 const { makeExecutableSchema } = require('graphql-tools');
 
-function createSchemaFromModels(models) {
+function createSchemaFromModels(models, extra) {
   const typeDefs = [];
   const resolvers = {};
   const query = {}, mutation = {};
@@ -15,37 +15,39 @@ function createSchemaFromModels(models) {
 
   const qnew = {};
 
-  let queryTypeDef = 'type Query {';
+  let queryMutation = 'type Query {';
   for (let query in resolvers.Query) {
-    queryTypeDef += `
+    queryMutation += `
     ${query}(${resolvers.Query[query].args}): ${resolvers.Query[query].returnType}`;
     qnew[query] = resolvers.Query[query].resolver;
   }
-  queryTypeDef += `
+  queryMutation += `
   }
   `;
 
   const mnew = {};
-  queryTypeDef += 'type Mutation {';
+  queryMutation += 'type Mutation {';
   for (let mutation in resolvers.Mutation) {
-    queryTypeDef += `
+    queryMutation += `
     ${mutation}(${resolvers.Mutation[mutation].args}): ${resolvers.Mutation[mutation].returnType}`;
     mnew[mutation] = resolvers.Mutation[mutation].resolver;
   }
-  queryTypeDef += `
+  queryMutation += `
   }
 
   scalar SequelizeJSON
   scalar Date
+
+  ${extra}
   `;
 
-  typeDefs.push(queryTypeDef);
+  typeDefs.push(queryMutation);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
 
   return makeExecutableSchema({
     typeDefs,
-    resolvers,
+    resolvers
   });
 }
 

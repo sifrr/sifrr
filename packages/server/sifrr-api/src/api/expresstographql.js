@@ -15,7 +15,7 @@ class ExpressToGraphql {
       schema: this._schema,
       source: query,
       contextValue: context
-    }).then( data => res.json(data));
+    }).then(data => res.json(data));
   }
 
   use(fxn) {
