@@ -1,0 +1,13 @@
+<template use-shadow-root="false">
+  <meta charset="utf-8">
+  <title>${this.state.title}</title>
+</template>
+<script type="text/javascript">
+  class SifrrHead extends Sifrr.Dom.Element.extends(HTMLHeadElement) {}
+  SifrrHead.defaultState = {
+    title: 'Home'
+  }
+  Sifrr.Dom.register(SifrrHead, {
+    extends: 'head'
+  });
+</script>

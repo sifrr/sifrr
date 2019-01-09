@@ -990,10 +990,8 @@ SifrrDom.setup = function (config) {
 SifrrDom.load = function (elemName, config = {
   baseUrl: SifrrDom.config.baseUrl
 }) {
-  return new Promise((res, rej) => {
-    let loader$$1 = new SifrrDom.Loader(elemName, config);
-    loader$$1.executeScripts().then(() => res()).catch(() => rej());
-  });
+  let loader$$1 = new SifrrDom.Loader(elemName, config);
+  return loader$$1.executeScripts();
 };
 
 SifrrDom.Url = url;
