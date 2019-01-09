@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha - sifrr project */
+/*! Sifrr.Dom v0.0.1-alpha2 - sifrr project */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -108,7 +108,7 @@
     }
   }
   var update = {
-    updateAttribute: updateAttribute
+    updateAttribute
   };
 
   var constants = {
@@ -182,8 +182,8 @@
     return oldNode;
   }
   var makeequal = {
-    makeEqual: makeEqual,
-    makeChildrenEqual: makeChildrenEqual
+    makeEqual,
+    makeChildrenEqual
   };
 
   const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
@@ -228,9 +228,9 @@
   }
   var ref = {
     walker: TREE_WALKER,
-    collect: collect,
-    create: create,
-    klass: Ref
+    collect,
+    create,
+    Ref
   };
 
   const {
@@ -374,7 +374,7 @@
       module.exports = factory();
     })(commonjsGlobal, function () {
       class Request {
-        constructor(type, url, options) {
+        constructor(type, url, options = {}) {
           this.type = type;
           this._options = options;
           this._url = url;
@@ -439,7 +439,6 @@
           delete options.query;
           delete options.variables;
           options.headers = options.headers || {};
-          options.headers.accept = options.headers.accept || '*/*';
           options.headers['Content-Type'] = 'application/json';
           options.headers['Accept'] = 'application/json';
           options.body = {
@@ -795,22 +794,22 @@
   SifrrDom.Loader = loader;
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event;
-  SifrrDom.register = function (Element, options) {
+  SifrrDom.register = (Element, options) => {
     Element.useShadowRoot = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
     if (!name) {
-      window.console.warn('Error creating Custom Element: No name given.', Element);
+      window.console.error('Error creating Custom Element: No name given.', Element);
     } else if (window.customElements.get(name)) {
       window.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
     } else if (name.indexOf('-') < 1) {
-      window.console.warn(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
+      window.console.error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
     } else {
       try {
         window.customElements.define(name, Element, options);
         SifrrDom.elements[name] = Element;
         return true;
       } catch (error) {
-        window.console.warn(`Error creating Custom Element: ${name} - ${error}`);
+        window.console.error(`Error creating Custom Element: ${name} - ${error}`);
         return false;
       }
     }
@@ -829,9 +828,9 @@
   SifrrDom.load = function (elemName, config = {
     baseUrl: SifrrDom.config.baseUrl
   }) {
-    return new Promise(res => {
+    return new Promise((res, rej) => {
       let loader$$1 = new SifrrDom.Loader(elemName, config);
-      loader$$1.executeScripts().then(() => res());
+      loader$$1.executeScripts().then(() => res()).catch(() => rej());
     });
   };
   SifrrDom.Url = url;

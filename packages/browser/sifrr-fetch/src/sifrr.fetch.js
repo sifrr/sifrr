@@ -22,7 +22,6 @@ class SifrrFetch {
     delete options.query;
     delete options.variables;
     options.headers = options.headers || {};
-    options.headers.accept = options.headers.accept || '*/*';
     options.headers['Content-Type'] = 'application/json';
     options.headers['Accept'] = 'application/json';
     options.body = {

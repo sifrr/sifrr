@@ -16,22 +16,22 @@ SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
 // Register Custom Element Function
-SifrrDom.register = function(Element, options) {
+SifrrDom.register = (Element, options) => {
   Element.useShadowRoot = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
-    window.console.warn('Error creating Custom Element: No name given.', Element);
+    window.console.error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
     window.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
   } else if (name.indexOf('-') < 1) {
-    window.console.warn(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
+    window.console.error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
     try {
       window.customElements.define(name, Element, options);
       SifrrDom.elements[name] = Element;
       return true;
     } catch (error) {
-      window.console.warn(`Error creating Custom Element: ${name} - ${error}`);
+      window.console.error(`Error creating Custom Element: ${name} - ${error}`);
       return false;
     }
   }
@@ -52,9 +52,9 @@ SifrrDom.setup = function(config) {
 
 // Load Element HTML and execute script in it
 SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
-  return new Promise((res) => {
+  return new Promise((res, rej) => {
     let loader = new SifrrDom.Loader(elemName, config);
-    loader.executeScripts().then(() => res());
+    loader.executeScripts().then(() => res()).catch(() => rej());
   });
 };
 

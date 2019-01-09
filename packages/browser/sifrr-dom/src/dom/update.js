@@ -27,5 +27,5 @@ function updateAttribute(element, name, newValue) {
 }
 
 module.exports = {
-  updateAttribute: updateAttribute,
+  updateAttribute
 };
