@@ -9,8 +9,8 @@ let jsFileName = pkgFolder.replace('-', '.');
 let pkgName = '@' + jsFileName.replace('.', '/');
 let pkgToMerge = {
   'name': pkgName,
-  'main': `src/${jsFileName}.js`,
-  'module': `dist/${jsFileName}.module.js`,
+  // 'main': `src/${jsFileName}.js`,
+  // 'module': `dist/${jsFileName}.module.js`,
   'version': pkg.version,
   'license': pkg.license,
   'repository': pkg.repository,

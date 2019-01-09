@@ -5,6 +5,9 @@
   "main": "src/sifrr.cli.js",
   "module": "dist/sifrr.cli.module.js",
   "license": "MIT",
+  "bin": {
+    "sifrr": "./src/sifrr.cli"
+  },
   "scripts": {
     "test": "../../../scripts/test/run ./packages/server/sifrr-cli",
     "build": "./node_modules/.bin/rollup -c"
@@ -23,8 +26,11 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {
-    "commander": "^2.19.0",
-    "inquirer": "^6.2.1"
+    "mkdirp": "^0.5.1",
+    "yargs": "^12.0.5"
+  },
+  "peerDependencies": {
+    "sequelize-cli": "^5.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

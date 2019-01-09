@@ -1,6 +1,0 @@
-#!/usr/bin/env node
-
-const repl = require('repl');
-const SifrrStorage = require('../src/sifrr.storage');
-
-repl.start('bs> ').context.Sifrr = { Storage: SifrrStorage };

@@ -44,7 +44,7 @@ function createSchemaFromModels(models, { extra = '', query = {}, mutation = {} 
 
   return makeExecutableSchema({
     typeDefs,
-    resolvers,
+    resolvers
   });
 }
 

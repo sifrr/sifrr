@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
 const repl = require('repl');
-const SifrrDOM = require('../src/sifrr.dom');
+const SifrrDom = require('../src/sifrr.dom');
 
-repl.start('sifrr-dom> ').context.Sifrr = { DOM: SifrrDOM };
+repl.start('sifrr-dom> ').context.Sifrr = { Dom: SifrrDom };

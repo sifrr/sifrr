@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+const program = require('yargs');
+
+// set globals
+global.version = require('../package.json').version;
+global.seqCMD = 'PATH=$(npm bin):$PATH sequelize';
+global.exec = require('child_process').execSync;
+global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
+global.path = require('path');
+
+// Check for sequelize-program
+let isSequelizeCliInstalled;
+try {
+  exec(`${seqCMD} --version`, { stdio: 'ignore' });
+  isSequelizeCliInstalled = true;
+} catch(e) {
+  isSequelizeCliInstalled = false;
+}
+
+if (!isSequelizeCliInstalled) {
+  global.console.error('sequelize-program is not installed. Install it by running `npm i sequelize-program`');
+  process.exit(1);
+}
+
+// get commands
+const dbReset = require('./commands/db:reset');
+const dbSetup = require('./commands/db:setup');
+const elementGenerate = require('./commands/elementgenerate');
+
+// Commands
+const cli = program
+  .help()
+  .version()
+  .alias('version', 'v')
+  .alias('help', 'h')
+  .command('db:reset', 'reset database for given node environment (clears database).', dbReset)
+  .command('db:setup', 'setup database for given node environment (doesn\'t clear database).', dbSetup)
+  .command('element:generate <name>', 'create sifrr-dom custom element', (yargs) => {
+    return yargs
+      .positional('name', {
+        describe: 'Name of sifrr element'
+      }).option('path', {
+        alias: 'p',
+        describe: 'base directory for elements',
+        default: './public/elements'
+      }).option('extends', {
+        alias: 'e',
+        describe: 'extend sifrr element with this class.'
+      });
+  }, elementGenerate)
+  .alias('element:generate', 'element:create');
+
+const args = cli.argv;
+if (!args._[0]) cli.showHelp();

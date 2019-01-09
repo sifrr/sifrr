@@ -93,6 +93,7 @@ type User {
 }
 ```
 it's default value is `Model.sequelizeToGqSchema()`
+
 - `Model.sequelizeToGqSchema({ required: [], allowed: [], extra: [] })` generates graphql type definition automatically based on Model's sequelize schema, gqName, associations. It will add `!` at the end if attribute is non-null type in schema or given in required argument. If provided allowed, only allowed attributes/associations will be added to schema. extra is extra attributes that need to be added to model's graphql schema, eg. [ 'id: Int', 'name: String' ]
 - `Model.onInit()` This function is called on init. So add any query/mutation resolvers here, there are a few built-in resolvers available, but query and mutations should be added explicitly.
 - `Model.addResolver(name, { resolver })` Add resolvers for extra fields you added in gqSchema.
