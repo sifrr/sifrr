@@ -35,13 +35,18 @@ const cli = program
   .alias('help', 'h')
   .command('db:reset', 'reset database for given node environment (clears database).', dbReset)
   .command('db:setup', 'setup database for given node environment (doesn\'t clear database).', dbSetup)
-  .command('element:generate', 'create sifrr-dom custom element', (yargs) => {
-    return yargs.option('path', {
-      alias: 'p',
-      default: './public/elements'
-    })
-      .option('extends')
-      .alias('extends', 'e');
+  .command('element:generate <name>', 'create sifrr-dom custom element', (yargs) => {
+    return yargs
+      .positional('name', {
+        describe: 'Name of sifrr element'
+      }).option('path', {
+        alias: 'p',
+        describe: 'base directory for elements',
+        default: './public/elements'
+      }).option('extends', {
+        alias: 'e',
+        describe: 'extend sifrr element with this class.'
+      });
   }, elementGenerate)
   .alias('element:generate', 'element:create');
 

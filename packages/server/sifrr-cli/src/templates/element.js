@@ -3,7 +3,7 @@ module.exports = (name, ext) => {
   <!-- Content -->
 </template>
 <script type="text/javascript">
-  class ${name} extends Sifrr.Dom.Element${ext} {
+  class ${name} extends Sifrr.Dom.Element${ext ? `.extends(${ext})` : ''} {
     onConnect() {
 
     }
@@ -13,7 +13,7 @@ module.exports = (name, ext) => {
     }
   }
   ${name}.defaultState = {};
-  Sifrr.Dom.register(${name});
+  Sifrr.Dom.register(${name}${ext ? ', { extends: \'/* tag of html to extend, eg. tr */\' }' : ''});
 </script>
 `;
 };

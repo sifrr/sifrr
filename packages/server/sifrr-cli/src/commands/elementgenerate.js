@@ -4,7 +4,7 @@ const mkdirp = require('mkdirp');
 
 module.exports = (argv) => {
   // Element class
-  const elemName = argv._[1];
+  const elemName = argv.name;
   // Loader
   const elemPath = path.resolve(argv.path, `./${elemName.split('-').join('/')}.html`);
   const className = elemName.replace(/-([a-z])/g, (g) => g[1].toUpperCase()).replace(/^([a-z])/, (g) => g[0].toUpperCase());
