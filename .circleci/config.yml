@@ -46,7 +46,7 @@ jobs:
           name: New Release
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/release/tag
+              ./scripts/publish
             fi
       - store_test_results:
           path: test-results

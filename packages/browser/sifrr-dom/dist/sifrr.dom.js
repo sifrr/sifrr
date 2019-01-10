@@ -345,7 +345,7 @@
         root = target._root;
       } else {
         root = target;
-        while (!root.isSifrr) root = target.parentNode || target.host;
+        while (!root.isSifrr) root = root.parentNode || root.host;
         target._root = root;
       }
       state[target.dataset.sifrrBind] = value;
