@@ -1,0 +1,1 @@
+{"version":3,"file":"index.bundled.js","sources":["index.js"],"sourcesContent":["Sifrr.Dom.setup({\n  useShadowRoot: true\n});\nSifrr.Dom.load('sifrr-test');\n"],"names":["Sifrr","Dom","setup","useShadowRoot","load"],"mappings":"uJAAAA,MAAMC,IAAIC,MAAM,CACdC,eAAe,IAEjBH,MAAMC,IAAIG,KAAK"}

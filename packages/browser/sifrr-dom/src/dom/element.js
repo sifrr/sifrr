@@ -55,9 +55,10 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       if(!this.constructor.useShadowRoot) {
+        this.textContent = '';
         this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
-        if (this._state) this.update();
+        if (this._state || this.hasAttribute('data-sifrr-state')) this.update();
       } else {
         if(!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }

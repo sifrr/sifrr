@@ -7,7 +7,10 @@
   "license": "MIT",
   "scripts": {
     "test": "../../../scripts/test/run ./packages/server/sifrr-api",
-    "build": "./node_modules/.bin/rollup -c"
+    "build": "./node_modules/.bin/rollup -c",
+    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ./test/public/server.js -p 1111",
+    "test-server": "yarn test-build && yarn test-server-only"
   },
   "repository": {
     "type": "git",

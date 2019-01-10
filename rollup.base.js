@@ -19,7 +19,8 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
     'graphql-sequelize',
     'graphql-tools',
     '@sifrr/dom',
-    '@sifrr/fetch'
+    '@sifrr/fetch',
+    'puppeteer'
   ];
   const globals = {
     '@sifrr/dom': 'Sifrr.Dom',

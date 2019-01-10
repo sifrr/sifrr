@@ -1,3 +1,8 @@
+const Seo = require('../../src/sifrr.seo');
+// Middleware
+const middle = new Seo().middleware;
+// Middleware
+
 const express = require('express'),
   compression = require('compression'),
   serveStatic = require('serve-static'),
@@ -19,18 +24,14 @@ if (diri !== -1) {
 const server = express();
 
 // export server for importing
-
-const sss = function(directory = dir) {
-  server.use(compression());
-  server.use(serveStatic(directory));
-  server.use(serveStatic(path.join(directory, '../../dist')));
-  server.use((req, res) => res.sendFile(path.join(directory, './index.html')));
-  return server;
-};
+server.use(middle);
+server.use(compression());
+server.use(serveStatic(__dirname));
+server.use(serveStatic(path.join(__dirname, '../../dist')));
+server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));
 
 // listen on port if port given
 if (port) {
-  sss().listen(port, () => global.console.log(`Listening on port ${port} and directory '${dir}'`));
+  server.listen(port, () => global.console.log(`Listening on port ${port} and directory '${dir}'`));
 }
 
-module.exports = sss;

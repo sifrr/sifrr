@@ -1,15 +1,12 @@
 {
-  "name": "@sifrr/cli",
+  "name": "@sifrr/seo",
   "version": "0.0.1-alpha2",
-  "description": "Sifrr Cli for creating web apps.",
-  "main": "src/sifrr.cli.js",
-  "module": "dist/sifrr.cli.module.js",
+  "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
+  "main": "src/sifrr.api.js",
+  "module": "dist/sifrr.api.module.js",
   "license": "MIT",
-  "bin": {
-    "sifrr": "./src/sifrr.cli"
-  },
   "scripts": {
-    "test": "../../../scripts/test/run ./packages/server/sifrr-cli",
+    "test": "../../../scripts/test/run ./packages/server/sifrr-seo",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ./test/public/server.js -p 1111",
@@ -21,7 +18,7 @@
   },
   "keywords": [
     "sifrr",
-    "cli"
+    "api"
   ],
   "author": "Sifrr",
   "bugs": {
@@ -29,11 +26,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {
-    "mkdirp": "^0.5.1",
-    "yargs": "^12.0.5"
-  },
-  "peerDependencies": {
-    "sequelize-cli": "^5.4.0"
+    "puppeteer": "^1.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
