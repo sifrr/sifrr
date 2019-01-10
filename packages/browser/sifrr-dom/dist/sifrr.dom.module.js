@@ -414,8 +414,20 @@ const Parser = {
     if (!target.dataset.sifrrBind) return;
     const value = target.value === undefined ? target.innerHTML : target.value;
     let state = {};
+    let root;
+
+    if (target._root) {
+      root = target._root;
+    } else {
+      root = target;
+
+      while (!root.isSifrr) root = target.parentNode || target.host;
+
+      target._root = root;
+    }
+
     state[target.dataset.sifrrBind] = value;
-    target.getRootNode().host.state = state;
+    root.state = state;
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
@@ -769,9 +781,11 @@ function elementClassFactory(baseClass) {
       if (!this.constructor.useShadowRoot) {
         this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
+        if (this._state) this.update();
+      } else {
+        if (!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }
 
-      if (!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       this.onConnect();
     }
 

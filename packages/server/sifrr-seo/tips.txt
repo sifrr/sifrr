@@ -1,0 +1,4 @@
+Readme
+Middleware to render js generated html as text for crawler bots.
+
+https://www.keycdn.com/blog/web-crawlers

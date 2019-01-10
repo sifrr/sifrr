@@ -39,7 +39,9 @@
     </script>
     <script>
       var state = {a: 'b'}
-      Sifrr.Dom.setup();
+      Sifrr.Dom.setup({
+        useShadowRoot: true
+      });
       Sifrr.Dom.Event.add('click');
       Sifrr.Dom.load('sifrr-test');
     </script>
