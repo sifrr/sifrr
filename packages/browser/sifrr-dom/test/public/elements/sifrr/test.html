@@ -48,7 +48,7 @@
 <script type="text/javascript">
   class SifrrTest extends Sifrr.Dom.Element {
     sifrrSmallClick(e, target) {
-      console.log(target)
+      console.log('you clicked on', target);
     }
   }
   SifrrTest.defaultState = {
@@ -61,7 +61,7 @@
     "color": "red",
     "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>",
     "disabled": false,
-    "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }],
+    "data": [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }],
     "html": "<p>xxxxx</p>"
   }
   Sifrr.Dom.load('sifrr-smaller');
