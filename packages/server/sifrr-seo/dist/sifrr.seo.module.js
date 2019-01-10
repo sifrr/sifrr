@@ -2,17 +2,54 @@
 import puppeteer from 'puppeteer';
 
 class SifrrSeo {
-  constuctor(botUserAgents = []) {
+  static flatteningJS() {
+    if (typeof Sifrr === 'undefined' || typeof !Sifrr.Dom === 'undefined') return false;
+    const defined = Object.keys(Sifrr.Dom.elements);
+    defined.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        if (el.shadowRoot) el.appendChild(el.shadowRoot);
+      });
+    });
+    return true;
+  }
+
+  constructor(botUserAgents = ['Googlebot', // Google
+  'Bingbot', // Bing
+  'Slurp', // Slurp
+  'DuckDuckBot', // DuckDuckGo
+  'Baiduspider', //Baidu
+  'YandexBot', // Yandex
+  'Sogou', // Sogou
+  'Exabot']) {
     this._bots = botUserAgents.map(ua => new RegExp(ua));
   }
 
-  middleware(req, res) {
-    function mw() {
-      if (this.isBot(req)) {
-        const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-        page.goto(fullUrl).then(async () => {
-          const renderedContent = await page.evaluate(() => new XMLSerializer().serializeToString(document));
-          res.send(renderedContent);
+  get middleware() {
+    function mw(req, res, next) {
+      if (!this.isHeadless(req) && this.isBot(req)) {
+        const self = this;
+        const browser = this.browser;
+        browser.then(br => {
+          return br.newPage();
+        }).then(async page => {
+          const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+          const resp = await page.goto(fullUrl, {
+            waitUntil: 'networkidle0'
+          });
+
+          if (resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0) {
+            process.stdout.write(`Rendering ${fullUrl} using sifrr-seo.\n`);
+            await page.evaluate(self.constructor.flatteningJS);
+            const renderedContent = await page.evaluate(() => new XMLSerializer().serializeToString(document));
+            res.send(renderedContent);
+          } else {
+            next();
+          }
+        }).then(() => {
+          return browser.close();
+        }).catch(e => {
+          process.stdout.write(e);
         });
       } else {
         next();
@@ -22,17 +59,25 @@ class SifrrSeo {
     return mw.bind(this);
   }
 
+  isHeadless(req) {
+    const ua = req.get('User-Agent');
+
+    if (new RegExp('headless').test(ua)) {
+      return true;
+    }
+
+    return false;
+  }
+
   isBot(req) {
     const ua = req.get('User-Agent');
-    let ret = false;
+    const l = this._bots.length;
 
-    this._bots.forEach(bot => {
-      if (bot.test(ua)) {
-        ret = true;
-      }
-    });
+    for (let i = 0; i < l; i++) {
+      if (this._bots[i].test(ua)) return true;
+    }
 
-    return ret;
+    return false;
   }
 
   addBot(botUserAgent) {
@@ -40,13 +85,7 @@ class SifrrSeo {
   }
 
   get browser() {
-    this._browser = this._browser || puppeteer.launch();
-    return this._browser;
-  }
-
-  get page() {
-    this._page = this._page || this.browser.then(br => br.newPage);
-    return this._page;
+    return puppeteer.launch();
   }
 
 }

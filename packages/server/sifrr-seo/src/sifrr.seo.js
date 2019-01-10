@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 
 class SifrrSeo {
   static flatteningJS() {
+    if (typeof Sifrr === 'undefined' || typeof !Sifrr.Dom === 'undefined') return false;
     const defined = Object.keys(Sifrr.Dom.elements);
     defined.forEach((selector) => {
       const elements = document.querySelectorAll(selector);
@@ -26,25 +27,28 @@ class SifrrSeo {
   }
 
   get middleware() {
-    function mw(req, res, next)  {
+    function mw(req, res, next) {
       if (!this.isHeadless(req) && this.isBot(req)) {
         const self = this;
-        this.page.then(async (page) => {
-
+        const browser = this.browser;
+        browser.then(br => {
+          return br.newPage();
+        }).then(async (page) => {
           const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
           const resp = await page.goto(fullUrl, { waitUntil: 'networkidle0' });
 
           if (resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0) {
-
             process.stdout.write(`Rendering ${fullUrl} using sifrr-seo.\n`);
             await page.evaluate(self.constructor.flatteningJS);
             const renderedContent = await page.evaluate(() => new XMLSerializer().serializeToString(document));
             res.send(renderedContent);
-
           } else {
             next();
           }
-
+        }).then(() => {
+          return browser.close();
+        }).catch((e) => {
+          process.stdout.write(e);
         });
       } else {
         next();
@@ -75,12 +79,7 @@ class SifrrSeo {
   }
 
   get browser() {
-    this._browser = this._browser || puppeteer.launch();
-    return this._browser;
-  }
-
-  get page() {
-    return this.browser.then((br) => br.newPage());
+    return puppeteer.launch();
   }
 }
 
