@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
+STATUS=0
+
 for dir in ./packages/browser/*
 do
   echo "Running test in ${dir}:"
   ./scripts/test/run "${dir}" "$@"
+  NEW_STATUS=$?
+  [ $NEW_STATUS -eq 0 ] || STATUS=1
 done
+
+exit $STATUS # Exit with 1 if any test failed

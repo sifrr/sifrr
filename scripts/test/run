@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const exec = require('child_process').execSync;
+const exec = require('../exec');
 
 global.fs = require('fs');
 global.path = require('path');
@@ -57,32 +57,37 @@ const unitTestDir = path.join(dir, './test/unit');
 const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
 const browserTestDir = path.join(dir, './test/browser');
 
-let ser = false;
+(async function() {
+  let ser = false;
 
-if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
-  // Add unit test.js files to the mocha instance
-  loadDir(unitTestDir);
-}
+  if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
+    // Add unit test.js files to the mocha instance
+    loadDir(unitTestDir);
+  }
 
-if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
-  const testPublicPath = path.join(dir, './test/public');
+  if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
+    const testPublicPath = path.join(dir, './test/public');
 
-  // Run yarn rollup if there is a rollup config in public folder
-  if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
+    // Run yarn rollup if there is a rollup config in public folder
+    if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
 
-  // Start server if there is a public folder
-  if (fs.existsSync(path.join(testPublicPath))) ser = server.listen(port, testPublicPath);
+    // Start server if there is a public folder
+    if (fs.existsSync(path.join(testPublicPath))) ser = server.listen(port, testPublicPath);
 
-  // Add browser test.js files to the mocha instance
-  loadDir(browserTestDir);
-}
+    // Add browser test.js files to the mocha instance
+    loadDir(browserTestDir);
+  }
 
-mocha.run(function(failures) {
-  // close server if open
-  if (ser) ser.close();
+  mocha.run((failures) => {
+    // close server if open
+    if (ser) ser.close();
 
-  process.exitCode = failures ? 1 : 0;  // exit with non-zero status if there were failures
-});
+    if (failures) {
+      process.stdout.write(`---------- ${failures} FAILURES. ----------\n`);
+      process.exitCode = 1;  // exit with non-zero status if there were failures
+    }
+  });
+})();
 
 function loadDir(dir) {
   fs.readdirSync(dir).filter(function(file) {

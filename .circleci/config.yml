@@ -37,8 +37,6 @@ jobs:
       - run:
           name: Run tests
           command: yarn jtest
-      - store_test_results:
-          path: test-results
       - run:
           name: Add git user email and name
           command: |
@@ -50,6 +48,8 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               ./scripts/release/tag
             fi
+      - store_test_results:
+          path: test-results
 workflows:
   version: 2
   build_and_test:
