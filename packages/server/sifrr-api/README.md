@@ -231,7 +231,9 @@ connects graphql executable schema to express routes. eg.
 const { ExpressToGraphql } = require('@sifrr/api');
 
 const expressToGq = new ExpressToGraphql(graphqQlExecutableSchema);
-expressToGq.use((req, res, ctx) => {
+
+// Adding middlewares
+expressToGq.use((req, ctx) => {
   // add middleware that modifies req, res and graphql context but don't mutate them
   ctx.user = req.user // example authentication
 });
@@ -240,7 +242,7 @@ expressToGq.use((req, res, ctx) => {
 // don't wrap reqToGraphqlArgs in brackets, it adds brackets by itself if required
 const app = express();
 app.use('/user/:id', (req, res) => {
-  expressToGq.resolve(req, res, `
+  expressToGq.resolve(req, `
     query {
       user${reqToGraphqlArgs(req, { allowed: ['id'] })} {
         id
@@ -251,7 +253,7 @@ app.use('/user/:id', (req, res) => {
         }
       }
     }
-    `);
+    `).then(data => res.json());
 });
 
 // Going to `/user/1` will return result from executing this graphql query in the graphqQlExecutableSchema given to ExpressToGraphql instance.

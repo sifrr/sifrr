@@ -6,16 +6,16 @@ class ExpressToGraphql {
     this._middlewares = [];
   }
 
-  resolve(req, res, query, context = {}) {
+  resolve(req, query, context = {}) {
     this._middlewares.forEach((m) => {
-      m(res, res, context);
+      m(req, context);
     });
 
     return graphql({
       schema: this._schema,
       source: query,
       contextValue: context
-    }).then(data => res.json(data));
+    });
   }
 
   use(fxn) {
