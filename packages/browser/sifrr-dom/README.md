@@ -64,7 +64,9 @@ Sifrr.Dom.setup(config);
 ```
 
 ### Sifrr element
+__Note__: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
 #### Basic sifrr element
+1. HTML element
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html  -->
 
@@ -97,16 +99,53 @@ Sifrr.Dom.setup(config);
   Sifrr.Dom.register(CustomTag);
 </script>
 ```
+ -- OR --
+2. JS Element
+```js
+// ${baseUrl}/elements/custom/tag.js
+class CustomTag extends Sifrr.Dom.Element {
+  static get template() {
+    // Note that bindings are defined by {{}} in js template.
+    return Sifrr.Dom.html`<style media="screen">
+      p {
+        color: blue;
+      }
+    </style>
+    <p attr={{this.state.attr}}>{{this.state.id}}</p>
+    <p>{{this.data()}}</p>`;
+  }
+  // other methods for the custom element
+  data() {
+    return this.state.id * 2;
+  }
+}
+CustomTag.defaultState = {
+  // default state for this element
+  id: 1,
+  attr: 'abcd'
+}
+Sifrr.Dom.register(CustomTag);
+```
+Then load in your js
 ```js
 // index.js
 
 const config = {
   baseUrl: ''
 }
+// Requires Sifrr.Fetch
 Sifrr.Dom.load('custom-tag', config); // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
+// or  ${baseUrl}/elements/custom/tag.js whichever is present
 // If no baseUrl is given in config, baseUrl from setup config is used
 ```
-- This html
+or as module
+```js
+// index.html
+<script type="module">
+  import '${baseUrl}/elements/custom/tag';
+</script>
+```
+Then this html
 ```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

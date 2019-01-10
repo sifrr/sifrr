@@ -3,6 +3,7 @@ const { TEMPLATE } = require('./constants');
 
 class Loader {
   constructor(elemName, config = {}) {
+    if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
     this.elementName = elemName;
     this.config = config;

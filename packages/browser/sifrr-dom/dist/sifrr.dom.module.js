@@ -1,4 +1,6 @@
 /*! Sifrr.Dom v0.0.1-alpha2 - sifrr project */
+import fetch from '@sifrr/fetch';
+
 const URLExt = {
   absolute: (base, relative) => {
     let stack = base.split('/'),
@@ -451,114 +453,13 @@ const Parser = {
 };
 var parser = Parser;
 
-/*! Sifrr.Fetch v0.0.1-alpha2 - sifrr project */
-class Request {
-  constructor(type, url, options = {}) {
-    this.type = type;
-    this._options = options;
-    this._url = url;
-  }
-
-  get response() {
-    return window.fetch(this.url, this.options).then(resp => {
-      let contentType = resp.headers.get('content-type');
-
-      if (resp.ok) {
-        if (contentType && contentType.includes('application/json')) {
-          resp = resp.json();
-        }
-
-        return resp;
-      } else {
-        let error = Error(resp.statusText);
-        error.response = resp;
-        throw error;
-      }
-    });
-  }
-
-  get url() {
-    const params = this._options.params;
-
-    if (params && Object.keys(params).length > 0) {
-      return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
-    } else {
-      return this._url;
-    }
-  }
-
-  get options() {
-    const options = Object.assign({
-      method: this.type,
-      mode: 'cors',
-      redirect: 'follow'
-    }, this._options);
-    options.headers = Object.assign({
-      'accept': 'application/json'
-    }, this._options.headers || {});
-
-    if (typeof options.body === 'object') {
-      options.body = JSON.stringify(options.body);
-    }
-
-    return options;
-  }
-
-}
-
-var request = Request;
-
-class SifrrFetch {
-  static get(url, options = {}) {
-    return new request('GET', url, options).response;
-  }
-
-  static post(url, options = {}) {
-    return new request('POST', url, options).response;
-  }
-
-  static put(url, options = {}) {
-    return new request('PUT', url, options).response;
-  }
-
-  static delete(url, options = {}) {
-    return new request('DELETE', url, options).response;
-  }
-
-  static graphql(url, options = {}) {
-    const {
-      query,
-      variables = {}
-    } = options;
-    delete options.query;
-    delete options.variables;
-    options.headers = options.headers || {};
-    options.headers['Content-Type'] = 'application/json';
-    options.headers['Accept'] = 'application/json';
-    options.body = {
-      query,
-      variables
-    };
-    return new request('POST', url, options).response;
-  }
-
-  static file(url, options = {}) {
-    options.headers = options.headers || {};
-    options.headers.accept = options.headers.accept || '*/*';
-    return new request('GET', url, options).response;
-  }
-
-}
-
-var sifrr_fetch = SifrrFetch;
-/*! (c) @aadityataparia */
-
 const {
   TEMPLATE: TEMPLATE$1
 } = constants;
 
 class Loader {
   constructor(elemName, config = {}) {
+    if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
     this.elementName = elemName;
     this.config = config;
@@ -568,7 +469,7 @@ class Loader {
   get html() {
     const me = this;
     if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
-    const html = sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
+    const html = fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
       TEMPLATE$1.innerHTML = file;
       return TEMPLATE$1.content;
     }).then(html => {
@@ -585,7 +486,7 @@ class Loader {
   get js() {
     const me = this;
     if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].js) return this.constructor.all[this.elementName].js;
-    const js = sifrr_fetch.file(this.jsUrl).then(resp => resp.text());
+    const js = fetch.file(this.jsUrl).then(resp => resp.text());
     Loader.add(me.elementName, {
       instance: me,
       js: js

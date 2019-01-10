@@ -11,6 +11,20 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
   let banner = `/*! ${name} v${version} - sifrr project */`;
   let footer = '/*! (c) @aadityataparia */';
   let ret = [];
+  const external = [
+    'path',
+    'fs',
+    'graphql',
+    'sequelize',
+    'graphql-sequelize',
+    'graphql-tools',
+    '@sifrr/dom',
+    '@sifrr/fetch'
+  ];
+  const globals = {
+    '@sifrr/dom': 'Sifrr.Dom',
+    '@sifrr/fetch': 'Sifrr.Fetch'
+  };
   if (isBrowser) {
     ret = [
       {
@@ -21,9 +35,11 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
           name: name,
           banner: banner,
           footer: footer,
-          sourcemap: true
+          sourcemap: true,
+          globals: globals
         },
         preferConst: true,
+        external: external,
         plugins: [
           resolve({
             browser: true
@@ -44,9 +60,11 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
           name: name,
           banner: banner,
           footer: footer,
-          sourcemap: true
+          sourcemap: true,
+          globals: globals
         },
         preferConst: true,
+        external: external,
         plugins: [
           resolve({
             browser: true
@@ -71,17 +89,11 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
       file: `dist/${fileName}.module.js`,
       format: 'es',
       banner: banner,
-      footer: footer
+      footer: footer,
+      globals: globals
     },
     preferConst: true,
-    external: [
-      'path',
-      'fs',
-      'graphql',
-      'sequelize',
-      'graphql-sequelize',
-      'graphql-tools'
-    ],
+    external: external,
     plugins: [
       resolve(),
       commonjs(),

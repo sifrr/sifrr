@@ -4,7 +4,13 @@ History API based Routing library for building One Page Applications with sifrr.
 
 ## How to use
 
-1. Copy contents of `dist/elements` to `elements` folder in your sifrr app. And use `Sifrr.Dom.load('sifrr-route')` to load sifrr-route.
+1. Copy contents of `dist/sifrr.route.js` to `elements/sifrr/route.js` folder in your sifrr app. And use `Sifrr.Dom.load('sifrr-route')` to load sifrr-route.
+2. Or you can directly import in html:
+```html
+<script type="module">
+  import '@sifrr/route';
+</script>
+```
 
 2. You also need to take care in your server configuration that correct html file is served for all sifrr-routes.
 
