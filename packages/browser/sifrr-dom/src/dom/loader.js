@@ -32,8 +32,11 @@ class Loader {
   executeScripts() {
     return this.html.then((file) => {
       file.querySelectorAll('script').forEach((script) => {
-        const fxn = new Function(script.text).bind(window);
-        fxn();
+        if (script.hasAttribute('src')) {
+          window.document.body.appendChild(script);
+        } else {
+          new Function(script.text).bind(window)();
+        }
       });
     });
   }

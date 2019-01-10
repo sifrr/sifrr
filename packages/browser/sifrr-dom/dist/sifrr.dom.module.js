@@ -91,6 +91,14 @@ const Json = {
 };
 var json = Json;
 
+var constants = {
+  SIFRR_NODE: window.document.createElement('sifrr-node'),
+  TEMPLATE: window.document.createElement('template'),
+  TEXT_NODE: 3,
+  COMMENT_NODE: 8,
+  ELEMENT_NODE: 1
+};
+
 // Attribute related gotchas
 function updateAttribute(element, name, newValue) {
   if (name === 'class') {
@@ -123,14 +131,6 @@ function updateAttribute(element, name, newValue) {
 
 var update = {
   updateAttribute
-};
-
-var constants = {
-  SIFRR_NODE: window.document.createElement('sifrr-node'),
-  TEMPLATE: window.document.createElement('template'),
-  TEXT_NODE: 3,
-  COMMENT_NODE: 8,
-  ELEMENT_NODE: 1
 };
 
 const {
@@ -577,8 +577,11 @@ class Loader {
   executeScripts() {
     return this.html.then(file => {
       file.querySelectorAll('script').forEach(script => {
-        const fxn = new Function(script.text).bind(window);
-        fxn();
+        if (script.hasAttribute('src')) {
+          window.document.body.appendChild(script);
+        } else {
+          new Function(script.text).bind(window)();
+        }
       });
     });
   }
@@ -740,8 +743,8 @@ function elementClassFactory(baseClass) {
 
     static onStateChange() {}
 
-    static useSR() {
-      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useShadowRoot;
+    static get useShadowRoot() {
+      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useSR;
     }
 
     constructor() {
@@ -750,7 +753,7 @@ function elementClassFactory(baseClass) {
       if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
       const content = this.constructor.template.content.cloneNode(true);
 
-      if (this.constructor.useSR()) {
+      if (this.constructor.useShadowRoot) {
         this._refs = parser.collectRefs(content, this.constructor.stateMap);
         this.attachShadow({
           mode: 'open'
@@ -763,7 +766,7 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if (!this.constructor.useSR()) {
+      if (!this.constructor.useShadowRoot) {
         this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
       }
@@ -775,8 +778,8 @@ function elementClassFactory(baseClass) {
     onConnect() {}
 
     disconnectedCallback() {
-      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-      if (!this.constructor.useSR()) this.textContent = '';
+      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+      if (!this.constructor.useShadowRoot) this.textContent = '';
       this.onDisconnect();
     }
 
@@ -939,6 +942,10 @@ const Event = {
 };
 var event = Event;
 
+const {
+  TEMPLATE: TEMPLATE$3
+} = constants; // Empty SifrrDom
+
 let SifrrDom = {}; // For elements
 
 SifrrDom.elements = {}; // Classes
@@ -948,10 +955,17 @@ SifrrDom.Parser = parser;
 SifrrDom.makeEqual = makeequal;
 SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
-SifrrDom.Event = event; // Register Custom Element Function
+SifrrDom.Event = event; // HTML to template
+
+SifrrDom.html = (str, ...extra) => {
+  str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+  TEMPLATE$3.innerHTML = str;
+  return TEMPLATE$3;
+}; // Register Custom Element Function
+
 
 SifrrDom.register = (Element, options) => {
-  Element.useShadowRoot = SifrrDom.config.useShadowRoot;
+  Element.useSR = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
 
   if (!name) {

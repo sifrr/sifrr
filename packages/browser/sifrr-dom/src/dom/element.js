@@ -32,8 +32,8 @@ function elementClassFactory(baseClass) {
 
     static onStateChange() {}
 
-    static useSR() {
-      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useShadowRoot;
+    static get useShadowRoot() {
+      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useSR;
     }
 
     constructor() {
@@ -41,7 +41,7 @@ function elementClassFactory(baseClass) {
       // this._oldState = {};
       if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
       const content = this.constructor.template.content.cloneNode(true);
-      if (this.constructor.useSR()) {
+      if (this.constructor.useShadowRoot) {
         this._refs = Parser.collectRefs(content, this.constructor.stateMap);
         this.attachShadow({
           mode: 'open'
@@ -54,7 +54,7 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if(!this.constructor.useSR()) {
+      if(!this.constructor.useShadowRoot) {
         this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
       }
@@ -65,8 +65,8 @@ function elementClassFactory(baseClass) {
     onConnect() {}
 
     disconnectedCallback() {
-      if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
-      if (!this.constructor.useSR()) this.textContent = '';
+      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
+      if (!this.constructor.useShadowRoot) this.textContent = '';
       this.onDisconnect();
     }
 

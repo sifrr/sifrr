@@ -46,8 +46,6 @@
   <sifrr-small $click="${this.sifrrSmallClick}"></sifrr-small>
 </template>
 <script type="text/javascript">
-  Sifrr.Dom.load('sifrr-small');
-  Sifrr.Dom.load('sifrr-smaller');
   class SifrrTest extends Sifrr.Dom.Element {
     sifrrSmallClick(e, target) {
       console.log(target)
@@ -66,7 +64,8 @@
     "data": [{ x: 1 }, { x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }, { x: 6 }],
     "html": "<p>xxxxx</p>"
   }
-  customElements.whenDefined('sifrr-small').then(() => {
+  Sifrr.Dom.load('sifrr-smaller');
+  Sifrr.Dom.load('sifrr-small').then(() => {
     SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
     SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-smaller' }));
 

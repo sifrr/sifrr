@@ -1,5 +1,6 @@
 const UrlExt = require('./utils/url');
 const JsonExt = require('./utils/json');
+const { TEMPLATE } = require('./dom/constants');
 
 // Empty SifrrDom
 let SifrrDom = {};
@@ -15,9 +16,16 @@ SifrrDom.Loader = require('./dom/loader');
 SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
+// HTML to template
+SifrrDom.html = (str, ...extra) => {
+  str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+  TEMPLATE.innerHTML = str;
+  return TEMPLATE;
+};
+
 // Register Custom Element Function
 SifrrDom.register = (Element, options) => {
-  Element.useShadowRoot = SifrrDom.config.useShadowRoot;
+  Element.useSR = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
     window.console.error('Error creating Custom Element: No name given.', Element);

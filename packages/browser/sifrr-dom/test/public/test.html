@@ -34,12 +34,14 @@
       sf sdfksdf nsjkf
     </sifrr-test>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script type="module">
+      import '/elements/sifrr/head.js';
+    </script>
     <script>
       var state = {a: 'b'}
       Sifrr.Dom.setup();
       Sifrr.Dom.Event.add('click');
       Sifrr.Dom.load('sifrr-test');
-      Sifrr.Dom.load('sifrr-head');
     </script>
   </body>
 </html>

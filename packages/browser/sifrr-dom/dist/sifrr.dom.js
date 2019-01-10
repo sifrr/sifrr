@@ -85,6 +85,14 @@
   };
   var json = Json;
 
+  var constants = {
+    SIFRR_NODE: window.document.createElement('sifrr-node'),
+    TEMPLATE: window.document.createElement('template'),
+    TEXT_NODE: 3,
+    COMMENT_NODE: 8,
+    ELEMENT_NODE: 1
+  };
+
   function updateAttribute(element, name, newValue) {
     if (name === 'class') {
       const fromValue = element.className;
@@ -109,14 +117,6 @@
   }
   var update = {
     updateAttribute
-  };
-
-  var constants = {
-    SIFRR_NODE: window.document.createElement('sifrr-node'),
-    TEMPLATE: window.document.createElement('template'),
-    TEXT_NODE: 3,
-    COMMENT_NODE: 8,
-    ELEMENT_NODE: 1
   };
 
   const {
@@ -491,8 +491,11 @@
     executeScripts() {
       return this.html.then(file => {
         file.querySelectorAll('script').forEach(script => {
-          const fxn = new Function(script.text).bind(window);
-          fxn();
+          if (script.hasAttribute('src')) {
+            window.document.body.appendChild(script);
+          } else {
+            new Function(script.text).bind(window)();
+          }
         });
       });
     }
@@ -626,14 +629,14 @@
         return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
       }
       static onStateChange() {}
-      static useSR() {
-        return this.template.getAttribute('use-shadow-root') !== 'false' && this.useShadowRoot;
+      static get useShadowRoot() {
+        return this.template.getAttribute('use-shadow-root') !== 'false' && this.useSR;
       }
       constructor() {
         super();
         if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.template.content.cloneNode(true);
-        if (this.constructor.useSR()) {
+        if (this.constructor.useShadowRoot) {
           this._refs = parser.collectRefs(content, this.constructor.stateMap);
           this.attachShadow({
             mode: 'open'
@@ -645,7 +648,7 @@
         }
       }
       connectedCallback() {
-        if (!this.constructor.useSR()) {
+        if (!this.constructor.useShadowRoot) {
           this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
           this.appendChild(this.__content);
         }
@@ -654,8 +657,8 @@
       }
       onConnect() {}
       disconnectedCallback() {
-        if (this.useShadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-        if (!this.constructor.useSR()) this.textContent = '';
+        if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+        if (!this.constructor.useShadowRoot) this.textContent = '';
         this.onDisconnect();
       }
       onDisconnect() {}
@@ -786,6 +789,9 @@
   };
   var event = Event;
 
+  const {
+    TEMPLATE: TEMPLATE$3
+  } = constants;
   let SifrrDom = {};
   SifrrDom.elements = {};
   SifrrDom.Element = element;
@@ -794,8 +800,13 @@
   SifrrDom.Loader = loader;
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event;
+  SifrrDom.html = (str, ...extra) => {
+    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+    TEMPLATE$3.innerHTML = str;
+    return TEMPLATE$3;
+  };
   SifrrDom.register = (Element, options) => {
-    Element.useShadowRoot = SifrrDom.config.useShadowRoot;
+    Element.useSR = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
     if (!name) {
       window.console.error('Error creating Custom Element: No name given.', Element);

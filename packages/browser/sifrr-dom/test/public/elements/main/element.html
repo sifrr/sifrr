@@ -40,7 +40,6 @@
 </template>
 <script>
   Sifrr.Dom.load('sifrr-small');
-  Sifrr.Dom.load('sifrr-smaller');
   class MainElement extends Sifrr.Dom.Element {
     newdata() {
       return this.state.data.map((st) => changeState(st, this.state.selected));
@@ -50,7 +49,7 @@
     "data": []
   }
 
-  customElements.whenDefined('sifrr-smaller').then(() => {
+  Sifrr.Dom.load('sifrr-smaller').then(() => {
     MainElement.addArrayToDom('data', '<tr is="sifrr-smaller"></tr>');
 
     Sifrr.Dom.register(MainElement);
