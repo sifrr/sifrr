@@ -39,7 +39,7 @@
     get dataMap() {
       if (this._dataMap) return this._dataMap;
       this._dataMap = [];
-      this.path.split(this.options.delimiter).forEach((r) => {
+      this.path.split('/').forEach((r) => {
         if (r[0] === ':' || r === '*' || r === '**') {
           this._dataMap.push(r);
         }

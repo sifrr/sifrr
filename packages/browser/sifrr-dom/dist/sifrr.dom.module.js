@@ -567,7 +567,7 @@ class Loader {
 
   get html() {
     const me = this;
-    if (this.constructor.all[this.elementName]) return this.constructor.all[this.elementName].html;
+    if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
     const html = sifrr_fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
       TEMPLATE$1.innerHTML = file;
       return TEMPLATE$1.content;
@@ -582,8 +582,23 @@ class Loader {
     return html;
   }
 
+  get js() {
+    const me = this;
+    if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].js) return this.constructor.all[this.elementName].js;
+    const js = sifrr_fetch.file(this.jsUrl).then(resp => resp.text());
+    Loader.add(me.elementName, {
+      instance: me,
+      js: js
+    });
+    return js;
+  }
+
   get htmlUrl() {
     return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
+  }
+
+  get jsUrl() {
+    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.js`;
   }
 
   executeScripts() {
@@ -595,11 +610,17 @@ class Loader {
           new Function(script.text).bind(window)();
         }
       });
+    }).catch(e => {
+      window.console.warn(e);
+      window.console.log('Trying to get js file.');
+      this.js.then(script => {
+        new Function(script).bind(window)();
+      });
     });
   }
 
   static add(elemName, instance) {
-    Loader._all[elemName] = instance;
+    Loader._all[elemName] = Object.assign(Loader._all[elemName] || {}, instance);
   }
 
   static get all() {
