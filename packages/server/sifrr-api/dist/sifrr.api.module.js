@@ -1,4 +1,4 @@
-/*! Sifrr.Api v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Api v0.0.2-alpha - sifrr project */
 import graphqlSequelize from 'graphql-sequelize';
 import sequelize from 'sequelize';
 import graphql from 'graphql';
@@ -283,16 +283,16 @@ class ExpressToGraphql {
     this._middlewares = [];
   }
 
-  resolve(req, res, query, context = {}) {
+  resolve(req, query, context = {}) {
     this._middlewares.forEach(m => {
-      m(res, res, context);
+      m(req, context);
     });
 
     return graphql$1({
       schema: this._schema,
       source: query,
       contextValue: context
-    }).then(data => res.json(data));
+    });
   }
 
   use(fxn) {
@@ -307,13 +307,18 @@ function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
 }
 
-function loadRoutes(app, dir, filter = []) {
-  fs.readdirSync(dir).filter(file => path.extname(file) === '.js' && filter.indexOf(file) < 0).forEach(file => {
+function loadRoutes(app, dir, {
+  ignore = [],
+  basePath = ''
+}) {
+  fs.readdirSync(dir).filter(file => path.extname(file) === '.js' && ignore.indexOf(file) < 0).forEach(file => {
     const routes = commonjsRequire(path.join(dir, file));
-    let basePath = routes.basePath || '';
+    let defaultBasePath;
+    if (typeof basePath === 'string') defaultBasePath = [basePath];
+    let basePaths = routes.basePath || '';
     delete routes.basePath;
-    if (typeof basePath === 'string') basePath = [basePath];
-    basePath.forEach(basep => {
+    if (typeof basePaths === 'string') basePaths = [basePath];
+    basePath.concat(defaultBasePath).forEach(basep => {
       for (let method in routes) {
         const methodRoutes = routes[method];
 
@@ -332,11 +337,27 @@ const {
   makeExecutableSchema
 } = graphqlTools;
 
-function createSchemaFromModels(models, extra) {
-  const typeDefs = [];
-  const resolvers = {};
-  const query = {},
-        mutation = {};
+function getTypeDef(qs, resolvers) {
+  let ret = '';
+
+  for (let q in qs) {
+    const qdet = qs[q];
+    const args = qdet.args ? `(${qdet.args})` : '';
+    ret += `${q}${args}: ${qdet.returnType}
+    `;
+    resolvers[q] = qdet.resolver;
+  }
+
+  return ret;
+}
+
+function createSchemaFromModels(models, {
+  extra = '',
+  query = {},
+  mutation = {}
+} = {}) {
+  const typeDefs = [],
+        resolvers = {};
 
   for (let modelName in models) {
     typeDefs.push(models[modelName].gqSchema);
@@ -347,36 +368,21 @@ function createSchemaFromModels(models, extra) {
 
   Object.assign(resolvers.Query, query);
   Object.assign(resolvers.Mutation, mutation);
-  const qnew = {};
-  let queryMutation = 'type Query {';
-
-  for (let query in resolvers.Query) {
-    queryMutation += `
-    ${query}(${resolvers.Query[query].args}): ${resolvers.Query[query].returnType}`;
-    qnew[query] = resolvers.Query[query].resolver;
+  const qnew = {},
+        mnew = {};
+  const typeDef = `type Query {
+    ${getTypeDef(resolvers.Query, qnew)}
   }
 
-  queryMutation += `
-  }
-  `;
-  const mnew = {};
-  queryMutation += 'type Mutation {';
-
-  for (let mutation in resolvers.Mutation) {
-    queryMutation += `
-    ${mutation}(${resolvers.Mutation[mutation].args}): ${resolvers.Mutation[mutation].returnType}`;
-    mnew[mutation] = resolvers.Mutation[mutation].resolver;
-  }
-
-  queryMutation += `
+  type Mutation {
+    ${getTypeDef(resolvers.Mutation, mnew)}
   }
 
   scalar SequelizeJSON
   scalar Date
-
   ${extra}
   `;
-  typeDefs.push(queryMutation);
+  typeDefs.push(typeDef);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
   return makeExecutableSchema({

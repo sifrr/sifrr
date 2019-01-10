@@ -1,5 +1,3 @@
-const Sifrr = Sifrr || {};
-Sifrr.Dom = require('@sifrr/dom');
 const template = Sifrr.Dom.html`<style>
   :host {
     display: none;
@@ -20,63 +18,15 @@ const template = Sifrr.Dom.html`<style>
 </style>
 <slot></slot>`;
 
-class RegexPath {
-  static get template() {
-    return template;
-  }
-
-  constructor(path, options = {}) {
-    this.options = Object.assign({ delimiter: '/' }, options);
-    this.path = path;
-  }
-
-  get regex() {
-    this._regex = this._regex || new RegExp('^' + this.path
-      .replace(/:[A-Za-z0-9_]{0,}\?$/g, '([^/]{0,})?')
-      .replace(/:[A-Za-z0-9_]{0,}\?/g, '([^/]{0,})')
-      .replace(/\*\*/g, '(.{0,})')
-      .replace(/\*/g, '([^/]{0,})')
-      .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
-    return this._regex;
-  }
-
-  get dataMap() {
-    if (this._dataMap) return this._dataMap;
-    this._dataMap = [];
-    this.path.split('/').forEach((r) => {
-      if (r[0] === ':' || r === '*' || r === '**') {
-        this._dataMap.push(r);
-      }
-    });
-    return this._dataMap;
-  }
-
-  test(route) {
-    const data = {
-        star: [],
-        doubleStar: []
-      }, match = this.regex.exec(route);
-    if (match) {
-      this.dataMap.forEach((d, i) => {
-        if (d === '*') {
-          data.star.push(match[i + 1]);
-        } else if (d === '**') {
-          data.doubleStar.push(match[i + 1]);
-        } else {
-          data[d.substr(1)] = match[i + 1];
-        }
-      });
-    }
-    return {
-      match: !!match,
-      data: data
-    };
-  }
-}
+const RegexPath = require('./regexpath');
 
 Sifrr.Dom.Event.add('click');
 const SifrrRoutes = [];
 class SifrrRoute extends Sifrr.Dom.Element {
+  static get template() {
+    return template;
+  }
+
   static observedAttrs() {
     return ['data-sifrr-path'];
   }

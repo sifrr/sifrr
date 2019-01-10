@@ -24,7 +24,8 @@
     "Sifrr": true,
     "version": true,
     "exec": true,
-    "seqCMD": true
+    "seqCMD": true,
+    "SifrrStorage": false
   },
   "extends": "eslint:recommended",
   "parserOptions": {

@@ -20,17 +20,17 @@ const server = express();
 
 // export server for importing
 
-const sss = function(directory = dir) {
+const sss = function(port, directory = dir) {
   server.use(compression());
   server.use(serveStatic(directory));
   server.use(serveStatic(path.join(directory, '../../dist')));
   server.use((req, res) => res.sendFile(path.join(directory, './index.html')));
-  return server;
+  return server.listen(port, () => global.console.log(`Listening on port ${port} and directory '${directory}'`));
 };
 
 // listen on port if port given
 if (port) {
-  sss().listen(port, () => global.console.log(`Listening on port ${port} and directory '${dir}'`));
+  sss(port);
 }
 
 module.exports = sss;

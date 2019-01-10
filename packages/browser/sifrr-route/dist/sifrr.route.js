@@ -1,37 +1,11 @@
-/*! Sifrr.Route v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Route v0.0.2-alpha - sifrr project */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/dom')) :
-  typeof define === 'function' && define.amd ? define(['@sifrr/dom'], factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory(global.Sifrr.Dom));
-}(this, (function (dom) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory());
+}(this, (function () { 'use strict';
 
-  dom = dom && dom.hasOwnProperty('default') ? dom['default'] : dom;
-
-  const Sifrr = Sifrr || {};
-  Sifrr.Dom = dom;
-  const template = Sifrr.Dom.html`<style>
-  :host {
-    display: none;
-  }
-  :host(.active) {
-    display: block;
-    opacity: 0;
-    animation: slide 0.3s ease forwards;
-  }
-  @keyframes slide {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-</style>
-<slot></slot>`;
   class RegexPath {
-    static get template() {
-      return template;
-    }
     constructor(path, options = {}) {
       this.options = Object.assign({
         delimiter: '/'
@@ -75,9 +49,33 @@
       };
     }
   }
+  var regexpath = RegexPath;
+
+  const template = Sifrr.Dom.html`<style>
+  :host {
+    display: none;
+  }
+  :host(.active) {
+    display: block;
+    opacity: 0;
+    animation: slide 0.3s ease forwards;
+  }
+  @keyframes slide {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+<slot></slot>`;
   Sifrr.Dom.Event.add('click');
   const SifrrRoutes = [];
   class SifrrRoute extends Sifrr.Dom.Element {
+    static get template() {
+      return template;
+    }
     static observedAttrs() {
       return ['data-sifrr-path'];
     }
@@ -94,7 +92,7 @@
       }
     }
     get routeRegex() {
-      this._routeRegex = this._routeRegex || new RegexPath(this.dataset.sifrrPath);
+      this._routeRegex = this._routeRegex || new regexpath(this.dataset.sifrrPath);
       return this._routeRegex;
     }
     refresh() {

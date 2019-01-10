@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/serviceworker",
-  "version": "0.0.1-alpha2",
+  "version": "0.0.2-alpha",
   "description": "Service Worker with customizations.",
   "license": "MIT",
   "main": "src/sifrr.serviceworker.js",
@@ -61,5 +61,6 @@
     "bin",
     "dist",
     "src"
-  ]
+  ],
+  "peerDependencies": {}
 }

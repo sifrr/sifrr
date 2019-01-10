@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Dom v0.0.2-alpha - sifrr project */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/fetch')) :
   typeof define === 'function' && define.amd ? define(['@sifrr/fetch'], factory) :
@@ -188,7 +188,7 @@
     makeChildrenEqual
   };
 
-  const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
+  const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   TREE_WALKER.roll = function (n, filter = false) {
     let node = this.currentNode;
     while (--n) {

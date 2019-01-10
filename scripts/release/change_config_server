@@ -34,6 +34,11 @@ let pkgToMerge = {
 
 try {
   pkgFile  = require(pkgFileString);
+
+  // change peerDependencies & dependencies
+  pkgToMerge.peerDependencies = dependencyVersion(pkgFile.peerDependencies, pkg.version);
+  pkgToMerge.dependencies = dependencyVersion(pkgFile.dependencies, pkg.version);
+
   Object.assign(pkgFile, pkgToMerge);
   fs.writeFileSync(__dirname + '/' + pkgFileString, JSON.stringify(pkgFile, null, 2) + '\n');
   process.stdout.write('Done: package.json');
@@ -49,3 +54,15 @@ export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase
 fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
 
 process.stdout.write('Done: rollup.config.js');
+
+function dependencyVersion(dependencies, version) {
+  const ret = {};
+  for (let dep in dependencies) {
+    if (dep.indexOf('@sifrr') >= 0) {
+      ret[dep] = version;
+    } else {
+      ret[dep] = dependencies[dep];
+    }
+  }
+  return ret;
+}

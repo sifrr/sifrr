@@ -1,4 +1,4 @@
-/*! Sifrr.Serviceworker v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Serviceworker v0.0.2-alpha - sifrr project */
 class SW {
   constructor(options) {
     this.options = Object.assign({

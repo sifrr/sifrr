@@ -1,19 +1,19 @@
-let Sifrr = { Storage: require('../../src/sifrr.storage') };
+const SifrrStorage = require('../../src/sifrr.storage');
 const JsonStorage = require('../../src/storages/jsonstorage'),
   Storage = require('../../src/storages/storage');
 
-describe('Sifrr.Storage', () => {
+describe('SifrrStorage', () => {
   describe('#new', () => {
     it('should return supported storage by default', () => {
-      let x = new Sifrr.Storage();
-      expect(x).to.be.an.instanceof(Sifrr.Storage.availableStores['indexeddb']);
+      let x = new SifrrStorage();
+      expect(x).to.be.an.instanceof(SifrrStorage.availableStores['indexeddb']);
       assert.equal(x.type, 'indexeddb');
     });
 
-    Object.keys(Sifrr.Storage.availableStores).forEach((type) => {
+    Object.keys(SifrrStorage.availableStores).forEach((type) => {
       it(`should return ${type} if ${type} is prioritized`, () => {
-        let x = new Sifrr.Storage({priority: [type]});
-        expect(x).to.be.an.instanceof(Sifrr.Storage.availableStores[type]);
+        let x = new SifrrStorage({priority: [type]});
+        expect(x).to.be.an.instanceof(SifrrStorage.availableStores[type]);
         assert.equal(x.type, type);
       });
     });
@@ -21,16 +21,16 @@ describe('Sifrr.Storage', () => {
 
   describe('#all', () => {
     it('should return all instances there are', () => {
-      Sifrr.Storage._all = [];
-      new Sifrr.Storage({ priority: ['cookies'] });
-      new Sifrr.Storage({ priority: ['indexeddb'] });
-      assert.equal(Sifrr.Storage.all.length, 2);
+      SifrrStorage._all = [];
+      new SifrrStorage({ priority: ['cookies'] });
+      new SifrrStorage({ priority: ['indexeddb'] });
+      assert.equal(SifrrStorage.all.length, 2);
     });
   });
 
   describe('#json', () => {
     it('should return jsonstorage', () => {
-      let x = Sifrr.Storage.json({ a: 'b' });
+      let x = SifrrStorage.json({ a: 'b' });
       assert.equal(x.type, 'jsonstorage');
     });
   });
@@ -38,7 +38,7 @@ describe('Sifrr.Storage', () => {
 
 describe('JsonStorage', () => {
   let options = {
-    name: 'Sifrr.Storage',
+    name: 'SifrrStorage',
     version: 1
   };
 
