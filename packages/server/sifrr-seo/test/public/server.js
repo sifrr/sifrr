@@ -1,6 +1,7 @@
 const Seo = require('../../src/sifrr.seo');
 // Middleware
-const middle = new Seo().middleware;
+const seo = new Seo();
+seo.addBot('Opera Mini');
 // Middleware
 
 const express = require('express'),
@@ -24,7 +25,7 @@ if (diri !== -1) {
 const server = express();
 
 // export server for importing
-server.use(middle);
+server.use(seo.middleware);
 server.use(compression());
 server.use(serveStatic(__dirname));
 server.use(serveStatic(path.join(__dirname, '../../dist')));
