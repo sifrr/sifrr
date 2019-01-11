@@ -8,26 +8,26 @@ let pkgFolder = folder.split('/')[folder.split('/').length - 1];
 let jsFileName = pkgFolder.replace('-', '.');
 let pkgName = '@' + jsFileName.replace('.', '/');
 let pkgToMerge = {
-  'name': pkgName,
-  'main': `src/${jsFileName}.js`,
-  'browser': `dist/${jsFileName}.js`,
-  'module': `dist/${jsFileName}.module.js`,
-  'version': pkg.version,
-  'license': pkg.license,
-  'browserslist': pkg.browserslist,
-  'repository': pkg.repository,
-  'author': pkg.author,
-  'bugs': pkg.bugs,
-  'homepage': pkg.homepage,
-  'devDependencies': pkg.devDependencies,
-  'scripts': {
-    'test': `../../../scripts/test/run ${folder}`,
-    'build': './node_modules/.bin/rollup -c',
+  name: pkgName,
+  main: `src/${jsFileName}.js`,
+  browser: `dist/${jsFileName}.js`,
+  module: `dist/${jsFileName}.module.js`,
+  version: pkg.version,
+  license: pkg.license,
+  browserslist: pkg.browserslist,
+  repository: pkg.repository,
+  author: pkg.author,
+  bugs: pkg.bugs,
+  homepage: pkg.homepage,
+  devDependencies: pkg.devDependencies,
+  scripts: {
+    test: `../../../scripts/test/run ${folder}`,
+    build: './node_modules/.bin/rollup -c',
     'test-build': 'cd test/public && ../../node_modules/.bin/rollup -c',
     'test-server-only': `node ../../../test-server.js -d ${folder}/test/public -p 1111`,
     'test-server': 'yarn test-build && yarn test-server-only'
   },
-  'files': [
+  files: [
     'bin',
     'dist',
     'src'
