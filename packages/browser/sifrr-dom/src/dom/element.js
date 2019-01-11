@@ -21,8 +21,13 @@ function elementClassFactory(baseClass) {
       return Loader.all[this.elementName].template;
     }
 
+    static get ctemp() {
+      this._ctemp = this._ctemp || this.template;
+      return this._ctemp;
+    }
+
     static get stateMap() {
-      this._stateMap = this._stateMap || Parser.createStateMap(this.template.content);
+      this._stateMap = this._stateMap || Parser.createStateMap(this.ctemp.content);
       return this._stateMap;
     }
 
@@ -33,14 +38,14 @@ function elementClassFactory(baseClass) {
     static onStateChange() {}
 
     static get useShadowRoot() {
-      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useSR;
+      return this.ctemp.getAttribute('use-shadow-root') !== 'false' && this.useSR;
     }
 
     constructor() {
       super();
       // this._oldState = {};
       if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
-      const content = this.constructor.template.content.cloneNode(true);
+      const content = this.constructor.ctemp.content.cloneNode(true);
       if (this.constructor.useShadowRoot) {
         this._refs = Parser.collectRefs(content, this.constructor.stateMap);
         this.attachShadow({

@@ -18,9 +18,18 @@ SifrrDom.Event = require('./dom/event');
 
 // HTML to template
 SifrrDom.html = (str, ...extra) => {
-  str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-  TEMPLATE.innerHTML = str;
-  return TEMPLATE;
+  const tmp = TEMPLATE();
+  if (str[0] && typeof str[0] === 'string') {
+    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+    tmp.innerHTML = str;
+  } else if (str[0]) {
+    Array.from(str).forEach((s) => {
+      tmp.appendChild(s);
+    });
+  } else {
+    return str;
+  }
+  return tmp;
 };
 
 // Register Custom Element Function

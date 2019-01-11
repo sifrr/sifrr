@@ -1,7 +1,8 @@
 const { makeChildrenEqual } = require('./makeequal');
 const { updateAttribute } = require('./update');
 const { collect, create } = require('./ref');
-const { TEMPLATE, TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const TEMPLATE = require('./constants').TEMPLATE();
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||

@@ -1,5 +1,5 @@
 const fetch = require('@sifrr/fetch');
-const { TEMPLATE } = require('./constants');
+const TEMPLATE = require('./constants').TEMPLATE();
 
 class Loader {
   constructor(elemName, config = {}) {

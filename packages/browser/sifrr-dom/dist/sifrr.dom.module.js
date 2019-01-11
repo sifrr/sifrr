@@ -93,9 +93,11 @@ const Json = {
 };
 var json = Json;
 
+const temp = window.document.createElement('template');
+const sfn = window.document.createElement('sifrr-node');
 var constants = {
-  SIFRR_NODE: window.document.createElement('sifrr-node'),
-  TEMPLATE: window.document.createElement('template'),
+  SIFRR_NODE: () => sfn.cloneNode(),
+  TEMPLATE: () => temp.cloneNode(),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1
@@ -295,11 +297,11 @@ const {
   create: create$1
 } = ref;
 const {
-  TEMPLATE,
   TEXT_NODE: TEXT_NODE$1,
   COMMENT_NODE: COMMENT_NODE$1,
   ELEMENT_NODE
 } = constants;
+const TEMPLATE = constants.TEMPLATE();
 
 function isHtml(el) {
   return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
@@ -453,9 +455,7 @@ const Parser = {
 };
 var parser = Parser;
 
-const {
-  TEMPLATE: TEMPLATE$1
-} = constants;
+const TEMPLATE$1 = constants.TEMPLATE();
 
 class Loader {
   constructor(elemName, config = {}) {
@@ -538,9 +538,7 @@ const {
   collect: collect$2,
   create: create$2
 } = ref;
-const {
-  TEMPLATE: TEMPLATE$2
-} = constants; // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
+const TEMPLATE$2 = constants.TEMPLATE(); // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 
 function creator$1(node) {
   if (node.nodeType !== 3) {
@@ -666,8 +664,13 @@ function elementClassFactory(baseClass) {
       return loader.all[this.elementName].template;
     }
 
+    static get ctemp() {
+      this._ctemp = this._ctemp || this.template;
+      return this._ctemp;
+    }
+
     static get stateMap() {
-      this._stateMap = this._stateMap || parser.createStateMap(this.template.content);
+      this._stateMap = this._stateMap || parser.createStateMap(this.ctemp.content);
       return this._stateMap;
     }
 
@@ -678,14 +681,14 @@ function elementClassFactory(baseClass) {
     static onStateChange() {}
 
     static get useShadowRoot() {
-      return this.template.getAttribute('use-shadow-root') !== 'false' && this.useSR;
+      return this.ctemp.getAttribute('use-shadow-root') !== 'false' && this.useSR;
     }
 
     constructor() {
       super(); // this._oldState = {};
 
       if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
-      const content = this.constructor.template.content.cloneNode(true);
+      const content = this.constructor.ctemp.content.cloneNode(true);
 
       if (this.constructor.useShadowRoot) {
         this._refs = parser.collectRefs(content, this.constructor.stateMap);
@@ -895,9 +898,20 @@ SifrrDom.SimpleElement = simpleelement;
 SifrrDom.Event = event; // HTML to template
 
 SifrrDom.html = (str, ...extra) => {
-  str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-  TEMPLATE$3.innerHTML = str;
-  return TEMPLATE$3;
+  const tmp = TEMPLATE$3();
+
+  if (str[0] && typeof str[0] === 'string') {
+    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+    tmp.innerHTML = str;
+  } else if (str[0]) {
+    Array.from(str).forEach(s => {
+      tmp.appendChild(s);
+    });
+  } else {
+    return str;
+  }
+
+  return tmp;
 }; // Register Custom Element Function
 
 

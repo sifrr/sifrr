@@ -1,7 +1,8 @@
 class SifrrHead extends Sifrr.Dom.Element.extends(HTMLHeadElement) {
   static get template() {
-    return Sifrr.Dom.html`<meta charset="utf-8">
-    <title>{{this.state.title}}</title>`;
+    const template = document.createElement('template');
+    template.innerHTML = '<meta charset="utf-8"><title>${this.state.title}</title>';
+    return Sifrr.Dom.html(template);
   }
 
   static get useShadowRoot() {
