@@ -1,13 +1,13 @@
 module.exports = function () {
   const presets = [
     ['@babel/env', {
-      'targets': {
-        'chrome': 55,
-        'safari': 11,
-        'opera': 42,
-        'firefox': 53
+      targets: {
+        chrome: 55,
+        safari: 11,
+        opera: 42,
+        firefox: 53
       },
-      'modules': false
+      modules: false
     }]
   ];
   const plugins = [

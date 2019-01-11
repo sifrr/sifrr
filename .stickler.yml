@@ -2,7 +2,7 @@ linters:
   shellcheck:
     shell: bash
   eslint:
-    config: './.eslintrc.json'
+    config: './.eslintrc.js'
 files:
   ignore:
     - 'bower_components/*'

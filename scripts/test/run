@@ -9,7 +9,6 @@ const ignoreGlobal = ['SifrrDom', 'SifrrRoute', 'SifrrCli'];
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');
-global.requireBase = (pt) => require(path.resolve(pt));
 global.assert = chai.assert;
 global.expect = chai.expect;
 global.should = chai.should();
@@ -64,6 +63,9 @@ const browserTestDir = path.join(dir, './test/browser');
 const pkg = require(path.join(dir, './package.json'));
 const name = pkg.name.replace(/^@sifrr\/([a-z])(.*)$/, (m, l, r) => `Sifrr${l.toUpperCase()}${r}`);
 if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.main));
+
+// Relative to base requiring
+global.requireBase = (pt) => require(path.join(dir, pt));
 
 (async function() {
   try {
