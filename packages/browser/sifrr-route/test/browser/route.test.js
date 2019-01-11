@@ -15,6 +15,11 @@ describe('sifrr-route', () => {
     await browser.close();
   });
 
+  it('has `Sifrr.Dom.html`', async () => {
+    const type = await page.evaluate(() => typeof Sifrr.Dom.html);
+    expect(type).to.equal('function');
+  });
+
   it('shows `**` everywhere', async () => {
     expect(await isActive('#everywhere')).to.be.true;
     await page.goto(`${PATH}/abcdasdsd`);

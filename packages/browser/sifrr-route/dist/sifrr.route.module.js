@@ -1,33 +1,5 @@
-/*! Sifrr.Route v0.0.1-alpha2 - sifrr project */
-import dom from '@sifrr/dom';
-
-const Sifrr = Sifrr || {};
-Sifrr.Dom = dom;
-const template = Sifrr.Dom.html`<style>
-  :host {
-    display: none;
-  }
-  :host(.active) {
-    display: block;
-    opacity: 0;
-    animation: slide 0.3s ease forwards;
-  }
-  @keyframes slide {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-</style>
-<slot></slot>`;
-
+/*! Sifrr.Route v0.0.2-alpha - sifrr project */
 class RegexPath {
-  static get template() {
-    return template;
-  }
-
   constructor(path, options = {}) {
     this.options = Object.assign({
       delimiter: '/'
@@ -78,10 +50,35 @@ class RegexPath {
 
 }
 
+var regexpath = RegexPath;
+
+const template = Sifrr.Dom.html`<style>
+  :host {
+    display: none;
+  }
+  :host(.active) {
+    display: block;
+    opacity: 0;
+    animation: slide 0.3s ease forwards;
+  }
+  @keyframes slide {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+<slot></slot>`;
 Sifrr.Dom.Event.add('click');
 const SifrrRoutes = [];
 
 class SifrrRoute extends Sifrr.Dom.Element {
+  static get template() {
+    return template;
+  }
+
   static observedAttrs() {
     return ['data-sifrr-path'];
   }
@@ -102,7 +99,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
   }
 
   get routeRegex() {
-    this._routeRegex = this._routeRegex || new RegexPath(this.dataset.sifrrPath);
+    this._routeRegex = this._routeRegex || new regexpath(this.dataset.sifrrPath);
     return this._routeRegex;
   }
 

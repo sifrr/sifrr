@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/cli",
-  "version": "0.0.1-alpha2",
+  "version": "0.0.2-alpha",
   "description": "Sifrr Cli for creating web apps.",
   "main": "src/sifrr.cli.js",
   "module": "dist/sifrr.cli.module.js",

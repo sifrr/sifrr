@@ -58,8 +58,12 @@
     Route state check
     <sifrr-test data-sifrr-route-state="true"></sifrr-test>
   </sifrr-route>
-  <script src="https://unpkg.com/@sifrr/dom/dist/sifrr.dom.min.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/@sifrr/fetch/dist/sifrr.fetch.min.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/@sifrr/dom@0.0.2-alpha/dist/sifrr.dom.min.js" charset="utf-8"></script>
   <script src="/index.bundled.js" charset="utf-8"></script>
+  <script type="module">
+    import '/sifrr.route.module.js';
+  </script>
 </body>
 
 </html>

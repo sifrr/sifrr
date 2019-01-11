@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/fetch",
-  "version": "0.0.1-alpha2",
+  "version": "0.0.2-alpha",
   "description": "Fetch based http requests library for browsers.",
   "license": "MIT",
   "main": "src/sifrr.fetch.js",
@@ -61,5 +61,6 @@
     "bin",
     "dist",
     "src"
-  ]
+  ],
+  "peerDependencies": {}
 }

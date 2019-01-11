@@ -1,10 +1,8 @@
-const SifrrStorage = require('../../src/sifrr.storage');
-
 for (let key in SifrrStorage.availableStores) {
   describe(`${key} in browser`, () => {
     before(async () => {
       await loadBrowser();
-      await page.goto(`${PATH}/test.html`);
+      await page.goto(`${PATH}/index.html`);
     });
 
     after(async () => {

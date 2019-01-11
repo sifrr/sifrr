@@ -1,4 +1,4 @@
-/*! Sifrr.Fetch v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Fetch v0.0.2-alpha - sifrr project */
 class Request {
   constructor(type, url, options = {}) {
     this.type = type;

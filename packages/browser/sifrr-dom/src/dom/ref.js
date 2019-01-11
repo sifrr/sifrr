@@ -1,6 +1,6 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 
-const TREE_WALKER = window.document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
+const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
 TREE_WALKER.roll = function(n, filter = false) {
   let node = this.currentNode;
   while(--n) {

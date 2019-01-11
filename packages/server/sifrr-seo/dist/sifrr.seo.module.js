@@ -1,4 +1,4 @@
-/*! Sifrr.Seo v0.0.1-alpha2 - sifrr project */
+/*! Sifrr.Seo v0.0.2-alpha - sifrr project */
 import puppeteer from 'puppeteer';
 
 class SifrrSeo {

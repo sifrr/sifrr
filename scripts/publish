@@ -6,4 +6,4 @@ set -ex
 ./scripts/yarn build
 ./scripts/release/tag
 ./scripts/repeat "./packages/browser/*" "npm publish --access=public"
-# ./scripts/repeat "./packages/server/*" "npm publish --access=public"
+./scripts/repeat "./packages/server/*" "npm publish --access=public"

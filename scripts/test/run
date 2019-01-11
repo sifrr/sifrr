@@ -2,6 +2,9 @@
 
 const Mocha = require('mocha');
 const exec = require('../exec');
+const listen = require('../../test-server');
+
+const ignoreGlobal = ['SifrrDom', 'SifrrRoute'];
 
 global.fs = require('fs');
 global.path = require('path');
@@ -10,7 +13,6 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.should = chai.should();
 global.puppeteer = require('puppeteer');
-global.server = require('../../test-server');
 global.port = 9999;
 global.PATH = `http://localhost:${port}`;
 global.loadBrowser = async function() {
@@ -21,7 +23,7 @@ global.loadBrowser = async function() {
       '--no-sandbox',
       '--disable-setuid-sandbox'
     ],
-    headless: true,
+    headless: process.env.HEADLESS !== 'false',
     devtools: false
   });
   let page = await browser.newPage();
@@ -57,36 +59,46 @@ const unitTestDir = path.join(dir, './test/unit');
 const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
 const browserTestDir = path.join(dir, './test/browser');
 
+// add main package to global
+const pkg = require(path.join(dir, './package.json'));
+const name = pkg.name.replace(/^@sifrr\/([a-z])(.*)$/, (m, l, r) => `Sifrr${l.toUpperCase()}${r}`);
+if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.main));
+
 (async function() {
-  let ser = false;
+  try {
+    let ser = false;
 
-  if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
-    // Add unit test.js files to the mocha instance
-    loadDir(unitTestDir);
-  }
-
-  if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
-    const testPublicPath = path.join(dir, './test/public');
-
-    // Run yarn rollup if there is a rollup config in public folder
-    if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
-
-    // Start server if there is a public folder
-    if (fs.existsSync(path.join(testPublicPath))) ser = server.listen(port, testPublicPath);
-
-    // Add browser test.js files to the mocha instance
-    loadDir(browserTestDir);
-  }
-
-  mocha.run((failures) => {
-    // close server if open
-    if (ser) ser.close();
-
-    if (failures) {
-      process.stdout.write(`---------- ${failures} FAILURES. ----------\n`);
-      process.exitCode = 1;  // exit with non-zero status if there were failures
+    if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
+      // Add unit test.js files to the mocha instance
+      loadDir(unitTestDir);
     }
-  });
+
+    if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
+      const testPublicPath = path.join(dir, './test/public');
+
+      // Run yarn rollup if there is a rollup config in public folder
+      if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
+
+      // Start server if there is a public folder
+      if (fs.existsSync(path.join(testPublicPath))) ser = listen(port, testPublicPath);
+
+      // Add browser test.js files to the mocha instance
+      loadDir(browserTestDir);
+    }
+
+    mocha.run((failures) => {
+      // close server if open
+      if (ser) ser.close();
+
+      if (failures) {
+        process.stdout.write(`---------- ${failures} FAILURES. ----------\n`);
+        process.exitCode = 1;  // exit with non-zero status if there were failures
+      }
+    });
+  } catch(e) {
+    process.exitCode = 1;
+    throw e;
+  }
 })();
 
 function loadDir(dir) {
@@ -98,4 +110,15 @@ function loadDir(dir) {
       path.join(dir, file)
     );
   });
+}
+
+function deepProxy() {
+  const target = ({}).constructor;
+  const handler = {
+    get: () => new Proxy(target, handler),
+    set: () => true,
+    apply: () => new Proxy(target, handler),
+    construct: () => new Proxy(target, handler)
+  };
+  return new Proxy(target, handler);
 }

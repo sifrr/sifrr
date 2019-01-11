@@ -1,1 +1,1 @@
-{"version":3,"file":"index.bundled.js","sources":["index.js"],"sourcesContent":["Sifrr.Dom.setup();\nSifrr.Dom.load('sifrr-route');\n"],"names":["Sifrr","Dom","setup","load"],"mappings":"uJAAAA,MAAMC,IAAIC,QACVF,MAAMC,IAAIE,KAAK"}
+{"version":3,"file":"index.bundled.js","sources":["index.js"],"sourcesContent":["Sifrr.Dom.setup();\n"],"names":["Sifrr","Dom","setup"],"mappings":"uJAAAA,MAAMC,IAAIC"}
