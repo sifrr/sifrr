@@ -1,6 +1,8 @@
 /* eslint no-case-declarations: 0 */
 
 module.exports = () => {
+  require('../utils/requireseq')();
+
   const configFile = require(path.resolve('./.sequelizerc')).config;
   const config = require(path.resolve(configFile))[ENV];
 
