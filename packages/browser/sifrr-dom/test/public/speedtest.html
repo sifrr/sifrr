@@ -35,18 +35,17 @@
     let startMeasure = function(name) {
       startTime = performance.now();
       lastMeasure = name;
-    }
+    };
     let stopMeasure = function() {
       let last = lastMeasure;
       if (lastMeasure) {
         window.setTimeout(function() {
           lastMeasure = null;
           let stop = performance.now();
-          let duration = 0;
-          console.log(last + " took " + (stop - startTime));
+          console.log(last + ' took ' + (stop - startTime));
         }, 0);
       }
-    }
+    };
     let selected = null, from = 1;
     document.$click = e => {
       let target = e.path ? e.path[0] : e.target;
@@ -62,7 +61,7 @@
           data: buildData(1000)
         };
       } else if (target.matches('#update')) {
-                let state = sft.state,
+        let state = sft.state,
           l = sft.state.data.length;
         for (let i = 0; i < l; i += 10) {
           state.data[i].label = state.data[i].label + ' !!!';
@@ -111,7 +110,7 @@
       } else if (target.matches('.lbl')) {
         const el = getParent(target);
         // console.log("select", id);
-        if (selected) selected.className = ''
+        if (selected) selected.className = '';
         el.className = 'danger';
         selected = el;
       }
@@ -123,23 +122,22 @@
     }
 
     function buildData(count = 1000) {
-      const adjectives = ["pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain", "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy", "odd", "unsightly", "adorable", "important", "inexpensive",
-        "cheap", "expensive", "fancy"
-      ];
-      const colours = ["red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white", "black", "orange"];
-      const nouns = ["table", "chair", "house", "bbq", "desk", "car", "pony", "cookie", "sandwich", "burger", "pizza", "mouse", "keyboard"];
+      const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
+        'cheap', 'expensive', 'fancy'];
+      const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
+      const nouns = ['table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger', 'pizza', 'mouse', 'keyboard'];
       let data = [];
       for (let i = 0; i < count; i++)
         data.push({
           id: i + from,
-          label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)]
+          label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)]
         });
       from = from + count;
       return data;
     }
 
     function getParent(elem) {
-      while(elem.nodeName !== "TR") elem = elem.parentNode;
+      while(elem.nodeName !== 'TR') elem = elem.parentNode;
       return elem;
     }
   </script>

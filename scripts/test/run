@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const exec = require('../exec');
 const listen = require('../../test-server');
+const exec = require('../exec');
 
-const ignoreGlobal = ['SifrrDom', 'SifrrRoute'];
+const ignoreGlobal = ['SifrrDom', 'SifrrRoute', 'SifrrCli'];
 
 global.fs = require('fs');
 global.path = require('path');
@@ -64,6 +64,9 @@ const pkg = require(path.join(dir, './package.json'));
 const name = pkg.name.replace(/^@sifrr\/([a-z])(.*)$/, (m, l, r) => `Sifrr${l.toUpperCase()}${r}`);
 if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.main));
 
+// Relative to base requiring
+global.requireBase = (pt) => require(path.join(dir, pt));
+
 (async function() {
   try {
     let ser = false;
@@ -101,14 +104,12 @@ if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.ma
   }
 })();
 
+
 function loadDir(dir) {
-  fs.readdirSync(dir).filter(function(file) {
-    // Only keep the `test.js` suffixed files
-    return file.substr(-7) === 'test.js';
-  }).forEach(function(file) {
-    mocha.addFile(
-      path.join(dir, file)
-    );
+  fs.readdirSync(dir).forEach(file => {
+    fs.statSync(path.join(dir, file)).isDirectory()
+      ? loadDir(path.join(dir, file))
+      : mocha.addFile(path.join(dir, file));
   });
 }
 

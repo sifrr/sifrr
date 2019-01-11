@@ -1,6 +1,6 @@
 const elemTemplate = require('../templates/element');
-const fs = require('fs');
-const mkdirp = require('mkdirp');
+const createFile = require('../utils/createfile');
+const path = require('path');
 
 module.exports = (argv) => {
   // Element class
@@ -12,17 +12,5 @@ module.exports = (argv) => {
 
   const elemHtml = elemTemplate(className, extend);
 
-  mkdirp.sync(path.dirname(elemPath), (err) => {
-    if (err) throw err;
-  });
-
-  if (fs.existsSync(elemPath)) {
-    global.console.error(`Element file already exists at ${elemPath}`);
-    process.exit(1);
-  }
-
-  fs.writeFile(elemPath, elemHtml, err => {
-    if(err) throw err;
-    global.console.log(`File for ${elemName} was saved at '${elemPath}'!`);
-  });
+  createFile(elemPath, elemHtml, argv.force);
 };

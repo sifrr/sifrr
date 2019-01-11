@@ -3,7 +3,6 @@ const express = require('express'),
   serveStatic = require('serve-static'),
   path = require('path');
 
-
 let port = false;
 const index = Math.max(process.argv.indexOf('--port'), process.argv.indexOf('-p'));
 if (index !== -1) {

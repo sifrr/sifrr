@@ -1,26 +1,8 @@
 #!/usr/bin/env node
-const program = require('yargs');
 
-// set globals
-global.version = require('../package.json').version;
-global.seqCMD = 'PATH=$(npm bin):$PATH sequelize';
-global.exec = require('child_process').execSync;
 global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
-global.path = require('path');
 
-// Check for sequelize-program
-let isSequelizeCliInstalled;
-try {
-  exec(`${seqCMD} --version`, { stdio: 'ignore' });
-  isSequelizeCliInstalled = true;
-} catch(e) {
-  isSequelizeCliInstalled = false;
-}
-
-if (!isSequelizeCliInstalled) {
-  global.console.error('sequelize-program is not installed. Install it by running `npm i sequelize-program`');
-  process.exit(1);
-}
+const program = require('yargs');
 
 // get commands
 const dbReset = require('./commands/db:reset');
@@ -46,6 +28,10 @@ const cli = program
       }).option('extends', {
         alias: 'e',
         describe: 'extend sifrr element with this class.'
+      }).option('force', {
+        alias: 'f',
+        describe: 'force create element.',
+        default: false
       });
   }, elementGenerate)
   .alias('element:generate', 'element:create');
