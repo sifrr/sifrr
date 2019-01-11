@@ -9,7 +9,7 @@ sifrr is a vanilla js fullstack framework.
 |:-------------|:-------------|:-------------|:----------|:------:|
 | [sifrr-dom](./packages/browser/sifrr-dom) | A < 5KB DOM library using Custom Elements, one way/two way data binding, faster than react | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) | [In Readme](./packages/browser/sifrr-dom) | [WIP] |
 | [sifrr-fetch](./packages/browser/sifrr-fetch) | Wrapper library for Browser fetch API | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch) | [In Readme](./packages/browser/sifrr-fetch) | [OK](./packages/browser/sifrr-fetch/test) |
-| [sifrr-route](./packages/browser/sifrr-route) | Routing for sifrr-dom | v0.0.1-alpha2 | [In Readme](./packages/browser/sifrr-route) | [OK](./packages/browser/sifrr-route/test) |
+| [sifrr-route](./packages/browser/sifrr-route) | Routing for sifrr-dom | [![npm version](https://img.shields.io/npm/v/@sifrr/route.svg)](https://www.npmjs.com/package/@sifrr/route) | [In Readme](./packages/browser/sifrr-route) | [OK](./packages/browser/sifrr-route/test) |
 | [sifrr-serviceworker](./packages/browser/sifrr-serviceworker) | Service worker wrapper library | [![npm version](https://img.shields.io/npm/v/@sifrr/serviceworker.svg)](https://www.npmjs.com/package/@sifrr/serviceworker) | [In Readme](./packages/browser/sifrr-serviceworker) | [OK](./packages/browser/sifrr-serviceworker/test) |
 | [sifrr-storage](./packages/browser/sifrr-storage) | Browser persisted storage library | [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage) | [In Readme](./packages/browser/sifrr-storage) | [OK](./packages/browser/sifrr-storage/test) |
 
@@ -17,7 +17,8 @@ sifrr is a vanilla js fullstack framework.
 | Package | Description | Package Status | Documentation Status | Tests |
 |:-------------|:-------------|:-------------|:-----------|:---------:|
 | [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [In Readme](./packages/server/sifrr-api) | [WIP] |
-| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr | [WIP] | [WIP] | [WIP] |
+| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [In Readme](./packages/server/sifrr-cli) | [WIP] |
+| [sifrr-seo](./packages/server/sifrr-seo) | Tool for serving pre-rendered file to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [WIP] | [WIP] |
 
 #### Packages that have tests have a working example of that package in `test/public` folder.
 
