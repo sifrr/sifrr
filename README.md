@@ -18,7 +18,7 @@ sifrr is a vanilla js fullstack framework.
 |:-------------|:-------------|:-------------|:-----------|:---------:|
 | [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [In Readme](./packages/server/sifrr-api) | [WIP] |
 | [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [In Readme](./packages/server/sifrr-cli) | [WIP] |
-| [sifrr-seo](./packages/server/sifrr-seo) | Tool for serving pre-rendered file to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [WIP] | [WIP] |
+| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [WIP] | [WIP] |
 
 #### Packages that have tests have a working example of that package in `test/public` folder.
 
