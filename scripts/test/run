@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const exec = require('../exec');
 const listen = require('../../test-server');
 
 const ignoreGlobal = ['SifrrDom', 'SifrrRoute'];
@@ -9,6 +8,7 @@ const ignoreGlobal = ['SifrrDom', 'SifrrRoute'];
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');
+global.exec = require('../exec');
 global.assert = chai.assert;
 global.expect = chai.expect;
 global.should = chai.should();

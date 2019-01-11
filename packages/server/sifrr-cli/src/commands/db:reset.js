@@ -1,7 +1,7 @@
 /* eslint no-case-declarations: 0 */
 
 module.exports = () => {
-  require('../utils/requireseq')();
+  require('../utils/check')(`${seqCMD} --version`, 'sequelize-cli is required to run this command. Install it by running `npm i sequelize-cli`');
 
   const configFile = require(path.resolve('./.sequelizerc')).config;
   const config = require(path.resolve(configFile))[ENV];
