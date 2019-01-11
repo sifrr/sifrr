@@ -21,11 +21,9 @@ module.exports = {
     'page': false,
     'browser': false,
     'pti': false,
-    'Sifrr': true,
-    'version': true,
-    'exec': true,
-    'seqCMD': true,
-    'SifrrStorage': false
+    'Sifrr': false,
+    'SifrrStorage': false,
+    'requireBase': false
   },
   'extends': 'eslint:recommended',
   'parserOptions': {
@@ -44,7 +42,11 @@ module.exports = {
     ],
     'quotes': [
       'error',
-      'single'
+      'single',
+      {
+        avoidEscape: true,
+        allowTemplateLiterals: true
+      }
     ],
     'semi': [
       'warn',

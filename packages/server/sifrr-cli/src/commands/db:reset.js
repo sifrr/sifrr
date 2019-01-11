@@ -1,4 +1,7 @@
 /* eslint no-case-declarations: 0 */
+const seqCMD = 'PATH=$(npm bin):$PATH sequelize';
+const path = require('path');
+const exec = require('child_process').execSync;
 
 module.exports = () => {
   require('../utils/check')(`${seqCMD} --version`, 'sequelize-cli is required to run this command. Install it by running `npm i sequelize-cli`');

@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-const program = require('yargs');
 
-// set globals
-global.version = require('../package.json').version;
-global.seqCMD = 'PATH=$(npm bin):$PATH sequelize';
-global.exec = require('child_process').execSync;
 global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
-global.path = require('path');
+
+const program = require('yargs');
 
 // get commands
 const dbReset = require('./commands/db:reset');
