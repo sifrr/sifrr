@@ -3,7 +3,7 @@ const SYNTHETIC_EVENTS = {};
 
 const nativeToSyntheticEvent = (e, name) => {
   return Promise.resolve((() => {
-    let dom = e.path ? e.path[0] : e.target;
+    let dom = e.composedPath ? e.composedPath()[0] : e.target;
     while(dom) {
       const eventHandler = dom[`$${name}`];
       if (eventHandler) {
