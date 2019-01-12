@@ -36,10 +36,11 @@ class Request {
     const options = Object.assign({
       method: this.type,
       mode: 'cors',
-      redirect: 'follow'
+      redirect: 'follow',
+      cache: 'no-cache'
     }, this._options);
     options.headers = Object.assign({
-      'accept': 'application/json'
+      accept: 'application/json'
     }, this._options.headers || {});
     if (typeof options.body === 'object') {
       options.body = JSON.stringify(options.body);
