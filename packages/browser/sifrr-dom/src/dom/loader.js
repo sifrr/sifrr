@@ -36,11 +36,11 @@ class Loader {
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   get jsUrl() {
-    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.js`;
+    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
   }
 
   executeScripts() {

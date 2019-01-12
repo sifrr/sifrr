@@ -5,6 +5,7 @@ module.exports = {
     'es6': true,
     'mocha': true
   },
+  // for tests
   'globals': {
     'ENV': true,
     'fs': false,
