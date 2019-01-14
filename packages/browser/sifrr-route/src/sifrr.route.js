@@ -96,6 +96,7 @@ Sifrr.Dom.register(SifrrRoute);
 
 document.addEventListener('click', (e) => {
   const target = e.path ? e.path[0] : e.target;
+  if (e.metaKey || e.ctrlKey) return;
   if (!target.matches('a') || target.host !== window.location.host || (target.target && target.target !== '_self')) return;
   e.preventDefault();
   const title = target.getAttribute('title') || 'Title';

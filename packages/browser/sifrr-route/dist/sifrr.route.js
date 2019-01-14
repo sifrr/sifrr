@@ -28,21 +28,23 @@
     }
     test(route) {
       const data = {
-        star: [],
-        doubleStar: []
+        '*': [],
+        '**': []
       },
             match = this.regex.exec(route);
       if (match) {
         this.dataMap.forEach((d, i) => {
           if (d === '*') {
-            data.star.push(match[i + 1]);
+            data['*'].push(match[i + 1]);
           } else if (d === '**') {
-            data.doubleStar.push(match[i + 1]);
+            data['**'].push(match[i + 1]);
           } else {
             data[d.substr(1)] = match[i + 1];
           }
         });
       }
+      data.star = data['*'];
+      data.doubleStar = data['**'];
       return {
         match: !!match,
         data: data
@@ -134,6 +136,7 @@
   Sifrr.Dom.register(SifrrRoute);
   document.addEventListener('click', e => {
     const target = e.path ? e.path[0] : e.target;
+    if (e.metaKey || e.ctrlKey) return;
     if (!target.matches('a') || target.host !== window.location.host || target.target && target.target !== '_self') return;
     e.preventDefault();
     const title = target.getAttribute('title') || 'Title';

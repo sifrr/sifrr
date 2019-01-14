@@ -2,7 +2,7 @@
 
 STATUS=0
 
-for dir in ./packages/browser/*
+for dir in ./packages/*/*
 do
   echo "Running test in ${dir}:"
   ./scripts/test/run "${dir}" "$@"

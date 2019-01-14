@@ -27,20 +27,22 @@ class RegexPath {
 
   test(route) {
     const data = {
-        star: [],
-        doubleStar: []
+        '*': [],
+        '**': []
       }, match = this.regex.exec(route);
     if (match) {
       this.dataMap.forEach((d, i) => {
         if (d === '*') {
-          data.star.push(match[i + 1]);
+          data['*'].push(match[i + 1]);
         } else if (d === '**') {
-          data.doubleStar.push(match[i + 1]);
+          data['**'].push(match[i + 1]);
         } else {
           data[d.substr(1)] = match[i + 1];
         }
       });
     }
+    data.star = data['*'];
+    data.doubleStar = data['**'];
     return {
       match: !!match,
       data: data

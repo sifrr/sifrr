@@ -109,7 +109,14 @@ describe('sifrr-route', () => {
         'def',
         'sdf'
       ],
+      '*': [
+        'def',
+        'sdf'
+      ],
       doubleStar: [
+        'ghi/klm'
+      ],
+      '**': [
         'ghi/klm'
       ]
     });
