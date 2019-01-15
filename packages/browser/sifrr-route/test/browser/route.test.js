@@ -33,6 +33,13 @@ describe('sifrr-route', () => {
     expect(await isActive('#abcd')).to.be.true;
   });
 
+  it('shows `/abcd` on /abcd with query', async () => {
+    await page.goto(`${PATH}/asasddddddd`);
+    expect(await isActive('#abcd')).to.be.false;
+    await page.goto(`${PATH}/abcd?key=value`);
+    expect(await isActive('#abcd')).to.be.true;
+  });
+
   it('changes routes when clicked on an a', async () => {
     await page.goto(`${PATH}/`);
     expect(await isActive('#abcd')).to.be.false;

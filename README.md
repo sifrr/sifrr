@@ -2,7 +2,7 @@
 
 [Contributing](docs/CONTRIBUTING.md) | [Contributors](docs/AUTHORS)
 
-sifrr is a set of libraries for creating complex webapps.
+sifrr is a set of libraries for creating modern webapps.
 
 ## Packages
 ### Browser
