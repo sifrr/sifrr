@@ -5,7 +5,6 @@
 # order, strips out leading spaces and numbers, then filters out specific
 # authors.
 
-git shortlog -se \
+git shortlog -sen \
   | perl -spe 's/^\s+\d+\s+//' \
-  | sed -e '/^CommitSyncScript.*$/d'
   > docs/AUTHORS

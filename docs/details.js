@@ -21,6 +21,6 @@ module.exports = {
     description: 'Sifrr Command line interface.'
   },
   '@sifrr/seo': {
-    description: 'Middleware to show js generated html to crawler bots with headless chrome.'
+    description: 'Middleware to show server rendered html to crawler bots with headless chrome.'
   }
 };
