@@ -495,11 +495,11 @@ class Loader {
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.html`;
+    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   get jsUrl() {
-    return this.config.url || `${this.config.baseUrl || ''}/elements/${this.elementName.split('-').join('/')}.js`;
+    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
   }
 
   executeScripts() {
@@ -920,11 +920,11 @@ SifrrDom.register = (Element, options) => {
   const name = Element.elementName;
 
   if (!name) {
-    window.console.error('Error creating Custom Element: No name given.', Element);
+    throw Error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
     window.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
   } else if (name.indexOf('-') < 1) {
-    window.console.error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
+    throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
     try {
       window.customElements.define(name, Element, options);
