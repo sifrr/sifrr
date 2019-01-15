@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const listen = require('../../test-server');
+const listen = require('../test-server');
 const exec = require('../exec');
 
 const ignoreGlobal = ['SifrrDom', 'SifrrRoute', 'SifrrCli'];
@@ -111,15 +111,4 @@ function loadDir(dir) {
       ? loadDir(path.join(dir, file))
       : mocha.addFile(path.join(dir, file));
   });
-}
-
-function deepProxy() {
-  const target = ({}).constructor;
-  const handler = {
-    get: () => new Proxy(target, handler),
-    set: () => true,
-    apply: () => new Proxy(target, handler),
-    construct: () => new Proxy(target, handler)
-  };
-  return new Proxy(target, handler);
 }

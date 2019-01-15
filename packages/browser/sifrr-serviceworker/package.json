@@ -16,7 +16,7 @@
     "test": "../../../scripts/test/run ./packages/browser/sifrr-serviceworker",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ../../../test-server.js -d ./packages/browser/sifrr-serviceworker/test/public -p 1111",
+    "test-server-only": "node ../../../scripts/test-server.js -d ./packages/browser/sifrr-serviceworker/test/public -p 1111",
     "test-server": "yarn test-build && yarn test-server-only"
   },
   "repository": {
@@ -38,6 +38,8 @@
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
+    "@semantic-release/changelog": "^3.0.2",
+    "@semantic-release/git": "^7.0.8",
     "babel-plugin-istanbul": "^5.1.0",
     "browserslist": "^4.1.0",
     "chai": "^4.1.2",
@@ -56,7 +58,8 @@
     "rollup-plugin-commonjs": "^9.1.5",
     "rollup-plugin-eslint": "^5.0.0",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-terser": "^1.0.1"
+    "rollup-plugin-terser": "^1.0.1",
+    "semantic-release": "^15.13.3"
   },
   "files": [
     "bin",
