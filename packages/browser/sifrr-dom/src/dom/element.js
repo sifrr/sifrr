@@ -38,7 +38,8 @@ function elementClassFactory(baseClass) {
     static onStateChange() {}
 
     static get useShadowRoot() {
-      return this.ctemp.getAttribute('use-shadow-root') !== 'false' && this.useSR;
+      this._ctempusr = this._ctempusr || this.ctemp.getAttribute('use-shadow-root') !== 'false';
+      return this._ctempusr && this.useSR;
     }
 
     constructor() {
@@ -115,8 +116,7 @@ function elementClassFactory(baseClass) {
     }
 
     sifrrClone(deep) {
-      const clone = this.cloneNode(deep);
-      return clone;
+      return this.cloneNode(deep);
     }
 
     clearState() {

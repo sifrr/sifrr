@@ -9,10 +9,10 @@ if (index !== -1) {
   port = +process.argv[index + 1];
 }
 
-let dir = __dirname;
+let dir = path.join(__dirname, '../');
 const diri = Math.max(process.argv.indexOf('--dir'), process.argv.indexOf('-d'));
 if (diri !== -1) {
-  dir = path.join(__dirname, process.argv[diri + 1]);
+  dir = path.join(dir, process.argv[diri + 1]);
 }
 
 const server = express();

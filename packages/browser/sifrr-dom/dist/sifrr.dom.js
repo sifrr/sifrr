@@ -565,7 +565,8 @@
       }
       static onStateChange() {}
       static get useShadowRoot() {
-        return this.ctemp.getAttribute('use-shadow-root') !== 'false' && this.useSR;
+        this._ctempusr = this._ctempusr || this.ctemp.getAttribute('use-shadow-root') !== 'false';
+        return this._ctempusr && this.useSR;
       }
       constructor() {
         super();
@@ -625,8 +626,7 @@
         if (name) return name === this.constructor.elementName;else return true;
       }
       sifrrClone(deep) {
-        const clone = this.cloneNode(deep);
-        return clone;
+        return this.cloneNode(deep);
       }
       clearState() {
         this._state = {};
