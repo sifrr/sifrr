@@ -205,13 +205,13 @@ class IndexedDB extends storage {
       let promise = this._tx('readonly', 'get', key).then(oldResult => {
         if (oldResult && oldResult.key == key) {
           return this._tx('readwrite', 'put', {
-            'key': key,
-            'value': data[key]
+            key: key,
+            value: data[key]
           });
         } else {
           return this._tx('readwrite', 'add', {
-            'key': key,
-            'value': data[key]
+            key: key,
+            value: data[key]
           });
         }
       });

@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 
 class SifrrSeo {
   static flatteningJS() {
-    if (typeof Sifrr === 'undefined' || typeof !Sifrr.Dom === 'undefined') return false;
+    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
     const defined = Object.keys(Sifrr.Dom.elements);
     defined.forEach(selector => {
       const elements = document.querySelectorAll(selector);

@@ -1,11 +1,6 @@
 describe('Sifrr.Storage in browser', () => {
   before(async () => {
-    await loadBrowser();
     await page.goto(`${PATH}/index.html`);
-  });
-
-  after(async () => {
-    await browser.close();
   });
 
   it('Website Should have Sifrr.Storage', async () => {

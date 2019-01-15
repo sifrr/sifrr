@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
+const pti = require('puppeteer-to-istanbul');
 const listen = require('../test-server');
 const exec = require('../exec');
 
@@ -15,9 +16,11 @@ global.should = chai.should();
 global.puppeteer = require('puppeteer');
 global.port = 9999;
 global.PATH = `http://localhost:${port}`;
-global.loadBrowser = async function() {
+
+const nycReport = path.join(__dirname, '../../.nyc_output');
+const loadBrowser = async function() {
   // set browser and page global variables
-  let browser = await puppeteer.launch({
+  let pBrowser = await puppeteer.launch({
     // to make it work in circleci
     args: [
       '--no-sandbox',
@@ -26,13 +29,19 @@ global.loadBrowser = async function() {
     headless: process.env.HEADLESS !== 'false',
     devtools: false
   });
-  let page = await browser.newPage();
+  let page = await pBrowser.newPage();
+  // await page.coverage.startJSCoverage();
   await page.setViewport( { width: 1280, height: 800} );
-  global.browser = browser;
+  global.browser = {
+    close: async () => {
+      // const jsCoverage = await page.coverage.stopJSCoverage();
+      // pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
+      return pBrowser.close();
+    }
+  };
   global.page = page;
   return true;
 };
-global.pti = require('puppeteer-to-istanbul');
 
 const dir = path.join(__dirname, '../../', process.argv[2]);
 
@@ -71,6 +80,9 @@ global.requireBase = (pt) => require(path.join(dir, pt));
   try {
     let ser = false;
 
+    // clear coverage
+    await exec(`rm -rf ${nycReport}`);
+
     if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
       // Add unit test.js files to the mocha instance
       loadDir(unitTestDir);
@@ -87,6 +99,9 @@ global.requireBase = (pt) => require(path.join(dir, pt));
 
       // Add browser test.js files to the mocha instance
       loadDir(browserTestDir);
+
+      // load browser
+      await loadBrowser();
     }
 
     mocha.run((failures) => {
@@ -97,6 +112,9 @@ global.requireBase = (pt) => require(path.join(dir, pt));
         process.stdout.write(`---------- ${failures} FAILURES. ----------\n`);
         process.exitCode = 1;  // exit with non-zero status if there were failures
       }
+
+      // close browser
+      if (global.browser) browser.close();
     });
   } catch(e) {
     process.exitCode = 1;

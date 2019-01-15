@@ -60,17 +60,9 @@ async function getResponse(type, url, options, text = false) {
 
 describe('sifrr-fetch', () => {
   before(async () => {
-    await loadBrowser();
     await page.setRequestInterception(true);
     stubRequests();
-    await page.coverage.startJSCoverage();
     await page.goto(`${PATH}/`);
-  });
-
-  after(async () => {
-    const jsCoverage = await page.coverage.stopJSCoverage();
-    pti.write(jsCoverage);
-    await browser.close();
   });
 
   it('gets request', async () => {

@@ -63,7 +63,7 @@ class SW {
     });
   }
 
-  setupPushNotification(defaultTitle = '', defaultOptions = { 'body': '' }, onNotificationClick) {
+  setupPushNotification(defaultTitle = '', defaultOptions = { body: '' }, onNotificationClick) {
     self.addEventListener('push', function(event) {
       let data = {};
       if (event.data) {

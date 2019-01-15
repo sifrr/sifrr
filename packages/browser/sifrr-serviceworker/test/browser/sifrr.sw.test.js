@@ -10,13 +10,8 @@ function stubRequests() {
 
 describe('sifrr-serviceworker', () => {
   before(async () => {
-    await loadBrowser();
     // await page.setRequestInterception(true);
     // stubRequests();
-  });
-
-  after(async () => {
-    await browser.close();
   });
 
   it('registers service worker', async () => {

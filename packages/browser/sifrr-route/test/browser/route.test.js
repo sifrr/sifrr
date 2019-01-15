@@ -7,12 +7,7 @@ async function isActive(selector) {
 
 describe('sifrr-route', () => {
   before(async () => {
-    await loadBrowser();
     await page.goto(`${PATH}/`);
-  });
-
-  after(async () => {
-    await browser.close();
   });
 
   it('has `Sifrr.Dom.html`', async () => {

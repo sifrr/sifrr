@@ -64,7 +64,7 @@
       });
     }
     setupPushNotification(defaultTitle = '', defaultOptions = {
-      'body': ''
+      body: ''
     }, onNotificationClick) {
       self.addEventListener('push', function (event) {
         let data = {};
