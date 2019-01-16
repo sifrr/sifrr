@@ -17,6 +17,9 @@ global.puppeteer = require('puppeteer');
 global.port = 9999;
 global.PATH = `http://localhost:${port}`;
 
+// Check if need coverage
+const toCover = process.env.COVERAGE === 'true';
+
 const nycReport = path.join(__dirname, '../../.nyc_output');
 const loadBrowser = async function() {
   // set browser and page global variables
@@ -30,16 +33,27 @@ const loadBrowser = async function() {
     devtools: false
   });
   let page = await pBrowser.newPage();
-  // await page.coverage.startJSCoverage();
+  if (toCover) await page.coverage.startJSCoverage();
   await page.setViewport( { width: 1280, height: 800} );
   global.browser = {
     close: async () => {
-      // const jsCoverage = await page.coverage.stopJSCoverage();
-      // pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
+      if (!toCover) return pBrowser.close();
+      const jsCoverage = await page.coverage.stopJSCoverage();
+      pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
       return pBrowser.close();
     }
   };
+  if (toCover) {
+    page.goto = async (url, options) => {
+      const jsCoverage = await page.coverage.stopJSCoverage();
+      pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
+      const ret = page.mainFrame().goto(url, options);
+      await page.coverage.startJSCoverage();
+      return ret;
+    };
+  }
   global.page = page;
+
   return true;
 };
 
@@ -81,7 +95,7 @@ global.requireBase = (pt) => require(path.join(dir, pt));
     let ser = false;
 
     // clear coverage
-    await exec(`rm -rf ${nycReport}`);
+    // await exec(`rm -rf ${nycReport}`);
 
     if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
       // Add unit test.js files to the mocha instance
@@ -115,6 +129,9 @@ global.requireBase = (pt) => require(path.join(dir, pt));
 
       // close browser
       if (global.browser) browser.close();
+
+      // Merge code coverage
+      if (toCover) fixCoverage();
     });
   } catch(e) {
     process.exitCode = 1;
@@ -123,10 +140,45 @@ global.requireBase = (pt) => require(path.join(dir, pt));
 })();
 
 
-function loadDir(dir) {
+function loadDir(dir, fxn) {
   fs.readdirSync(dir).forEach(file => {
-    fs.statSync(path.join(dir, file)).isDirectory()
-      ? loadDir(path.join(dir, file))
-      : mocha.addFile(path.join(dir, file));
+    const filePath = path.join(dir, file);
+    fs.statSync(filePath).isDirectory()
+      ? loadDir(filePath)
+      : fxn ? fxn(filePath) : mocha.addFile(filePath);
+  });
+}
+
+async function fixCoverage() {
+  const fileName = `${Date.now()}-full-coverage.json`;
+  await exec(`nyc merge ${nycReport} ${nycReport}/${fileName}`);
+
+  function fileParse(filePath) {
+    if (path.extname(filePath) !== '.json') return;
+    if (filePath.indexOf('full-coverage.json') > 0) return;
+    const fileContents = require(filePath);
+    for (let file in fileContents) {
+      const branchStats = fileContents[file].b,
+        branchMeta = fileContents[file].branchMap;
+      if (!branchStats) {
+        return;
+      }
+
+      Object.keys(branchStats).forEach((branchName) => {
+        if (!branchMeta[branchName]) {
+          delete branchStats[branchName];
+        }
+      });
+    }
+
+    fs.writeFileSync(filePath, JSON.stringify(fileContents));
+  }
+
+  fileParse(`${nycReport}/${fileName}`);
+
+  const allFiles = [];
+  loadDir(nycReport, (file) => allFiles.push(file));
+  allFiles.forEach(async (file) => {
+    if (file.indexOf('full-coverage.json') < 0) await exec(`rm ${file}`);
   });
 }

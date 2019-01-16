@@ -2,6 +2,11 @@
 
 STATUS=0
 
+if [[ $COVERAGE == 'true' ]]; then
+  find ./.nyc_output -name "*coverage*.json" -delete
+  rm -rf ./.nyc_output/js
+fi
+
 for dir in ./packages/*/*
 do
   echo "Running test in ${dir}:"
