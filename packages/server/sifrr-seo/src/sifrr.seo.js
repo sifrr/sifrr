@@ -13,7 +13,7 @@ class SifrrSeo {
     return true;
   }
 
-  constructor(botUserAgents = [
+  constructor(userAgents = [
     'Googlebot', // Google
     'Bingbot', // Bing
     'Slurp', // Slurp
@@ -23,7 +23,7 @@ class SifrrSeo {
     'Sogou', // Sogou
     'Exabot', // Exalead
   ]) {
-    this._bots = botUserAgents.map((ua) => new RegExp(ua));
+    this._uas = userAgents.map((ua) => new RegExp(ua));
     this.launched = false;
     this.shouldRenderCache = {};
     this.renderedCache = {};
@@ -63,20 +63,25 @@ class SifrrSeo {
   }
 
   shouldRender(req) {
-    return this.isBot(req);
+    return this.isUserAgent(req);
   }
 
-  isBot(req) {
+  isUserAgent(req) {
     const ua = req.get('User-Agent');
     let ret = false;
-    this._bots.forEach((b) => {
+    this._uas.forEach((b) => {
       if (b.test(ua)) ret = true;
     });
     return ret;
   }
 
-  addBot(botUserAgent) {
-    this._bots.push(new RegExp(botUserAgent));
+  addUserAgent(userAgent) {
+    this._uas.push(new RegExp(userAgent));
+  }
+
+  clearCache() {
+    this.shouldRenderCache = {};
+    this.renderedCache = {};
   }
 
   async launchBrowser() {

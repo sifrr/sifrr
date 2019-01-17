@@ -6,7 +6,7 @@ sifrr is a set of libraries for creating modern webapps.
 
 ## Packages
 ### Browser
-| Package | Description | Package Status | Documentation Status | Tests |
+| Package | Description | NPM | Documentation | Tests |
 |:-------------|:-------------|:-------------|:----------|:------:|
 | [sifrr-dom](./packages/browser/sifrr-dom) | A < 5KB DOM library using Custom Elements, one way/two way data binding, faster than react | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) | [In Readme](./packages/browser/sifrr-dom) | [WIP] |
 | [sifrr-fetch](./packages/browser/sifrr-fetch) | Wrapper library for Browser fetch API | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch) | [In Readme](./packages/browser/sifrr-fetch) | [OK](./packages/browser/sifrr-fetch/test) |
@@ -17,17 +17,15 @@ sifrr is a set of libraries for creating modern webapps.
 `sifrr-dom`, `sifrr-fetch`, `sifrr-serviceworker`, `sifrr-storage` can be used independently. `sifrr-route` is a `sifrr-dom` element, hence it should be used with `sifrr-dom`.
 
 ### Server
-| Package | Description | Package Status | Documentation Status | Tests |
+| Package | Description | NPM | Documentation | Tests |
 |:-------------|:-------------|:-------------|:-----------|:---------:|
 | [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [In Readme](./packages/server/sifrr-api) | [WIP] |
 | [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [In Readme](./packages/server/sifrr-cli) | [WIP] |
-| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [WIP] | [WIP] |
+| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [In Readme](./packages/server/sifrr-seo) | [WIP] |
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
 #### Packages that have tests have a working example of that package in `test/public` folder.
-
-You can use these packages individually or together by creating a app using sifrr-cli [WIP].
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_large)

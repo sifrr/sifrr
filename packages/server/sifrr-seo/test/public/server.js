@@ -1,7 +1,7 @@
 const Seo = require('../../src/sifrr.seo');
 // Middleware
 const seo = new Seo();
-seo.addBot('Opera Mini');
+seo.addUserAgent('Opera Mini');
 // Middleware
 
 const express = require('express'),
