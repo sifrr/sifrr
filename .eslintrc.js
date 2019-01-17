@@ -18,10 +18,8 @@ module.exports = {
     'server': false,
     'port': false,
     'PATH': false,
-    'loadBrowser': false,
     'page': false,
     'browser': false,
-    'pti': false,
     'Sifrr': false,
     'SifrrStorage': false,
     'requireBase': false

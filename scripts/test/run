@@ -39,14 +39,14 @@ const loadBrowser = async function() {
     close: async () => {
       if (!toCover) return pBrowser.close();
       const jsCoverage = await page.coverage.stopJSCoverage();
-      pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
+      pti.write(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
       return pBrowser.close();
     }
   };
   if (toCover) {
     page.goto = async (url, options) => {
       const jsCoverage = await page.coverage.stopJSCoverage();
-      pti.write(jsCoverage, path.join(nycReport, `./${Date.now()}-coverage.json`));
+      pti.write(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
       const ret = page.mainFrame().goto(url, options);
       await page.coverage.startJSCoverage();
       return ret;
@@ -151,7 +151,10 @@ function loadDir(dir, fxn) {
 
 async function fixCoverage() {
   const fileName = `${Date.now()}-full-coverage.json`;
-  await exec(`nyc merge ${nycReport} ${nycReport}/${fileName}`);
+  if (fs.existsSync(`${nycReport}/separate`)) {
+    await exec(`nyc merge ${nycReport}/separate ${nycReport}/${fileName}`);
+    await exec(`find ${nycReport}/separate -name "*.json" -delete`);
+  }
 
   function fileParse(filePath) {
     if (path.extname(filePath) !== '.json') return;
@@ -169,6 +172,7 @@ async function fixCoverage() {
           delete branchStats[branchName];
         }
       });
+
     }
 
     fs.writeFileSync(filePath, JSON.stringify(fileContents));
