@@ -27,6 +27,7 @@ const sss = function(port, dirs = dir) {
   dirs.forEach(dirS => {
     server.use(serveStatic(dirS));
     server.use(serveStatic(path.join(dirS, '../../dist')));
+    server.use((req, res) => res.sendFile(path.join(dirS, './index.html')));
   });
 
   return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirs));

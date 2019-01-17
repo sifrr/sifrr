@@ -1,6 +1,5 @@
 class Request {
-  constructor(type, url, options = {}) {
-    this.type = type;
+  constructor(url, options = {}) {
     this._options = options;
     this._url = url;
   }
@@ -34,7 +33,6 @@ class Request {
 
   get options() {
     const options = Object.assign({
-      method: this.type,
       mode: 'cors',
       redirect: 'follow',
       cache: 'no-cache'

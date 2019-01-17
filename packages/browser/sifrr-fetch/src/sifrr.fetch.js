@@ -1,23 +1,28 @@
 const Request = require('./request');
 
 class SifrrFetch {
-  static get(url, options = {}) {
-    return new Request('GET', url, options).response;
+  static get(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'GET');
+    return new Request(url, options).response;
   }
 
-  static post(url, options = {}) {
-    return new Request('POST', url, options).response;
+  static post(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'POST');
+    return new Request(url, options).response;
   }
 
-  static put(url, options = {}) {
-    return new Request('PUT', url, options).response;
+  static put(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'PUT');
+    return new Request(url, options).response;
   }
 
-  static delete(url, options = {}) {
-    return new Request('DELETE', url, options).response;
+  static delete(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'DELETE');
+    return new Request(url, options).response;
   }
 
-  static graphql(url, options = {}) {
+  static graphql(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'POST');
     const { query, variables = {} } = options;
     delete options.query;
     delete options.variables;
@@ -28,14 +33,31 @@ class SifrrFetch {
       query,
       variables
     };
-    return new Request('POST', url, options).response;
+    return new Request(url, options).response;
   }
 
-  static file(url, options = {}) {
+  static file(purl, poptions) {
+    const { url, options } = this.afterUse(purl, poptions, 'GET');
     options.headers = options.headers || {};
     options.headers.accept = options.headers.accept || '*/*';
-    return new Request('GET', url, options).response;
+    return new Request(url, options).response;
+  }
+
+  static use(fxn) {
+    SifrrFetch._middlewares.push(fxn);
+  }
+
+  static afterUse(url, options = {}, method) {
+    options.method = method;
+    SifrrFetch._middlewares.forEach((fxn) => {
+      const res = fxn(url, options);
+      url = res.url;
+      options = res.options;
+    });
+    return { url, options };
   }
 }
+
+SifrrFetch._middlewares = [];
 
 module.exports = SifrrFetch;

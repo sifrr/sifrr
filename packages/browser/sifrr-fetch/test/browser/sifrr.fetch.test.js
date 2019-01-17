@@ -50,7 +50,7 @@ function stubRequests() {
 }
 
 async function getResponse(type, url, options, text = false) {
-  return await page.evaluate(async (type, url, options, text) => {
+  return page.evaluate((type, url, options, text) => {
     const ret = Sifrr.Fetch[type](url, options);
     if (text) return ret.then((resp) => resp.text());
     else return ret.catch((e) => e.message);
@@ -108,5 +108,15 @@ describe('sifrr-fetch', () => {
     const resp = await getResponse('get', '/params', { params: { param: 'value' } });
     expect(resp).to.deep.equal({ param: 'value' });
   });
-});
 
+  it('middlewares work', async () => {
+    await page.evaluate(() => {
+      Sifrr.Fetch.use((url, options) => {
+        options.body = 'hijacked body';
+        return { url, options };
+      });
+    });
+    const resp = await getResponse('post', '/test', { body: 'post body' });
+    expect(resp).to.deep.equal({ a: 'hijacked body' });
+  });
+});
