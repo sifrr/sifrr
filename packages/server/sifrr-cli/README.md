@@ -16,7 +16,7 @@ Commands:
 
 Options:
   --help, -h     Help
-  --version, -v  バージョンを表示                                       [真偽]
+  --version, -v  Current version                                  
 ```
 
 Run `sifrr [command] --help` to show help for that command.
