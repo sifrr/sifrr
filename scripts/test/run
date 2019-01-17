@@ -119,40 +119,47 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
   }
 })();
 
+// Filter out clutter, map to real files
 async function fixCoverage() {
   const fileName = `${Date.now()}-full-coverage.json`;
   if (fs.existsSync(`${nycReport}/separate`)) {
     await exec(`nyc merge ${nycReport}/separate ${nycReport}/${fileName}`);
-    await exec(`find ${nycReport}/separate -name "*.json" -delete`);
+    fileParse(`${nycReport}/${fileName}`);
   }
 
   function fileParse(filePath) {
     if (path.extname(filePath) !== '.json') return;
-    if (filePath.indexOf('full-coverage.json') > 0) return;
+    if (filePath.indexOf('full-coverage.json') < 0) return;
     const fileContents = require(filePath);
     for (let file in fileContents) {
-      const branchStats = fileContents[file].b,
-        branchMeta = fileContents[file].branchMap;
-      if (!branchStats) {
-        return;
-      }
-
-      Object.keys(branchStats).forEach((branchName) => {
-        if (!branchMeta[branchName]) {
-          delete branchStats[branchName];
+      if (file.indexOf('sifrr.') < 0 || file.indexOf('unpkg') >= 0) {
+        delete fileContents[file];
+      } else {
+        const branchStats = fileContents[file].b,
+          branchMeta = fileContents[file].branchMap;
+        if (!branchStats) {
+          return;
         }
-      });
 
+        Object.keys(branchStats).forEach((branchName) => {
+          if (!branchMeta[branchName]) {
+            delete branchStats[branchName];
+          }
+        });
+
+        const newPath = fileContents[file].path.replace(/\.nyc_output\/separate\/js\/.*\/sifrr\.([^.]*)(\.module)?\.js$/, 'packages/browser/sifrr-$1/dist/sifrr.$1$2.js');
+        fileContents[newPath] = Object.assign({}, fileContents[file]);
+        fileContents[newPath].path = newPath;
+        delete fileContents[file];
+      }
     }
 
     fs.writeFileSync(filePath, JSON.stringify(fileContents));
   }
 
-  fileParse(`${nycReport}/${fileName}`);
-
   const allFiles = [];
   loadDir(nycReport, (file) => allFiles.push(file));
   allFiles.forEach(async (file) => {
-    if (file.indexOf('full-coverage.json') < 0) await exec(`rm ${file}`);
+    if (file.indexOf('full-coverage.json') < 0 && file.indexOf('separate/js') < 0) await exec(`rm ${file}`);
   });
 }
