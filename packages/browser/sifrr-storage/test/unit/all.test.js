@@ -1,6 +1,6 @@
-const SifrrStorage = requireBase('./src/sifrr.storage');
-const JsonStorage = requireBase('./src/storages/jsonstorage'),
-  Storage = requireBase('./src/storages/storage');
+const SifrrStorage = require('../../src/sifrr.storage');
+const JsonStorage = require('../../src/storages/jsonstorage'),
+  Storage = require('../../src/storages/storage');
 
 describe('SifrrStorage', () => {
   describe('#new', () => {

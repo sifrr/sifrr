@@ -1,4 +1,4 @@
-const createFile = requireBase('./src/utils/createfile');
+const createFile = require('../../../src/utils/createfile');
 const exec = require('child_process').execSync;
 
 describe('Create File', () => {

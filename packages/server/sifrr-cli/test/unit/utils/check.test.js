@@ -1,4 +1,4 @@
-const check = requireBase('./src/utils/check');
+const check = require('../../../src/utils/check');
 
 describe('Check', () => {
   it('show error and exit 1 for bad command', () => {

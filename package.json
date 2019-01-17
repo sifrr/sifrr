@@ -17,6 +17,7 @@
     "test": "./scripts/test/runall",
     "jtest": "yarn test -j",
     "cov-test": "COVERAGE=true nyc --reporter=json --report-dir=./.nyc_output yarn test",
+    "test-server": "node ./scripts/test-server -p 1234 -d ./packages/browser/sifrr-dom/test/public,./packages/browser/sifrr-fetch/test/public,./packages/browser/sifrr-route/test/public,./packages/browser/sifrr-serviceworker/test/public,./packages/browser/sifrr-storage/test/public,./packages/server/sifrr-api/test/public,./packages/server/sifrr-cli/test/public,./packages/server/sifrr-seo/test/public",
     "build": "./scripts/yarn rollup -c",
     "publish": "./scripts/yarn publish"
   },

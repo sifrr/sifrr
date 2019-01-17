@@ -4,8 +4,8 @@ const Mocha = require('mocha');
 const pti = require('puppeteer-to-istanbul');
 const listen = require('../test-server');
 const exec = require('../exec');
-
-const ignoreGlobal = ['SifrrDom', 'SifrrRoute', 'SifrrCli'];
+const loadDir = require('./loaddir');
+const testLoader = require('./testloader');
 
 global.fs = require('fs');
 global.path = require('path');
@@ -57,18 +57,17 @@ const loadBrowser = async function() {
   return true;
 };
 
-const dir = path.join(__dirname, '../../', process.argv[2]);
-
 const mochaOptions = {
   timeout: 10000
 };
+
 const useJunitReporter = process.argv.indexOf('-j') > 0 || process.argv.indexOf('--junit') > 0;
-const junitXmlFile = path.join(__dirname, `../../test-results/${dir.split(path.sep).pop()}/results.xml`);
+// const junitXmlFile = path.join(__dirname, `../../test-results/${dir.split(path.sep).pop()}/results.xml`);
 
 if (useJunitReporter) {
   mochaOptions.reporter = 'mocha-junit-reporter';
   mochaOptions.reporterOptions = {
-    mochaFile: junitXmlFile
+    // mochaFile: junitXmlFile
   };
 }
 
@@ -76,45 +75,26 @@ const mocha = new Mocha(mochaOptions);
 
 // check if run only unit test
 const runUnitTests = process.argv.indexOf('-u') > 0 || process.argv.indexOf('--unit') > 0;
-const unitTestDir = path.join(dir, './test/unit');
 
 // check if run only browser tests
 const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
-const browserTestDir = path.join(dir, './test/browser');
-
-// add main package to global
-const pkg = require(path.join(dir, './package.json'));
-const name = pkg.name.replace(/^@sifrr\/([a-z])(.*)$/, (m, l, r) => `Sifrr${l.toUpperCase()}${r}`);
-if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.main));
 
 // Relative to base requiring
-global.requireBase = (pt) => require(path.join(dir, pt));
+// global.requireBase = (pt) => require(path.join(dir, pt));
 
 (async function() {
   try {
     let ser = false;
 
-    // clear coverage
-    // await exec(`rm -rf ${nycReport}`);
-
-    if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
-      // Add unit test.js files to the mocha instance
-      loadDir(unitTestDir);
+    const dirs = process.argv[2].split(',').filter(x => !!x);
+    const pubPs = await dirs
+      .map(async dir => await testLoader(dir, mocha, { runUnitTests, runBrowserTests }));
+    const pubPaths = (await Promise.all(pubPs)).filter(x => !!x);
+    if (pubPaths.length > 0) {
+      ser = listen(port, pubPaths);
     }
 
-    if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
-      const testPublicPath = path.join(dir, './test/public');
-
-      // Run yarn rollup if there is a rollup config in public folder
-      if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
-
-      // Start server if there is a public folder
-      if (fs.existsSync(path.join(testPublicPath))) ser = listen(port, testPublicPath);
-
-      // Add browser test.js files to the mocha instance
-      loadDir(browserTestDir);
-
-      // load browser
+    if (runBrowserTests || !runUnitTests) {
       await loadBrowser();
     }
 
@@ -138,16 +118,6 @@ global.requireBase = (pt) => require(path.join(dir, pt));
     throw e;
   }
 })();
-
-
-function loadDir(dir, fxn) {
-  fs.readdirSync(dir).forEach(file => {
-    const filePath = path.join(dir, file);
-    fs.statSync(filePath).isDirectory()
-      ? loadDir(filePath)
-      : fxn ? fxn(filePath) : mocha.addFile(filePath);
-  });
-}
 
 async function fixCoverage() {
   const fileName = `${Date.now()}-full-coverage.json`;
