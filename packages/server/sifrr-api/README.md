@@ -1,25 +1,29 @@
-# sifrr-api &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)
+# sifrr-api · [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)
 
 Opinionated way of creating normal apis or GraphQL apis using these amazing libraries:
 
-- [graphql](https://github.com/graphql/graphql-js)
-- [sequelize](https://github.com/sequelize/sequelize)
-- [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
-- [graphql-tools](https://github.com/apollographql/graphql-tools)
+-   [graphql](https://github.com/graphql/graphql-js)
+-   [sequelize](https://github.com/sequelize/sequelize)
+-   [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+-   [graphql-tools](https://github.com/apollographql/graphql-tools)
 
 ## Why use sifrr-api
-- This library is mainly to make development of graphQL APIs easier, avoiding manually creating schema/resolvers.
-- Serving graphQL query results easily in route based APIs.
-- Serve both type of APIs at once without duplicating most of the code.
+
+-   This library is mainly to make development of graphQL APIs easier, avoiding manually creating schema/resolvers.
+-   Serving graphQL query results easily in route based APIs.
+-   Serve both type of APIs at once without duplicating most of the code.
 
 Fully working example [here](https://github.com/sifrr/sifrr-api-demo).
 
 ## How to use
+
 Do `npm i @sifrr/fetch` or `yarn add @sifrr/fetch` or add the package to your `package.json` file.
 You should know basics of graphql and sequelize to use this.
 
 ### Model
-- Sifrr Api Model extends Sequelize.model but has more added features
+
+-   Sifrr Api Model extends Sequelize.model but has more added features
+
 ```js
 const { Model } = require('@sifrr/api')
 
@@ -78,12 +82,14 @@ class User extends Model {
 
 // Return init model
 module.exports = User.init();
-
 ```
+
 #### API
-- `Model.schema` should return sequelize schema
-- All associations (`hasOne`, `hasMany`, `belongsTo`, `belongsToMany`) are modified to automatically assign this[options.as] = association
-- `Model.gqSchema` should return graphql type definition for this model, like
+
+-   `Model.schema` should return sequelize schema
+-   All associations (`hasOne`, `hasMany`, `belongsTo`, `belongsToMany`) are modified to automatically assign this[options.as] = association
+-   `Model.gqSchema` should return graphql type definition for this model, like
+
 ```schema
 type User {
   id: Int!
@@ -92,12 +98,14 @@ type User {
   ....
 }
 ```
+
 it's default value is `Model.sequelizeToGqSchema()`
 
-- `Model.sequelizeToGqSchema({ required: [], allowed: [], extra: [] })` generates graphql type definition automatically based on Model's sequelize schema, gqName, associations. It will add `!` at the end if attribute is non-null type in schema or given in required argument. If provided allowed, only allowed attributes/associations will be added to schema. extra is extra attributes that need to be added to model's graphql schema, eg. [ 'id: Int', 'name: String' ]
-- `Model.onInit()` This function is called on init. So add any query/mutation resolvers here, there are a few built-in resolvers available, but query and mutations should be added explicitly.
-- `Model.addResolver(name, { resolver })` Add resolvers for extra fields you added in gqSchema.
-- `Model.addQuery(name, { args, resolver, returnType })` Adds graphql query of name = name. args are query arguments, resolver is a graphql resolver that is used for resolving the query, and returnType is string which tells which type of data this query will return. eg.
+-   `Model.sequelizeToGqSchema({ required: [], allowed: [], extra: [] })` generates graphql type definition automatically based on Model's sequelize schema, gqName, associations. It will add `!` at the end if attribute is non-null type in schema or given in required argument. If provided allowed, only allowed attributes/associations will be added to schema. extra is extra attributes that need to be added to model's graphql schema, eg. [ 'id: Int', 'name: String' ]
+-   `Model.onInit()` This function is called on init. So add any query/mutation resolvers here, there are a few built-in resolvers available, but query and mutations should be added explicitly.
+-   `Model.addResolver(name, { resolver })` Add resolvers for extra fields you added in gqSchema.
+-   `Model.addQuery(name, { args, resolver, returnType })` Adds graphql query of name = name. args are query arguments, resolver is a graphql resolver that is used for resolving the query, and returnType is string which tells which type of data this query will return. eg.
+
 ```js
 this.addQuery('getUser', {
   args: 'id: Int!, name: String', // string
@@ -110,7 +118,9 @@ this.addQuery('getUser', {
 //   getUser(id: Int!, name: String): User
 // }
 ```
-- `Model.addMutation(name, { args, resolver, returnType })` takes same arguments as addQuery, but adds a graphql mutation instead of query. eg.
+
+-   `Model.addMutation(name, { args, resolver, returnType })` takes same arguments as addQuery, but adds a graphql mutation instead of query. eg.
+
 ```js
 this.addQuery('createUser', {
   args: 'name: String', // string
@@ -123,21 +133,24 @@ this.addQuery('createUser', {
 //   createUser(name: String): User
 // }
 ```
-- Predefined resolvers:
-  - `Model.getQueryResolver`
-    Gets data from table, this is essentially `resolver(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize), with with one upgrade. You can pass `association__column` in where argument to query based on that association. Returns `[Model.gqName]` type result. eg.
-      `User.getQueryResolver(null, { where: { 'pets__id': 1 } })` will return User whose pets id is 1. You can even branch the associations like `'pets__owner__id': 1`, this will return User whose pets' owner's id is 1.
-  - `Model.createMutationResolver`
-    Creates new row in db table. Takes all column names as arguments. Returns `Model.gqName` type result. eg. `User.createMutationResolver(null, { name: 'Aaditya' })` will create a user with name = Aaditya and returns it.
-  - `Model.updateMutationResolver` Takes all column names as arguments, requires `id` of row to update. Returns `Model.gqName`.
-  - `Model.upsertMutationResolver` Takes all column names as arguments, requires `id` of row to update/insert. Returns `Model.gqName`.
-  - `Model.deleteMutationResolver` Takes only id as arguments, requires `id` of row to delete. Returns `1` of row was deleted and `0` if not.
-- `Model.gqArgs` - key-value object of argument name to graphqlObjects. Has `defaultArgs(this)` and `defaultListArgs()` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
-- `Model.gqAttrs` - key-value object of argument name to graphqlObjects. Has `attributeFields(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
-- `Model.argsToString(gqArgs, { required: [], allowed: [] })` takes key-value object of argument name to graphqlObjects as gqArgs and return string to be used by options.args of addQuery/addMutation. Add `!` at end of a argument if it is in required. If allowed is given, only args in allowed are returned.
+
+-   Predefined resolvers:
+    -   `Model.getQueryResolver`
+        Gets data from table, this is essentially `resolver(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize), with with one upgrade. You can pass `association__column` in where argument to query based on that association. Returns `[Model.gqName]` type result. eg.
+          `User.getQueryResolver(null, { where: { 'pets__id': 1 } })` will return User whose pets id is 1. You can even branch the associations like `'pets__owner__id': 1`, this will return User whose pets' owner's id is 1.
+    -   `Model.createMutationResolver`
+        Creates new row in db table. Takes all column names as arguments. Returns `Model.gqName` type result. eg. `User.createMutationResolver(null, { name: 'Aaditya' })` will create a user with name = Aaditya and returns it.
+    -   `Model.updateMutationResolver` Takes all column names as arguments, requires `id` of row to update. Returns `Model.gqName`.
+    -   `Model.upsertMutationResolver` Takes all column names as arguments, requires `id` of row to update/insert. Returns `Model.gqName`.
+    -   `Model.deleteMutationResolver` Takes only id as arguments, requires `id` of row to delete. Returns `1` of row was deleted and `0` if not.
+-   `Model.gqArgs` - key-value object of argument name to graphqlObjects. Has `defaultArgs(this)` and `defaultListArgs()` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+-   `Model.gqAttrs` - key-value object of argument name to graphqlObjects. Has `attributeFields(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+-   `Model.argsToString(gqArgs, { required: [], allowed: [] })` takes key-value object of argument name to graphqlObjects as gqArgs and return string to be used by options.args of addQuery/addMutation. Add `!` at end of a argument if it is in required. If allowed is given, only args in allowed are returned.
 
 ### createSchemaFromModels
-- Takes array of sifrr.api models and returns executable graphql schema. Adds `Model.gqSchema`, Model's queries, mutations, resolvers of model, it's associations, queries and mutations.
+
+-   Takes array of sifrr.api models and returns executable graphql schema. Adds `Model.gqSchema`, Model's queries, mutations, resolvers of model, it's associations, queries and mutations.
+
 ```js
 const { createSchemaFromModels } = require('@sifrr/api');
 const graphqlSchema = createSchemaFromModels([require('./models/user'), ...], {
@@ -158,7 +171,9 @@ server.use('/graphql', expressGraphql({
 ```
 
 ### loadRoutes
+
 Takes (expressApp, RoutesFolderPath, filter) and adds all routes in files in RoutesFolderPath to expressApp except files in filter.
+
 ```js
 // Example route file:
 // ./routes/user.js
@@ -197,25 +212,26 @@ loadRoutes(app, path.join(__dirname, './routes'),{ ignore: [ 'index.js' ], baseP
 ```
 
 This will add these routes to express app:
-```
-// v1, v2 from user routes file
-// v3 from loadRoutes
 
-POST /v1/user
-POST /v2/user
-POST /v3/user
+    // v1, v2 from user routes file
+    // v3 from loadRoutes
 
-GET /v1/users
-GET /v2/users
-GET /v3/users
+    POST /v1/user
+    POST /v2/user
+    POST /v3/user
 
-GET /v1/user/:id
-GET /v2/user/:id
-GET /v3/user/:id
-```
+    GET /v1/users
+    GET /v2/users
+    GET /v3/users
+
+    GET /v1/user/:id
+    GET /v2/user/:id
+    GET /v3/user/:id
 
 ### reqToGraphqlArgs
+
 Takes express request object and returns args to be used in graphql query. Only returns arguments given in allowed if allowed is not empty. You should always provide allowed for safety.
+
 ```js
 const { reqToGraphqlArgs } = require('@sifrr/api');
 
@@ -226,7 +242,9 @@ reqToGraphqlArgs(req, { allowed: ['where', 'name', 'id'] }) // will return args 
 ```
 
 ### ExpressToGraphql
+
 connects graphql executable schema to express routes. eg.
+
 ```js
 const { ExpressToGraphql } = require('@sifrr/api');
 
@@ -272,5 +290,3 @@ app.use('/user/:id', (req, res) => {
 ```
 
 ### Working Example using all of them together is [here](https://github.com/sifrr/sifrr-api-demo).
-
-

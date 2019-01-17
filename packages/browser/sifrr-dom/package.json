@@ -32,6 +32,7 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
+  "dependencies": {},
   "peerDependencies": {
     "@sifrr/fetch": "0.0.2-alpha"
   },
@@ -66,6 +67,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "dependencies": {}
+  ]
 }

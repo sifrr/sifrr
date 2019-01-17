@@ -24,6 +24,26 @@ if (diri !== -1) {
 
 const server = express();
 
+// Show total request time
+const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
+if (ENV === 'development') {
+  let time;
+  server.use(function (req, res, next) {
+    time = Date.now();
+    function afterResponse() {
+      res.removeListener('finish', afterResponse);
+
+      // action after response
+      global.console.log('\x1b[36m%s\x1b[0m', `Request '${req.originalUrl}' took: ${Date.now() - time}ms`);
+    }
+
+    res.on('finish', afterResponse);
+
+    // action before request
+    next();
+  });
+}
+
 // export server for importing
 server.use(seo.middleware);
 server.use(compression());

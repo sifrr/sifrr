@@ -8,9 +8,12 @@ History API based Routing library for building One Page Applications with sifrr.
 2.  Or you can directly import in html:
 
 ```html
+<!-- Using npm -->
 <script type="module">
   import '@sifrr/route';
 </script>
+<!-- OR using CDN -->
+<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8" type="module"></script>
 ```
 
 -   You also need to take care in your server configuration that correct html file is served for all sifrr-routes.

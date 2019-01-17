@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
@@ -69,6 +70,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "peerDependencies": {}
+  ]
 }

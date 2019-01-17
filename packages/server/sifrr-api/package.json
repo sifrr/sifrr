@@ -32,6 +32,7 @@
     "graphql-tools": "^4.0.3",
     "sequelize": "^4.42.0"
   },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
@@ -60,6 +61,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "peerDependencies": {}
+  ]
 }

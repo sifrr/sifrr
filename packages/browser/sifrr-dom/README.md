@@ -1,38 +1,47 @@
-# sifrr-dom &middot; [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
+# sifrr-dom · [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
-A < 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
+A &lt; 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
 
 ### Size
-| Type | Size     |
-| :------------ | :------------: |
-| Normal (`dist/sifrr.dom.js`)       | [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.js) |
-| Minified (`dist/sifrr.dom.min.js`) | [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
+
+| Type                                         |                                                                                                                      Size                                                                                                                      |
+| :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Normal (`dist/sifrr.dom.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.js)                   |
+| Minified (`dist/sifrr.dom.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js)              |
 | Minified + Gzipped (`dist/sifrr.dom.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
 
 ## Fetures
-- Simple API based on web components v1, custom elements v1, shadow dom v1 with callbacks
-- bindings (js based) without virtual DOM (faster than react), no special syntax except pure HTML, CSS, JS
-- synthetic event listener
-- simpler querySelector for custom elements/web components
+
+-   Simple API based on web components v1, custom elements v1, shadow dom v1 with callbacks
+-   bindings (js based) without virtual DOM (faster than react), no special syntax except pure HTML, CSS, JS
+-   synthetic event listener
+-   simpler querySelector for custom elements/web components
 
 ## How to use
+
 ### Directly in Browser using standalone distribution
+
 Add script tag in your website.
+
 ```html
-<script src="https://unpkg.com/@sifrr/dom@0.1.0-alpha1/dist/sifrr.dom.min.js"></script>
+<script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
 ```
 
 #### Compatibility table for standalone distribution (Needs support for JavaScript Custom Elements, Shadow DOM, Fetch API)
-- chrome >= 55
-- safari >= 10.1
-- opera >= 42
-- firefox >= 53
+
+-   chrome >= 55
+-   safari >= 10.1
+-   opera >= 42
+-   firefox >= 53
 
 ### Using npm
+
 Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `package.json` file.
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
+
 #### Commonjs
+
 ```js
 // index.js
 
@@ -41,6 +50,7 @@ window.Sifrr.Dom = require('@sifrr/dom');
 ```
 
 #### ES modules
+
 ```js
 // index.js
 
@@ -50,7 +60,9 @@ window.Sifrr.Dom = DOM;
 ```
 
 ## Basic API usage
+
 ### Setting Up
+
 ```js
 // index.js
 
@@ -64,9 +76,13 @@ Sifrr.Dom.setup(config);
 ```
 
 ### Sifrr element
-__Note__: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
+
+**Note**: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
+
 #### Basic sifrr element
-1. HTML element
+
+1.  HTML element
+
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html  -->
 
@@ -99,8 +115,10 @@ __Note__: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
   Sifrr.Dom.register(CustomTag);
 </script>
 ```
- -- OR --
-2. JS Element
+
+ \-- OR --
+2\. JS Element
+
 ```js
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
@@ -126,7 +144,9 @@ CustomTag.defaultState = {
 }
 Sifrr.Dom.register(CustomTag);
 ```
+
 Then load in your js
+
 ```js
 // index.js
 
@@ -138,14 +158,18 @@ Sifrr.Dom.load('custom-tag', config); // custom-tag element is loaded from ${bas
 // or  ${baseUrl}/elements/custom/tag.js whichever is present
 // If no baseUrl is given in config, baseUrl from setup config is used
 ```
+
 or as module
+
 ```js
 // index.html
 <script type="module">
   import '${baseUrl}/elements/custom/tag';
 </script>
 ```
+
 Then this html
+
 ```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -160,7 +184,9 @@ Then this html
   </body>
 </html>
 ```
+
 will render to
+
 ```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -179,13 +205,17 @@ will render to
   </body>
 </html>
 ```
+
 #### Changing state of element
+
 ```js
 const customtag = window.querySelector('custom-tag');
 customtag.state = { id: 2, attr: 'xyz' }
 // Note: doing `customtag.state.id = 2` doesn't work
 ```
+
 This will change custom-tag to
+
 ```html
 <custom-tag>
   #shadow-root
@@ -194,13 +224,16 @@ This will change custom-tag to
 </custom-tag>
 ```
 
-- To force update element bindings
+-   To force update element bindings
+
 ```js
 customtag.update();
 ```
 
 ### Components Without shadow root
+
 #### If you don't want to use shadow root by default
+
 ```js
 // index.js
 
@@ -210,7 +243,9 @@ const config = {
 }
 Sifrr.Dom.setup(config);
 ```
+
 #### If you don't want to use shadow root for a particular component
+
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html -->
 <template use-shadow-root="false">
@@ -225,7 +260,9 @@ Sifrr.Dom.setup(config);
 ```
 
 ### Sifrr Element (Sifrr.Dom.Element) API
+
 #### Callbacks
+
 ```js
 class CustomTag extends Sifrr.Dom.Element {
   static observedAttrs() {
@@ -252,11 +289,13 @@ class CustomTag extends Sifrr.Dom.Element {
 ```
 
 #### Clearing state of element
+
 ```js
 customtag.clearState()
 ```
 
 #### Query selectors for custom element content
+
 ```js
 // querySelector
 customtag.$(selector, shadowRoot = true if element uses shadow root else false by default);
@@ -266,6 +305,7 @@ customtag.$$(selector, shadowRoot = true if element uses shadow root else false 
 ```
 
 ### Synthetic events
+
 ```js
 // example for adding 'click' event listeners can be replaced with any type of event
 
@@ -286,7 +326,9 @@ Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 ```
 
 ### More complex apis
+
 #### html in bindings
+
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html -->
 
@@ -317,7 +359,9 @@ Sifrr.Dom.Event.trigger(target, 'custom:event', options);
   Sifrr.Dom.register(CustomTag);
 </script>
 ```
+
 this will render
+
 ```html
 <custom-tag>
   #shadow-root
@@ -335,7 +379,9 @@ this will render
     <div>
 </custom-tag>
 ```
+
 #### input/select/textarea/contenteditable one way, two way bindings
+
 ```html
 <!-- inside template -->
 <!-- One Way bindings to value, updates value/content when state is changed -->
@@ -366,10 +412,12 @@ this will render
 <div contenteditable data-sifrr-bind="elements">
   ${this.state.elements}
 </div>
-
 ```
+
 #### arrayToDom,
+
 parses array to dom nodes in bindings
+
 ```html
 <!-- ${baseUrl}/elements/custom/array.html -->
 
@@ -381,6 +429,7 @@ parses array to dom nodes in bindings
   Sifrr.Dom.register(CustomArray);
 </script>
 ```
+
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html -->
 
@@ -407,7 +456,9 @@ parses array to dom nodes in bindings
   Sifrr.Dom.register(CustomTag);
 </script>
 ```
+
 then, `<custom-tag></custom-tag>` will render:
+
 ```html
 <custom-tag>
   #shadow-root
@@ -425,25 +476,32 @@ then, `<custom-tag></custom-tag>` will render:
 ```
 
 #### Extending another declared html element
+
 Sifrr element can extend other html elements also, eg:
 CustomTag extends HTMLButtonElement here, note that register call has { extends: 'button' } as second argument
+
 ```js
 class CustomTag extends Sifrr.Dom.Element.extends(HTMLButtonElement) {}
 Sifrr.Dom.register(SifrrSmaller, {
   extends: 'button'
 });
 ```
+
 then you can use custom-tag as button in html like:
+
 ```html
 <button is="custom-tag"></button>
 ```
 
 #### slots
-- Slots work same as it would in web components, but note that bindings in slot elements won't work
+
+-   Slots work same as it would in web components, but note that bindings in slot elements won't work
 
 ## More readings
-- https://developers.google.com/web/fundamentals/web-components/customelements
+
+-   <https://developers.google.com/web/fundamentals/web-components/customelements>
 
 ## Special thanks to:
-- https://github.com/Freak613/stage0 for optimization ideas
-- https://github.com/krausest/js-framework-benchmark for benchmarking performance
+
+-   <https://github.com/Freak613/stage0> for optimization ideas
+-   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance

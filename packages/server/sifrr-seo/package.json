@@ -28,6 +28,7 @@
   "dependencies": {
     "puppeteer": "^1.11.0"
   },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
@@ -56,6 +57,5 @@
     "bin",
     "dist",
     "src"
-  ],
-  "peerDependencies": {}
+  ]
 }
