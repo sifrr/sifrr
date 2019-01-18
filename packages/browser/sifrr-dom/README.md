@@ -116,9 +116,8 @@ Sifrr.Dom.setup(config);
 </script>
 ```
 
- \-- OR --
-2\. JS Element
-
+__OR__
+2. JS Element
 ```js
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
@@ -166,6 +165,12 @@ or as module
 <script type="module">
   import '${baseUrl}/elements/custom/tag';
 </script>
+```
+
+or as normal js
+```js
+// index.html
+<script src="${baseUrl}/elements/custom/tag"></script>
 ```
 
 Then this html

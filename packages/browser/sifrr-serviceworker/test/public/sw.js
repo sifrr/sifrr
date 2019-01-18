@@ -4,30 +4,30 @@ const sw = new SW({
   fallbackCacheName: 'ffff',
   defaultCacheName: 'dddd',
   policies: {
-    'cachefirst': {
+    cachefirst: {
       policy: 'CACHE_FIRST'
     },
-    'networkfirst': {
+    networkfirst: {
       policy: 'NETWORK_FIRST',
       cacheName: 'bangbang'
     },
-    'networkonly': {
+    networkonly: {
       policy: 'NETWORK_ONLY'
     },
-    'server': {
+    server: {
       policy: 'NETWORK_ONLY'
     },
-    'cacheonly': {
+    cacheonly: {
       policy: 'CACHE_ONLY',
       cacheName: 'bangbang2'
     },
-    'precache': {
+    precache: {
       policy: 'CACHE_ONLY',
       cacheName: 'bangbang2'
     },
   },
   fallbacks: {
-    'networkonly': '/offline.html'
+    networkonly: '/offline.html'
   },
   precacheUrls: ['/precache.js', '/cacheonly.js']
 });

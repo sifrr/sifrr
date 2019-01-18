@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Mocha = require('mocha');
-const pti = require('puppeteer-to-istanbul');
+const mkdirp = require('mkdirp');
 const listen = require('../test-server');
 const exec = require('../exec');
 const loadDir = require('./loaddir');
@@ -14,11 +14,17 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.should = chai.should();
 global.puppeteer = require('puppeteer');
-global.port = 9999;
+global.port = 8888;
 global.PATH = `http://localhost:${port}`;
 
 // Check if need coverage
 const toCover = process.env.COVERAGE === 'true';
+if (toCover) {
+  const { createInstrumenter } = require('istanbul-lib-instrument');
+  const instrumenter = createInstrumenter();
+  const { hookRequire } = require('istanbul-lib-hook');
+  hookRequire((filePath) => filePath.match(/packages\/[a-z]+\/sifrr-[a-z]+\/src/), (code, { filename }) => instrumenter.instrumentSync(code, filename));
+}
 
 const nycReport = path.join(__dirname, '../../.nyc_output');
 const loadBrowser = async function() {
@@ -33,22 +39,20 @@ const loadBrowser = async function() {
     devtools: false
   });
   let page = await pBrowser.newPage();
-  if (toCover) await page.coverage.startJSCoverage();
   await page.setViewport( { width: 1280, height: 800} );
   global.browser = {
     close: async () => {
       if (!toCover) return pBrowser.close();
-      const jsCoverage = await page.coverage.stopJSCoverage();
-      pti.write(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
+      const jsCoverage = await page.evaluate(() => window.__coverage__ || {});
+      writeCoverage(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
       return pBrowser.close();
     }
   };
   if (toCover) {
     page.goto = async (url, options) => {
-      const jsCoverage = await page.coverage.stopJSCoverage();
-      pti.write(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
+      const jsCoverage = await page.evaluate(() => window.__coverage__ || {});
+      writeCoverage(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
       const ret = page.mainFrame().goto(url, options);
-      await page.coverage.startJSCoverage();
       return ret;
     };
   }
@@ -110,8 +114,11 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
       // close browser
       if (global.browser) browser.close();
 
-      // Merge code coverage
-      if (toCover) fixCoverage();
+      // Get and fix code coverage
+      if (toCover) {
+        writeCoverage(global.__coverage__, path.join(nycReport, `./${Date.now()}-unit-full-coverage.json`));
+        fixCoverage();
+      }
     });
   } catch(e) {
     process.exitCode = 1;
@@ -119,47 +126,29 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
   }
 })();
 
+// write coverage
+function writeCoverage(coverage, file) {
+  mkdirp.sync(path.dirname(file), (err) => {
+    if (err) throw err;
+  });
+
+  fs.writeFileSync(file, JSON.stringify(coverage), err => {
+    if(err) throw err;
+  });
+}
+
 // Filter out clutter, map to real files
 async function fixCoverage() {
-  const fileName = `${Date.now()}-full-coverage.json`;
+  const fileName = `${Date.now()}-browser-full-coverage.json`;
   if (fs.existsSync(`${nycReport}/separate`)) {
     await exec(`nyc merge ${nycReport}/separate ${nycReport}/${fileName}`);
-    fileParse(`${nycReport}/${fileName}`);
   }
 
-  function fileParse(filePath) {
-    if (path.extname(filePath) !== '.json') return;
-    if (filePath.indexOf('full-coverage.json') < 0) return;
-    const fileContents = require(filePath);
-    for (let file in fileContents) {
-      if (file.indexOf('sifrr.') < 0 || file.indexOf('unpkg') >= 0) {
-        delete fileContents[file];
-      } else {
-        const branchStats = fileContents[file].b,
-          branchMeta = fileContents[file].branchMap;
-        if (!branchStats) {
-          return;
-        }
-
-        Object.keys(branchStats).forEach((branchName) => {
-          if (!branchMeta[branchName]) {
-            delete branchStats[branchName];
-          }
-        });
-
-        const newPath = fileContents[file].path.replace(/\.nyc_output\/separate\/js\/.*\/sifrr\.([^.]*)(\.module)?\.js$/, 'packages/browser/sifrr-$1/dist/sifrr.$1$2.js');
-        fileContents[newPath] = Object.assign({}, fileContents[file]);
-        fileContents[newPath].path = newPath;
-        delete fileContents[file];
-      }
-    }
-
-    fs.writeFileSync(filePath, JSON.stringify(fileContents));
+  if (fs.existsSync(nycReport)) {
+    const allFiles = [];
+    loadDir(nycReport, (file) => allFiles.push(file));
+    allFiles.forEach(async (file) => {
+      if (file.indexOf('full-coverage.json') < 0) await exec(`rm ${file}`);
+    });
   }
-
-  const allFiles = [];
-  loadDir(nycReport, (file) => allFiles.push(file));
-  allFiles.forEach(async (file) => {
-    if (file.indexOf('full-coverage.json') < 0 && file.indexOf('separate/js') < 0) await exec(`rm ${file}`);
-  });
 }

@@ -16,7 +16,6 @@
   "scripts": {
     "test": "./scripts/test/runall",
     "jtest": "yarn test -j",
-    "cov-test": "COVERAGE=true nyc --reporter=json --report-dir=./.nyc_output yarn test",
     "test-server": "node ./scripts/test-server -p 1234 -d ./packages/browser/sifrr-dom/test/public,./packages/browser/sifrr-fetch/test/public,./packages/browser/sifrr-route/test/public,./packages/browser/sifrr-serviceworker/test/public,./packages/browser/sifrr-storage/test/public,./packages/server/sifrr-api/test/public,./packages/server/sifrr-cli/test/public,./packages/server/sifrr-seo/test/public",
     "build": "./scripts/yarn rollup -c",
     "publish": "./scripts/yarn publish"
@@ -48,18 +47,25 @@
     "eslint-plugin-html": "^5.0.0",
     "express": "^4.16.4",
     "file-url": "^2.0.2",
+    "istanbul-lib-hook": "^2.0.1",
+    "istanbul-lib-instrument": "^3.0.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "puppeteer": "^1.11.0",
-    "puppeteer-to-istanbul": "https://github.com/aadityataparia/puppeteer-to-istanbul.git",
     "repl": "^0.1.3",
     "rollup": "^0.64.1",
     "rollup-plugin-babel": "^4.0.1",
     "rollup-plugin-cleanup": "^3.0.0",
     "rollup-plugin-commonjs": "^9.1.5",
     "rollup-plugin-eslint": "^5.0.0",
+    "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1",
     "semantic-release": "^15.13.3"
+  },
+  "nyc": {
+    "include": [
+      "**/src/*.js"
+    ]
   }
 }

@@ -1,6 +1,8 @@
 const express = require('express'),
   compression = require('compression'),
   serveStatic = require('serve-static'),
+  staticTransform = require('connect-static-transform'),
+  fs = require('fs'),
   path = require('path');
 
 let port = false;
@@ -18,17 +20,35 @@ if (diri !== -1) {
 const server = express();
 
 // export server for importing
-
 const sss = function(port, dirs = dir) {
   server.use(compression());
+
+  const toCover = process.env.COVERAGE === 'true';
 
   // serve all directories
   if (!Array.isArray(dirs)) dirs = [dirs];
   dirs.forEach(dirS => {
     server.use(serveStatic(dirS));
-    server.use(serveStatic(path.join(dirS, '../../dist')));
+
+    if (toCover) {
+      const { createInstrumenter } = require('istanbul-lib-instrument');
+      const instrumenter = createInstrumenter();
+      const st = staticTransform({
+        root: path.join(dirS, '../../dist'),
+        match: /.+\.js/,
+        transform: function (path, text, send) {
+          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))));
+        }
+      });
+      server.use(st);
+    } else {
+      server.use(serveStatic(path.join(dirS, '../../dist')));
+    }
+
     server.use((req, res) => res.sendFile(path.join(dirS, './index.html')));
   });
+
+
 
   return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirs));
 };

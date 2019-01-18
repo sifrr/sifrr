@@ -5,6 +5,7 @@ const terser = require('rollup-plugin-terser').terser;
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const cleanup = require('rollup-plugin-cleanup');
+const istanbul = require('rollup-plugin-istanbul');
 
 module.exports = function getRollupConfig(name, isBrowser = true) {
   let fileName = name.toLowerCase();
@@ -80,6 +81,32 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
               comments: 'all'
             }
           })
+        ]
+      },
+      {
+        input: `src/${fileName}.js`,
+        output: {
+          file: `dist/${fileName}.test.js`,
+          format: 'umd',
+          name: name,
+          banner: banner,
+          footer: footer,
+          sourcemap: true,
+          globals: globals
+        },
+        preferConst: true,
+        external: external,
+        plugins: [
+          resolve({
+            browser: true
+          }),
+          commonjs(),
+          eslint(),
+          babel({
+            exclude: 'node_modules/**',
+          }),
+          cleanup(),
+          istanbul()
         ]
       }
     ];

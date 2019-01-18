@@ -51,6 +51,7 @@ function stubRequests() {
 
 async function getResponse(type, url, options, text = false) {
   return page.evaluate((type, url, options, text) => {
+    if (typeof Sifrr === 'undefined') return Sifrr;
     const ret = Sifrr.Fetch[type](url, options);
     if (text) return ret.then((resp) => resp.text());
     else return ret.catch((e) => e.message);
@@ -62,7 +63,7 @@ describe('sifrr-fetch', () => {
   before(async () => {
     await page.setRequestInterception(true);
     stubRequests();
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/`, { waitUntil: 'networkidle0' });
   });
 
   it('gets request', async () => {

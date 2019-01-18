@@ -14,7 +14,7 @@ class SifrrSeo {
     return true;
   }
 
-  constructor(botUserAgents = ['Googlebot', // Google
+  constructor(userAgents = ['Googlebot', // Google
   'Bingbot', // Bing
   'Slurp', // Slurp
   'DuckDuckBot', // DuckDuckGo
@@ -22,35 +22,28 @@ class SifrrSeo {
   'YandexBot', // Yandex
   'Sogou', // Sogou
   'Exabot']) {
-    this._bots = botUserAgents.map(ua => new RegExp(ua));
+    this._uas = userAgents.map(ua => new RegExp(ua));
+    this.launched = false;
+    this.shouldRenderCache = {};
+    this.renderedCache = {};
   }
 
   get middleware() {
     function mw(req, res, next) {
-      if (!this.isHeadless(req) && this.isBot(req)) {
-        const self = this;
-        const browser = this.browser;
-        browser.then(br => {
-          return br.newPage();
-        }).then(async page => {
-          const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-          const resp = await page.goto(fullUrl, {
-            waitUntil: 'networkidle0'
-          });
+      if (this.shouldRender(req)) {
+        const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
-          if (resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0) {
-            process.stdout.write(`Rendering ${fullUrl} using sifrr-seo.\n`);
-            await page.evaluate(self.constructor.flatteningJS);
-            const renderedContent = await page.evaluate(() => new XMLSerializer().serializeToString(document));
-            res.send(renderedContent);
+        if (this.shouldRenderCache[fullUrl] === false) {
+          next();
+        } else {
+          if (this.shouldRenderCache[fullUrl]) {
+            res.send(this.renderedCache[fullUrl]);
           } else {
-            next();
+            this.render(fullUrl).then(resp => {
+              if (resp) res.send(resp);else next();
+            });
           }
-        }).then(() => {
-          return browser.close();
-        }).catch(e => {
-          process.stdout.write(e);
-        });
+        }
       } else {
         next();
       }
@@ -69,23 +62,64 @@ class SifrrSeo {
     return false;
   }
 
-  isBot(req) {
+  shouldRender(req) {
+    return this.isUserAgent(req);
+  }
+
+  isUserAgent(req) {
     const ua = req.get('User-Agent');
-    const l = this._bots.length;
+    let ret = false;
 
-    for (let i = 0; i < l; i++) {
-      if (this._bots[i].test(ua)) return true;
-    }
+    this._uas.forEach(b => {
+      if (b.test(ua)) ret = true;
+    });
 
-    return false;
+    return ret;
   }
 
-  addBot(botUserAgent) {
-    this._bots.push(new RegExp(botUserAgent));
+  addUserAgent(userAgent) {
+    this._uas.push(new RegExp(userAgent));
   }
 
-  get browser() {
-    return puppeteer.launch();
+  clearCache() {
+    this.shouldRenderCache = {};
+    this.renderedCache = {};
+  }
+
+  async launchBrowser() {
+    this.browser = await puppeteer.launch({
+      headless: process.env.HEADLESS !== 'false',
+      devtools: process.env.HEADLESS !== 'false'
+    });
+    this.launched = true;
+    this.browser.on('disconnected', this.launchBrowser.bind(this));
+  }
+
+  async render(fullUrl) {
+    let pro = Promise.resolve(true);
+    if (!this.launched) pro = this.launchBrowser();
+    const me = this;
+    return pro.then(() => this.browser.newPage()).then(async page => {
+      const resp = await page.goto(fullUrl, {
+        waitUntil: 'networkidle0'
+      });
+      const sRC = !!(resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0);
+      let ret;
+
+      if (sRC) {
+        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
+        await page.evaluate(this.constructor.flatteningJS);
+        const resp = await page.evaluate(() => new XMLSerializer().serializeToString(document));
+        me.renderedCache[fullUrl] = resp;
+        ret = resp;
+      } else {
+        ret = false;
+      }
+
+      me.shouldRenderCache[fullUrl] = sRC;
+      page.close();
+      return ret;
+    });
   }
 
 }
