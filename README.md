@@ -1,7 +1,5 @@
 # sifrr · [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sifrr/sifrr/blob/master/LICENSE) [![CircleCI](https://circleci.com/gh/sifrr/sifrr.svg?style=shield)](https://circleci.com/gh/sifrr/sifrr) [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) [![No PRs yet](https://img.shields.io/badge/PRs-Not%20yet-red.svg)](<>) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield)
 
-[Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/AUTHORS)
-
 sifrr is a set of libraries for creating modern webapps.
 
 ## Packages
@@ -29,6 +27,10 @@ sifrr is a set of libraries for creating modern webapps.
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
 #### Packages that have tests have a working example of that package in `test/public` folder.
+
+## Contributing
+[Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/AUTHORS)
+[WIP]
 
 ## License
 

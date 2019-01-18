@@ -2,14 +2,14 @@
 
 const Mocha = require('mocha');
 const mkdirp = require('mkdirp');
-const listen = require('../test-server');
+const listen = require('./server');
 const exec = require('../exec');
-const loadDir = require('./loaddir');
 const testLoader = require('./testloader');
 
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');
+global.sinon = require('sinon').createSandbox();
 global.assert = chai.assert;
 global.expect = chai.expect;
 global.should = chai.should();
@@ -43,7 +43,7 @@ const loadBrowser = async function() {
   global.browser = {
     close: async () => {
       if (!toCover) return pBrowser.close();
-      const jsCoverage = await page.evaluate(() => window.__coverage__ || {});
+      const jsCoverage = await page.evaluate(() => window.__coverage__);
       writeCoverage(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
       return pBrowser.close();
     }
@@ -66,12 +66,12 @@ const mochaOptions = {
 };
 
 const useJunitReporter = process.argv.indexOf('-j') > 0 || process.argv.indexOf('--junit') > 0;
-// const junitXmlFile = path.join(__dirname, `../../test-results/${dir.split(path.sep).pop()}/results.xml`);
+const junitXmlFile = path.join(__dirname, `../../test-results/${process.argv[2].split(path.sep).pop()}/results.xml`);
 
 if (useJunitReporter) {
   mochaOptions.reporter = 'mocha-junit-reporter';
   mochaOptions.reporterOptions = {
-    // mochaFile: junitXmlFile
+    mochaFile: junitXmlFile
   };
 }
 
@@ -116,7 +116,7 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
 
       // Get and fix code coverage
       if (toCover) {
-        writeCoverage(global.__coverage__, path.join(nycReport, `./${Date.now()}-unit-full-coverage.json`));
+        writeCoverage(global.__coverage__, path.join(nycReport, `./${Date.now()}-unit-coverage.json`));
         fixCoverage();
       }
     });
@@ -132,23 +132,16 @@ function writeCoverage(coverage, file) {
     if (err) throw err;
   });
 
-  fs.writeFileSync(file, JSON.stringify(coverage), err => {
+  fs.writeFileSync(file, JSON.stringify(coverage || {}), err => {
     if(err) throw err;
   });
 }
 
 // Filter out clutter, map to real files
 async function fixCoverage() {
-  const fileName = `${Date.now()}-browser-full-coverage.json`;
+  const fileName = `${Date.now()}-browser-coverage.json`;
   if (fs.existsSync(`${nycReport}/separate`)) {
     await exec(`nyc merge ${nycReport}/separate ${nycReport}/${fileName}`);
-  }
-
-  if (fs.existsSync(nycReport)) {
-    const allFiles = [];
-    loadDir(nycReport, (file) => allFiles.push(file));
-    allFiles.forEach(async (file) => {
-      if (file.indexOf('full-coverage.json') < 0) await exec(`rm ${file}`);
-    });
+    await exec(`rm -rf ${nycReport}/separate`);
   }
 }

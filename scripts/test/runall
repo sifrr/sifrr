@@ -3,8 +3,7 @@
 STATUS=0
 
 if [[ $COVERAGE == 'true' ]]; then
-  find ./.nyc_output -name "*coverage*.json" -delete
-  rm -rf ./.nyc_output/js
+  rm -rf ./.nyc_output
 fi
 
 for dir in ./packages/*/*
@@ -15,5 +14,9 @@ do
   NEW_STATUS=$?
   [ $NEW_STATUS -eq 0 ] || STATUS=1
 done
+
+if [[ $COVERAGE == 'true' ]]; then
+  node ./scripts/test/htmlcoverage
+fi
 
 exit $STATUS # Exit with 1 if any test failed

@@ -24,7 +24,7 @@ let pkgToMerge = {
     test: `../../../scripts/test/run ${folder}`,
     build: './node_modules/.bin/rollup -c',
     'test-build': 'cd test/public && ../../node_modules/.bin/rollup -c',
-    'test-server-only': `node ../../../scripts/test-server.js -d ${folder}/test/public -p 1111`,
+    'test-server-only': `node ../../../scripts/test/server.js -d ${folder}/test/public -p 1111`,
     'test-server': 'yarn test-build; yarn test-server-only'
   },
   files: [

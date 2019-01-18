@@ -1,6 +1,6 @@
 const exec = require('child_process').execSync;
 
-function check(cmnd, err, exit = true) {
+function check(cmnd, err) {
   let isWorking;
   try {
     exec(cmnd, { stdio: 'ignore' });
@@ -10,8 +10,8 @@ function check(cmnd, err, exit = true) {
   }
 
   if (!isWorking) {
-    global.console.error(err);
-    if (exit) process.exit(1);
+    process.stderr.write(err);
+    process.exit(1);
     return false;
   }
 

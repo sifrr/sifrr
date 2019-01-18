@@ -2,12 +2,17 @@ const createFile = require('../../../src/utils/createfile');
 const exec = require('child_process').execSync;
 
 describe('Create File', () => {
-  beforeEach(() => {
+  before(() => {
+    sinon.stub(process, 'exit');
+    sinon.stub(process.stderr, 'write');
+  });
+
+  afterEach(() => {
     exec('if [ -f ./test.txt ]; then rm ./test.txt; fi');
   });
 
   after(() => {
-    exec('if [ -f ./test.txt ]; then rm ./test.txt; fi');
+    sinon.restore();
   });
 
   it('creates file when it is not present', () => {
@@ -15,8 +20,10 @@ describe('Create File', () => {
   });
 
   it("doesn't create file when it is present", () => {
+    createFile(path.resolve('./test.txt'), 'Mnop');
     createFile(path.resolve('./test.txt'), 'Abcd');
-    expect(createFile(path.resolve('./test.txt'), 'Abcd', false, false)).to.be.false;
+    assert(process.stderr.write.calledWith(`File already exists at ${path.resolve('./test.txt')}`));
+    assert(process.exit.calledWith(1));
   });
 
   it('creates file when it is present and forced', () => {
