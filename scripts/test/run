@@ -41,6 +41,7 @@ const loadBrowser = async function() {
   let page = await pBrowser.newPage();
   await page.setViewport( { width: 1280, height: 800} );
   global.browser = {
+    current: pBrowser,
     close: async () => {
       if (!toCover) return pBrowser.close();
       const jsCoverage = await page.evaluate(() => window.__coverage__);

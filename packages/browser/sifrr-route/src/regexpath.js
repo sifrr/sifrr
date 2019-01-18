@@ -6,8 +6,7 @@ class RegexPath {
 
   get regex() {
     this._regex = this._regex || new RegExp('^' + this.path
-      .replace(/:[A-Za-z0-9_]{0,}\?$/g, '([^/]{0,})?')
-      .replace(/:[A-Za-z0-9_]{0,}\?/g, '([^/]{0,})')
+      .replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?')
       .replace(/\*\*/g, '(.{0,})')
       .replace(/\*/g, '([^/]{0,})')
       .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');

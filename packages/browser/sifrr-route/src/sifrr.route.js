@@ -18,7 +18,9 @@ const template = Sifrr.Dom.html`<style>
 </style>
 <slot></slot>`;
 
-const RegexPath = require('./regexpath');
+Sifrr.Dom.Route =  {
+  RegexPath: require('./regexpath')
+};
 
 Sifrr.Dom.Event.add('click');
 const SifrrRoutes = [];
@@ -47,7 +49,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
   }
 
   get routeRegex() {
-    this._routeRegex = this._routeRegex || new RegexPath(this.dataset.sifrrPath);
+    this._routeRegex = this._routeRegex || new Sifrr.Dom.Route.RegexPath(this.dataset.sifrrPath);
     return this._routeRegex;
   }
 
@@ -92,6 +94,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
   static onRouteChange() {}
 }
 
+Sifrr.Dom.Route.Element = SifrrRoute;
 Sifrr.Dom.register(SifrrRoute);
 
 document.addEventListener('click', (e) => {
