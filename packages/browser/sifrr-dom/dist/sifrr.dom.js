@@ -597,7 +597,6 @@
       onConnect() {}
       disconnectedCallback() {
         if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-        if (!this.constructor.useShadowRoot) this.textContent = '';
         this.onDisconnect();
       }
       onDisconnect() {}
@@ -734,10 +733,12 @@
   SifrrDom.elements = {};
   SifrrDom.Element = element;
   SifrrDom.Parser = parser;
-  SifrrDom.makeEqual = makeequal;
   SifrrDom.Loader = loader;
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event;
+  SifrrDom.makeEqual = makeequal;
+  SifrrDom.Url = url;
+  SifrrDom.Json = json;
   SifrrDom.html = (str, ...extra) => {
     const tmp = TEMPLATE$3();
     if (str[0] && typeof str[0] === 'string') {
@@ -789,8 +790,6 @@
     let loader$$1 = new SifrrDom.Loader(elemName, config);
     return loader$$1.executeScripts();
   };
-  SifrrDom.Url = url;
-  SifrrDom.Json = json;
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
     if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
   };

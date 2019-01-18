@@ -720,7 +720,6 @@ function elementClassFactory(baseClass) {
 
     disconnectedCallback() {
       if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-      if (!this.constructor.useShadowRoot) this.textContent = '';
       this.onDisconnect();
     }
 
@@ -892,10 +891,12 @@ SifrrDom.elements = {}; // Classes
 
 SifrrDom.Element = element;
 SifrrDom.Parser = parser;
-SifrrDom.makeEqual = makeequal;
 SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
-SifrrDom.Event = event; // HTML to template
+SifrrDom.Event = event;
+SifrrDom.makeEqual = makeequal;
+SifrrDom.Url = url;
+SifrrDom.Json = json; // HTML to template
 
 SifrrDom.html = (str, ...extra) => {
   const tmp = TEMPLATE$3();
@@ -957,10 +958,8 @@ SifrrDom.load = function (elemName, config = {
 }) {
   let loader$$1 = new SifrrDom.Loader(elemName, config);
   return loader$$1.executeScripts();
-};
+}; // Relative path to element html
 
-SifrrDom.Url = url;
-SifrrDom.Json = json; // Relative path to element html
 
 SifrrDom.relativeTo = function (elemName, relativeUrl) {
   if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);

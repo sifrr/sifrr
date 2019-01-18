@@ -11,10 +11,13 @@ SifrrDom.elements = {};
 // Classes
 SifrrDom.Element = require('./dom/element');
 SifrrDom.Parser = require('./dom/parser');
-SifrrDom.makeEqual = require('./dom/makeequal');
 SifrrDom.Loader = require('./dom/loader');
 SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
+
+SifrrDom.makeEqual = require('./dom/makeequal');
+SifrrDom.Url = UrlExt;
+SifrrDom.Json = JsonExt;
 
 // HTML to template
 SifrrDom.html = (str, ...extra) => {
@@ -73,8 +76,6 @@ SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }
   return loader.executeScripts();
 };
 
-SifrrDom.Url = UrlExt;
-SifrrDom.Json = JsonExt;
 // Relative path to element html
 SifrrDom.relativeTo = function(elemName, relativeUrl) {
   if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);

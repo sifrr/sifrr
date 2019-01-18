@@ -75,7 +75,6 @@ function elementClassFactory(baseClass) {
 
     disconnectedCallback() {
       if (this.shadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
-      if (!this.constructor.useShadowRoot) this.textContent = '';
       this.onDisconnect();
     }
 
