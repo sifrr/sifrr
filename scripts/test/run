@@ -94,11 +94,9 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
     const pubPs = await dirs
       .map(async dir => await testLoader(dir, mocha, { runUnitTests, runBrowserTests }));
     const pubPaths = (await Promise.all(pubPs)).filter(x => !!x);
-    if (pubPaths.length > 0) {
-      ser = listen(port, pubPaths);
-    }
 
     if (runBrowserTests || !runUnitTests) {
+      if (pubPaths.length > 0) ser = listen(port, pubPaths);
       await loadBrowser();
     }
 
