@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
+  const paths = [];
+
   fs
     .readdirSync(dir)
     .filter(file =>
@@ -10,23 +12,22 @@ function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
     )
     .forEach((file) => {
       const routes = require(path.join(dir, file));
-      let defaultBasePath;
-      if (typeof basePath === 'string') defaultBasePath = [basePath];
       let basePaths = routes.basePath || '';
       delete routes.basePath;
-      if (typeof basePaths === 'string') basePaths = [basePath];
+      if (typeof basePaths === 'string') basePaths = [basePaths];
 
-      basePath.concat(defaultBasePath).forEach((basep) => {
+      basePaths.forEach((basep) => {
         for (let method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
-            app[method](basep + r, methodRoutes[r]);
+            app[method](basePath + basep + r, methodRoutes[r]);
+            paths.push(basePath + basep + r);
           }
         }
       });
     });
 
-  return app;
+  return paths;
 }
 
 module.exports = loadRoutes;
