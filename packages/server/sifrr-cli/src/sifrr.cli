@@ -5,8 +5,7 @@ global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 const program = require('yargs');
 
 // get commands
-const dbReset = require('./commands/db:reset');
-const dbSetup = require('./commands/db:setup');
+const db = require('./commands/db');
 const elementGenerate = require('./commands/elementgenerate');
 
 // Commands
@@ -15,8 +14,8 @@ const cli = program
   .version()
   .alias('version', 'v')
   .alias('help', 'h')
-  .command('db:reset', 'reset database for given node environment (clears database).', dbReset)
-  .command('db:setup', 'setup database for given node environment (doesn\'t clear database).', dbSetup)
+  .command('db:reset', 'reset database for given node environment (clears database).', db('reset'))
+  .command('db:setup', 'setup database for given node environment (doesn\'t clear database).', db('setup'))
   .command('element:generate <name>', 'create sifrr-dom custom element', (yargs) => {
     return yargs
       .positional('name', {
