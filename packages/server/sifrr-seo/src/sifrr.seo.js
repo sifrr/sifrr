@@ -38,7 +38,7 @@ class SifrrSeo {
         if (this.shouldRenderCache[fullUrl] === false) {
           next();
         } else {
-          if (this.shouldRenderCache[fullUrl]) {
+          if (this.shouldRenderCache[fullUrl] && typeof this.renderedCache[fullUrl] === 'string') {
             res.send(this.renderedCache[fullUrl]);
           } else {
             this.render(fullUrl).then((resp) => {
