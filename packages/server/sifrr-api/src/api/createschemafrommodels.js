@@ -1,18 +1,20 @@
 const { makeExecutableSchema } = require('graphql-tools');
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
 
 function getTypeDef(qs, resolvers) {
-  let ret = '';
+  let ret = [];
   for (let q in qs) {
     const qdet = qs[q];
     const args = qdet.args ? `(${qdet.args})` : '';
-    ret += `${q}${args}: ${qdet.returnType}
-    `;
+    ret.push(`${q}${args}: ${qdet.returnType}`);
     resolvers[q] = qdet.resolver;
   }
-  return ret;
+  return ret.join('\n  ');
 }
 
-function createSchemaFromModels(models, { extra = '', query = {}, mutation = {} } = {}) {
+function createSchemaFromModels(models, { extra = '', query = {}, mutation = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
   const typeDefs = [], resolvers = {};
   for(let modelName in models) {
     typeDefs.push(models[modelName].gqSchema);
@@ -26,21 +28,28 @@ function createSchemaFromModels(models, { extra = '', query = {}, mutation = {} 
   const qnew = {}, mnew = {};
 
   const typeDef = `type Query {
-    ${getTypeDef(resolvers.Query, qnew)}
-  }
+  ${getTypeDef(resolvers.Query, qnew)}
+}
 
-  type Mutation {
-    ${getTypeDef(resolvers.Mutation, mnew)}
-  }
+type Mutation {
+  ${getTypeDef(resolvers.Mutation, mnew)}
+}
 
-  scalar SequelizeJSON
-  scalar Date
-  ${extra}
-  `;
+scalar SequelizeJSON
+scalar Date
+${extra}
+`;
 
   typeDefs.push(typeDef);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
+
+  if (saveSchema) {
+    schemaPath = path.resolve(schemaPath);
+    mkdirp(path.dirname(schemaPath));
+    const comment = '# This schema was automatically generate by sifrr-api, do not edit manually \n\n';
+    fs.writeFileSync(schemaPath, comment + typeDefs.join('\n\n'));
+  }
 
   return makeExecutableSchema({
     typeDefs,

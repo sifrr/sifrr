@@ -30,6 +30,7 @@
     "graphql-relay": "^0.5.5",
     "graphql-sequelize": "^9.3.1",
     "graphql-tools": "^4.0.3",
+    "mkdirp": "^0.5.1",
     "sequelize": "^4.42.0"
   },
   "peerDependencies": {},
