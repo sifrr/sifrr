@@ -296,16 +296,16 @@ class CustomTag extends Sifrr.Dom.Element {
 #### Clearing state of element
 
 ```js
-customtag.clearState()
+customtag.clearState() // Not recommended to avoid blank bindings
 ```
 
 #### Query selectors for custom element content
 
 ```js
 // querySelector
-customtag.$(selector, shadowRoot = true if element uses shadow root else false by default);
+customtag.$(selector, /* shadowRoot = default: true if element uses shadow root else false */);
 // querySelectorAll
-customtag.$$(selector, shadowRoot = true if element uses shadow root else false by default);
+customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root else false */);
 // If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
 ```
 
@@ -317,7 +317,7 @@ customtag.$$(selector, shadowRoot = true if element uses shadow root else false 
 // Add synthetic event listerner (only need to be called once for one type of event)
 Sifrr.Dom.Event.add('click');
 
-// Adding event callback on a element (any element not just sifrr element), works inside shadowRoots too
+// Adding event callback on an element (any html element), works inside shadowRoots also
 el.$click = fxn;
 // fxn will be called with two arguments `fxn(event, target)`
 
@@ -509,4 +509,4 @@ then you can use custom-tag as button in html like:
 ## Special thanks to:
 
 -   <https://github.com/Freak613/stage0> for optimization ideas
--   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance
+-   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr elementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)
