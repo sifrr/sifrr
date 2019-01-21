@@ -84,28 +84,39 @@ class SifrrSeo {
     this.renderedCache = {};
   }
 
+  close() {
+    this.browser.close();
+  }
+
   async launchBrowser() {
     this.browser = await puppeteer.launch({
       headless: process.env.HEADLESS !== 'false',
-      devtools: process.env.HEADLESS !== 'false'
+      devtools: process.env.HEADLESS !== 'false',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox'
+      ],
     });
     this.launched = true;
-    this.browser.on('disconnected', this.launchBrowser.bind(this));
+    const me = this;
+    this.browser.on('disconnected', () => {
+      me.launched = false;
+    });
   }
 
   async render(fullUrl) {
     let pro = Promise.resolve(true);
-    if (!this.launched) pro = this.launchBrowser();
     const me = this;
-    return pro.then(() => this.browser.newPage()).then(async (page) => {
-      const resp = await page.goto(fullUrl, { waitUntil: 'networkidle0' });
+    if (!this.launched) pro = this.launchBrowser();
+    return pro.then(() => this.browser.newPage()).then(async (newp) => {
+      const resp = await newp.goto(fullUrl, { waitUntil: 'networkidle0' });
       const sRC = !!(resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0);
       let ret;
 
       if (sRC) {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
-        await page.evaluate(this.constructor.flatteningJS);
-        const resp = await page.evaluate(() => new XMLSerializer().serializeToString(document));
+        await newp.evaluate(this.constructor.flatteningJS);
+        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
         me.renderedCache[fullUrl] = resp;
         ret = resp;
       } else {
@@ -113,8 +124,10 @@ class SifrrSeo {
       }
 
       me.shouldRenderCache[fullUrl] = sRC;
-      page.close();
+      newp.close();
       return ret;
+    }).catch(e => {
+      process.stderr.write(e.message);
     });
   }
 }

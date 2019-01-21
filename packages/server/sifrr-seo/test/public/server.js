@@ -25,8 +25,7 @@ if (diri !== -1) {
 const server = express();
 
 // Show total request time
-const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
-if (ENV === 'development') {
+if (global.ENV === 'development') {
   let time;
   server.use(function (req, res, next) {
     time = Date.now();
@@ -51,8 +50,19 @@ server.use(serveStatic(__dirname));
 server.use(serveStatic(path.join(__dirname, '../../dist')));
 server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));
 
-// listen on port if port given
-if (port) {
-  server.listen(port, () => global.console.log(`Listening on port ${port} and directory '${dir}'`));
+function sss(p) {
+  const ser = server.listen(p, () => global.console.log(`Listening on port ${p} and directory '${dir}'`));
+  return {
+    close: () => {
+      ser.close();
+      seo.close();
+    }
+  };
 }
 
+// listen on port if port given
+if (port) {
+  sss(port);
+}
+
+module.exports = sss;

@@ -6,6 +6,7 @@ const listen = require('./server');
 const exec = require('../exec');
 const testLoader = require('./testloader');
 
+global.ENV = 'test';
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');
@@ -91,13 +92,17 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
   try {
     let ser = false;
 
-    const dirs = process.argv[2].split(',').filter(x => !!x);
-    const pubPs = await dirs
-      .map(async dir => await testLoader(dir, mocha, { runUnitTests, runBrowserTests }));
-    const pubPaths = (await Promise.all(pubPs)).filter(x => !!x);
-
     if (runBrowserTests || !runUnitTests) {
-      if (pubPaths.length > 0) ser = listen(port, pubPaths);
+      const dir = process.argv[2];
+      const pubPath = await testLoader(dir, mocha, { runUnitTests, runBrowserTests });
+      let serverFile;
+      if (pubPath) serverFile = path.join(pubPath, './server.js');
+      if (pubPath && fs.existsSync(serverFile)) {
+        ser = require(serverFile)(port);
+      } else if (pubPath) {
+        ser = listen(port, pubPath);
+      }
+
       await loadBrowser();
     }
 
