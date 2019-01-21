@@ -1,38 +1,38 @@
 module.exports = {
-  'env': {
-    'browser': true,
-    'node': true,
-    'es6': true,
-    'mocha': true
+  env: {
+    browser: true,
+    node: true,
+    es6: true,
+    mocha: true
   },
   // for tests
-  'globals': {
-    'ENV': true,
-    'fs': false,
-    'path': false,
-    'chai': false,
-    'sinon': false,
-    'assert': false,
-    'expect': false,
-    'should': false,
-    'puppeteer': false,
-    'server': false,
-    'port': false,
-    'PATH': false,
-    'page': false,
-    'browser': false,
-    'Sifrr': false,
-    'SifrrStorage': false,
-    'requireBase': false
+  globals: {
+    ENV: true,
+    fs: false,
+    path: false,
+    chai: false,
+    sinon: false,
+    assert: false,
+    expect: false,
+    should: false,
+    puppeteer: false,
+    server: false,
+    port: false,
+    PATH: false,
+    page: false,
+    browser: false,
+    Sifrr: false,
+    SifrrStorage: false,
+    requireBase: false
   },
-  'extends': 'eslint:recommended',
-  'parserOptions': {
-    'sourceType': 'module',
-    'ecmaVersion': 2017,
-    'esversion': 2017
+  extends: 'eslint:recommended',
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 2017,
+    esversion: 2017
   },
-  'rules': {
-    'indent': [
+  rules: {
+    indent: [
       'error',
       2
     ],
@@ -40,7 +40,7 @@ module.exports = {
       'error',
       'unix'
     ],
-    'quotes': [
+    quotes: [
       'error',
       'single',
       {
@@ -48,7 +48,7 @@ module.exports = {
         allowTemplateLiterals: true
       }
     ],
-    'semi': [
+    semi: [
       'warn',
       'always'
     ],
@@ -57,10 +57,10 @@ module.exports = {
       'as-needed'
     ]
   },
-  'plugins': [
+  plugins: [
     'html'
   ],
-  'settings': {
+  settings: {
     'html/indent': '+2'
   }
 };
