@@ -4,3 +4,4 @@ yarn-error*
 test-results
 .nyc_output
 coverage
+.*docker*
