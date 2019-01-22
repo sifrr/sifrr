@@ -28,11 +28,22 @@ sifrr is a set of libraries for creating modern webapps.
 
 #### Packages that have tests have a working example of that package in `test/public` folder.
 
+## Node support
+
+| Node Version | CI                                                                                                                    |
+| :----------- | :----------------------------------------------------------------------------------------------------------------------- |
+| v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
+| v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
+| v9           | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/3)](https://travis-ci.org/sifrr/sifrr) |
+
 ## Contributing
+
 [Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/AUTHORS)
 [WIP]
 
 ## License
+
+Sifrr is [MIT Licensed](./LICENSE).
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_large)
 
