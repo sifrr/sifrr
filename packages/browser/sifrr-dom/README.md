@@ -19,7 +19,7 @@ A &lt; 5KB DOM library for creating user interfaces for websites using Custom El
 
 ## Performance Comparison
 
-Run locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark)
+Run locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark). Latest benchmark implementation [here](./test/public/speedtest.html)
 
 <img src="./performance.png" alt="Performance" height='400'>
 

@@ -830,16 +830,17 @@ const SYNTHETIC_EVENTS = {};
 
 const nativeToSyntheticEvent = (e, name) => {
   return Promise.resolve((() => {
-    let dom = e.composedPath ? e.composedPath()[0] : e.target;
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    let dom = target;
 
     while (dom) {
       const eventHandler = dom[`$${name}`];
 
       if (eventHandler) {
-        eventHandler(e, dom);
+        eventHandler(e, target);
       }
 
-      cssMatchEvent(e, name, dom);
+      cssMatchEvent(e, name, target);
       dom = dom.parentNode || dom.host;
     }
   })());
