@@ -1,10 +1,9 @@
-#!/usr/bin/env node
-
 const Mocha = require('mocha');
 const mkdirp = require('mkdirp');
 const listen = require('./server');
 const exec = require('../exec');
 const testLoader = require('./testloader');
+const inspector = require('inspector');
 
 global.ENV = 'test';
 global.fs = require('fs');
@@ -17,6 +16,10 @@ global.should = chai.should();
 global.puppeteer = require('puppeteer');
 global.port = 8888;
 global.PATH = `http://localhost:${port}`;
+
+// check if should inspect or not
+const shouldInspect = process.argv.indexOf('-i') > 0 || process.argv.indexOf('--inspect') > 0;
+if (shouldInspect) inspector.open();
 
 // Check if need coverage
 const toCover = process.env.COVERAGE === 'true';

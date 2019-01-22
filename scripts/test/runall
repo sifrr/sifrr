@@ -9,14 +9,14 @@ fi
 for dir in ./packages/*/*
 do
   echo "Running test in ${dir}:"
-  ./scripts/test/run "${dir}" "$@"
+  node ./scripts/test/run.js "${dir}" "$@"
 
   NEW_STATUS=$?
   [ $NEW_STATUS -eq 0 ] || STATUS=1
 done
 
 if [[ $COVERAGE == 'true' ]]; then
-  node ./scripts/test/htmlcoverage
+  node ./scripts/test/htmlcoverage.js
 fi
 
 exit $STATUS # Exit with 1 if any test failed

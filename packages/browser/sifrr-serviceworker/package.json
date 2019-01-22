@@ -13,7 +13,7 @@
     "firefox >= 53"
   ],
   "scripts": {
-    "test": "../../../scripts/test/run ./packages/browser/sifrr-serviceworker",
+    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-serviceworker",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-serviceworker/test/public -p 1111",
@@ -28,7 +28,7 @@
     "service worker",
     "sw"
   ],
-  "author": "Sifrr",
+  "author": "Aaditya Taparia <aadityataparia@gmail.com>",
   "bugs": {
     "url": "https://github.com/sifrr/sifrr/issues"
   },
@@ -41,10 +41,10 @@
     "@babel/preset-env": "^7.0.0",
     "@semantic-release/changelog": "^3.0.2",
     "@semantic-release/git": "^7.0.8",
-    "babel-plugin-istanbul": "^5.1.0",
     "browserslist": "^4.1.0",
     "chai": "^4.1.2",
     "compression": "^1.7.3",
+    "connect-static-transform": "^0.9.1",
     "cross-env": "^5.2.0",
     "eslint-plugin-html": "^5.0.0",
     "express": "^4.16.4",
@@ -62,7 +62,6 @@
     "rollup-plugin-cleanup": "^3.0.0",
     "rollup-plugin-commonjs": "^9.1.5",
     "rollup-plugin-eslint": "^5.0.0",
-    "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1",
     "semantic-release": "^15.13.3",
