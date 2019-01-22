@@ -1,6 +1,6 @@
 # sifrr-dom · [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
-A &lt; 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding.
+A &lt; 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding. Alternative to React/Vue/Angular etc.
 
 ### Size
 
@@ -12,10 +12,16 @@ A &lt; 5KB DOM library for creating user interfaces for websites using Custom El
 
 ## Fetures
 
--   Simple API based on web components v1, custom elements v1, shadow dom v1 with callbacks
--   bindings (js based) without virtual DOM (faster than react), no special syntax except pure HTML, CSS, JS
+-   Simple API based on web components v1, custom elements v1, shadow dom v1 (optional) with callbacks
+-   Pure DOM bindings (no virtual DOM) still faster than react, no special syntax like jsx etc. only vanilla HTML, CSS, JS
 -   synthetic event listener
 -   simpler querySelector for custom elements/web components
+
+## Performance Comparison
+
+Run locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark)
+
+<img src="./performance.png" alt="Performance" height='400'>
 
 ## How to use
 
@@ -116,8 +122,9 @@ Sifrr.Dom.setup(config);
 </script>
 ```
 
-__OR__
-2. JS Element
+**OR**
+2\. JS Element
+
 ```js
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
@@ -168,6 +175,7 @@ or as module
 ```
 
 or as normal js
+
 ```js
 // index.html
 <script src="${baseUrl}/elements/custom/tag"></script>

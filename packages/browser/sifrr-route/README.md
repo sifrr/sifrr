@@ -2,18 +2,29 @@
 
 History API based Routing library for building One Page Applications with sifrr.
 
+### Size
+
+| Type                                         |                                                                                                                      Size                                                                                                                      |
+| :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Normal (`dist/sifrr.route.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.js)                   |
+| Minified (`dist/sifrr.route.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js)              |
+| Minified + Gzipped (`dist/sifrr.route.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js) |
+
+
 ## How to use
 
 1.  Copy contents of `dist/sifrr.route.js` to `elements/sifrr/route.js` folder in your sifrr app. And use `Sifrr.Dom.load('sifrr-route')` to load sifrr-route.
 2.  Or you can directly import in html:
 
 ```html
-<!-- Using npm -->
+<!-- Using ES6 modules and NPM -->
 <script type="module">
   import '@sifrr/route';
 </script>
-<!-- OR using CDN -->
-<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8" type="module"></script>
+<!-- OR ES6 modules and using CDN -->
+<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.module.js" charset="utf-8" type="module"></script>
+<!-- OR without module -->
+<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8"></script>
 ```
 
 -   You also need to take care in your server configuration that correct html file is served for all sifrr-routes.

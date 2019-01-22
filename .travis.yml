@@ -1,5 +1,6 @@
 language: node_js
 cache: yarn
+before_install: yarn config set workspaces-experimental true
 script: yarn test
 node_js:
   - '11'
