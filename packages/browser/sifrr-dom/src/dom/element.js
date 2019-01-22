@@ -97,7 +97,7 @@ function elementClassFactory(baseClass) {
     set state(v) {
       // this._oldState = this.state;
       this._state = this._state || {};
-      Object.assign(this._state, v);
+      if (this._state !== v) Object.assign(this._state, v);
       this.update();
     }
 

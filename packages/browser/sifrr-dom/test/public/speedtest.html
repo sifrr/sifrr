@@ -8,8 +8,8 @@
     @font-face {
       font-family: 'Glyphicons Halflings';
 
-      src: url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.eot');
-      src: url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/css/bootstrap/dist/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+      src: url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.eot');
+      src: url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.woff') format('woff'), url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
     }
     body {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -29,116 +29,6 @@
     Sifrr.Dom.setup();
     Sifrr.Dom.Event.add('click');
     Sifrr.Dom.load('main-element');
-    const sft = document.querySelector('main-element');
-    let startTime, lastMeasure;
-    let startMeasure = function(name) {
-      startTime = performance.now();
-      lastMeasure = name;
-    };
-    let stopMeasure = function() {
-      let last = lastMeasure;
-      if (lastMeasure) {
-        window.setTimeout(function() {
-          lastMeasure = null;
-          let stop = performance.now();
-          console.log(last + ' took ' + (stop - startTime));
-        }, 0);
-      }
-    };
-    let selected = null, from = 1;
-    document.$click = e => {
-      let target = e.path ? e.path[0] : e.target;
-      startMeasure(target.id || target.className);
-      if (target.matches('#add')) {
-        //console.log("add");
-        sft.state = {
-          data: sft.state.data.concat(buildData(1000, sft.state.data.length))
-        };
-      } else if (target.matches('#run')) {
-        //console.log("run");
-        sft.state = {
-          data: buildData(1000)
-        };
-      } else if (target.matches('#update')) {
-        let state = sft.state,
-          l = sft.state.data.length;
-        for (let i = 0; i < l; i += 10) {
-          state.data[i].label = state.data[i].label + ' !!!';
-          // this.data[i] = Object.assign({}, this.data[i], {label: this.data[i].label +' !!!'});
-        }
-        sft.state = state;
-      } else if (target.matches('#hideall')) {
-        //console.log("hideAll");
-        sft.state = {
-          data: []
-        };
-      } else if (target.matches('#showall')) {
-        //console.log("showAll");
-        sft.state = {
-          data: buildData(1000)
-        };
-      } else if (target.matches('#runlots')) {
-        //console.log("runLots");
-        sft.state = {
-          data: buildData(10000)
-        };
-      } else if (target.matches('#clear')) {
-        //console.log("clear");
-        sft.state = {
-          data: []
-        };
-      } else if (target.matches('#swaprows')) {
-        //console.log("swapRows");
-        let data = sft.state.data;
-        if (data.length > 998) {
-          let a = data[1];
-          data[1] = data[998];
-          data[998] = a;
-          sft.state = { data: data };
-        }
-      } else if (target.matches('.remove')) {
-        const id = getParent(target).state.id;
-        // console.log("delete",id);
-        const data = sft.state.data;
-        for(let i = data.length-1; i >= 0; i--){
-          if (data[i].id == id) {
-            data.splice(i, 1);
-          }
-        }
-        sft.state = { data: data };
-      } else if (target.matches('.lbl')) {
-        const el = getParent(target);
-        // console.log("select", id);
-        if (selected) selected.className = '';
-        el.className = 'danger';
-        selected = el;
-      }
-      stopMeasure();
-    };
-
-    function _random(max) {
-      return Math.round(Math.random() * 1000) % max;
-    }
-
-    function buildData(count = 1000) {
-      const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
-        'cheap', 'expensive', 'fancy'];
-      const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
-      const nouns = ['table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger', 'pizza', 'mouse', 'keyboard'];
-      let data = [];
-      for (let i = 0; i < count; i++)
-        data.push({
-          id: i + from,
-          label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)]
-        });
-      from = from + count;
-      return data;
-    }
-
-    function getParent(elem) {
-      while(elem.nodeName !== 'TR') elem = elem.parentNode;
-      return elem;
-    }
   </script>
 </body>
 

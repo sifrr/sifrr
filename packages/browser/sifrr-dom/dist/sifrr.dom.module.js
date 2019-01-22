@@ -370,7 +370,13 @@ const Parser = {
         for (let key in data.attributes) {
           if (key === 'events') {
             for (let event in data.attributes.events) {
-              dom[event] = Parser.evaluateString(data.attributes.events[event], element);
+              const eventLis = Parser.evaluateString(data.attributes.events[event], element, true);
+
+              if (data.attributes.events[event].slice(0, 6) === '${this') {
+                dom[event] = eventLis.bind(element);
+              } else {
+                dom[event] = eventLis;
+              }
             }
           } else {
             const val = Parser.evaluateString(data.attributes[key], element);
@@ -743,7 +749,7 @@ function elementClassFactory(baseClass) {
     set state(v) {
       // this._oldState = this.state;
       this._state = this._state || {};
-      Object.assign(this._state, v);
+      if (this._state !== v) Object.assign(this._state, v);
       this.update();
     }
 
