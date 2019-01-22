@@ -13,7 +13,7 @@
       this.path = path;
     }
     get regex() {
-      this._regex = this._regex || new RegExp('^' + this.path.replace(/:[A-Za-z0-9_]{0,}\?$/g, '([^/]{0,})?').replace(/:[A-Za-z0-9_]{0,}\?/g, '([^/]{0,})').replace(/\*\*/g, '(.{0,})').replace(/\*/g, '([^/]{0,})').replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
+      this._regex = this._regex || new RegExp('^' + this.path.replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?').replace(/\*\*/g, '(.{0,})').replace(/\*/g, '([^/]{0,})').replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
       return this._regex;
     }
     get dataMap() {
@@ -72,6 +72,9 @@
   }
 </style>
 <slot></slot>`;
+  Sifrr.Dom.Route = {
+    RegexPath: regexpath
+  };
   Sifrr.Dom.Event.add('click');
   const SifrrRoutes = [];
   class SifrrRoute extends Sifrr.Dom.Element {
@@ -94,7 +97,7 @@
       }
     }
     get routeRegex() {
-      this._routeRegex = this._routeRegex || new regexpath(this.dataset.sifrrPath);
+      this._routeRegex = this._routeRegex || new Sifrr.Dom.Route.RegexPath(this.dataset.sifrrPath);
       return this._routeRegex;
     }
     refresh() {
@@ -125,14 +128,23 @@
     deactivate() {
       this.classList.remove('active');
     }
+    static get currentUrl() {
+      return this._curl;
+    }
+    static set currentUrl(v) {
+      this._curl = v;
+    }
     static refreshAll() {
+      if (window.location.href === this.currentUrl) return;
       SifrrRoutes.forEach(sfr => {
         sfr.refresh();
       });
       this.onRouteChange();
+      this.currentUrl = window.location.href;
     }
     static onRouteChange() {}
   }
+  Sifrr.Dom.Route.Element = SifrrRoute;
   Sifrr.Dom.register(SifrrRoute);
   document.addEventListener('click', e => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;

@@ -53,6 +53,17 @@ describe('sifrr-route', () => {
     assert.equal(await page.$eval('#test', el => el.i), 1);
   });
 
+  it('doesn\'t refresh if same link is clicked', async () => {
+    await page.click('a[href="/abcd"]');
+    await page.$eval('#test', el => {
+      el.i = 0;
+      el.refresh = () => el.i = el.i + 1;
+    });
+    await page.click('a[href="/abcd"]');
+
+    assert.equal(await page.$eval('#test', el => el.i), 0);
+  });
+
   it('refreshes once when data-sifrr-path is changed', async () => {
     await page.$eval('#test', el => {
       el.i = 0;

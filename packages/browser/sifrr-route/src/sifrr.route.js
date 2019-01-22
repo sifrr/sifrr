@@ -84,11 +84,21 @@ class SifrrRoute extends Sifrr.Dom.Element {
     this.classList.remove('active');
   }
 
+  static get currentUrl() {
+    return this._curl;
+  }
+
+  static set currentUrl(v) {
+    this._curl = v;
+  }
+
   static refreshAll() {
+    if (window.location.href === this.currentUrl) return;
     SifrrRoutes.forEach((sfr) => {
       sfr.refresh();
     });
     this.onRouteChange();
+    this.currentUrl = window.location.href;
   }
 
   static onRouteChange() {}
