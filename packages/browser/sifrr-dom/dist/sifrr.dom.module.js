@@ -519,7 +519,7 @@ class Loader {
       });
     }).catch(e => {
       window.console.warn(e);
-      window.console.log('Trying to get js file.');
+      window.console.log(`Failed to fetch HTML. Trying to get js file for ${this.elementName}.`);
       this.js.then(script => {
         new Function(script).bind(window)();
       });
