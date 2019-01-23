@@ -91,16 +91,27 @@ class SifrrSeo {
   }
 
   async launchBrowser() {
-    this.browser = await puppeteer.launch({
-      headless: process.env.HEADLESS !== 'false',
-      devtools: process.env.HEADLESS !== 'false',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    this.browser = await puppeteer.launch(this.puppeteerOptions);
     this.launched = true;
     const me = this;
     this.browser.on('disconnected', () => {
       me.launched = false;
     });
+  }
+
+  setPuppeteerOption(name, value) {
+    this._poptions = this._poptions || {};
+    this._poptions[name] = value;
+  }
+
+  get puppeteerOptions() {
+    const newOpts = Object.assign({
+      headless: process.env.HEADLESS !== 'false',
+      devtools: process.env.HEADLESS !== 'false',
+      args: []
+    }, this._poptions || {});
+    newOpts.args.push('--no-sandbox', '--disable-setuid-sandbox');
+    return newOpts;
   }
 
   async render(fullUrl) {
