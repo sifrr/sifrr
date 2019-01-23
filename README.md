@@ -30,7 +30,7 @@ sifrr is a set of libraries for creating modern webapps.
 
 ## Node support
 
-Supports node v9 and higher (for server packages and for development).
+Sifrr officially supports node v9 and higher (for packages and for development). Other versions should work as well with some limitations (mostly regarding development).
 
 | Node Version | CI                                                                                                                    |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |

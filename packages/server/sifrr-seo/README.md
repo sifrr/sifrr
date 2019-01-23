@@ -57,4 +57,30 @@ By default, server side rendered html is cached till you restart the server or i
 sifrrSeo.clearCache();
 ```
 
-__Note__: Note that first server rendered will be slow, but subsequent requests will be really fast because of caching.
+### Higher level API
+
+#### render()
+returns `Promise` which resolves in `html text` if url response has content-type html, else resolves in `false`.
+```js
+sifrrSeo.render(url);
+```
+
+#### close()
+closes puppeteer browser instance
+```js
+sifrrSeo.close();
+```
+
+#### addPuppeteerOption()
+adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
+```js
+sifrrSeo.addPuppeteerOption('headless', false);
+```
+
+#### puppeteerOptions
+return options that will be used to launch puppeteer instance.
+```js
+sifrrSeo.puppeteerOptions;
+```
+
+__Note__: Note that first server render will be slow, but subsequent requests will be really fast because of caching.
