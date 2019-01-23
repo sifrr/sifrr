@@ -37,7 +37,7 @@ server.listen(8080);
 
 #### Adding your custom rendering logic
 
-Change `sifrrSeo.shouldRender`, by default it is `sifrrSeo.isUserAgent`. eg:
+Change `sifrrSeo.shouldRender`, by default it is `sifrrSeo.isUserAgent(req)`. eg:
 
 ```js
 sifrrSeo.shouldRender = (req) => {
@@ -47,6 +47,8 @@ sifrrSeo.shouldRender = (req) => {
 }
 ```
 
+- `sifrrSeo.isUserAgent(req)` returns `true` if req's user agent is in seo userAgents, else returns `false`.
+
 #### Clearing cache
 
 By default, server side rendered html is cached till you restart the server or if you close the browser. You can manually clear cache using
@@ -54,3 +56,5 @@ By default, server side rendered html is cached till you restart the server or i
 ```js
 sifrrSeo.clearCache();
 ```
+
+__Note__: Note that first server rendered will be slow, but subsequent requests will be really fast because of caching.

@@ -30,6 +30,8 @@ sifrr is a set of libraries for creating modern webapps.
 
 ## Node support
 
+Supports node v9 and higher (for server packages and for development).
+
 | Node Version | CI                                                                                                                    |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
 | v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
