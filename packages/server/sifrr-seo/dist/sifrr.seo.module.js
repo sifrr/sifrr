@@ -2399,6 +2399,7 @@ var lib = cacheManager;
 var cacheManager$1 = lib;
 
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
+const isHeadless = new RegExp('headless');
 
 const defaultCache = ops => cacheManager$1.caching({
   store: 'memory',
@@ -2410,6 +2411,7 @@ const defaultCache = ops => cacheManager$1.caching({
 });
 
 class SifrrSeo {
+  /* istanbul ignore next */
   static flatteningJS() {
     if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
     const defined = Object.keys(Sifrr.Dom.elements);
@@ -2474,7 +2476,7 @@ class SifrrSeo {
   isHeadless(req) {
     const ua = req.get('User-Agent');
 
-    if (new RegExp('headless').test(ua)) {
+    if (isHeadless.test(ua)) {
       return true;
     }
 
@@ -2551,7 +2553,11 @@ class SifrrSeo {
 
       if (sRC) {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
+        /* istanbul ignore next */
+
         await newp.evaluate(this.constructor.flatteningJS);
+        /* istanbul ignore next */
+
         const resp = (await newp.evaluate(() => new XMLSerializer().serializeToString(document))) + footer;
         me.renderedCache.set(fullUrl, resp, err => {
           if (err) throw err;
@@ -2571,11 +2577,10 @@ class SifrrSeo {
 
   isHTML(puppeteerResp) {
     return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
-  }
+  } // isHtml(expressResp) {
+  //   return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
+  // }
 
-  isHtml(expressResp) {
-    return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
-  }
 
 }
 
