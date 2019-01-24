@@ -43,7 +43,9 @@ sifrrSeo.addUserAgent(/* string */ 'Opera Mini');
 // for example in express:
 const express = require('express');
 const server = express();
-server.use(sifrrSeo.middleware);
+
+// Only use for GET requests
+server.get(sifrrSeo.middleware);
 server.listen(8080);
 ```
 

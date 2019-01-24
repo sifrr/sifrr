@@ -2457,7 +2457,7 @@ class SifrrSeo {
         } else {
           this.renderedCache.get(fullUrl, (err, val) => {
             if (err || !val) {
-              this.render(fullUrl).then(resp => {
+              this.render(fullUrl, next).then(resp => {
                 if (resp) res.send(resp);else next();
               });
             } else res.send(val);
@@ -2538,7 +2538,7 @@ class SifrrSeo {
     return newOpts;
   }
 
-  async render(fullUrl) {
+  async render(fullUrl, next) {
     let pro = Promise.resolve(true);
     const me = this;
     if (!this.launched) pro = this.launchBrowser();
@@ -2565,12 +2565,16 @@ class SifrrSeo {
       newp.close();
       return ret;
     }).catch(e => {
-      throw e;
+      next(e);
     });
   }
 
-  isHTML(resp) {
-    return !!(resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0);
+  isHTML(puppeteerResp) {
+    return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+  }
+
+  isHtml(expressResp) {
+    return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
   }
 
 }
