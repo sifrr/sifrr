@@ -108,6 +108,7 @@ Sifrr.Dom.Route.Element = SifrrRoute;
 Sifrr.Dom.register(SifrrRoute);
 
 document.addEventListener('click', (e) => {
+  if (!(window.history && window.history.pushState)) return;
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (e.metaKey || e.ctrlKey) return;
   if (!target.matches('a') || target.host !== window.location.host || (target.target && target.target !== '_self')) return;
@@ -119,7 +120,7 @@ document.addEventListener('click', (e) => {
   };
   // replace title with default title for your webapp, maybe your app name
   document.title = title;
-  history.pushState(state, title, target.pathname);
+  window.history.pushState(state, title, target.pathname);
   SifrrRoute.refreshAll();
 });
 
