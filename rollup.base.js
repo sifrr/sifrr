@@ -37,9 +37,9 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
           banner: banner,
           footer: footer,
           sourcemap: true,
+          preferConst: true,
           globals: globals
         },
-        preferConst: true,
         external: external,
         plugins: [
           resolve({
@@ -62,9 +62,9 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
           banner: banner,
           footer: footer,
           sourcemap: true,
+          preferConst: true,
           globals: globals
         },
-        preferConst: true,
         external: external,
         plugins: [
           resolve({
@@ -91,9 +91,9 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
       format: 'es',
       banner: banner,
       footer: footer,
+      preferConst: true,
       globals: globals
     },
-    preferConst: true,
     external: external,
     plugins: [
       resolve(),
