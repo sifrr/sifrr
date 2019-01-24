@@ -30,6 +30,21 @@
         transform: rotate(360deg);
       }
     }
+
+    /* Animation */
+    sifrr-route.active {
+      opacity: 0;
+      animation: anim 0.3s ease forwards;
+    }
+
+    @keyframes anim {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 

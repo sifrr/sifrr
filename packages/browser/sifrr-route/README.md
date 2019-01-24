@@ -94,3 +94,24 @@ eg.
 ```
 
 When window location path is `/test/1`, sifrr-route's state will be `{ id: 1 }` and sifrr-test's state will be `{ route: { id: 1 } }`
+
+## Animating
+
+Example:
+```css
+sifrr-route {
+  
+}
+sifrr-route.active {
+  opacity: 0;
+  animation: anim 0.3s ease forwards;
+}
+@keyframes anim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+```

@@ -4,16 +4,6 @@ const template = Sifrr.Dom.html`<style>
   }
   :host(.active) {
     display: block;
-    opacity: 0;
-    animation: slide 0.3s ease forwards;
-  }
-  @keyframes slide {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 </style>
 <slot></slot>`;
