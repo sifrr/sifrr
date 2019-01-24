@@ -11,7 +11,7 @@
     "chrome >= 55",
     "safari >= 10.1",
     "opera >= 42",
-    "firefox >= 53"
+    "firefox >= 63"
   ],
   "scripts": {
     "test": "./scripts/test/runall",

@@ -28,14 +28,15 @@ Add script tag in your website.
 <script src="https://unpkg.com/@sifrr/storage@{version}/dist/sifrr.storage.min.js"></script>
 ```
 
-#### Compatibility table for standalone distribution (Needs support for JavaScript Promises)
+#### Browser API support needed
 
--   chrome >= 55
--   safari >= 10.1
--   opera >= 42
--   firefox >= 53
-
-#### If you want to support older browsers without promises support, use [Promises Polyfill](https://github.com/stefanpenner/es6-promise) with sifrr-storage.
+| APIs         | caniuse                                       | polyfills                                     |
+| :----------- | :-------------------------------------------- | :-------------------------------------------- |
+| Promises API | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise> |
+| IndexedDB    | <https://caniuse.com/#feat=indexeddb>         | -                                             |
+| WebSQL       | <https://caniuse.com/#feat=sql-storage>       | -                                             |
+| LocalStorage | <https://caniuse.com/#feat=namevalue-storage> | -                                             |
+| Cookies      | 100%                                          | -                                             |
 
 ### Using npm
 

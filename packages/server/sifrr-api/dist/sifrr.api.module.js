@@ -20,7 +20,7 @@ class Model extends sequelize.Model {
     this.gqAssociations[this.gqName] = {};
     this.gqQuery[this.gqName] = {};
     this.gqMutations[this.gqName] = {};
-    this.gqResolvers[this.gqName] = {};
+    this.gqExtraArgs[this.gqName] = {};
     const ret = super.init(this.schema, options);
     ret.onInit();
     return ret;
@@ -31,7 +31,7 @@ class Model extends sequelize.Model {
     this[name] = super.belongsToMany(model, options);
     this.gqAssociations[this.gqName][name] = {
       resolver: resolver(this[name]),
-      type: `[${model.gqName}]`,
+      returnType: `[${model.gqName}]`,
       model: model
     };
     return this[name];
@@ -42,7 +42,7 @@ class Model extends sequelize.Model {
     this[name] = super.belongsTo(model, options);
     this.gqAssociations[this.gqName][name] = {
       resolver: resolver(this[name]),
-      type: model.gqName,
+      returnType: model.gqName,
       model: model
     };
     return this[name];
@@ -53,7 +53,7 @@ class Model extends sequelize.Model {
     this[name] = super.hasMany(model, options);
     this.gqAssociations[this.gqName][name] = {
       resolver: resolver(this[name]),
-      type: `[${model.gqName}]`,
+      returnType: `[${model.gqName}]`,
       model: model
     };
     return this[name];
@@ -64,18 +64,17 @@ class Model extends sequelize.Model {
     this[name] = super.hasOne(model, options);
     this.gqAssociations[this.gqName][name] = {
       resolver: resolver(this[name]),
-      type: model.gqName,
+      returnType: model.gqName,
       model: model
     };
     return this[name];
   }
 
-  static addResolver(name, options
-  /* = { resolver } */
+  static addArg(name, options
+  /* = { args, resolver, returnType } */
   ) {
-    if (typeof options === 'function') this.gqResolvers[this.gqName][name] = {
-      resolver: options
-    };else this.gqResolvers[this.gqName][name] = options;
+    // args = 'id:Int, name:String'
+    this.gqExtraArgs[this.gqName][name] = options;
   }
 
   static addMutation(name, options
@@ -121,8 +120,8 @@ class Model extends sequelize.Model {
     } // Extra
 
 
-    for (let a in this.gqResolvers[this.gqName]) {
-      const assoc = this.gqResolvers[this.gqName][a];
+    for (let a in this.gqExtraArgs[this.gqName]) {
+      const assoc = this.gqExtraArgs[this.gqName][a];
       q[this.gqName][a] = assoc.resolver;
     }
 
@@ -184,37 +183,37 @@ class Model extends sequelize.Model {
     separator = ', '
   } = {}) {
     if (allowed.length > 0) args = filter(args, arg => allowed.indexOf(arg) >= 0 || required.indexOf(arg) >= 0);
-    let str = '';
+    let str = [];
 
     for (let arg in args) {
       const bang = required.indexOf(arg) >= 0 ? '!' : '';
 
-      if (args[arg].type.constructor.name === 'GraphQLList') {
-        str += `${arg}:[${args[arg].type.ofType.name}]${bang}`;
+      if (args[arg].returnType) {
+        str.push(`${arg}: ${args[arg].returnType}${bang}`);
+      } else if (args[arg].type.constructor.name === 'GraphQLList') {
+        str.push(`${arg}: [${args[arg].type.ofType.name}]${bang}`);
       } else if (args[arg].type.constructor.name === 'GraphQLNonNull') {
-        str += `${arg}:${args[arg].type.ofType.name}!`;
+        str.push(`${arg}: ${args[arg].type.ofType.name}!`);
       } else {
         try {
-          str += `${arg}:${args[arg].type.name || args[arg].type.ofType.name}${bang}`;
+          str.push(`${arg}: ${args[arg].type.name || args[arg].type.ofType.name}${bang}`);
         } catch (e) {
-          if (Array.isArray(args[arg].type)) str += `${arg}:[${args[arg].type[0]}]${bang}`;else str += `${arg}:${args[arg].type}${bang}`;
+          if (Array.isArray(args[arg].type)) str.push(`${arg}:[${args[arg].type[0]}]${bang}`);else str.push(`${arg}: ${args[arg].type}${bang}`);
         }
       }
-
-      str += separator;
     }
 
-    return str;
+    return str.join(separator);
   }
 
   static sequelizeToGqSchema({
     required = [],
-    allowed = [],
-    extra = []
+    allowed = []
   } = {}) {
     // Fields - arguments and associations
     const args = attributeFields(this);
     const assocs = this.gqAssociations[this.gqName];
+    const extras = this.gqExtraArgs[this.gqName];
     const me = this;
 
     if (allowed.length > 0) {
@@ -222,21 +221,20 @@ class Model extends sequelize.Model {
         // Remove resolvers for not allowed associations
         delete me.gqAssociations[me.gqName][a];
       });
+      Object.keys(filter(extras, extra => allowed.indexOf(extra) < 0)).forEach(a => {
+        // Remove resolvers for not allowed associations
+        delete me.gqExtraArgs[me.gqName][a];
+      });
     }
 
+    const total = Object.assign(args, assocs, extras);
     let sq = `type ${this.gqName} {
-      ${this.argsToString(args, {
+  ${this.argsToString(total, {
       required,
       allowed,
-      separator: '\n'
+      separator: '\n  '
     })}
-      ${this.argsToString(assocs, {
-      required,
-      allowed,
-      separator: '\n'
-    })}
-      ${extra ? extra.join('\n') + '\n' : ''}}
-    `;
+}`;
     return sq;
   }
 
@@ -270,7 +268,7 @@ function filter(json, fxn) {
 Model.gqAssociations = {};
 Model.gqMutations = {};
 Model.gqQuery = {};
-Model.gqResolvers = {};
+Model.gqExtraArgs = {};
 var model = Model;
 
 const {
@@ -333,28 +331,129 @@ function loadRoutes(app, dir, {
 
 var loadroutes = loadRoutes;
 
+var _0777 = parseInt('0777', 8);
+
+var mkdirp = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
+
+function mkdirP(p, opts, f, made) {
+  if (typeof opts === 'function') {
+    f = opts;
+    opts = {};
+  } else if (!opts || typeof opts !== 'object') {
+    opts = {
+      mode: opts
+    };
+  }
+
+  var mode = opts.mode;
+  var xfs = opts.fs || fs;
+
+  if (mode === undefined) {
+    mode = _0777 & ~process.umask();
+  }
+
+  if (!made) made = null;
+
+  var cb = f || function () {};
+
+  p = path.resolve(p);
+  xfs.mkdir(p, mode, function (er) {
+    if (!er) {
+      made = made || p;
+      return cb(null, made);
+    }
+
+    switch (er.code) {
+      case 'ENOENT':
+        mkdirP(path.dirname(p), opts, function (er, made) {
+          if (er) cb(er, made);else mkdirP(p, opts, cb, made);
+        });
+        break;
+      // In the case of any other error, just see if there's a dir
+      // there already.  If so, then hooray!  If not, then something
+      // is borked.
+
+      default:
+        xfs.stat(p, function (er2, stat) {
+          // if the stat fails, then that's super weird.
+          // let the original error be the failure reason.
+          if (er2 || !stat.isDirectory()) cb(er, made);else cb(null, made);
+        });
+        break;
+    }
+  });
+}
+
+mkdirP.sync = function sync(p, opts, made) {
+  if (!opts || typeof opts !== 'object') {
+    opts = {
+      mode: opts
+    };
+  }
+
+  var mode = opts.mode;
+  var xfs = opts.fs || fs;
+
+  if (mode === undefined) {
+    mode = _0777 & ~process.umask();
+  }
+
+  if (!made) made = null;
+  p = path.resolve(p);
+
+  try {
+    xfs.mkdirSync(p, mode);
+    made = made || p;
+  } catch (err0) {
+    switch (err0.code) {
+      case 'ENOENT':
+        made = sync(path.dirname(p), opts, made);
+        sync(p, opts, made);
+        break;
+      // In the case of any other error, just see if there's a dir
+      // there already.  If so, then hooray!  If not, then something
+      // is borked.
+
+      default:
+        var stat;
+
+        try {
+          stat = xfs.statSync(p);
+        } catch (err1) {
+          throw err0;
+        }
+
+        if (!stat.isDirectory()) throw err0;
+        break;
+    }
+  }
+
+  return made;
+};
+
 const {
   makeExecutableSchema
 } = graphqlTools;
 
 function getTypeDef(qs, resolvers) {
-  let ret = '';
+  let ret = [];
 
   for (let q in qs) {
     const qdet = qs[q];
     const args = qdet.args ? `(${qdet.args})` : '';
-    ret += `${q}${args}: ${qdet.returnType}
-    `;
+    ret.push(`${q}${args}: ${qdet.returnType}`);
     resolvers[q] = qdet.resolver;
   }
 
-  return ret;
+  return ret.join('\n  ');
 }
 
 function createSchemaFromModels(models, {
   extra = '',
   query = {},
-  mutation = {}
+  mutation = {},
+  saveSchema = true,
+  schemaPath = './db/schema.graphql'
 } = {}) {
   const typeDefs = [],
         resolvers = {};
@@ -371,20 +470,28 @@ function createSchemaFromModels(models, {
   const qnew = {},
         mnew = {};
   const typeDef = `type Query {
-    ${getTypeDef(resolvers.Query, qnew)}
-  }
+  ${getTypeDef(resolvers.Query, qnew)}
+}
 
-  type Mutation {
-    ${getTypeDef(resolvers.Mutation, mnew)}
-  }
+type Mutation {
+  ${getTypeDef(resolvers.Mutation, mnew)}
+}
 
-  scalar SequelizeJSON
-  scalar Date
-  ${extra}
-  `;
+scalar SequelizeJSON
+scalar Date
+${extra}
+`;
   typeDefs.push(typeDef);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
+
+  if (saveSchema) {
+    schemaPath = path.resolve(schemaPath);
+    mkdirp(path.dirname(schemaPath));
+    const comment = '# THIS FILE WS AUTOGENERATED BY SIFRR-API. DO NOT EDIT THIS FILE DIRECTLY. \n\n';
+    fs.writeFileSync(schemaPath, comment + typeDefs.join('\n\n'));
+  }
+
   return makeExecutableSchema({
     typeDefs,
     resolvers

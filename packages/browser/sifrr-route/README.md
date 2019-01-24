@@ -4,12 +4,11 @@ History API based Routing library for building One Page Applications with sifrr.
 
 ### Size
 
-| Type                                         |                                                                                                                      Size                                                                                                                      |
-| :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Type                                           |                                                                                                                          Size                                                                                                                          |
+| :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | Normal (`dist/sifrr.route.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.js)                   |
 | Minified (`dist/sifrr.route.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js)              |
 | Minified + Gzipped (`dist/sifrr.route.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js) |
-
 
 ## How to use
 

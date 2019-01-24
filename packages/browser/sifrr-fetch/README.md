@@ -20,12 +20,12 @@ Add script tag in your website.
 <script src="https://unpkg.com/@sifrr/fetch@{version}/dist/sifrr.fetch.min.js"></script>
 ```
 
-#### Compatibility table for standalone distribution (Needs support for JavaScript Fetch API)
+#### Browser API support needed for
 
--   chrome >= 55
--   safari >= 10.1
--   opera >= 42
--   firefox >= 53
+| APIs      | caniuse                           | polyfills                         |
+| :-------- | :-------------------------------- | :-------------------------------- |
+| Fetch API | <https://caniuse.com/#feat=fetch> | <https://github.com/github/fetch> |
+| Promises API             | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
 
 ### Using npm
 

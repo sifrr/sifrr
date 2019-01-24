@@ -33,12 +33,17 @@ Add script tag in your website.
 <script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
 ```
 
-#### Compatibility table for standalone distribution (Needs support for JavaScript Custom Elements, Shadow DOM, Fetch API)
+#### Browser API support needed for
 
--   chrome >= 55
--   safari >= 10.1
--   opera >= 42
--   firefox >= 53
+| APIs                     | caniuse                                       | polyfills                                          |
+| :----------------------- | :-------------------------------------------- | :------------------------------------------------- |
+| Custom Elements v1       | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
+| Promises API             | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
+| Shadow DOM v1 (optional) | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
+| ES6 Modules (optional)   | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
+| Fetch API (optional)     | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
+
+If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
 ### Using npm
 

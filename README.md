@@ -32,11 +32,29 @@ sifrr is a set of libraries for creating modern webapps.
 
 Sifrr officially supports node v9 and higher (for packages and for development). Other versions should work as well with some limitations (mostly regarding development).
 
-| Node Version | CI                                                                                                                    |
+| Node Version | CI                                                                                                                       |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
 | v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
 | v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
 | v9           | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/3)](https://travis-ci.org/sifrr/sifrr) |
+
+## Browser Support
+
+Sifrr browser packages officially supports these browser versions (for dist files):
+
+| Browser               | Version |
+| :-------------------- | :------ |
+| Chrome                | >= 55   |
+| Android Chrome        | >= 55   |
+| Firefox               | >= 63   |
+| Android Firefox       | >= 63   |
+| Opera                 | >= 42   |
+| Safari                | >= 10.1 |
+| Safari (iOS browsers) | >= 10.1 |
+
+Individual libraries may support older versions too with polyfills listed in readmes, or by bundling it with polyfills using babel etc.
+
+Approximately amounts to > 80% of total worldwide browser usage.
 
 ## Contributing
 

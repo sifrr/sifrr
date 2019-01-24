@@ -23,12 +23,11 @@ sw.setup(); // setup service worker caching
 sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event listener
 ```
 
-#### Compatibility table for standalone distribution (Needs support for Service worker API)
+#### Browser API support needed for
 
--   chrome >= 55
--   safari >= 10.1
--   opera >= 42
--   firefox >= 53
+| APIs               | caniuse                                    | polyfills    |
+| :----------------- | :----------------------------------------- | :----------- |
+| Service Worker API | <https://caniuse.com/#feat=serviceworkers> | Not possible |
 
 ### Using npm
 
