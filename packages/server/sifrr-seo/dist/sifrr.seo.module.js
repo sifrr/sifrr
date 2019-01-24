@@ -2398,6 +2398,8 @@ var lib = cacheManager;
 
 var cacheManager$1 = lib;
 
+const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
+
 const defaultCache = ops => cacheManager$1.caching({
   store: 'memory',
   ttl: ops.ttl,
@@ -2550,7 +2552,7 @@ class SifrrSeo {
       if (sRC) {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         await newp.evaluate(this.constructor.flatteningJS);
-        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
+        const resp = (await newp.evaluate(() => new XMLSerializer().serializeToString(document))) + footer;
         me.renderedCache.set(fullUrl, resp, err => {
           if (err) throw err;
         });

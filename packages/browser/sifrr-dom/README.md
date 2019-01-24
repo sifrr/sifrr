@@ -251,6 +251,7 @@ customtag.update();
 ### Components Without shadow root
 
 #### If you don't want to use shadow root by default
+Don't use shadow-root if you want to serve server rendered files with sifrr-seo.
 
 ```js
 // index.js

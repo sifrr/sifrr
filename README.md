@@ -18,11 +18,11 @@ sifrr is a set of libraries for creating modern webapps.
 
 ### Server
 
-| Package                                  | Description                                                                          | NPM                                                                                                     | Documentation                            | Tests |
-| :--------------------------------------- | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :--------------------------------------- | :---: |
-| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express                 | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [In Readme](./packages/server/sifrr-api) | [WIP] |
-| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr                                           | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [In Readme](./packages/server/sifrr-cli) | [WIP] |
-| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [In Readme](./packages/server/sifrr-seo) | [WIP] |
+| Package                                  | Description                                                                          | NPM                                                                                                     | Documentation                            |                  Tests                 |
+| :--------------------------------------- | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :--------------------------------------- | :------------------------------------: |
+| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express                 | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [In Readme](./packages/server/sifrr-api) |                  [WIP]                 |
+| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr                                           | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [In Readme](./packages/server/sifrr-cli) |                  [WIP]                 |
+| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [In Readme](./packages/server/sifrr-seo) | [OK](./packages/server/sifrr-seo/test) |
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
