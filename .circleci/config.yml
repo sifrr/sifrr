@@ -33,7 +33,7 @@ jobs:
             - ~/.cache/yarn
       - run:
           name: Build dist
-          command: yarn rollup
+          command: yarn build
       - run:
           name: Run tests
           command: yarn jtest
