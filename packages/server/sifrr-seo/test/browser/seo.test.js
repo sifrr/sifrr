@@ -1,5 +1,5 @@
 describe('sifrr-seo', () => {
-  describe('no js', () => {
+  describe('js disabled', () => {
     before(async () => {
       await page.setJavaScriptEnabled(false);
       await page.setUserAgent('Opera Mini');
@@ -27,7 +27,7 @@ describe('sifrr-seo', () => {
     });
   });
 
-  describe('with js', () => {
+  describe('js enabled', () => {
     before(async () => {
       await page.setJavaScriptEnabled(true);
       await page.setUserAgent('Opera Mini');

@@ -21,7 +21,7 @@ History API based Routing library for building One Page Applications with sifrr.
   import '@sifrr/route';
 </script>
 <!-- OR ES6 modules and using CDN -->
-<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.module.js" charset="utf-8" type="module"></script>
+<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8" type="module"></script>
 <!-- OR without module -->
 <script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8"></script>
 ```

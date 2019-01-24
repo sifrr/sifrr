@@ -20,7 +20,8 @@ module.exports = function getRollupConfig(name, isBrowser = true) {
     'graphql-tools',
     '@sifrr/dom',
     '@sifrr/fetch',
-    'puppeteer'
+    'puppeteer',
+    'events'
   ];
   const globals = {
     '@sifrr/dom': 'Sifrr.Dom',

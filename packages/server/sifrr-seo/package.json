@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {
+    "cache-manager": "^2.9.0",
     "puppeteer": "^1.11.0"
   },
   "peerDependencies": {},

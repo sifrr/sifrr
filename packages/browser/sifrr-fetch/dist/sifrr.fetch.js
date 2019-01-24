@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Fetch = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Fetch = factory()));
+}(this, function () { 'use strict';
 
   class Request {
     constructor(url, options = {}) {
@@ -129,6 +129,6 @@
 
   return sifrr_fetch;
 
-})));
+}));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.fetch.js.map

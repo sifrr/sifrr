@@ -1,4 +1,14 @@
 const puppeteer = require('puppeteer');
+const Cache = require('cache-manager');
+
+const defaultCache = (ops) => Cache.caching({
+  store: 'memory',
+  ttl: ops.ttl,
+  length: (val, key) => {
+    return Buffer.from(2 * key + val).length + 2;
+  },
+  max: ops.maxCacheSize * 1000000
+});
 
 class SifrrSeo {
   static flatteningJS() {
@@ -22,30 +32,40 @@ class SifrrSeo {
     'YandexBot', // Yandex
     'Sogou', // Sogou
     'Exabot', // Exalead
-  ]) {
+  ], options) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
     this.launched = false;
     this.shouldRenderCache = {};
-    this.renderedCache = {};
+    this.options = Object.assign({
+      cache: false,
+      maxCacheSize: 100,
+      ttl: 0
+    }, options);
+    if (!this.options.cache) {
+      this.renderedCache = defaultCache(this.options);
+    } else this.renderedCache = this.options.cache;
   }
 
   get middleware() {
     function mw(req, res, next) {
-      if (this.shouldRender(req)) {
+      // Don't render other requests than GET
+      if (req.method !== 'GET') return next();
+
+      if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
 
         const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
         if (this.shouldRenderCache[fullUrl] === false) {
           next();
         } else {
-          if (this.shouldRenderCache[fullUrl] && typeof this.renderedCache[fullUrl] === 'string') {
-            res.send(this.renderedCache[fullUrl]);
-          } else {
-            this.render(fullUrl).then((resp) => {
-              if (resp) res.send(resp);
-              else next();
-            });
-          }
+          this.renderedCache.get(fullUrl, (err, val) => {
+            if (err || !val) {
+              this.render(fullUrl).then((resp) => {
+                if (resp) res.send(resp);
+                else next();
+              });
+            } else res.send(val);
+          });
         }
       } else {
         next();
@@ -60,6 +80,11 @@ class SifrrSeo {
       return true;
     }
     return false;
+  }
+
+  hasReferer(req) {
+    const ref = req.get('Referer');
+    return !!ref;
   }
 
   shouldRender(req) {
@@ -81,7 +106,7 @@ class SifrrSeo {
 
   clearCache() {
     this.shouldRenderCache = {};
-    this.renderedCache = {};
+    this.renderedCache.flushAll();
   }
 
   close() {
@@ -121,14 +146,16 @@ class SifrrSeo {
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async (newp) => {
       const resp = await newp.goto(fullUrl, { waitUntil: 'networkidle0' });
-      const sRC = !!(resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0);
+      const sRC = me.isHTML(resp);
       let ret;
 
       if (sRC) {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         await newp.evaluate(this.constructor.flatteningJS);
         const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
-        me.renderedCache[fullUrl] = resp;
+        me.renderedCache.set(fullUrl, resp, (err) => {
+          if (err) throw err;
+        });
         ret = resp;
       } else {
         ret = false;
@@ -138,8 +165,12 @@ class SifrrSeo {
       newp.close();
       return ret;
     }).catch(e => {
-      process.stderr.write(e.message);
+      throw e;
     });
+  }
+
+  isHTML(resp) {
+    return !!(resp.headers()['content-type'] && resp.headers()['content-type'].indexOf('html') >= 0);
   }
 }
 

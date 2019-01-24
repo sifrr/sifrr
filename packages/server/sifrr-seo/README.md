@@ -12,7 +12,7 @@ Do `npm i @sifrr/fetch` or `yarn add @sifrr/fetch` or add the package to your `p
 
 ```js
 const SifrrSeo = require('@sifrr/seo');
-const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */);
+const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);
 // By default array is made up of these crawl bot user agents:
 // 'Googlebot', // Google
 // 'Bingbot', // Bing
@@ -22,6 +22,11 @@ const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */);
 // 'YandexBot', // Yandex
 // 'Sogou', // Sogou
 // 'Exabot', // Exalead
+
+// Options
+// `cache`: Cache to use (should be a node-cache-manager), default: cacheManager.caching()
+// `maxCacheSize`: Maximum in-memory cache size (in MBs), for default cache. default: 100 (MB)
+// `ttl`: Time to expire caches (in Seconds), for default cache. default: Infinity
 
 // Add your own user agent for which you want to server render
 // You can give sub string of regex string like '(Google|Microsoft).*'
@@ -34,6 +39,8 @@ const server = express();
 server.use(sifrrSeo.middleware);
 server.listen(8080);
 ```
+
+[node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) supported a lot of stores: [list](https://github.com/BryanDonovan/node-cache-manager#store-engines).
 
 #### Adding your custom rendering logic
 

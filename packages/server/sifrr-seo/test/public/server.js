@@ -43,6 +43,12 @@ if (global.ENV === 'development') {
   });
 }
 
+// serve sifrr-fetch and sifrr-dom
+const baseDir = path.join(__dirname, '../../../../');
+server.use(serveStatic(path.join(baseDir, './browser/sifrr-dom/dist')));
+server.use(serveStatic(path.join(baseDir, './browser/sifrr-fetch/dist')));
+process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
+
 // export server for importing
 server.use(seo.middleware);
 server.use(compression());

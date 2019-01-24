@@ -56,6 +56,8 @@ Individual libraries may support older versions too with polyfills listed in rea
 
 Approximately amounts to > 80% of total worldwide browser usage.
 
+To support mini browsers (opera mini, uc browser etc.), You can use sifrr-seo to provide server side rendering.
+
 ## Contributing
 
 [Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/AUTHORS)

@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory()));
+}(this, function () { 'use strict';
 
   class RegexPath {
     constructor(path, options = {}) {
@@ -168,6 +168,6 @@
 
   return sifrr_route;
 
-})));
+}));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.route.js.map

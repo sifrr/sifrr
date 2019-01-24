@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Storage = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Storage = factory()));
+}(this, function () { 'use strict';
 
   class Json {
     static parse(data) {
@@ -461,6 +461,6 @@
 
   return sifrr_storage;
 
-})));
+}));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.storage.js.map

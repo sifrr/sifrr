@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/fetch')) :
   typeof define === 'function' && define.amd ? define(['@sifrr/fetch'], factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory(global.Sifrr.Fetch));
-}(this, (function (fetch) { 'use strict';
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory(global.Sifrr.Fetch)));
+}(this, function (fetch) { 'use strict';
 
   fetch = fetch && fetch.hasOwnProperty('default') ? fetch['default'] : fetch;
 
@@ -803,6 +803,6 @@
 
   return sifrr_dom;
 
-})));
+}));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.dom.js.map

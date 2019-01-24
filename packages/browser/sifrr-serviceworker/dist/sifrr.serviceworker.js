@@ -2,8 +2,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.Sifrr = global.Sifrr || {}, global.Sifrr.Serviceworker = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Serviceworker = factory()));
+}(this, function () { 'use strict';
 
   class SW {
     constructor(options) {
@@ -136,6 +136,6 @@
 
   return sifrr_serviceworker;
 
-})));
+}));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.serviceworker.js.map
