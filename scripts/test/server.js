@@ -25,6 +25,12 @@ const sss = function(port, dirs = dir) {
 
   const toCover = process.env.COVERAGE === 'true';
 
+  // serve sifrr-fetch and sifrr-dom
+  const baseDir = path.join(__dirname, '../../');
+  server.use(serveStatic(path.join(baseDir, './packages/browser/sifrr-dom/dist')));
+  server.use(serveStatic(path.join(baseDir, './packages/browser/sifrr-fetch/dist')));
+  process.stdout.write('Serving sifrr-dom and sifrr-fetch');
+
   // serve all directories
   if (!Array.isArray(dirs)) dirs = [dirs];
   dirs.forEach(dirS => {
