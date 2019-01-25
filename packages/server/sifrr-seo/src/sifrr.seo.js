@@ -14,7 +14,7 @@ const defaultCache = (ops) => Cache.caching({
 
 class SifrrSeo {
   /* istanbul ignore next */
-  static flatteningJS() {
+  static onRenderJS() {
     if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
     const defined = Object.keys(Sifrr.Dom.elements);
     defined.forEach((selector) => {
@@ -59,7 +59,7 @@ class SifrrSeo {
         const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
         if (this.shouldRenderCache[fullUrl] === false) {
-          next();
+          if (next) next();
         } else {
           this.renderedCache.get(fullUrl, (err, val) => {
             if (err || !val) {
@@ -71,7 +71,7 @@ class SifrrSeo {
           });
         }
       } else {
-        next();
+        if (next) next();
       }
     }
     return mw.bind(this);
@@ -79,10 +79,7 @@ class SifrrSeo {
 
   isHeadless(req) {
     const ua = req.get('User-Agent');
-    if (isHeadless.test(ua)) {
-      return true;
-    }
-    return false;
+    return !!isHeadless.test(ua);
   }
 
   hasReferer(req) {
@@ -155,7 +152,7 @@ class SifrrSeo {
       if (sRC) {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         /* istanbul ignore next */
-        await newp.evaluate(this.constructor.flatteningJS);
+        await newp.evaluate(this.constructor.onRenderJS);
 
         /* istanbul ignore next */
         const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document)) + footer;
@@ -171,7 +168,7 @@ class SifrrSeo {
       newp.close();
       return ret;
     }).catch(e => {
-      next(e);
+      if (next) next(e);
     });
   }
 
