@@ -17,11 +17,14 @@ const SifrrSeo = require('@sifrr/seo');
 // `cache`: Cache to use (should be a node-cache-manager instance)
 // `maxCacheSize`: Maximum in-memory cache size
 // `ttl`: time to live for a cache request
+// `cacheKey`: function that returns cache key for given req object
+//
 // default values
 const options = {
   cache: require('cache-manager').caching, // default in memory caching
   maxCacheSize: 100, // (in MegaBytes)
-  ttl: 0 // (in Seconds) 0 means infinity
+  ttl: 0, // (in Seconds) 0 means infinity
+  cacheKey: (req) => SifrrSeo.fullUrl(req) // function that return a cache key for the request
 }
 
 const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);

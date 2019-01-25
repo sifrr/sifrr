@@ -1,6 +1,8 @@
 const Seo = require('../../src/sifrr.seo');
 // Middleware
-const seo = new Seo();
+const seo = new Seo(undefined, {
+  cacheKey: (req) => Seo.fullUrl(req) + (req.headers['x-user'] ? req.headers['x-user'] : '')
+});
 seo.addUserAgent('Opera Mini');
 // Middleware
 
@@ -52,6 +54,14 @@ process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 // export server for importing
 server.use(seo.middleware);
 server.use(compression());
+server.get('/xuser', (req, res) => {
+  res.set('content-type', 'text/html');
+  res.send(`
+    <html>
+    <body>${JSON.stringify(req.headers)}<body>
+    </html>
+    `);
+});
 server.use(serveStatic(__dirname));
 server.use(serveStatic(path.join(__dirname, '../../dist')));
 server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));
