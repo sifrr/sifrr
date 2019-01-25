@@ -2424,6 +2424,10 @@ class SifrrSeo {
     return true;
   }
 
+  fullUrl(req) {
+    return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
+  }
+
   constructor(userAgents = ['Googlebot', // Google
   'Bingbot', // Bing
   'Slurp', // Slurp
@@ -2438,7 +2442,9 @@ class SifrrSeo {
     this.options = Object.assign({
       cache: false,
       maxCacheSize: 100,
-      ttl: 0
+      ttl: 0,
+      cacheKey: req => this.fullUrl(req),
+      localport: 80
     }, options);
 
     if (!this.options.cache) {
@@ -2452,14 +2458,16 @@ class SifrrSeo {
       if (req.method !== 'GET') return next();
 
       if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-        const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+        const key = this.options.cacheKey(req);
+        req.sifrrCacheKey = key;
+        req.sifrrUrl = this.fullUrl(req);
 
-        if (this.shouldRenderCache[fullUrl] === false) {
+        if (this.shouldRenderCache[key] === false) {
           if (next) next();
         } else {
-          this.renderedCache.get(fullUrl, (err, val) => {
+          this.renderedCache.get(key, (err, val) => {
             if (err || !val) {
-              this.render(fullUrl, next).then(resp => {
+              this.render(req, next).then(resp => {
                 if (resp) res.send(resp);else next();
               });
             } else res.send(val);
@@ -2535,11 +2543,15 @@ class SifrrSeo {
     return newOpts;
   }
 
-  async render(fullUrl, next) {
+  async render(req, next) {
+    const fullUrl = req.sifrrUrl;
     let pro = Promise.resolve(true);
     const me = this;
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async newp => {
+      const headers = req.headers;
+      delete headers['user-agent'];
+      await newp.setExtraHTTPHeaders(headers);
       const resp = await newp.goto(fullUrl, {
         waitUntil: 'networkidle0'
       });
@@ -2554,7 +2566,7 @@ class SifrrSeo {
         /* istanbul ignore next */
 
         const resp = (await newp.evaluate(() => new XMLSerializer().serializeToString(document))) + footer;
-        me.renderedCache.set(fullUrl, resp, err => {
+        me.renderedCache.set(req.sifrrCacheKey, resp, err => {
           if (err) throw err;
         });
         ret = resp;
@@ -2562,7 +2574,7 @@ class SifrrSeo {
         ret = false;
       }
 
-      me.shouldRenderCache[fullUrl] = sRC;
+      me.shouldRenderCache[req.sifrrCacheKey] = sRC;
       newp.close();
       return ret;
     }).catch(e => {

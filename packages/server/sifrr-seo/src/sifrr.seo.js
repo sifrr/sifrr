@@ -26,8 +26,8 @@ class SifrrSeo {
     return true;
   }
 
-  static fullUrl(req) {
-    return `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  fullUrl(req) {
+    return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
   }
 
   constructor(userAgents = [
@@ -47,7 +47,8 @@ class SifrrSeo {
       cache: false,
       maxCacheSize: 100,
       ttl: 0,
-      cacheKey: (req) => this.constructor.fullUrl(req)
+      cacheKey: (req) => this.fullUrl(req),
+      localport: 80
     }, options);
     if (!this.options.cache) {
       this.renderedCache = defaultCache(this.options);
@@ -63,7 +64,7 @@ class SifrrSeo {
 
         const key = this.options.cacheKey(req);
         req.sifrrCacheKey = key;
-        req.sifrrUrl = this.constructor.fullUrl(req);
+        req.sifrrUrl = this.fullUrl(req);
 
         if (this.shouldRenderCache[key] === false) {
           if (next) next();

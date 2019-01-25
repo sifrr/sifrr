@@ -14,6 +14,7 @@ Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `packa
 const SifrrSeo = require('@sifrr/seo');
 
 // options
+// `localport`: local server port on which you are listening (will be used to get full url for puppeteer)
 // `cache`: Cache to use (should be a node-cache-manager instance)
 // `maxCacheSize`: Maximum in-memory cache size
 // `ttl`: time to live for a cache request
@@ -21,6 +22,7 @@ const SifrrSeo = require('@sifrr/seo');
 //
 // default values
 const options = {
+  localport: 80,
   cache: require('cache-manager').caching, // default in memory caching
   maxCacheSize: 100, // (in MegaBytes)
   ttl: 0, // (in Seconds) 0 means infinity

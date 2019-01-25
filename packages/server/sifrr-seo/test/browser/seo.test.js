@@ -65,7 +65,7 @@ describe('sifrr-seo', () => {
 
     it('first render is slow, second is fast', async () => {
       const ltBefore = await loadTime(page);
-      await page.goto(`${PATH}/wuser`);
+      await page.goto(`${PATH}/xuser`);
       const ltAfter = await loadTime(page);
 
       assert.isAbove(ltAfter, 500, 'First render should take > 500ms');
@@ -73,13 +73,16 @@ describe('sifrr-seo', () => {
     });
 
     it('/xuser', async () => {
+      await page.goto(`${PATH}/xuser`);
+      const ltBefore = await loadTime(page);
       await page.setExtraHTTPHeaders({
         'x-user': 'new'
       });
       const resp = await (await page.goto(`${PATH}/xuser`)).text();
-      const lt = await loadTime(page);
+      const ltAfter = await loadTime(page);
 
-      assert.isAbove(lt, 500, 'It should render xuser again because of new x-user header');
+      assert.isAbove(ltAfter, 500, 'new x-user should render html again');
+      assert.isBelow(ltBefore, 100, 'no render because it was cached in previous test');
       expect(resp).to.have.string('"x-user":"new"', 'it should pass headers to render request');
     });
   });
