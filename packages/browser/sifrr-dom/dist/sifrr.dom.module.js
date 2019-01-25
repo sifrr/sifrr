@@ -518,11 +518,14 @@ class Loader {
         }
       });
     }).catch(e => {
-      window.console.warn(e);
-      window.console.log(`Failed to fetch HTML. Trying to get js file for ${this.elementName}.`);
-      this.js.then(script => {
-        new Function(script).bind(window)();
-      });
+      if (e.message === 'Not Found') {
+        window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
+        this.js.then(script => {
+          new Function(script).bind(window)();
+        });
+      } else {
+        window.console.warn(e);
+      }
     });
   }
 
@@ -848,15 +851,15 @@ const nativeToSyntheticEvent = (e, name) => {
         eventHandler(e, target);
       }
 
-      cssMatchEvent(e, name, target);
+      cssMatchEvent(e, name, dom, target);
       dom = dom.parentNode || dom.host;
     }
   })());
 };
 
-const cssMatchEvent = (e, name, dom) => {
+const cssMatchEvent = (e, name, dom, target) => {
   function callEach(fxns) {
-    fxns.forEach(fxn => fxn(e, dom));
+    fxns.forEach(fxn => fxn(e, target, dom));
   }
 
   for (let css in SYNTHETIC_EVENTS[name]) {
