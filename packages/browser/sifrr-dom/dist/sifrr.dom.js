@@ -558,7 +558,9 @@
         return [];
       }
       static get template() {
-        return loader.all[this.elementName].template;
+        return (loader.all[this.elementName] || {
+          template: false
+        }).template;
       }
       static get ctemp() {
         this._ctemp = this._ctemp || this.template;
@@ -576,13 +578,9 @@
         this._ctempusr = this._ctempusr || this.ctemp.getAttribute('use-shadow-root') !== 'false';
         return this._ctempusr && this.useSR;
       }
-      static get noContent() {
-        this._nocont = this._nocont || this.ctemp.getAttribute('content') === 'false';
-        return this._nocont;
-      }
       constructor() {
         super();
-        if (this.constructor.noContent) ; else {
+        if (!this.constructor.ctemp) ; else {
           if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
           const content = this.constructor.ctemp.content.cloneNode(true);
           if (this.constructor.useShadowRoot) {

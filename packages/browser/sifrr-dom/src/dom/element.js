@@ -18,7 +18,7 @@ function elementClassFactory(baseClass) {
     }
 
     static get template() {
-      return Loader.all[this.elementName].template;
+      return (Loader.all[this.elementName] || { template: false }).template;
     }
 
     static get ctemp() {
@@ -42,14 +42,9 @@ function elementClassFactory(baseClass) {
       return this._ctempusr && this.useSR;
     }
 
-    static get noContent() {
-      this._nocont = this._nocont || this.ctemp.getAttribute('content') === 'false';
-      return this._nocont;
-    }
-
     constructor() {
       super();
-      if (this.constructor.noContent) {
+      if (!this.constructor.ctemp) {
         // no content
       } else {
         // this._oldState = {};
