@@ -1,4 +1,6 @@
 /*! Sifrr.Route v0.0.2-alpha - sifrr project */
+import dom from '@sifrr/dom';
+
 class RegexPath {
   constructor(path, options = {}) {
     this.options = Object.assign({
@@ -54,6 +56,9 @@ class RegexPath {
 
 var regexpath = RegexPath;
 
+const Sifrr = window.Sifrr || {
+  Dom: dom
+};
 const template = Sifrr.Dom.html`<style>
   :host {
     display: none;

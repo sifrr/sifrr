@@ -1,3 +1,7 @@
+const Sifrr = window.Sifrr || {
+  Dom: require('@sifrr/dom')
+};
+
 const template = Sifrr.Dom.html`<style>
   :host {
     display: none;

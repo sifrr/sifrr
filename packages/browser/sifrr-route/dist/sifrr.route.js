@@ -1,9 +1,11 @@
 /*! Sifrr.Route v0.0.2-alpha - sifrr project */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory()));
-}(this, function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/dom')) :
+  typeof define === 'function' && define.amd ? define(['@sifrr/dom'], factory) :
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory(global.Sifrr.Dom)));
+}(this, function (dom) { 'use strict';
+
+  dom = dom && dom.hasOwnProperty('default') ? dom['default'] : dom;
 
   class RegexPath {
     constructor(path, options = {}) {
@@ -53,6 +55,9 @@
   }
   var regexpath = RegexPath;
 
+  const Sifrr = window.Sifrr || {
+    Dom: dom
+  };
   const template = Sifrr.Dom.html`<style>
   :host {
     display: none;
