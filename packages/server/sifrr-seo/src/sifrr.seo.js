@@ -1,5 +1,8 @@
 const puppeteer = require('puppeteer');
+const http = require('http');
+const { JSDOM } = require('jsdom');
 const Cache = require('cache-manager');
+const nodeFetch = require('node-fetch');
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('headless');
 
@@ -152,10 +155,39 @@ class SifrrSeo {
     const fullUrl = req.sifrrUrl;
     let pro = Promise.resolve(true);
     const me = this;
+    const headers = req.headers;
+    delete headers['user-agent'];
+    const httpHeaders = Object.assign({ 'user-agent': 'headless' }, headers);
+
+    http.get(fullUrl, { headers: httpHeaders }, (res) => {
+      const sRC = me.isHtml(res);
+      if (sRC) {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const dom = new JSDOM(body, {
+            url: fullUrl,
+            referrer: fullUrl,
+            resources: 'usable',
+            runScripts: 'dangerously',
+            userAgent: 'headless',
+            beforeParse(window) {
+              window.fetch = (url, options) => {
+                if (url.indexOf('http') !== 0) url = `http://127.0.0.1:${me.options.localport}${url}`;
+                return nodeFetch(url, options);
+              };
+            }
+          });
+          console.log(dom.serialize());
+        });
+      }
+    });
+
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async (newp) => {
-      const headers = req.headers;
-      delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
       const resp = await newp.goto(fullUrl, { waitUntil: 'networkidle0' });
       const sRC = me.isHTML(resp);
@@ -188,9 +220,9 @@ class SifrrSeo {
     return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
   }
 
-  // isHtml(expressResp) {
-  //   return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
-  // }
+  isHtml(resp) {
+    return !!(resp.headers['content-type'] && resp.headers['content-type'].indexOf('html') >= 0);
+  }
 }
 
 module.exports = SifrrSeo;
