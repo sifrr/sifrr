@@ -663,7 +663,7 @@
         try {
           temp = this.constructor._arrayToDom[this.constructor.elementName][key];
         } catch (e) {
-          return window.console.log(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
+          return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
         }
         for (let i = 0; i < newL; i++) {
           if (i < oldL) {

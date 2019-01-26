@@ -72,10 +72,10 @@ class SifrrSeo {
           this.renderedCache.get(key, (err, val) => {
             if (err || !val) {
               this.render(req, next).then((resp) => {
-                if (resp) res.send(resp);
+                if (resp) res.send(resp + footer);
                 else next();
               });
-            } else res.send(val);
+            } else res.send(val + footer);
           });
         }
       } else {
@@ -167,7 +167,7 @@ class SifrrSeo {
         await newp.evaluate(this.constructor.onRenderJS);
 
         /* istanbul ignore next */
-        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document)) + footer;
+        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
         me.renderedCache.set(req.sifrrCacheKey, resp, (err) => {
           if (err) throw err;
         });
