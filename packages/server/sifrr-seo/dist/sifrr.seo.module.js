@@ -1,6 +1,10 @@
 /*! Sifrr.Seo v0.0.2-alpha - sifrr project */
 import puppeteer from 'puppeteer';
 
+var constants = {
+  noop: () => {}
+};
+
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function commonjsRequire () {
@@ -2398,8 +2402,57 @@ var lib = cacheManager;
 
 var cacheManager$1 = lib;
 
-const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
-const isHeadless = new RegExp('headless');
+const mediaTypes = ['image'];
+const fetchTypes = ['xhr', 'fetch'];
+let pendingRequests = 0;
+let pendingPromise = Promise.resolve(true);
+let pendingResolver = constants.noop;
+
+function isTypeOf(request, types) {
+  const resType = request.resourceType();
+  return types.indexOf(resType) !== -1;
+}
+
+function onEnd(request) {
+  if (isTypeOf(request, fetchTypes)) {
+    pendingRequests--;
+
+    if (pendingRequests === 0) {
+      pendingResolver();
+    }
+  }
+}
+
+var pagerequest = async page => {
+  // Don't load images
+  await page.setRequestInterception(true);
+  page.on('request', request => {
+    if (isTypeOf(request, mediaTypes)) {
+      request.abort();
+    } else if (isTypeOf(request, fetchTypes)) {
+      pendingRequests++;
+      pendingPromise = new Promise(res => pendingResolver = res);
+      request.continue();
+    } else {
+      request.continue();
+    }
+  }); // resolve pending fetch/xhrs
+
+  page.on('requestfailed', request => {
+    onEnd(request);
+  });
+  page.on('requestfinished', request => {
+    onEnd(request);
+  });
+
+  page.allFetchComplete = async () => {
+    if (pendingRequests === 0) {
+      return true;
+    }
+
+    return pendingPromise;
+  };
+};
 
 const defaultCache = ops => cacheManager$1.caching({
   store: 'memory',
@@ -2410,24 +2463,112 @@ const defaultCache = ops => cacheManager$1.caching({
   max: ops.maxCacheSize * 1000000
 });
 
-class SifrrSeo {
-  /* istanbul ignore next */
-  static onRenderJS() {
-    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-    const defined = Object.keys(Sifrr.Dom.elements);
-    defined.forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach(el => {
-        if (el.shadowRoot) el.appendChild(el.shadowRoot);
-      });
+class Renderer {
+  constructor(puppeteerOptions, options) {
+    this.launched = false;
+    this.puppeteerOptions = puppeteerOptions;
+    this.options = options;
+
+    if (!this.options.cache) {
+      this.cache = defaultCache(this.options);
+    } else this.cache = this.options.cache;
+
+    this.shouldRenderCache = {};
+  }
+
+  async launchBrowser() {
+    this.browser = await puppeteer.launch(this.puppeteerOptions);
+    this.launched = true;
+    const me = this;
+    this.browser.on('disconnected', () => {
+      me.launched = false;
     });
-    return true;
+  }
+
+  close() {
+    if (this.launched) this.browser.close();
+  }
+
+  render(req) {
+    const key = this.options.cacheKey(req);
+    return new Promise((res, rej) => {
+      if (this.shouldRenderCache[key] === false) {
+        res(false);
+      } else {
+        this.cache.get(key, (err, val) => {
+          if (err) {
+            rej(err);
+          } else if (!val) {
+            this.renderOnPuppeteer(req).then(resp => {
+              res(resp);
+            }).catch(err => rej(err));
+          } else {
+            res(val);
+          }
+        });
+      }
+    });
+  }
+
+  renderOnPuppeteer(req) {
+    const key = this.options.cacheKey(req);
+    const fullUrl = this.fullUrl(req);
+    let pro = Promise.resolve(true);
+    const me = this;
+    if (!this.launched) pro = this.launchBrowser();
+    return pro.then(() => this.browser.newPage()).then(async newp => {
+      await pagerequest(newp);
+      const headers = req.headers;
+      delete headers['user-agent'];
+      await newp.setExtraHTTPHeaders(headers);
+      const resp = await newp.goto(fullUrl, {
+        waitUntil: 'load'
+      });
+      const sRC = me.isHTML(resp);
+      let ret;
+
+      if (sRC) {
+        await newp.allFetchComplete();
+        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
+        /* istanbul ignore next */
+
+        await newp.evaluate(me.options.onRender);
+        /* istanbul ignore next */
+
+        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
+        me.cache.set(key, resp, err => {
+          if (err) throw err;
+        });
+        ret = resp;
+      } else {
+        ret = false;
+      }
+
+      me.shouldRenderCache[key] = sRC;
+      newp.close();
+      return ret;
+    });
   }
 
   fullUrl(req) {
     return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
   }
 
+  isHTML(puppeteerResp) {
+    return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+  }
+
+}
+
+var renderer = Renderer;
+
+const {
+  noop
+} = constants;
+const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
+const isHeadless = new RegExp('headless');
+
+class SifrrSeo {
   constructor(userAgents = ['Googlebot', // Google
   'Bingbot', // Bing
   'Slurp', // Slurp
@@ -2437,19 +2578,14 @@ class SifrrSeo {
   'Sogou', // Sogou
   'Exabot'], options) {
     this._uas = userAgents.map(ua => new RegExp(ua));
-    this.launched = false;
-    this.shouldRenderCache = {};
     this.options = Object.assign({
       cache: false,
       maxCacheSize: 100,
       ttl: 0,
       cacheKey: req => this.fullUrl(req),
-      localport: 80
+      localport: 80,
+      onRender: noop
     }, options);
-
-    if (!this.options.cache) {
-      this.renderedCache = defaultCache(this.options);
-    } else this.renderedCache = this.options.cache;
   }
 
   get middleware() {
@@ -2458,21 +2594,11 @@ class SifrrSeo {
       if (req.method !== 'GET') return next();
 
       if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-        const key = this.options.cacheKey(req);
-        req.sifrrCacheKey = key;
-        req.sifrrUrl = this.fullUrl(req);
-
-        if (this.shouldRenderCache[key] === false) {
-          if (next) next();
-        } else {
-          this.renderedCache.get(key, (err, val) => {
-            if (err || !val) {
-              this.render(req, next).then(resp => {
-                if (resp) res.send(resp);else next();
-              });
-            } else res.send(val);
-          });
-        }
+        this.render(req).then(html => {
+          if (html) res.send(html + footer);else next();
+        }).catch(e => {
+          next(e);
+        });
       } else {
         if (next) next();
       }
@@ -2516,16 +2642,7 @@ class SifrrSeo {
   }
 
   close() {
-    this.browser.close();
-  }
-
-  async launchBrowser() {
-    this.browser = await puppeteer.launch(this.puppeteerOptions);
-    this.launched = true;
-    const me = this;
-    this.browser.on('disconnected', () => {
-      me.launched = false;
-    });
+    this.renderer.close();
   }
 
   setPuppeteerOption(name, value) {
@@ -2543,51 +2660,14 @@ class SifrrSeo {
     return newOpts;
   }
 
-  async render(req, next) {
-    const fullUrl = req.sifrrUrl;
-    let pro = Promise.resolve(true);
-    const me = this;
-    if (!this.launched) pro = this.launchBrowser();
-    return pro.then(() => this.browser.newPage()).then(async newp => {
-      const headers = req.headers;
-      delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      const resp = await newp.goto(fullUrl, {
-        waitUntil: 'networkidle0'
-      });
-      const sRC = me.isHTML(resp);
-      let ret;
-
-      if (sRC) {
-        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
-        /* istanbul ignore next */
-
-        await newp.evaluate(this.constructor.onRenderJS);
-        /* istanbul ignore next */
-
-        const resp = (await newp.evaluate(() => new XMLSerializer().serializeToString(document))) + footer;
-        me.renderedCache.set(req.sifrrCacheKey, resp, err => {
-          if (err) throw err;
-        });
-        ret = resp;
-      } else {
-        ret = false;
-      }
-
-      me.shouldRenderCache[req.sifrrCacheKey] = sRC;
-      newp.close();
-      return ret;
-    }).catch(e => {
-      if (next) next(e);
-    });
+  render(req, next) {
+    return this.renderer.render(req, next);
   }
 
-  isHTML(puppeteerResp) {
-    return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
-  } // isHtml(expressResp) {
-  //   return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
-  // }
-
+  get renderer() {
+    this._renderer = this._renderer || new renderer(this.puppeteerOptions, this.options);
+    return this._renderer;
+  }
 
 }
 

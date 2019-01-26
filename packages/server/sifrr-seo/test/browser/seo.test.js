@@ -43,19 +43,16 @@ describe('sifrr-seo', () => {
     });
 
     it('renders sifrr-test again locally (with sr)', async () => {
-      const html1 = await page.$eval('sifrr-test', el => el.innerHTML.trim());
-      const html2 = await page.$eval('sifrr-test', async el => {
+      const html = await page.$eval('sifrr-test', async el => {
         await customElements.whenDefined('sifrr-test');
         return el.shadowRoot.innerHTML;
       });
 
-      expect(html1).to.have.string('<p>Simple element</p>');
-      expect(html2).to.have.string('<p>Simple element</p>');
-      expect(html1).to.have.string('<p>1</p>');
-      expect(html2).to.have.string('<p>1</p>');
+      expect(html).to.have.string('<p>Simple element</p>');
+      expect(html).to.have.string('<p>1</p>');
     });
 
-    it('renders sifrr-test again locally (without sr)', async () => {
+    it('renders sifrr-nosr again locally (without sr)', async () => {
       const html = await page.$eval('sifrr-nosr', async el => {
         await customElements.whenDefined('sifrr-nosr');
         return el.innerHTML;
@@ -70,7 +67,7 @@ describe('sifrr-seo', () => {
       await page.goto(`${PATH}/xuser`);
       const ltAfter = await loadTime(page);
 
-      assert.isAbove(ltAfter, 500, 'First render should take > 500ms');
+      assert.isAbove(ltAfter, 100, 'First render should take > 100ms');
       assert.isBelow(ltBefore, 100, 'Second render should take < 100ms');
     });
 
@@ -83,7 +80,7 @@ describe('sifrr-seo', () => {
       const resp = await (await page.goto(`${PATH}/xuser`)).text();
       const ltAfter = await loadTime(page);
 
-      assert.isAbove(ltAfter, 500, 'new x-user should render html again');
+      assert.isAbove(ltAfter, 100, 'new x-user should render html again');
       assert.isBelow(ltBefore, 100, 'no render because it was cached in previous test');
       expect(resp).to.have.string('"x-user":"new"', 'it should pass headers to render request');
     });
@@ -91,7 +88,7 @@ describe('sifrr-seo', () => {
 
   describe('non html files', () => {
     it("doesn't render non html files", async () => {
-      await page.goto(`${PATH}/index.js`);
+      await page.goto(`${PATH}/index.js`, { waitUntil: 'load' });
       const html = await page.$eval('body', async el => {
         return el.innerHTML;
       });

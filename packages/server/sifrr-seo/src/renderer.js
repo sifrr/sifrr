@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const Cache = require('cache-manager');
+const pageRequest = require('./pagerequest');
 
 const defaultCache = (ops) => Cache.caching({
   store: 'memory',
@@ -63,14 +64,17 @@ class Renderer {
 
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async (newp) => {
+      await pageRequest(newp);
+
       const headers = req.headers;
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
-      const resp = await newp.goto(fullUrl, { waitUntil: 'networkidle0' });
+      const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
       let ret;
 
       if (sRC) {
+        await newp.allFetchComplete();
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         /* istanbul ignore next */
         await newp.evaluate(me.options.onRender);

@@ -1,3 +1,4 @@
+const { noop } = require('./constants');
 const Renderer = require('./renderer');
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('headless');
@@ -12,7 +13,7 @@ class SifrrSeo {
     'YandexBot', // Yandex
     'Sogou', // Sogou
     'Exabot', // Exalead
-  ], options) {
+  ], options = {}) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
     this.options = Object.assign({
       cache: false,
@@ -20,7 +21,7 @@ class SifrrSeo {
       ttl: 0,
       cacheKey: (req) => this.fullUrl(req),
       localport: 80,
-      onRender: () => {}
+      onRender: noop
     }, options);
   }
 

@@ -7,7 +7,7 @@ if (index !== -1) {
 function sss(p) {
   const Seo = require('../../src/sifrr.seo');
   // Middleware
-  const seo = new Seo(undefined, {
+  const seo = new Seo([], {
     cacheKey: (req) => req.originalUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
     localport: p,
     onRender: () => {

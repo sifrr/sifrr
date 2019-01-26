@@ -19,6 +19,7 @@ const SifrrSeo = require('@sifrr/seo');
 // `maxCacheSize`: Maximum in-memory cache size
 // `ttl`: time to live for a cache request
 // `cacheKey`: function that returns cache key for given req object
+// `onRender`: this function will be executer in browser after rendering
 //
 // default values
 const options = {
@@ -26,7 +27,8 @@ const options = {
   cache: require('cache-manager').caching, // default in memory caching
   maxCacheSize: 100, // (in MegaBytes)
   ttl: 0, // (in Seconds) 0 means infinity
-  cacheKey: (req) => SifrrSeo.fullUrl(req) // function that return a cache key for the request
+  cacheKey: (req) => this.fullUrl(req),
+  onRender: () => {}
 }
 
 const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);
