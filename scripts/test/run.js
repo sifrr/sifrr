@@ -16,6 +16,13 @@ global.should = chai.should();
 global.puppeteer = require('puppeteer');
 global.port = 8888;
 global.PATH = `http://localhost:${port}`;
+global.delay = (time) => {
+  return new Promise(res => {
+    setTimeout(function(){
+      res();
+    }, time * 1000);
+  });
+};
 
 // check if should inspect or not
 const shouldInspect = process.argv.indexOf('-i') > 0 || process.argv.indexOf('--inspect') > 0;
@@ -95,9 +102,10 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
   try {
     let ser = false;
 
+    const dir = process.argv[2];
+    const pubPath = await testLoader(dir, mocha, { runUnitTests, runBrowserTests });
+
     if (runBrowserTests || !runUnitTests) {
-      const dir = process.argv[2];
-      const pubPath = await testLoader(dir, mocha, { runUnitTests, runBrowserTests });
       let serverFile;
       if (pubPath) serverFile = path.join(pubPath, './server.js');
       if (pubPath && fs.existsSync(serverFile)) {

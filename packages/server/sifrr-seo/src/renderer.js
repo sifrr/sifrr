@@ -4,15 +4,15 @@ const pageRequest = require('./pagerequest');
 
 const defaultCache = (ops) => Cache.caching({
   store: 'memory',
-  ttl: ops.ttl,
+  ttl: ops.ttl || 0,
   length: (val, key) => {
-    return Buffer.from(2 * key + val).length + 2;
+    return Buffer.from(key + val).length + 2;
   },
-  max: ops.maxCacheSize * 1000000
+  max: (ops.maxCacheSize || 0) * 1000000
 });
 
 class Renderer {
-  constructor(puppeteerOptions, options) {
+  constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
     this.puppeteerOptions = puppeteerOptions;
     this.options = options;
@@ -27,6 +27,7 @@ class Renderer {
     this.launched = true;
     const me = this;
     this.browser.on('disconnected', () => {
+      /* istanbul ignore next */
       me.launched = false;
     });
   }
@@ -43,10 +44,12 @@ class Renderer {
       } else {
         this.cache.get(key, (err, val) => {
           if (err) {
+            /* istanbul ignore next */
             rej(err);
           } else if (!val) {
             this.renderOnPuppeteer(req).then((resp) => {
               res(resp);
+            /* istanbul ignore next */
             }).catch(err => rej(err));
           } else {
             res(val);

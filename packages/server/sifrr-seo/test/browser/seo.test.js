@@ -38,7 +38,7 @@ describe('sifrr-seo', () => {
   describe('js enabled', () => {
     before(async () => {
       await page.setJavaScriptEnabled(true);
-      await page.setUserAgent('Opera Mini');
+      await page.setUserAgent('UC Browser');
       await page.goto(`${PATH}/`);
     });
 
@@ -64,11 +64,15 @@ describe('sifrr-seo', () => {
 
     it('first render is slow, second is fast', async () => {
       const ltBefore = await loadTime(page);
-      await page.goto(`${PATH}/xuser`);
+      await page.setExtraHTTPHeaders({
+        'x-user': 'bang'
+      });
+      const resp = await (await page.goto(`${PATH}/xuser`)).text();
       const ltAfter = await loadTime(page);
 
       assert.isAbove(ltAfter, 100, 'First render should take > 100ms');
       assert.isBelow(ltBefore, 100, 'Second render should take < 100ms');
+      expect(resp).to.have.string('"x-user":"bang"', 'it should pass headers to render request');
     });
 
     it('/xuser', async () => {
