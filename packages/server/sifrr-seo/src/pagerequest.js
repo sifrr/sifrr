@@ -18,10 +18,10 @@ function onEnd(request) {
   }
 }
 
-module.exports = async (page) => {
+module.exports = async (bpage) => {
   // Don't load images
-  await page.setRequestInterception(true);
-  page.on('request', (request) => {
+  await bpage.setRequestInterception(true);
+  bpage.on('request', (request) => {
     if (isTypeOf(request, mediaTypes)) {
       request.abort();
     } else if (isTypeOf(request, fetchTypes)) {
@@ -34,14 +34,14 @@ module.exports = async (page) => {
   });
 
   // resolve pending fetch/xhrs
-  page.on('requestfailed', request => {
+  bpage.on('requestfailed', request => {
     onEnd(request);
   });
-  page.on('requestfinished', request => {
+  bpage.on('requestfinished', request => {
     onEnd(request);
   });
 
-  page.allFetchComplete = async () => {
+  bpage.allFetchComplete = async () => {
     if (pendingRequests === 0) {
       return true;
     }

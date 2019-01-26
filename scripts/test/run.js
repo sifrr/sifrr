@@ -1,7 +1,6 @@
 const Mocha = require('mocha');
 const mkdirp = require('mkdirp');
 const listen = require('./server');
-const exec = require('../exec');
 const testLoader = require('./testloader');
 const inspector = require('inspector');
 
@@ -56,14 +55,14 @@ const loadBrowser = async function() {
     close: async () => {
       if (!toCover) return pBrowser.close();
       const jsCoverage = await page.evaluate(() => window.__coverage__);
-      writeCoverage(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
+      writeCoverage(jsCoverage, path.join(nycReport, `./${Date.now()}-browser-coverage.json`));
       return pBrowser.close();
     }
   };
   if (toCover) {
     page.goto = async (url, options) => {
       const jsCoverage = await page.evaluate(() => window.__coverage__ || {});
-      writeCoverage(jsCoverage, path.join(nycReport, `./separate/${Date.now()}-coverage.json`));
+      writeCoverage(jsCoverage, path.join(nycReport, `./${Date.now()}-browser-coverage.json`));
       const ret = page.mainFrame().goto(url, options);
       return ret;
     };
@@ -132,7 +131,6 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
       // Get and fix code coverage
       if (toCover) {
         writeCoverage(global.__coverage__, path.join(nycReport, `./${Date.now()}-unit-coverage.json`));
-        fixCoverage();
       }
     });
   } catch(e) {
@@ -147,16 +145,10 @@ function writeCoverage(coverage, file) {
     if (err) throw err;
   });
 
-  fs.writeFileSync(file, JSON.stringify(coverage || {}), err => {
-    if(err) throw err;
-  });
-}
-
-// Filter out clutter, map to real files
-async function fixCoverage() {
-  const fileName = `${Date.now()}-browser-coverage.json`;
-  if (fs.existsSync(`${nycReport}/separate`)) {
-    await exec(`nyc merge ${nycReport}/separate ${nycReport}/${fileName}`);
-    await exec(`rm -rf ${nycReport}/separate`);
+  const contents = JSON.stringify(coverage || {});
+  if (contents !== '{}') {
+    fs.writeFileSync(file, contents, err => {
+      if(err) throw err;
+    });
   }
 }

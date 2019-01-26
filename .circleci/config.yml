@@ -33,11 +33,8 @@ jobs:
           paths:
             - ~/.cache/yarn
       - run:
-          name: Build dist
-          command: yarn build
-      - run:
           name: Run tests
-          command: yarn jtest
+          command: COVERAGE=true LCOV=true yarn test -j
       - run:
           name: Add git user email and name
           command: |
@@ -46,7 +43,7 @@ jobs:
       - run:
           name: New Release
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "not-yet-master" ]; then
               ./scripts/publish
             fi
       - store_test_results:

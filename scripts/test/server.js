@@ -14,47 +14,62 @@ if (index !== -1) {
 let dir = path.join(__dirname, '../../');
 const diri = Math.max(process.argv.indexOf('--dir'), process.argv.indexOf('-d'));
 if (diri !== -1) {
-  dir = path.join(dir, process.argv[diri + 1]).split(',');
+  dir = path.join(dir, process.argv[diri + 1]);
 }
 
 const server = express();
 
 // export server for importing
-const sss = function(port, dirs = dir) {
+const sss = function(port, dirS = dir) {
   server.use(compression());
 
   const toCover = process.env.COVERAGE === 'true';
+
+
+
+  if (toCover) {
+    const { createInstrumenter } = require('istanbul-lib-instrument');
+    const instrumenter = createInstrumenter();
+    const st = staticTransform({
+      root: path.join(dirS),
+      match: /.+\.js/,
+      transform: function (path, text, send) {
+        if (fs.existsSync(path + '.map')) {
+          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
+        } else {
+          send(text);
+        }
+      }
+    });
+    const st2 = staticTransform({
+      root: path.join(dirS, '../../dist'),
+      match: /.+\.js/,
+      transform: function (path, text, send) {
+        if (fs.existsSync(path + '.map')) {
+          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
+        } else {
+          send(text);
+        }
+      }
+    });
+    server.use(st);
+    server.use(st2);
+    server.use(serveStatic(dirS));
+  } else {
+    // serve test public directories
+    server.use(serveStatic(dirS));
+    server.use(serveStatic(path.join(dirS, '../../dist')));
+  }
 
   // serve sifrr-fetch and sifrr-dom
   const baseDir = path.join(__dirname, '../../');
   server.use(serveStatic(path.join(baseDir, './packages/browser/sifrr-dom/dist')));
   server.use(serveStatic(path.join(baseDir, './packages/browser/sifrr-fetch/dist')));
-  process.stdout.write('Serving sifrr-dom and sifrr-fetch');
+  process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
-  // serve all directories
-  if (!Array.isArray(dirs)) dirs = [dirs];
-  dirs.forEach(dirS => {
-    server.use(serveStatic(dirS));
+  server.use((req, res) => res.sendFile(path.join(dirS, './index.html')));
 
-    if (toCover) {
-      const { createInstrumenter } = require('istanbul-lib-instrument');
-      const instrumenter = createInstrumenter();
-      const st = staticTransform({
-        root: path.join(dirS, '../../dist'),
-        match: /.+\.js/,
-        transform: function (path, text, send) {
-          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))));
-        }
-      });
-      server.use(st);
-    } else {
-      server.use(serveStatic(path.join(dirS, '../../dist')));
-    }
-
-    server.use((req, res) => res.sendFile(path.join(dirS, './index.html')));
-  });
-
-  return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirs));
+  return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirS));
 };
 
 // listen on port if port given

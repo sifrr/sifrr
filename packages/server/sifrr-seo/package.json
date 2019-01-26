@@ -1,7 +1,7 @@
 {
   "name": "@sifrr/seo",
   "version": "0.0.2-alpha",
-  "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
+  "description": "Server Side Redering for any js based app as a express middleware.",
   "main": "src/sifrr.seo.js",
   "module": "dist/sifrr.seo.module.js",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "sifrr",
     "api"
   ],
-  "author": "Aaditya Taparia <aadityataparia@gmail.com>",
+  "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {
     "url": "https://github.com/sifrr/sifrr/issues"
   },
@@ -40,10 +40,12 @@
     "chai": "^4.1.2",
     "compression": "^1.7.3",
     "connect-static-transform": "^0.9.1",
+    "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
     "eslint-plugin-html": "^5.0.0",
     "express": "^4.16.4",
     "file-url": "^2.0.2",
+    "istanbul-api": "^2.0.6",
     "istanbul-lib-coverage": "^2.0.1",
     "istanbul-lib-hook": "^2.0.1",
     "istanbul-lib-instrument": "^3.0.0",

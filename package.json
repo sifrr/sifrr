@@ -15,8 +15,6 @@
   ],
   "scripts": {
     "test": "./scripts/test/runall",
-    "jtest": "yarn test -j",
-    "test-server": "node ./scripts/test-server -p 1234 -d ./packages/browser/sifrr-dom/test/public,./packages/browser/sifrr-fetch/test/public,./packages/browser/sifrr-route/test/public,./packages/browser/sifrr-serviceworker/test/public,./packages/browser/sifrr-storage/test/public,./packages/server/sifrr-api/test/public,./packages/server/sifrr-cli/test/public,./packages/server/sifrr-seo/test/public",
     "build": "./scripts/yarn build",
     "publish": "./scripts/yarn publish"
   },
@@ -43,13 +41,16 @@
     "chai": "^4.1.2",
     "compression": "^1.7.3",
     "connect-static-transform": "^0.9.1",
+    "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
     "eslint-plugin-html": "^5.0.0",
     "express": "^4.16.4",
     "file-url": "^2.0.2",
+    "istanbul-api": "^2.0.6",
     "istanbul-lib-coverage": "^2.0.1",
     "istanbul-lib-hook": "^2.0.1",
     "istanbul-lib-instrument": "^3.0.0",
+    "istanbul-lib-source-maps": "^2.0.1",
     "istanbul-reports": "^2.0.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
@@ -67,7 +68,7 @@
   },
   "nyc": {
     "include": [
-      "**/src/**.js"
+      "packages/*/*/src"
     ]
   }
 }

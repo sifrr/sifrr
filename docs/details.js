@@ -38,7 +38,7 @@ module.exports = {
     peerDependencies: []
   },
   '@sifrr/seo': {
-    description: 'Middleware to show server rendered html to crawler bots with headless chrome.',
+    description: 'Server Side Redering for any js based app as a express middleware.',
     version: version,
     peerDependencies: []
   }

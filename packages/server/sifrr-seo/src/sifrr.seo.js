@@ -73,7 +73,7 @@ class SifrrSeo {
 
   clearCache() {
     this.shouldRenderCache = {};
-    this.renderedCache.flushAll();
+    this.renderer.cache.flushAll();
   }
 
   close() {

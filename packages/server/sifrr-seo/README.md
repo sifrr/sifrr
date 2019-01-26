@@ -1,6 +1,6 @@
 # sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)
 
-Middleware to serve js rendered html to crawler bots using puppeteer with caching, i.e. Server side rendering for any js based webapp.
+Server Side Redering for any js based app as a express middleware.
 
 ## How to use
 
@@ -85,7 +85,7 @@ sifrrSeo.clearCache();
 ### Higher level API
 
 #### render()
-returns `Promise` which resolves in `html text` if url response has content-type html, else resolves in `false`.
+returns `Promise` which resolves in server rendered `html` if url response has content-type html, else resolves in `false`.
 ```js
 sifrrSeo.render(url);
 ```
