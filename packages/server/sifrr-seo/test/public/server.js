@@ -5,12 +5,22 @@ if (index !== -1) {
 }
 
 function sss(p) {
-
   const Seo = require('../../src/sifrr.seo');
   // Middleware
   const seo = new Seo(undefined, {
     cacheKey: (req) => req.originalUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
-    localport: p
+    localport: p,
+    onRender: () => {
+      if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
+      const defined = Object.keys(Sifrr.Dom.elements);
+      defined.forEach((selector) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((el) => {
+          if (el.shadowRoot) el.appendChild(el.shadowRoot);
+        });
+      });
+      return true;
+    }
   });
   seo.addUserAgent('Opera Mini');
   // Middleware

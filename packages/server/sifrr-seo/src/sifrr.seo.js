@@ -1,35 +1,8 @@
-const puppeteer = require('puppeteer');
-const Cache = require('cache-manager');
+const Renderer = require('./renderer');
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('headless');
 
-const defaultCache = (ops) => Cache.caching({
-  store: 'memory',
-  ttl: ops.ttl,
-  length: (val, key) => {
-    return Buffer.from(2 * key + val).length + 2;
-  },
-  max: ops.maxCacheSize * 1000000
-});
-
 class SifrrSeo {
-  /* istanbul ignore next */
-  static onRenderJS() {
-    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-    const defined = Object.keys(Sifrr.Dom.elements);
-    defined.forEach((selector) => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach((el) => {
-        if (el.shadowRoot) el.appendChild(el.shadowRoot);
-      });
-    });
-    return true;
-  }
-
-  fullUrl(req) {
-    return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
-  }
-
   constructor(userAgents = [
     'Googlebot', // Google
     'Bingbot', // Bing
@@ -41,18 +14,14 @@ class SifrrSeo {
     'Exabot', // Exalead
   ], options) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
-    this.launched = false;
-    this.shouldRenderCache = {};
     this.options = Object.assign({
       cache: false,
       maxCacheSize: 100,
       ttl: 0,
       cacheKey: (req) => this.fullUrl(req),
-      localport: 80
+      localport: 80,
+      onRender: () => {}
     }, options);
-    if (!this.options.cache) {
-      this.renderedCache = defaultCache(this.options);
-    } else this.renderedCache = this.options.cache;
   }
 
   get middleware() {
@@ -61,23 +30,12 @@ class SifrrSeo {
       if (req.method !== 'GET') return next();
 
       if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-
-        const key = this.options.cacheKey(req);
-        req.sifrrCacheKey = key;
-        req.sifrrUrl = this.fullUrl(req);
-
-        if (this.shouldRenderCache[key] === false) {
-          if (next) next();
-        } else {
-          this.renderedCache.get(key, (err, val) => {
-            if (err || !val) {
-              this.render(req, next).then((resp) => {
-                if (resp) res.send(resp + footer);
-                else next();
-              });
-            } else res.send(val + footer);
-          });
-        }
+        this.render(req).then((html) => {
+          if (html) res.send(html + footer);
+          else next();
+        }).catch((e) => {
+          next(e);
+        });
       } else {
         if (next) next();
       }
@@ -118,16 +76,7 @@ class SifrrSeo {
   }
 
   close() {
-    this.browser.close();
-  }
-
-  async launchBrowser() {
-    this.browser = await puppeteer.launch(this.puppeteerOptions);
-    this.launched = true;
-    const me = this;
-    this.browser.on('disconnected', () => {
-      me.launched = false;
-    });
+    this.renderer.close();
   }
 
   setPuppeteerOption(name, value) {
@@ -148,49 +97,14 @@ class SifrrSeo {
     return newOpts;
   }
 
-  async render(req, next) {
-    const fullUrl = req.sifrrUrl;
-    let pro = Promise.resolve(true);
-    const me = this;
-    if (!this.launched) pro = this.launchBrowser();
-    return pro.then(() => this.browser.newPage()).then(async (newp) => {
-      const headers = req.headers;
-      delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      const resp = await newp.goto(fullUrl, { waitUntil: 'networkidle0' });
-      const sRC = me.isHTML(resp);
-      let ret;
-
-      if (sRC) {
-        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
-        /* istanbul ignore next */
-        await newp.evaluate(this.constructor.onRenderJS);
-
-        /* istanbul ignore next */
-        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
-        me.renderedCache.set(req.sifrrCacheKey, resp, (err) => {
-          if (err) throw err;
-        });
-        ret = resp;
-      } else {
-        ret = false;
-      }
-
-      me.shouldRenderCache[req.sifrrCacheKey] = sRC;
-      newp.close();
-      return ret;
-    }).catch(e => {
-      if (next) next(e);
-    });
+  render(req, next) {
+    return this.renderer.render(req, next);
   }
 
-  isHTML(puppeteerResp) {
-    return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+  get renderer() {
+    this._renderer = this._renderer || new Renderer(this.puppeteerOptions, this.options);
+    return this._renderer;
   }
-
-  // isHtml(expressResp) {
-  //   return !!(expressResp.get('content-type') && expressResp.get('content-type').indexOf('html') >= 0);
-  // }
 }
 
 module.exports = SifrrSeo;

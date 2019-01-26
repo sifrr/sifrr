@@ -4,6 +4,8 @@ async function loadTime(page) {
   });
 }
 
+// With sr are because of setting onRender option
+
 describe('sifrr-seo', () => {
   describe('js disabled', () => {
     before(async () => {
@@ -84,6 +86,17 @@ describe('sifrr-seo', () => {
       assert.isAbove(ltAfter, 500, 'new x-user should render html again');
       assert.isBelow(ltBefore, 100, 'no render because it was cached in previous test');
       expect(resp).to.have.string('"x-user":"new"', 'it should pass headers to render request');
+    });
+  });
+
+  describe('non html files', () => {
+    it("doesn't render non html files", async () => {
+      await page.goto(`${PATH}/index.js`);
+      const html = await page.$eval('body', async el => {
+        return el.innerHTML;
+      });
+
+      expect(html).to.not.have.string('@sifrr/seo');
     });
   });
 });
