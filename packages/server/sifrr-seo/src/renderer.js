@@ -97,6 +97,17 @@ class Renderer {
     });
   }
 
+  addShouldRenderCache(req, val) {
+    const key = this.options.cacheKey(req);
+    this.shouldRenderCache[key] = val;
+  }
+
+  getShouldRenderCache(req) {
+    const key = this.options.cacheKey(req);
+    if (this.shouldRenderCache[key] === undefined) return null;
+    return this.shouldRenderCache[key];
+  }
+
   isHTML(puppeteerResp) {
     return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
   }

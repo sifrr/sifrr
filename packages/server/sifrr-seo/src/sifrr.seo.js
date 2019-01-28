@@ -36,6 +36,21 @@ class SifrrSeo {
         headers: req.headers
       };
 
+      if (this.renderer.getShouldRenderCache(renderReq) === null) {
+        res._end = res.end;
+        res.end = (resp) => {
+          if (res.hasHeader('content-type')) {
+            const contentType = res.getHeader('content-type');
+            if (contentType.indexOf('html') >= 0) {
+              this.renderer.addShouldRenderCache(renderReq, true);
+            } else {
+              this.renderer.addShouldRenderCache(renderReq, false);
+            }
+          }
+          res._end(resp);
+        };
+      }
+
       this.render(renderReq).then((html) => {
         if (html) res.send(html + footer);
         else next();
