@@ -267,14 +267,18 @@ Sifrr.Dom.setup(config);
 
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html -->
-<template use-shadow-root="false">
+<template>
   <style media="screen">
     // Style here will be global
   </style>
   <!-- content -->
 </template>
 <script type="text/javascript">
-  // Same setting up as before
+  class CustomTag {
+    static get useShadowRoot {
+      return false;
+    }
+  }
 </script>
 ```
 

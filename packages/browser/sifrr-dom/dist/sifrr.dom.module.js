@@ -670,9 +670,11 @@ function elementClassFactory(baseClass) {
     }
 
     static get template() {
-      return (loader.all[this.elementName] || {
+      const temp = (loader.all[this.elementName] || {
         template: false
       }).template;
+      if (window.ShadyCSS && this.useShadowRoot) window.ShadyCSS.prepareTemplate(temp, this.elementName);
+      return temp;
     }
 
     static get ctemp() {
@@ -692,8 +694,7 @@ function elementClassFactory(baseClass) {
     static onStateChange() {}
 
     static get useShadowRoot() {
-      this._ctempusr = this._ctempusr || this.ctemp.getAttribute('use-shadow-root') !== 'false';
-      return this._ctempusr && this.useSR;
+      return this.useSR;
     }
 
     constructor() {
@@ -902,7 +903,8 @@ const {
 
 let SifrrDom = {}; // For elements
 
-SifrrDom.elements = {}; // Classes
+SifrrDom.elements = {};
+SifrrDom.loadingElements = []; // Classes
 
 SifrrDom.Element = element;
 SifrrDom.Parser = parser;
@@ -972,7 +974,12 @@ SifrrDom.load = function (elemName, config = {
   baseUrl: SifrrDom.config.baseUrl
 }) {
   let loader$$1 = new SifrrDom.Loader(elemName, config);
+  SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader$$1.executeScripts();
+};
+
+SifrrDom.loading = () => {
+  return Promise.all(SifrrDom.loadingElements);
 }; // Relative path to element html
 
 

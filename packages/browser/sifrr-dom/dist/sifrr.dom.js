@@ -558,9 +558,11 @@
         return [];
       }
       static get template() {
-        return (loader.all[this.elementName] || {
+        const temp = (loader.all[this.elementName] || {
           template: false
         }).template;
+        if (window.ShadyCSS && this.useShadowRoot) window.ShadyCSS.prepareTemplate(temp, this.elementName);
+        return temp;
       }
       static get ctemp() {
         this._ctemp = this._ctemp || this.template;
@@ -575,8 +577,7 @@
       }
       static onStateChange() {}
       static get useShadowRoot() {
-        this._ctempusr = this._ctempusr || this.ctemp.getAttribute('use-shadow-root') !== 'false';
-        return this._ctempusr && this.useSR;
+        return this.useSR;
       }
       constructor() {
         super();
@@ -744,6 +745,7 @@
   } = constants;
   let SifrrDom = {};
   SifrrDom.elements = {};
+  SifrrDom.loadingElements = [];
   SifrrDom.Element = element;
   SifrrDom.Parser = parser;
   SifrrDom.Loader = loader;
@@ -801,7 +803,11 @@
     baseUrl: SifrrDom.config.baseUrl
   }) {
     let loader$$1 = new SifrrDom.Loader(elemName, config);
+    SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
     return loader$$1.executeScripts();
+  };
+  SifrrDom.loading = () => {
+    return Promise.all(SifrrDom.loadingElements);
   };
   SifrrDom.relativeTo = function (elemName, relativeUrl) {
     if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
