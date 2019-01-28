@@ -22,10 +22,10 @@ Add script tag in your website.
 
 #### Browser API support needed for
 
-| APIs      | caniuse                           | polyfills                         |
-| :-------- | :-------------------------------- | :-------------------------------- |
-| Fetch API | <https://caniuse.com/#feat=fetch> | <https://github.com/github/fetch> |
-| Promises API             | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
+| APIs         | caniuse                              | polyfills                                     |
+| :----------- | :----------------------------------- | :-------------------------------------------- |
+| Fetch API    | <https://caniuse.com/#feat=fetch>    | <https://github.com/github/fetch>             |
+| Promises API | <https://caniuse.com/#feat=promises> | <https://github.com/stefanpenner/es6-promise> |
 
 ### Using npm
 

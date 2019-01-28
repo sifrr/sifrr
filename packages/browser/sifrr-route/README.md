@@ -98,9 +98,10 @@ When window location path is `/test/1`, sifrr-route's state will be `{ id: 1 }` 
 ## Animating
 
 Example:
+
 ```css
 sifrr-route {
-  
+
 }
 sifrr-route.active {
   opacity: 0;
