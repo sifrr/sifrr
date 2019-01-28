@@ -1,46 +1,73 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <h1>OK</h1>
-    <script type="text/javascript">
-      function base64UrlToUint8Array(base64UrlData) {
-        const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
-        const base64 = (base64UrlData + padding)
-          .replace(/\-/g, '+')
-          .replace(/_/g, '/');
-        const rawData = atob(base64);
-        const buffer = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-          buffer[i] = rawData.charCodeAt(i);
-        }
-        return buffer;
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+
+<body>
+  <h1>OK</h1>
+  <script type="text/javascript">
+    function base64UrlToUint8Array(base64UrlData) {
+      const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
+      const base64 = (base64UrlData + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      const rawData = atob(base64);
+      const buffer = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        buffer[i] = rawData.charCodeAt(i);
       }
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
-            // Registration was successful
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: base64UrlToUint8Array('BA5yK_1yHG2nmv1yJoVJY51zvXauoquAbPV2EwgdAkmiiUZEQeWpSKHv5DqGJkm_WU47GHBPfDkDR6qkG7s4BUM')
-            })
+      return buffer;
+    }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
+          // Registration was successful
+          window.console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: base64UrlToUint8Array('BA5yK_1yHG2nmv1yJoVJY51zvXauoquAbPV2EwgdAkmiiUZEQeWpSKHv5DqGJkm_WU47GHBPfDkDR6qkG7s4BUM')
+          })
             .then(function(subscription) {
-              console.log(JSON.stringify(subscription));
-              console.log('User is subscribed.');
+              window.console.log(JSON.stringify(subscription));
+              window.console.log('User is subscribed.');
             })
             .catch(function(err) {
-              console.log('Failed to subscribe the user: ', err);
+              window.console.log('Failed to subscribe the user: ', err);
             });
-          }, function(err) {
-            // registration failed :(
-            console.log('ServiceWorker registration failed: ', err);
+        }, function(err) {
+          // registration failed :(
+          window.console.log('ServiceWorker registration failed: ', err);
+        }).then(() => {
+          function send_message_to_sw(msg) {
+            return new Promise(function(resolve, reject) {
+              // Create a Message Channel
+              var msg_chan = new MessageChannel();
+
+              // Handler for recieving message reply from service worker
+              msg_chan.port1.onmessage = function(event) {
+                if (event.data.error) {
+                  reject(event.data.error);
+                } else {
+                  resolve(event.data);
+                }
+              };
+
+              // Send message to service worker along with port for reply
+              navigator.serviceWorker.controller.postMessage(msg, [msg_chan.port2]);
+            });
+          }
+          Object.defineProperty(window, '__coverage__', {
+            get: () => {
+              return send_message_to_sw('coverage');
+            }
           });
         });
-      }
-    </script>
-  </body>
+      });
+    }
+  </script>
+</body>
+
 </html>

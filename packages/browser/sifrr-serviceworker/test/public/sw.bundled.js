@@ -1,2 +1,208 @@
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e=e||self).SW=t()}(this,function(){"use strict";var e;"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self&&self;const t=new(function(e,t){e.exports=class{constructor(e){this.options=Object.assign({version:1,fallbackCacheName:"fallbacks",defaultCacheName:"default",policies:{},fallbacks:{},precacheUrls:[]},e),this.options.policies.default=Object.assign(this.options.policies.default||{},{policy:"NETWORK_FIRST",cacheName:this.options.defaultCacheName})}precache(e=this.options.precacheUrls,t=this.options.fallbacks){const s=this;let o=[];e.forEach(e=>{let t=s.requestFromURL(e);return o.push(s.responseFromNetwork(t,s.findRegex(e,s.options.policies).cacheName||s.options.defaultCacheName))});for(let e of Object.values(t)){let t=this.requestFromURL(e);o.push(this.responseFromNetwork(t,this.options.fallbackCacheName))}return Promise.all(o)}setup(e=!0){let t=this;self.addEventListener("install",s=>{e&&self.skipWaiting(),s.waitUntil(t.precache())}),self.addEventListener("activate",()=>{const e="-v"+t.options.version;caches.keys().then(t=>t.filter(t=>t.indexOf(e)<0)).then(e=>Promise.all(e.map(e=>caches.delete(e)))).then(()=>self.clients.claim())}),self.addEventListener("fetch",e=>{const s=e.request,o=s.clone(),n=s.clone();"GET"===s.method&&e.respondWith(t.respondWithPolicy(s).then(e=>{if(!e.ok&&e.status>0&&t.findRegex(n.url,t.options.fallbacks))throw Error("response status "+e.status);return e}).catch(e=>t.respondWithFallback(o,e)))})}setupPushNotification(e="",t={body:""},s){self.addEventListener("push",function(s){let o={};s.data&&(o=s.data.json());const n=o.title||e,i=Object.assign(t,o);s.waitUntil(self.registration.showNotification(n,i))}),self.addEventListener("notificationclick",s)}respondWithFallback(e,t){const s=this.requestFromURL(this.findRegex(e.url,this.options.fallbacks));if(void 0!==s)return this.responseFromCache(s,this.options.fallbackCacheName);throw t}respondWithPolicy(e){const t=e.clone(),s=this.findRegex(e.url,this.options.policies),o=s.policy||"NETWORK_FIRST",n=s.cacheName||this.options.defaultCacheName;let i;switch(o){case"NETWORK_ONLY":i=this.responseFromNetwork(t,n,!1);break;case"CACHE_FIRST":case"CACHE_ONLY":i=this.responseFromCache(t,n).catch(()=>this.responseFromNetwork(e,n));break;case"NETWORK_FIRST":default:i=this.responseFromNetwork(t,n).catch(()=>this.responseFromCache(e,n))}return i}responseFromNetwork(e,t,s=!0){return caches.open(t+"-v"+this.options.version).then(t=>fetch(e).then(o=>(s&&t.put(e,o.clone()),o)))}responseFromCache(e,t){return caches.open(t+"-v"+this.options.version).then(t=>t.match(e)).then(t=>{if(t)return t;throw"Cache not found for "+e.url})}requestFromURL(e,t="GET"){return new Request(e,{method:t})}findRegex(e,t){for(let[s,o]of Object.entries(t)){const t=new RegExp(s);if(t.test(e))return o}return t.default}}}(e={exports:{}},e.exports),e.exports)({version:2,fallbackCacheName:"ffff",defaultCacheName:"dddd",policies:{cachefirst:{policy:"CACHE_FIRST"},networkfirst:{policy:"NETWORK_FIRST",cacheName:"bangbang"},networkonly:{policy:"NETWORK_ONLY"},server:{policy:"NETWORK_ONLY"},cacheonly:{policy:"CACHE_ONLY",cacheName:"bangbang2"},precache:{policy:"CACHE_ONLY",cacheName:"bangbang2"}},fallbacks:{networkonly:"/offline.html"},precacheUrls:["/precache.js","/cacheonly.js"]});return t.setup(),t.setupPushNotification("default title",{body:"default body"}),t});
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.SW = factory());
+}(this, function () { 'use strict';
+
+  class SW {
+    constructor(options) {
+      this.options = Object.assign({
+        version: 1,
+        fallbackCacheName: 'fallbacks',
+        defaultCacheName: 'default',
+        policies: {},
+        fallbacks: {},
+        precacheUrls: []
+      }, options);
+      this.options.policies.default = Object.assign(this.options.policies.default || {}, {
+        policy: 'NETWORK_FIRST',
+        cacheName: this.options.defaultCacheName
+      });
+    }
+
+    precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
+      const me = this;
+      let promises = [];
+      urls.forEach(u => {
+        let req = me.requestFromURL(u);
+        return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName || me.options.defaultCacheName));
+      });
+
+      for (let value of Object.values(fbs)) {
+        let req = this.requestFromURL(value);
+        promises.push(this.responseFromNetwork(req, this.options.fallbackCacheName));
+      }
+
+      return Promise.all(promises);
+    }
+
+    setup(skipWaiting = true) {
+      let me = this;
+      self.addEventListener('install', event => {
+        // replace old sw ASAP
+        if (skipWaiting) self.skipWaiting();
+        event.waitUntil(me.precache());
+      });
+      self.addEventListener('activate', () => {
+        const version = '-v' + me.options.version; // remove old version caches
+
+        caches.keys().then(cacheNames => {
+          return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
+        }).then(cachesToDelete => {
+          return Promise.all(cachesToDelete.map(cacheToDelete => {
+            return caches.delete(cacheToDelete);
+          }));
+        }).then(() => self.clients.claim());
+      });
+      self.addEventListener('fetch', event => {
+        const request = event.request;
+        const otherReq = request.clone();
+        const oreq = request.clone();
+
+        if (request.method === 'GET') {
+          event.respondWith(me.respondWithPolicy(request).then(response => {
+            if (!response.ok && response.status > 0 && me.findRegex(oreq.url, me.options.fallbacks)) {
+              throw Error('response status ' + response.status);
+            }
+
+            return response;
+          }).catch(e => me.respondWithFallback(otherReq, e)));
+        }
+      });
+    }
+
+    setupPushNotification(defaultTitle = '', defaultOptions = {
+      body: ''
+    }, onNotificationClick) {
+      self.addEventListener('push', function (event) {
+        let data = {};
+
+        if (event.data) {
+          data = event.data.json();
+        }
+
+        const title = data.title || defaultTitle;
+        const options = Object.assign(defaultOptions, data);
+        event.waitUntil(self.registration.showNotification(title, options));
+      });
+      self.addEventListener('notificationclick', onNotificationClick);
+    }
+
+    respondWithFallback(request, error) {
+      const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
+
+      if (fallback !== undefined) {
+        return this.responseFromCache(fallback, this.options.fallbackCacheName);
+      } else {
+        throw error;
+      }
+    }
+
+    respondWithPolicy(request) {
+      const newreq = request.clone();
+      const config = this.findRegex(request.url, this.options.policies);
+      const policy = config.policy || 'NETWORK_FIRST';
+      const cacheName = config.cacheName || this.options.defaultCacheName;
+      let resp;
+
+      switch (policy) {
+        case 'NETWORK_ONLY':
+          resp = this.responseFromNetwork(newreq, cacheName, false);
+          break;
+
+        case 'CACHE_FIRST':
+        case 'CACHE_ONLY':
+          resp = this.responseFromCache(newreq, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          break;
+
+        case 'NETWORK_FIRST':
+          resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));
+          break;
+
+        default:
+          resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));
+          break;
+      }
+
+      return resp;
+    }
+
+    responseFromNetwork(request, cache, putInCache = true) {
+      return caches.open(cache + '-v' + this.options.version).then(cache => fetch(request).then(response => {
+        if (putInCache) cache.put(request, response.clone());
+        return response;
+      }));
+    }
+
+    responseFromCache(request, cache) {
+      return caches.open(cache + '-v' + this.options.version).then(cache => cache.match(request)).then(resp => {
+        if (resp) return resp;else throw 'Cache not found for ' + request.url;
+      });
+    }
+
+    requestFromURL(url, method = 'GET') {
+      return new Request(url, {
+        method: method
+      });
+    }
+
+    findRegex(url, policies) {
+      for (let [key, value] of Object.entries(policies)) {
+        const regex = new RegExp(key);
+        if (regex.test(url)) return value;
+      }
+
+      return policies['default'];
+    }
+
+  }
+
+  var sifrr_serviceworker = SW;
+
+  const sw = new sifrr_serviceworker({
+    version: 2,
+    fallbackCacheName: 'ffff',
+    defaultCacheName: 'dddd',
+    policies: {
+      cachefirst: {
+        policy: 'CACHE_FIRST'
+      },
+      networkfirst: {
+        policy: 'NETWORK_FIRST',
+        cacheName: 'bangbang'
+      },
+      networkonly: {
+        policy: 'NETWORK_ONLY'
+      },
+      server: {
+        policy: 'NETWORK_ONLY'
+      },
+      cacheonly: {
+        policy: 'CACHE_ONLY',
+        cacheName: 'bangbang2'
+      },
+      precache: {
+        policy: 'CACHE_ONLY',
+        cacheName: 'bangbang2'
+      }
+    },
+    fallbacks: {
+      networkonly: '/offline.html'
+    },
+    precacheUrls: ['/precache.js', '/cacheonly.js']
+  });
+  sw.setup();
+  sw.setupPushNotification('default title', {
+    body: 'default body'
+  });
+  self.addEventListener('message', e => {
+    if (e.data === 'coverage') {
+      e.ports[0].postMessage(self.__coverage__);
+    }
+  });
+  var sw_1 = sw;
+
+  return sw_1;
+
+}));
 //# sourceMappingURL=sw.bundled.js.map

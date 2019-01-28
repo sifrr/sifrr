@@ -1,6 +1,7 @@
 function stubRequests() {
   page.on('request', request => {
-    if (page.__offline) {
+    request.continue();
+    if (page.__offline === false) {
       request.abort();
     } else {
       request.continue();
@@ -10,14 +11,18 @@ function stubRequests() {
 
 describe('sifrr-serviceworker', () => {
   before(async () => {
+    // Doesn't work because of https://github.com/GoogleChrome/puppeteer/issues/3715
     // await page.setRequestInterception(true);
     // stubRequests();
+    await page.goto(`${PATH}/`);
+    await page.evaluate('navigator.serviceWorker.ready');
+  });
+
+  after(async () => {
   });
 
   it('registers service worker', async () => {
-    await page.goto(`${PATH}/`);
     // wait for service worker ready
-    await page.evaluate('navigator.serviceWorker.ready');
     const resp = await page.goto(`${PATH}/index.html`);
 
     assert.equal(resp.fromServiceWorker(), true);
@@ -51,12 +56,12 @@ describe('sifrr-serviceworker', () => {
 
   // can't test these before https://github.com/GoogleChrome/puppeteer/issues/2469 is solved
   it('responds non cached files with assigned fallbacks when offline', async () => {
-    await page.setOfflineMode(true);
+    page.__offline = true;
 
     const resp = await page.goto(`${PATH}/networkonly.js`);
     const respText = await resp.text();
 
-    await page.setOfflineMode(false);
+    page.__offline = false;
 
     // expect(respText.indexOf('OFFLINE') >= 0).to.be.true;
   });

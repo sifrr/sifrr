@@ -171,6 +171,14 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
+## More manual handling
+In your sw file
+```js
+const sw = new SW(/* config */);
+
+self.addEventListener(...); // You can add methods on self if you need
+```
+
 ### Tutorials
 
 -   <https://developers.google.com/web/fundamentals/codelabs/push-notifications/>

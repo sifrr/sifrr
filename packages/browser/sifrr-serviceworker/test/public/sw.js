@@ -1,4 +1,5 @@
-const SW = require('../../dist/sifrr.serviceworker');
+const SW = require('../../src/sifrr.serviceworker');
+
 const sw = new SW({
   version: 2,
   fallbackCacheName: 'ffff',
@@ -34,4 +35,9 @@ const sw = new SW({
 
 sw.setup();
 sw.setupPushNotification('default title', { body: 'default body' });
+self.addEventListener('message', (e) => {
+  if (e.data === 'coverage') {
+    e.ports[0].postMessage(self.__coverage__);
+  }
+});
 module.exports = sw;
