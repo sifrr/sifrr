@@ -68,7 +68,7 @@
   },
   "nyc": {
     "include": [
-      "packages/*/*/src"
+      "packages/(.*)/sifrr-(.*)/src/*.js"
     ]
   }
 }
