@@ -1,6 +1,6 @@
 # sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)
 
-Server Side Redering for any js based app as a express middleware.
+Server Side Redering for any js based app as a express/connect middleware.
 
 ## How to use
 
@@ -9,6 +9,8 @@ Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `packa
 ### Api
 
 #### Basic usage
+
+SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request to complete before returning rendered HTML. It doesn't load any media content on server.
 
 ```js
 const SifrrSeo = require('@sifrr/seo');
@@ -19,7 +21,8 @@ const SifrrSeo = require('@sifrr/seo');
 // `maxCacheSize`: Maximum in-memory cache size
 // `ttl`: time to live for a cache request
 // `cacheKey`: function that returns cache key for given req object
-// `onRender`: this function will be executer in browser after rendering
+// `beforeRender`: this function will be executed in browser before rendering, doesn't take any arguments
+// `afterRender`: this function will be executed in browser after rendering, doesn't take any arguments
 //
 // default values
 const options = {
@@ -28,7 +31,8 @@ const options = {
   maxCacheSize: 100, // (in MegaBytes)
   ttl: 0, // (in Seconds) 0 means infinity
   cacheKey: (req) => this.fullUrl(req),
-  onRender: () => {}
+  beforeRender: () => {},
+  afterRender: () => {}
 }
 
 const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);
@@ -51,7 +55,7 @@ sifrrSeo.addUserAgent(/* string */ 'Opera Mini');
 const express = require('express');
 const server = express();
 
-// Only use for GET requests
+// Only use for GET requests as a express middleware
 server.get(sifrrSeo.middleware);
 server.listen(8080);
 ```
@@ -60,7 +64,7 @@ server.listen(8080);
 
 #### Adding your custom rendering logic
 
-- sifrr-seo only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
+-   sifrr-seo only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
 
 Change `sifrrSeo.shouldRender`, by default it is `sifrrSeo.isUserAgent(req)`. eg:
 
@@ -72,7 +76,7 @@ sifrrSeo.shouldRender = (req) => {
 }
 ```
 
-- `sifrrSeo.isUserAgent(req)` returns `true` if req's user agent is in seo userAgents, else returns `false`.
+-   `sifrrSeo.isUserAgent(req)` returns `true` if req's user agent is in seo userAgents, else returns `false`.
 
 #### Clearing cache
 
@@ -85,27 +89,56 @@ sifrrSeo.clearCache();
 ### Higher level API
 
 #### render()
+
 returns `Promise` which resolves in server rendered `html` if url response has content-type html, else resolves in `false`.
+
 ```js
 sifrrSeo.render(url);
 ```
 
 #### close()
+
 closes puppeteer browser instance
+
 ```js
 sifrrSeo.close();
 ```
 
 #### addPuppeteerOption()
+
 adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
+
 ```js
 sifrrSeo.addPuppeteerOption('headless', false);
 ```
 
 #### puppeteerOptions
+
 return options that will be used to launch puppeteer instance.
+
 ```js
 sifrrSeo.puppeteerOptions;
 ```
 
-__Note__: Note that first server render will be slow, but subsequent requests will be really fast because of caching.
+**Note**: Note that first server render will be slow (depending on server machine), but subsequent requests will be really fast because of caching.
+
+## Tips
+
+-   Don't use external scripts in pages without a good cache age.
+-   How to use with sifrr-dom:
+    -   Add web components (shadowdom v1 spec) polyfills from [here](https://github.com/webcomponents/webcomponentsjs). Needs [ShadyDOM](https://github.com/webcomponents/shadydom) and [ShadyCSS](https://github.com/webcomponents/shadycss) polyfills.
+    -   Change options to force shadyDOM in server render.
+    - Example in [tests](./test/public/server.js)
+```js
+seoOptions = {
+  beforeRender: () => {
+    // Force shadyDom (no shadow root)
+    ShadyDOM = { force: true };
+  },
+  afterRender: async () => {
+    // Wait till all sifrr elements are loaded
+    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
+    await Sifrr.Dom.loading();
+  }
+}
+```

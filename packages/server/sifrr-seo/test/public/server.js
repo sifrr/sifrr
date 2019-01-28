@@ -11,10 +11,11 @@ function sss(p) {
     cacheKey: (req) => req.originalUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
     localport: p,
     beforeRender: () => {
-      ShadyDOM = { force: true};
-      ShadyCSS = { shimcssproperties: true};
+      // Force shadyDom (no shadow root)
+      ShadyDOM = { force: true };
     },
     afterRender: async () => {
+      // Wait till all sifrr elements are loaded
       if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
       await Sifrr.Dom.loading();
     }

@@ -1,5 +1,5 @@
 module.exports = (name, ext) => {
-  return `<template use-shadow-root="true">
+  return `<template>
   <!-- Content -->
 </template>
 <script type="text/javascript">

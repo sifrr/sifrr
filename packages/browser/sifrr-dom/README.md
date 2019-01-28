@@ -35,13 +35,13 @@ Add script tag in your website.
 
 #### Browser API support needed for
 
-| APIs                     | caniuse                                       | polyfills                                          |
-| :----------------------- | :-------------------------------------------- | :------------------------------------------------- |
-| Custom Elements v1       | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
-| Promises API             | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
-| Shadow DOM v1 (optional) | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
-| ES6 Modules (optional)   | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
-| Fetch API (optional)     | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
+| APIs                                                 | caniuse                                       | polyfills                                          |
+| :--------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------- |
+| Custom Elements v1                                   | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
+| Promises API                                         | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
+| Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
+| ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
+| Fetch API (if you use `Sifrr.Dom.load`)              | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
 
 If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
@@ -251,6 +251,7 @@ customtag.update();
 ### Components Without shadow root
 
 #### If you don't want to use shadow root by default
+
 Don't use shadow-root if you want to serve server rendered files with sifrr-seo.
 
 ```js
