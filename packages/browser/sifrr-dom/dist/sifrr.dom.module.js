@@ -868,7 +868,7 @@ const cssMatchEvent = (e, name, dom, target) => {
 const Event = {
   add: name => {
     if (SYNTHETIC_EVENTS[name]) return false;
-    window.document.addEventListener(name, event => nativeToSyntheticEvent(event, name), {
+    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), {
       capture: true,
       passive: true
     });

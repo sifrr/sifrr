@@ -2475,7 +2475,7 @@ const getCache = ops => cacheManager$1.caching({
   store: ops.cacheStore,
   ttl: ops.ttl || 0,
   length: (val, key) => {
-    return Buffer.from(key + val).length + 2;
+    return Buffer.from(key + key + val).length + 2;
   },
   max: (ops.maxCacheSize || 0) * 1000000
 });
