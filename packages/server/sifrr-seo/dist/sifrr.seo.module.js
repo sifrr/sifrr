@@ -2404,55 +2404,72 @@ var cacheManager$1 = lib;
 
 const mediaTypes = ['image'];
 const fetchTypes = ['xhr', 'fetch'];
-let pendingRequests = 0;
-let pendingPromise = Promise.resolve(true);
-let pendingResolver = constants.noop;
 
 function isTypeOf(request, types) {
   const resType = request.resourceType();
   return types.indexOf(resType) !== -1;
 }
 
-function onEnd(request) {
-  if (isTypeOf(request, fetchTypes)) {
-    pendingRequests--;
+class PageRequest {
+  constructor(page) {
+    this.page = page;
+    this.pendingRequests = 0;
+    this.pendingPromise = Promise.resolve(true);
+    this.pendingResolver = constants.noop;
+    this.addOnRequestListener();
+    this.addEndRequestListener();
+  }
 
-    if (pendingRequests === 0) {
-      pendingResolver();
+  addOnRequestListener() {
+    const me = this;
+    this.page.setRequestInterception(true).then(() => {
+      me.page.on('request', request => {
+        if (isTypeOf(request, mediaTypes)) {
+          request.abort();
+        } else if (isTypeOf(request, fetchTypes)) {
+          me.pendingRequests++;
+          me.pendingPromise = new Promise(res => me.pendingResolver = res);
+          request.continue();
+        } else {
+          request.continue();
+        }
+      });
+    });
+  }
+
+  addEndRequestListener() {
+    // resolve pending fetch/xhrs
+    const me = this;
+    this.page.on('requestfailed', request => {
+      me.onEnd(request);
+    });
+    this.page.on('requestfinished', request => {
+      me.onEnd(request);
+    });
+  }
+
+  onEnd(req) {
+    if (isTypeOf(req, fetchTypes)) {
+      this.pendingRequests--;
+
+      if (this.pendingRequests === 0) {
+        this.pendingResolver();
+      }
     }
   }
-}
 
-var pagerequest = async bpage => {
-  // Don't load images
-  await bpage.setRequestInterception(true);
-  bpage.on('request', request => {
-    if (isTypeOf(request, mediaTypes)) {
-      request.abort();
-    } else if (isTypeOf(request, fetchTypes)) {
-      pendingRequests++;
-      pendingPromise = new Promise(res => pendingResolver = res);
-      request.continue();
-    } else {
-      request.continue();
-    }
-  }); // resolve pending fetch/xhrs
-
-  bpage.on('requestfailed', request => {
-    onEnd(request);
-  });
-  bpage.on('requestfinished', request => {
-    onEnd(request);
-  });
-
-  bpage.allFetchComplete = async () => {
-    if (pendingRequests === 0) {
+  async all() {
+    if (this.pendingRequests === 0) {
       return true;
     }
 
-    return pendingPromise;
-  };
-};
+    await this.pendingPromise;
+    return true;
+  }
+
+}
+
+var pagerequest = PageRequest;
 
 const defaultCache = ops => cacheManager$1.caching({
   store: 'memory',
@@ -2520,10 +2537,11 @@ class Renderer {
     const me = this;
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async newp => {
-      await pagerequest(newp);
+      const fetches = new pagerequest(newp);
       const headers = req.headers;
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
+      await newp.evaluateOnNewDocument(me.options.beforeRender);
       const resp = await newp.goto(fullUrl, {
         waitUntil: 'load'
       });
@@ -2531,11 +2549,11 @@ class Renderer {
       let ret;
 
       if (sRC) {
-        await newp.allFetchComplete();
+        await fetches.all();
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         /* istanbul ignore next */
 
-        await newp.evaluate(me.options.onRender);
+        await newp.evaluate(me.options.afterRender);
         /* istanbul ignore next */
 
         const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
@@ -2587,7 +2605,8 @@ class SifrrSeo {
       ttl: 0,
       cacheKey: req => this.fullUrl(req),
       localport: 80,
-      onRender: noop
+      beforeRender: noop,
+      afterRender: noop
     }, options);
   }
 
@@ -2641,7 +2660,7 @@ class SifrrSeo {
 
   clearCache() {
     this.shouldRenderCache = {};
-    this.renderedCache.flushAll();
+    this.renderer.cache.flushAll();
   }
 
   close() {

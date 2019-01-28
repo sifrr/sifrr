@@ -21,7 +21,8 @@ class SifrrSeo {
       ttl: 0,
       cacheKey: (req) => this.fullUrl(req),
       localport: 80,
-      onRender: noop
+      beforeRender: noop,
+      afterRender: noop
     }, options);
   }
 

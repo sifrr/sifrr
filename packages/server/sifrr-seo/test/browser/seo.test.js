@@ -23,8 +23,8 @@ describe('sifrr-seo', () => {
     it('renders sifrr-test on server (with sr)', async () => {
       const html = await page.$eval('sifrr-test', el => el.innerHTML.trim());
 
-      expect(html).to.have.string('<p>Simple element</p>');
-      expect(html).to.have.string('<p>1</p>');
+      expect(html).to.have.string('Simple element');
+      expect(html).to.have.string('1');
     });
 
     it('renders sifrr-test on server (without sr)', async () => {
@@ -48,8 +48,8 @@ describe('sifrr-seo', () => {
         return el.shadowRoot.innerHTML;
       });
 
-      expect(html).to.have.string('<p>Simple element</p>');
-      expect(html).to.have.string('<p>1</p>');
+      expect(html).to.have.string('Simple element');
+      expect(html).to.have.string('1');
     });
 
     it('renders sifrr-nosr again locally (without sr)', async () => {

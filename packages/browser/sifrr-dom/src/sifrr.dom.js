@@ -7,6 +7,7 @@ let SifrrDom = {};
 
 // For elements
 SifrrDom.elements = {};
+SifrrDom.loadingElements = [];
 
 // Classes
 SifrrDom.Element = require('./dom/element');
@@ -73,7 +74,12 @@ SifrrDom.setup = function(config) {
 // Load Element HTML and execute script in it
 SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
   let loader = new SifrrDom.Loader(elemName, config);
+  SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader.executeScripts();
+};
+
+SifrrDom.loading = () => {
+  return Promise.all(SifrrDom.loadingElements);
 };
 
 // Relative path to element html

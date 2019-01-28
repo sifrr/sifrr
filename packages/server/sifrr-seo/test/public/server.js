@@ -10,16 +10,13 @@ function sss(p) {
   const seo = new Seo(['UC Browser'], {
     cacheKey: (req) => req.originalUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
     localport: p,
-    onRender: () => {
+    beforeRender: () => {
+      ShadyDOM = { force: true};
+      ShadyCSS = { shimcssproperties: true};
+    },
+    afterRender: async () => {
       if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-      const defined = Object.keys(Sifrr.Dom.elements);
-      defined.forEach((selector) => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach((el) => {
-          if (el.shadowRoot) el.appendChild(el.shadowRoot);
-        });
-      });
-      return true;
+      await Sifrr.Dom.loading();
     }
   });
   seo.addUserAgent('Opera Mini');

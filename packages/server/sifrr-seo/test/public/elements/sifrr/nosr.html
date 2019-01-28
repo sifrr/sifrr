@@ -1,4 +1,4 @@
-<template use-shadow-root='false'>
+<template>
   <style media="screen">
     sifrr-nosr p {
       color: red;
@@ -8,7 +8,11 @@
   <p>${this.state.id}</p>
 </template>
 <script>
-  class SifrrNosr extends Sifrr.Dom.Element {}
+  class SifrrNosr extends Sifrr.Dom.Element {
+    static get useShadowRoot() {
+      return false;
+    }
+  }
 
   Sifrr.Dom.register(SifrrNosr);
 </script>
