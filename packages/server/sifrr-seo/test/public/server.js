@@ -8,8 +8,8 @@ function sss(p) {
   const Seo = require('../../src/sifrr.seo');
   // Middleware
   const seo = new Seo(['UC Browser'], {
-    cacheKey: (req) => req.originalUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
-    localport: p,
+    cacheKey: (req) => req.fullUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
+    fullUrl: (expressReq) => `http://127.0.0.1:${p}${expressReq.originalUrl}`,
     beforeRender: () => {
       // Force shadyDom (no shadow root)
       ShadyDOM = { force: true };

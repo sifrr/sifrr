@@ -61,7 +61,7 @@ class Renderer {
 
   renderOnPuppeteer(req) {
     const key = this.options.cacheKey(req);
-    const fullUrl = this.fullUrl(req);
+    const fullUrl = req.fullUrl;
     let pro = Promise.resolve(true);
     const me = this;
 
@@ -97,10 +97,6 @@ class Renderer {
       newp.close();
       return ret;
     });
-  }
-
-  fullUrl(req) {
-    return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
   }
 
   isHTML(puppeteerResp) {

@@ -1,7 +1,7 @@
 const { noop } = require('./constants');
 const Renderer = require('./renderer');
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
-const isHeadless = new RegExp('headless');
+const isHeadless = new RegExp('(headless|Headless)');
 
 class SifrrSeo {
   constructor(userAgents = [
@@ -19,8 +19,8 @@ class SifrrSeo {
       cache: false,
       maxCacheSize: 100,
       ttl: 0,
-      cacheKey: (req) => this.fullUrl(req),
-      localport: 80,
+      cacheKey: (req) => req.fullUrl,
+      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`,
       beforeRender: noop,
       afterRender: noop
     }, options);
@@ -31,27 +31,29 @@ class SifrrSeo {
       // Don't render other requests than GET
       if (req.method !== 'GET') return next();
 
-      if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-        this.render(req).then((html) => {
-          if (html) res.send(html + footer);
-          else next();
-        }).catch((e) => {
-          next(e);
-        });
-      } else {
-        if (next) next();
-      }
+      const renderReq = {
+        fullUrl: this.options.fullUrl(req),
+        headers: req.headers
+      };
+
+      this.render(renderReq).then((html) => {
+        if (html) res.send(html + footer);
+        else next();
+      }).catch((e) => {
+        process.stdout.write(e);
+        next();
+      });
     }
     return mw.bind(this);
   }
 
   isHeadless(req) {
-    const ua = req.get('User-Agent');
+    const ua = req.headers['user-agent'];
     return !!isHeadless.test(ua);
   }
 
   hasReferer(req) {
-    const ref = req.get('Referer');
+    const ref = req.headers['referer'];
     return !!ref;
   }
 
@@ -60,7 +62,7 @@ class SifrrSeo {
   }
 
   isUserAgent(req) {
-    const ua = req.get('User-Agent');
+    const ua = req.headers['user-agent'];
     let ret = false;
     this._uas.forEach((b) => {
       if (b.test(ua)) ret = true;
@@ -99,8 +101,12 @@ class SifrrSeo {
     return newOpts;
   }
 
-  render(req, next) {
-    return this.renderer.render(req, next);
+  async render(req) {
+    if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
+      return this.renderer.render(req);
+    } else {
+      throw Error(`No Render`);
+    }
   }
 
   get renderer() {
@@ -108,5 +114,7 @@ class SifrrSeo {
     return this._renderer;
   }
 }
+
+SifrrSeo.Renderer = Renderer;
 
 module.exports = SifrrSeo;

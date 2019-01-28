@@ -2532,7 +2532,7 @@ class Renderer {
 
   renderOnPuppeteer(req) {
     const key = this.options.cacheKey(req);
-    const fullUrl = this.fullUrl(req);
+    const fullUrl = req.fullUrl;
     let pro = Promise.resolve(true);
     const me = this;
     if (!this.launched) pro = this.launchBrowser();
@@ -2571,10 +2571,6 @@ class Renderer {
     });
   }
 
-  fullUrl(req) {
-    return `http://127.0.0.1:${this.options.localport}${req.originalUrl}`;
-  }
-
   isHTML(puppeteerResp) {
     return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
   }
@@ -2587,7 +2583,7 @@ const {
   noop
 } = constants;
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
-const isHeadless = new RegExp('headless');
+const isHeadless = new RegExp('(headless|Headless)');
 
 class SifrrSeo {
   constructor(userAgents = ['Googlebot', // Google
@@ -2603,8 +2599,8 @@ class SifrrSeo {
       cache: false,
       maxCacheSize: 100,
       ttl: 0,
-      cacheKey: req => this.fullUrl(req),
-      localport: 80,
+      cacheKey: req => req.fullUrl,
+      fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`,
       beforeRender: noop,
       afterRender: noop
     }, options);
@@ -2614,28 +2610,28 @@ class SifrrSeo {
     function mw(req, res, next) {
       // Don't render other requests than GET
       if (req.method !== 'GET') return next();
-
-      if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-        this.render(req).then(html => {
-          if (html) res.send(html + footer);else next();
-        }).catch(e => {
-          next(e);
-        });
-      } else {
-        if (next) next();
-      }
+      const renderReq = {
+        fullUrl: this.options.fullUrl(req),
+        headers: req.headers
+      };
+      this.render(renderReq).then(html => {
+        if (html) res.send(html + footer);else next();
+      }).catch(e => {
+        process.stdout.write(e);
+        next();
+      });
     }
 
     return mw.bind(this);
   }
 
   isHeadless(req) {
-    const ua = req.get('User-Agent');
+    const ua = req.headers['user-agent'];
     return !!isHeadless.test(ua);
   }
 
   hasReferer(req) {
-    const ref = req.get('Referer');
+    const ref = req.headers['referer'];
     return !!ref;
   }
 
@@ -2644,7 +2640,7 @@ class SifrrSeo {
   }
 
   isUserAgent(req) {
-    const ua = req.get('User-Agent');
+    const ua = req.headers['user-agent'];
     let ret = false;
 
     this._uas.forEach(b => {
@@ -2682,8 +2678,12 @@ class SifrrSeo {
     return newOpts;
   }
 
-  render(req, next) {
-    return this.renderer.render(req, next);
+  async render(req) {
+    if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
+      return this.renderer.render(req);
+    } else {
+      throw Error(`No Render`);
+    }
   }
 
   get renderer() {
@@ -2693,6 +2693,7 @@ class SifrrSeo {
 
 }
 
+SifrrSeo.Renderer = renderer;
 var sifrr_seo = SifrrSeo;
 
 export default sifrr_seo;

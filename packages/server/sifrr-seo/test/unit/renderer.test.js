@@ -7,7 +7,7 @@ const renderer = new Renderer({ damn: true }, {
   localport: 80
 });
 const req = {
-  originalUrl: '/index.html'
+  fullUrl: '/index.html'
 };
 const res = {
   headers: () => {
@@ -34,10 +34,10 @@ describe('Renderer', () => {
 
   it('renders false if res is not html', async () => {
     const r = new Renderer({}, {
-      cacheKey: (req) => r.fullUrl(req)
+      cacheKey: (req) => req.fullUrl
     });
     const reqq = {
-      originalUrl: '/image'
+      fullUrl: '/image'
     };
     r.shouldRenderCache[r.options.cacheKey(reqq)] = false;
 
@@ -63,10 +63,6 @@ describe('Renderer', () => {
     r.close();
 
     assert(close.called); // Closed if launched
-  });
-
-  it('fullUrl', () => {
-    assert.equal(renderer.fullUrl(req), 'http://127.0.0.1:80/index.html');
   });
 
   it('isHTML', () => {

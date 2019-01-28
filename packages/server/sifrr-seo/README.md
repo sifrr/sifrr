@@ -1,14 +1,14 @@
 # sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)
 
-Server Side Redering for any js based app as a express/connect middleware.
+Server Side Redering for any js based app using puppeteer (headless chrome) with caching.
 
 ## How to use
 
 Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `package.json` file.
 
-### Api
+## Api
 
-#### Basic usage
+### Basic usage
 
 SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request to complete before returning rendered HTML. It doesn't load any media content on server.
 
@@ -16,21 +16,21 @@ SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request 
 const SifrrSeo = require('@sifrr/seo');
 
 // options
-// `localport`: local server port on which you are listening (will be used to get full url for puppeteer)
 // `cache`: Cache to use (should be a node-cache-manager instance)
-// `maxCacheSize`: Maximum in-memory cache size
-// `ttl`: time to live for a cache request
+// `maxCacheSize`: Maximum in-memory cache size (in MegaBytes)
+// `ttl`: time to live for a cache request (in Seconds) 0 means infinity
 // `cacheKey`: function that returns cache key for given req object
+// `fullUrl`: function for middleware to determine fullUrl of express request
 // `beforeRender`: this function will be executed in browser before rendering, doesn't take any arguments
 // `afterRender`: this function will be executed in browser after rendering, doesn't take any arguments
 //
 // default values
 const options = {
-  localport: 80,
   cache: require('cache-manager').caching, // default in memory caching
-  maxCacheSize: 100, // (in MegaBytes)
-  ttl: 0, // (in Seconds) 0 means infinity
-  cacheKey: (req) => this.fullUrl(req),
+  maxCacheSize: 100,
+  ttl: 0,
+  cacheKey: (req) => req.fullUrl,
+  fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`
   beforeRender: () => {},
   afterRender: () => {}
 }
@@ -58,15 +58,28 @@ const server = express();
 // Only use for GET requests as a express middleware
 server.get(sifrrSeo.middleware);
 server.listen(8080);
+
+// Use it programatically - Only renders get requets
+sifrrSeo.render({
+  fullUrl: /* Full url of page to render with protocol, domain, port, etc. */,
+  headers: {
+    /* Headers to send with GET request */
+  }
+}).then(html => ...).catch((e) => {
+  // Some error
+  // It won't render the page if rendering logic is not satisfied and give error. e.message === 'No Render'
+});
 ```
 
 [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) supports a lot of stores: [list](https://github.com/BryanDonovan/node-cache-manager#store-engines).
 
-#### Adding your custom rendering logic
+### Rendering logic
 
--   sifrr-seo only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
+sifrr-seo only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
 
-Change `sifrrSeo.shouldRender`, by default it is `sifrrSeo.isUserAgent(req)`. eg:
+#### Changing shouldRender()
+
+Change `sifrrSeo.shouldRender`, by default it returns `this.isUserAgent(req)` ([details](#isUserAgent)). eg:
 
 ```js
 sifrrSeo.shouldRender = (req) => {
@@ -76,9 +89,7 @@ sifrrSeo.shouldRender = (req) => {
 }
 ```
 
--   `sifrrSeo.isUserAgent(req)` returns `true` if req's user agent is in seo userAgents, else returns `false`.
-
-#### Clearing cache
+### Clearing cache
 
 By default, server side rendered html is cached till you restart the server or if you close the browser. You can manually clear cache using
 
@@ -93,8 +104,17 @@ sifrrSeo.clearCache();
 returns `Promise` which resolves in server rendered `html` if url response has content-type html, else resolves in `false`.
 
 ```js
-sifrrSeo.render(url);
+sifrrSeo.render({
+  fullUrl: /* Full url of page to render with protocol, domain, port, etc. */,
+  headers: {
+    /* Headers to send with GET request */
+  }
+});
 ```
+
+#### isUserAgent()
+
+Returns true if req.headers['user-agent'] matches any of user-agents given in initialization
 
 #### close()
 
