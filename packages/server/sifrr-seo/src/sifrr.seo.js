@@ -16,7 +16,7 @@ class SifrrSeo {
   ], options = {}) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
     this.options = Object.assign({
-      cache: false,
+      cache: 'memory',
       maxCacheSize: 100,
       ttl: 0,
       cacheKey: (req) => req.fullUrl,

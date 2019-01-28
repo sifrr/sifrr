@@ -16,7 +16,7 @@ SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request 
 const SifrrSeo = require('@sifrr/seo');
 
 // options
-// `cache`: Cache to use (should be a node-cache-manager instance)
+// `cacheStore`: same as store in [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) options
 // `maxCacheSize`: Maximum in-memory cache size (in MegaBytes)
 // `ttl`: time to live for a cache request (in Seconds) 0 means infinity
 // `cacheKey`: function that returns cache key for given req object
@@ -26,7 +26,7 @@ const SifrrSeo = require('@sifrr/seo');
 //
 // default values
 const options = {
-  cache: require('cache-manager').caching, // default in memory caching
+  cacheStore: 'memory', // default in memory caching
   maxCacheSize: 100,
   ttl: 0,
   cacheKey: (req) => req.fullUrl,
@@ -66,8 +66,8 @@ sifrrSeo.render({
     /* Headers to send with GET request */
   }
 }).then(html => ...).catch((e) => {
-  // Some error
-  // It won't render the page if rendering logic is not satisfied and give error. e.message === 'No Render'
+  // It won't render the page if [rendering logic](#rendering-logic) is not satisfied and will throw error.
+  // e.message === 'No Render' when it doesn't render
 });
 ```
 

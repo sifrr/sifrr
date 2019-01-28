@@ -2471,8 +2471,8 @@ class PageRequest {
 
 var pagerequest = PageRequest;
 
-const defaultCache = ops => cacheManager$1.caching({
-  store: 'memory',
+const getCache = ops => cacheManager$1.caching({
+  store: ops.cacheStore,
   ttl: ops.ttl || 0,
   length: (val, key) => {
     return Buffer.from(key + val).length + 2;
@@ -2485,11 +2485,7 @@ class Renderer {
     this.launched = false;
     this.puppeteerOptions = puppeteerOptions;
     this.options = options;
-
-    if (!this.options.cache) {
-      this.cache = defaultCache(this.options);
-    } else this.cache = this.options.cache;
-
+    this.cache = getCache(this.options);
     this.shouldRenderCache = {};
   }
 
@@ -2596,7 +2592,7 @@ class SifrrSeo {
   'Exabot'], options = {}) {
     this._uas = userAgents.map(ua => new RegExp(ua));
     this.options = Object.assign({
-      cache: false,
+      cache: 'memory',
       maxCacheSize: 100,
       ttl: 0,
       cacheKey: req => req.fullUrl,

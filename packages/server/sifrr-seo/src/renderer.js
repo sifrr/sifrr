@@ -2,8 +2,8 @@ const puppeteer = require('puppeteer');
 const Cache = require('cache-manager');
 const PageRequest = require('./pagerequest');
 
-const defaultCache = (ops) => Cache.caching({
-  store: 'memory',
+const getCache = (ops) => Cache.caching({
+  store: ops.cacheStore,
   ttl: ops.ttl || 0,
   length: (val, key) => {
     return Buffer.from(key + val).length + 2;
@@ -16,9 +16,7 @@ class Renderer {
     this.launched = false;
     this.puppeteerOptions = puppeteerOptions;
     this.options = options;
-    if (!this.options.cache) {
-      this.cache = defaultCache(this.options);
-    } else this.cache = this.options.cache;
+    this.cache = getCache(this.options);
     this.shouldRenderCache = {};
   }
 

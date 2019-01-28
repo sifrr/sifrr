@@ -71,12 +71,14 @@ describe('Renderer', () => {
   });
 
   it('can manually take cache store', () => {
-    const cache = 'cache';
+    const Cache = require('cache-manager');
+    const store = Cache.caching().store;
+
     const r = new Renderer({}, {
-      cache: cache
+      cacheStore: store
     });
 
-    assert.equal(r.cache, cache);
+    assert.equal(r.cache.store, store);
   });
 
   it('returns from cache if there is a response', async () => {
