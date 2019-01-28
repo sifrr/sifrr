@@ -51,6 +51,9 @@ if (fs.existsSync(nycReport)) {
     }
   });
 
+  // Remove files that we don't need coverage
+  map.filter((file) => file.match(/sifrr-[a-z]+\/src\/.*\.js$/));
+
   reporter.add('html');
   if (process.env.LCOV === 'true') reporter.add('lcov');
   reporter.write(map);
