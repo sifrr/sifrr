@@ -40,6 +40,7 @@ Add script tag in your website.
 | Custom Elements v1                                   | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
 | Promises API                                         | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
 | Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
+| Shadow DOM CSS v1 (if you are using ShadyCSS)        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadycss>        |
 | ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
 | Fetch API (if you use `Sifrr.Dom.load`)              | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
 
@@ -128,7 +129,7 @@ Sifrr.Dom.setup(config);
 ```
 
 **OR**
-2\. JS Element
+2. JS Element
 
 ```js
 // ${baseUrl}/elements/custom/tag.js
