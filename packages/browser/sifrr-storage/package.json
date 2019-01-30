@@ -13,7 +13,7 @@
     "firefox >= 63"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-storage/test/public -p 1111",
@@ -58,6 +58,7 @@
     "istanbul-lib-coverage": "^2.0.1",
     "istanbul-lib-hook": "^2.0.1",
     "istanbul-lib-instrument": "^3.0.0",
+    "istanbul-lib-source-maps": "^2.0.1",
     "istanbul-reports": "^2.0.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
