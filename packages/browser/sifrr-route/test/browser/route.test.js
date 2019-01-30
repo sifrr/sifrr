@@ -16,6 +16,14 @@ describe('sifrr-route', () => {
     expect(type).to.equal('function');
   });
 
+  it('has Sifrr.Dom.Route', async () => {
+    const element = await page.evaluate(() => typeof Sifrr.Dom.Route.Element);
+    const regex = await page.evaluate(() => typeof Sifrr.Dom.Route.RegexPath);
+
+    expect(element).to.equal('function');
+    expect(regex).to.equal('function');
+  });
+
   it('makes el active on refresh if it test is true', async () => {
     await page.$eval('#test', el => {
       el.routeRegex.test = () => {
@@ -75,14 +83,12 @@ describe('sifrr-route', () => {
   });
 
   it('changes title when clicked on a link', async () => {
-    await page.goto(`${PATH}/`);
     await page.click('a[href="/abcd"]');
 
     expect(await page.title()).to.be.equal('abcd');
   });
 
   it('doesn\'t reload when clicked on a link without target', async () => {
-    await page.goto(`${PATH}/`);
     await page.$eval('#complexlink', el => el.i = 1);
     await page.click('a[href="/abcd"]');
 
@@ -120,6 +126,16 @@ describe('sifrr-route', () => {
     expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(5);
   });
 
+  it('reloads when clicked on a link with target has different host', async () => {
+    expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.equal(PATH);
+
+    await page.click('a#external');
+
+    expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.not.equal(PATH);
+
+    await page.goto(`${PATH}/`);
+  });
+
   it('opens in new tab when clicked with control key', async () => {
     const oldP = (await browser.current.pages()).length;
     // Not working in macOS
@@ -132,18 +148,20 @@ describe('sifrr-route', () => {
   });
 
   it('changes routes when clicked on back/forward button', async () => {
-    await page.goto(`${PATH}/`);
-    await page.goto(`${PATH}/abcd`);
+    await page.click('a[href="/abcd"]');
 
     expect(await isActive('#abcd')).to.be.true;
+    expect(await page.title()).to.equal('abcd');
 
     await page.goBack();
 
     expect(await isActive('#abcd')).to.be.false;
+    expect(await page.title()).to.equal('route');
 
     await page.goForward();
 
     expect(await isActive('#abcd')).to.be.true;
+    expect(await page.title()).to.equal('abcd');
   });
 
   it('doesn\'t reload when clicking back/forward', async () => {

@@ -1,6 +1,6 @@
 const Regex = require('../../src/regexpath');
 
-describe('Check', () => {
+describe('Regex', () => {
   it('works with :name', () => {
     const reg = new Regex('/abcd/:name/yz');
     const res = reg.test('/abcd/name/yz');

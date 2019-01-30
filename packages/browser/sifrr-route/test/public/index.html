@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title></title>
+  <title>route</title>
   <style media="screen">
     *:not(:defined) * {
       display: none;
@@ -49,7 +49,8 @@
 </head>
 
 <body>
-  <h1><a href="/" title="Home">OK</a></h1>
+  <h1><a id="ok" href="/" title="Home">OK</a></h1>
+  <a href="http://google.com" id="external" title="Home">External</a>
   <a href="/target" target="_blank" title="Home">Outside</a>
   <a href="/target" target="_parent" title="Home">Parent</a>
   <a href="/target" target="_top" title="Home">Top</a>
@@ -65,7 +66,7 @@
     <p>Visible everywhere</p>
     <p>e</p>
   </sifrr-route>
-  <sifrr-route id='abcd' data-sifrr-path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
+  <sifrr-route id='abcd' title='abcd' data-sifrr-path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
     <p>/abcd</p>
     <sifrr-test data-sifrr-state='{"route":{}}'></sifrr-test>
   </sifrr-route>

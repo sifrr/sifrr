@@ -71,8 +71,7 @@ const template = Sifrr.Dom.html`<style>
 Sifrr.Dom.Route = {
   RegexPath: regexpath
 };
-Sifrr.Dom.Event.add('click');
-const SifrrRoutes = [];
+const firstTitle = document.title;
 
 class SifrrRoute extends Sifrr.Dom.Element {
   static get template() {
@@ -85,11 +84,11 @@ class SifrrRoute extends Sifrr.Dom.Element {
 
   onConnect() {
     this.loaded = false;
-    SifrrRoutes.push(this);
+    this.constructor.all.push(this);
   }
 
   onDisconnect() {
-    SifrrRoutes.splice(SifrrRoutes.indexOf(this), 1);
+    this.constructor.all.splice(this.constructor.all.indexOf(this), 1);
   }
 
   onAttributeChange(attrName) {
@@ -147,7 +146,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
 
   static refreshAll() {
     if (window.location.href === this.currentUrl) return;
-    SifrrRoutes.forEach(sfr => {
+    this.all.forEach(sfr => {
       sfr.refresh();
     });
     this.onRouteChange();
@@ -158,29 +157,36 @@ class SifrrRoute extends Sifrr.Dom.Element {
 
 }
 
+SifrrRoute.all = [];
 Sifrr.Dom.Route.Element = SifrrRoute;
 Sifrr.Dom.register(SifrrRoute);
 document.addEventListener('click', e => {
+  /* istanbul ignore if */
   if (!(window.history && window.history.pushState)) return;
+  /* istanbul ignore next */
+
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (e.metaKey || e.ctrlKey) return;
-  if (!target.matches('a') || target.host !== window.location.host || target.target && target.target !== '_self') return;
-  e.preventDefault();
-  const title = target.getAttribute('title') || 'Title';
+  if (!target.matches('a')) return;
+  if (target.host !== window.location.host) return;
+  if (target.target && target.target !== '_self') return;
+  e.preventDefault(); // replace title with First title if there's no attribute
+
+  const title = target.getAttribute('title') || firstTitle;
   const state = {
     location: target.pathname,
     title: title
-  }; // replace title with default title for your webapp, maybe your app name
-
+  };
   document.title = title;
   window.history.pushState(state, title, target.pathname);
   SifrrRoute.refreshAll();
 });
 window.addEventListener('popstate', event => {
-  if (event.state && event.state.title) document.title = event.state.title;
+  if (event.state && event.state.title) document.title = event.state.title; // replace title with First title if there's no state title
+  else document.title = firstTitle;
   SifrrRoute.refreshAll();
 });
-var sifrr_route = {};
+var sifrr_route = SifrrRoute;
 
 export default sifrr_route;
 /*! (c) @aadityataparia */

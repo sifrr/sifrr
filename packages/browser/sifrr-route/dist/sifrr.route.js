@@ -70,8 +70,7 @@
   Sifrr.Dom.Route = {
     RegexPath: regexpath
   };
-  Sifrr.Dom.Event.add('click');
-  const SifrrRoutes = [];
+  const firstTitle = document.title;
   class SifrrRoute extends Sifrr.Dom.Element {
     static get template() {
       return template;
@@ -81,10 +80,10 @@
     }
     onConnect() {
       this.loaded = false;
-      SifrrRoutes.push(this);
+      this.constructor.all.push(this);
     }
     onDisconnect() {
-      SifrrRoutes.splice(SifrrRoutes.indexOf(this), 1);
+      this.constructor.all.splice(this.constructor.all.indexOf(this), 1);
     }
     onAttributeChange(attrName) {
       if (attrName == 'data-sifrr-path') {
@@ -131,7 +130,7 @@
     }
     static refreshAll() {
       if (window.location.href === this.currentUrl) return;
-      SifrrRoutes.forEach(sfr => {
+      this.all.forEach(sfr => {
         sfr.refresh();
       });
       this.onRouteChange();
@@ -139,15 +138,18 @@
     }
     static onRouteChange() {}
   }
+  SifrrRoute.all = [];
   Sifrr.Dom.Route.Element = SifrrRoute;
   Sifrr.Dom.register(SifrrRoute);
   document.addEventListener('click', e => {
     if (!(window.history && window.history.pushState)) return;
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (e.metaKey || e.ctrlKey) return;
-    if (!target.matches('a') || target.host !== window.location.host || target.target && target.target !== '_self') return;
+    if (!target.matches('a')) return;
+    if (target.host !== window.location.host) return;
+    if (target.target && target.target !== '_self') return;
     e.preventDefault();
-    const title = target.getAttribute('title') || 'Title';
+    const title = target.getAttribute('title') || firstTitle;
     const state = {
       location: target.pathname,
       title: title
@@ -158,9 +160,10 @@
   });
   window.addEventListener('popstate', event => {
     if (event.state && event.state.title) document.title = event.state.title;
+    else document.title = firstTitle;
     SifrrRoute.refreshAll();
   });
-  var sifrr_route = {};
+  var sifrr_route = SifrrRoute;
 
   return sifrr_route;
 
