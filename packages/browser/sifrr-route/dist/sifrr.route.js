@@ -58,15 +58,7 @@
   const Sifrr = window.Sifrr || {
     Dom: dom
   };
-  const template = Sifrr.Dom.html`<style>
-  :host {
-    display: none;
-  }
-  :host(.active) {
-    display: block;
-  }
-</style>
-<slot></slot>`;
+  const template = Sifrr.Dom.html('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
   Sifrr.Dom.Route = {
     RegexPath: regexpath
   };

@@ -51,12 +51,13 @@ describe('sifrr-route', () => {
     expect(await isActive('#abcd')).to.be.true;
   });
 
-  it('refreshes once when a link is click', async () => {
+  it("refreshes once when a link is click and doesn't if somewhere else is click", async () => {
     await page.$eval('#test', el => {
       el.i = 0;
       el.refresh = () => el.i = el.i + 1;
     });
     await page.click('a[href="/abcd"]');
+    await page.click('h1');
 
     assert.equal(await page.$eval('#test', el => el.i), 1);
   });
@@ -82,10 +83,14 @@ describe('sifrr-route', () => {
     assert.equal(await page.$eval('#test', el => el.i), 1);
   });
 
-  it('changes title when clicked on a link', async () => {
+  it('changes title when clicked on a link and first title when title is not present', async () => {
     await page.click('a[href="/abcd"]');
 
     expect(await page.title()).to.be.equal('abcd');
+
+    await page.click('a[href="/notitle"]');
+
+    expect(await page.title()).to.be.equal('route');
   });
 
   it('doesn\'t reload when clicked on a link without target', async () => {

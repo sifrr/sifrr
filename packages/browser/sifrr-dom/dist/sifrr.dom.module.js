@@ -922,7 +922,9 @@ SifrrDom.Json = json; // HTML to template
 SifrrDom.html = (str, ...extra) => {
   const tmp = TEMPLATE$3();
 
-  if (str[0] && typeof str[0] === 'string') {
+  if (typeof str === 'string') {
+    tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
+  } else if (str[0] && typeof str[0] === 'string') {
     str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
     tmp.innerHTML = str;
   } else if (str[0]) {

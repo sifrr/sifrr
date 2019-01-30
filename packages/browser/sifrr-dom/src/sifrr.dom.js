@@ -23,7 +23,9 @@ SifrrDom.Json = JsonExt;
 // HTML to template
 SifrrDom.html = (str, ...extra) => {
   const tmp = TEMPLATE();
-  if (str[0] && typeof str[0] === 'string') {
+  if (typeof str === 'string') {
+    tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
+  } else if (str[0] && typeof str[0] === 'string') {
     str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
     tmp.innerHTML = str;
   } else if (str[0]) {

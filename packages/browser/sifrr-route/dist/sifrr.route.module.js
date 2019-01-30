@@ -59,15 +59,7 @@ var regexpath = RegexPath;
 const Sifrr = window.Sifrr || {
   Dom: dom
 };
-const template = Sifrr.Dom.html`<style>
-  :host {
-    display: none;
-  }
-  :host(.active) {
-    display: block;
-  }
-</style>
-<slot></slot>`;
+const template = Sifrr.Dom.html('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
 Sifrr.Dom.Route = {
   RegexPath: regexpath
 };
@@ -161,11 +153,9 @@ SifrrRoute.all = [];
 Sifrr.Dom.Route.Element = SifrrRoute;
 Sifrr.Dom.register(SifrrRoute);
 document.addEventListener('click', e => {
-  /* istanbul ignore if */
   if (!(window.history && window.history.pushState)) return;
-  /* istanbul ignore next */
+  const target = e.composedPath ? e.composedPath()[0] : e.target; // composedPath works in safari too
 
-  const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (e.metaKey || e.ctrlKey) return;
   if (!target.matches('a')) return;
   if (target.host !== window.location.host) return;
