@@ -98,6 +98,22 @@ describe('Renderer', () => {
     assert.equal(await renderer.render(req), 'v');
   });
 
+  it('renders false if res is not html', async () => {
+    const r = new Renderer({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }, {
+      cacheKey: (req) => req.fullUrl
+    });
+    r.isHTML = () => false;
+    const reqq = {
+      fullUrl: 'about:blank'
+    };
+
+    const res = await r.render(reqq);
+    assert.equal(res, false);
+    await r.close();
+  });
+
   describe('cache', () => {
     it('has cache', () => {
       assert(renderer.cache);

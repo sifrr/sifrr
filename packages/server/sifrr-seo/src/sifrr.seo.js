@@ -29,7 +29,7 @@ class SifrrSeo {
 
       if (this.renderer.getShouldRenderCache(renderReq) === null) {
         res._end = res.end;
-        res.end = (resp) => {
+        res.end = (resp, encoding) => {
           if (res.hasHeader('content-type')) {
             const contentType = res.getHeader('content-type');
             if (contentType.indexOf('html') >= 0) {
@@ -38,7 +38,7 @@ class SifrrSeo {
               this.renderer.addShouldRenderCache(renderReq, false);
             }
           }
-          res._end(resp);
+          res._end(resp, encoding);
         };
       }
 

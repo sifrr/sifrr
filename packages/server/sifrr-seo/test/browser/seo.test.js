@@ -1,5 +1,3 @@
-const Renderer = require('../../src/renderer');
-
 async function loadTime(page) {
   return page.evaluate(() => {
     return window.performance.timing.responseEnd - window.performance.timing.requestStart;
@@ -112,15 +110,5 @@ describe('sifrr-seo', () => {
 
     expect(html).to.have.string('post');
     expect(html).to.not.have.string('@sifrr/seo');
-  });
-
-  it('renders false if res is not html', async () => {
-    const r = new Renderer({}, {
-      cacheKey: (req) => req.fullUrl
-    });
-    const reqq = {
-      fullUrl: PATH
-    };
-    r.isHTML = () => false;
   });
 });

@@ -21,6 +21,30 @@ describe('SifrrSeo', () => {
 
       assert(next.calledOnce);
     });
+
+    it('doesn\'t set shouldRenderCache when res has no content-type', async () => {
+      const m = seo.middleware;
+      sinon.stub(seo, 'render').resolves(false);
+      sinon.stub(seo.renderer.options, 'fullUrl').returns('http://');
+      const next = sinon.spy();
+      const req = {
+        method: 'GET',
+        headers: {}
+      };
+      const res = {
+        hasHeader: () => false,
+        getHeader: () => 'aa/html/bb',
+        end: () => {}
+      };
+
+      await m(req, res, next);
+      res.end();
+
+      assert.equal(seo.renderer.getShouldRenderCache({
+        fullUrl: 'http://',
+        headers: {}
+      }), null);
+    });
   });
 
   describe('calling renderer', () => {

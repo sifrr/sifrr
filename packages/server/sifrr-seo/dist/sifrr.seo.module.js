@@ -2477,11 +2477,11 @@ const {
 
 const getCache = ops => cacheManager$1.caching({
   store: ops.cacheStore,
-  ttl: ops.ttl || 0,
+  ttl: ops.ttl,
   length: (val, key) => {
     return Buffer.from(key + key + val).length + 2;
   },
-  max: (ops.maxCacheSize || 0) * 1000000
+  max: ops.maxCacheSize * 1000000
 });
 
 class Renderer {
@@ -2629,7 +2629,7 @@ class SifrrSeo {
       if (this.renderer.getShouldRenderCache(renderReq) === null) {
         res._end = res.end;
 
-        res.end = resp => {
+        res.end = (resp, encoding) => {
           if (res.hasHeader('content-type')) {
             const contentType = res.getHeader('content-type');
 
@@ -2640,7 +2640,7 @@ class SifrrSeo {
             }
           }
 
-          res._end(resp);
+          res._end(resp, encoding);
         };
       }
 
