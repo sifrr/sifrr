@@ -46,11 +46,7 @@ class WebSQL extends Storage {
   }
 
   get store() {
-    if (typeof window !== 'undefined') {
-      return window.openDatabase('bs', 1, this._options.description, this._options.size);
-    } else {
-      return true;
-    }
+    return window.openDatabase('bs', 1, this._options.description, this._options.size);
   }
 
   createStore() {

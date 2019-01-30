@@ -10,7 +10,7 @@ class LocalStorage extends Storage {
   }
 
   get table() {
-    return this.constructor.parse(this.store.getItem(this.tableName));
+    return this.constructor.parse(this.store.getItem(this.tableName) || {});
   }
 
   set table(value) {

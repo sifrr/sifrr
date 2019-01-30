@@ -3,14 +3,14 @@ const JsonStorage = require('./storages/jsonstorage');
 
 class SifrrStorage {
   constructor(options) {
-    if (typeof options == 'string') options = { priority: [options] }; else options = options || {};
+    if (typeof options === 'string') options = { priority: [options] }; else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);
     return this.storage;
   }
 
   get storage() {
     let storage = this.supportedStore();
-    if (typeof storage == 'undefined') throw new Error('No available storage supported in this browser');
+    if (typeof storage === 'undefined') throw Error('No available storage supported in this browser');
     let matchingInstance = this.constructor._matchingInstance(this._options, storage.type);
     if (matchingInstance) { return matchingInstance; }
     else {

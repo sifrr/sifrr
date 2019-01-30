@@ -16,7 +16,29 @@ describe('SifrrStorage', () => {
         let x = new SifrrStorage({priority: [type]});
         expect(x).to.be.an.instanceof(SifrrStorage.availableStores[type]);
         assert.equal(x.type, type);
+
+        let y = new SifrrStorage(type);
+        expect(y).to.be.an.instanceof(SifrrStorage.availableStores[type]);
+        assert.equal(y.type, type);
       });
+
+      it("doesn't return the storage if not supported", () => {
+        sinon.stub(SifrrStorage.availableStores[type].prototype, 'isSupported');
+
+        let y = new SifrrStorage(type);
+
+        expect(y).to.not.be.an.instanceof(SifrrStorage.availableStores[type]);
+
+        sinon.restore();
+      });
+    });
+
+    it('throws error if no supported storages', () => {
+      sinon.stub(SifrrStorage.prototype, 'supportedStore');
+
+      expect(() => new SifrrStorage()).to.throw();
+
+      sinon.restore();
     });
   });
 
@@ -77,6 +99,20 @@ describe('Storage', () => {
     it('should return object if key is string and value is string', () => {
       assert.deepEqual(x._parseKeyValue('a', 'b'), {a: 'b'});
     });
+
+    it('throws error when key is not supported', () => {
+      expect(() => x._parseKeyValue(() => {})).to.throw('Invalid Key');
+      expect(() => x._parseKeyValue(() => {}, 'ok')).to.throw('Invalid Key');
+    });
+  });
+
+  it('returns false on isSupported if store is undefined', () => {
+    global.window = true;
+    x.store = undefined;
+
+    expect(x.isSupported(false)).to.be.false;
+
+    global.window = undefined;
   });
 });
 

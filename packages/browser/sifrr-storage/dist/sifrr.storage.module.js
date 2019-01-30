@@ -17,6 +17,8 @@ class Json {
         ans[i] = this.parse(v);
       });
     } else if (typeof data == 'object') {
+      if (data === null) return null;
+
       for (const k in data) {
         ans[k] = this.parse(data[k]);
       }
@@ -40,17 +42,17 @@ class Json {
 var json = Json;
 
 class Storage {
-  constructor(options) {
+  constructor(options = {}) {
     this._options = options;
   }
 
   _parseKeyValue(key, value) {
     let jsonConstructor = {}.constructor;
 
-    if (typeof value == 'undefined') {
+    if (typeof value === 'undefined') {
       if (Array.isArray(key)) {
         return key;
-      } else if (typeof key == 'string') {
+      } else if (typeof key === 'string') {
         return [key];
       } else if (key.constructor === jsonConstructor) {
         return key;
@@ -59,7 +61,7 @@ class Storage {
       {
         throw Error('Invalid Key');
       }
-    } else if (typeof key == 'string') {
+    } else if (typeof key === 'string') {
       let ans = {};
       ans[key] = value;
       return ans;
@@ -124,10 +126,10 @@ class Storage {
     return this.constructor.type;
   }
 
-  isSupported() {
-    if (typeof window == 'undefined' || typeof document == 'undefined') {
+  isSupported(force = true) {
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
       return true;
-    } else if (window && typeof this.store != 'undefined') {
+    } else if (window && typeof this.store !== 'undefined') {
       return true;
     } else {
       return false;
@@ -337,11 +339,7 @@ class WebSQL extends storage {
   }
 
   get store() {
-    if (typeof window !== 'undefined') {
-      return window.openDatabase('bs', 1, this._options.description, this._options.size);
-    } else {
-      return true;
-    }
+    return window.openDatabase('bs', 1, this._options.description, this._options.size);
   }
 
   createStore() {
@@ -391,7 +389,7 @@ class LocalStorage extends storage {
   }
 
   get table() {
-    return this.constructor.parse(this.store.getItem(this.tableName));
+    return this.constructor.parse(this.store.getItem(this.tableName) || {});
   }
 
   set table(value) {
@@ -424,7 +422,7 @@ class Cookies extends storage {
         ans = {};
     result.split('; ').forEach(value => {
       let [k, v] = value.split('=');
-      if (v) ans[k] = this.constructor.parse(v);
+      ans[k] = this.constructor.parse(v);
     });
     return ans[this.tableName] || {};
   }
@@ -486,7 +484,7 @@ var storages_1 = storages;
 
 class SifrrStorage {
   constructor(options) {
-    if (typeof options == 'string') options = {
+    if (typeof options === 'string') options = {
       priority: [options]
     };else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);
@@ -495,7 +493,7 @@ class SifrrStorage {
 
   get storage() {
     let storage = this.supportedStore();
-    if (typeof storage == 'undefined') throw new Error('No available storage supported in this browser');
+    if (typeof storage === 'undefined') throw Error('No available storage supported in this browser');
 
     let matchingInstance = this.constructor._matchingInstance(this._options, storage.type);
 

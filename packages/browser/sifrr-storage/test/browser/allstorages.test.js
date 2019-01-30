@@ -44,14 +44,15 @@ for (let key in SifrrStorage.availableStores) {
     it(`${key}.data gives all storage`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
-          eval(`save_${key}();`);
+          (new Function(`save_${key}();`))();
           let storage = new Sifrr.Storage(key);
-          return storage.data();
+          return { data: await storage.data(), all: await storage.all() };
         } catch(e) {
           return e.message;
         }
       }, key);
-      assert.equal(result.a, 'b');
+      assert.equal(result.data.a, 'b');
+      assert.equal(result.all.a, 'b');
     });
 
     it(`${key}.select selects cookie`, async () => {
@@ -80,7 +81,8 @@ for (let key in SifrrStorage.availableStores) {
           await storage.upsert('w', 'abc');
           await storage.upsert('y', 'abc');
           await storage.upsert('z', 'abc');
-          await storage.upsert({ w: 'x', y: 'z' });
+          await storage.upsert({ w: 'x' });
+          await storage.update({ y: 'z' });
           return storage.data();
         } catch(e) {
           return e.message;
@@ -154,13 +156,20 @@ for (let key in SifrrStorage.availableStores) {
           ans.before = await storage.select('a');
           await storage.clear();
           ans.after = await storage.select('a');
+
+          await storage.insert('a', 'b');
+          ans.before2 = await storage.select('a');
+          await storage.deleteAll();
+          ans.after2 = await storage.select('a');
           return ans;
         } catch(e) {
           return e.message;
         }
       }, key);
       assert.equal(result.before.a, 'b');
+      assert.equal(result.before2.a, 'b');
       assert.deepEqual(result.after, {});
+      assert.deepEqual(result.after2, {});
     });
   });
 }

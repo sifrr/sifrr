@@ -1,23 +1,23 @@
 const JsonExt = require('../utils/json');
 
 class Storage {
-  constructor(options) {
+  constructor(options = {}) {
     this._options = options;
   }
 
   _parseKeyValue(key, value) {
     let jsonConstructor = {}.constructor;
-    if (typeof value == 'undefined') {
+    if (typeof value === 'undefined') {
       if (Array.isArray(key)) {
         return key;
-      } else if (typeof key == 'string') {
+      } else if (typeof key === 'string') {
         return [key];
       } else if (key.constructor === jsonConstructor) {
         return key;
       } {
         throw Error('Invalid Key');
       }
-    } else if (typeof key == 'string') {
+    } else if (typeof key === 'string') {
       let ans = {};
       ans[key] = value;
       return ans;
@@ -77,9 +77,9 @@ class Storage {
     return this.constructor.type;
   }
 
-  isSupported() {
-    if (typeof window == 'undefined' || typeof document == 'undefined') { return true; }
-    else if (window && typeof this.store != 'undefined') { return true; }
+  isSupported(force = true) {
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) { return true; }
+    else if (window && typeof this.store !== 'undefined') { return true; }
     else { return false; }
   }
 
