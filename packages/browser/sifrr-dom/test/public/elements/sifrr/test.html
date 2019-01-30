@@ -28,6 +28,9 @@
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
+  <div id="styled" style="${this.state.padding}: 10px; margin: ${this.state.margin}; border: 1px solid black;">
+
+  </div>
   <div data-sifrr-html="true">
     <!-- ${this.arrayToDom('data')} -->
   </div>
@@ -52,22 +55,24 @@
     }
   }
   SifrrTest.defaultState = {
-    "text": "I\'m a shadow-element using Shadow DOM!",
-    "input": "whatever",
-    "select": "mercedes",
-    "textarea": "whatever",
-    "randomElement": ["this is random text", "this is second random text"],
-    "attr": "bang",
-    "color": "red",
-    "elements": "<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>",
-    "disabled": false,
-    "data": [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }],
-    "html": "<p>xxxxx</p>"
-  }
-  Sifrr.Dom.load('sifrr-smaller');
+    text: "I'm a shadow-element using Shadow DOM!",
+    input: 'whatever',
+    select: 'mercedes',
+    textarea: 'whatever',
+    randomElement: ['this is random text', 'this is second random text'],
+    attr: 'bang',
+    color: 'red',
+    elements: '<p>a</p><p>b</p><p>c</p><p>d</p><p>e</p>',
+    disabled: false,
+    data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }],
+    html: '<p>xxxxx</p>',
+    padding: 'padding-top',
+    margin: '5px'
+  };
+  Sifrr.Dom.load('sifrr-row');
   Sifrr.Dom.load('sifrr-small').then(() => {
     SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
-    SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-smaller' }));
+    SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-row' }));
 
     Sifrr.Dom.register(SifrrTest);
   });

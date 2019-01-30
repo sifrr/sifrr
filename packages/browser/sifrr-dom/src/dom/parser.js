@@ -38,9 +38,21 @@ function creator(el) {
       if (attribute.name[0] === '$') {
         attrStateMap.events[attribute.name] = attribute.value;
       } else if (attribute.value.indexOf('${') >= 0) {
-        attrStateMap[attribute.name] = attribute.value;
+        if (attribute.name === 'style') {
+          const styles = {};
+          attribute.value.split(';').forEach((s) => {
+            const [n, v] = s.split(/:(?!\/\/)/);
+            if (n && v && v.indexOf('${') >= 0) {
+              styles[n.trim()] = v.trim();
+            }
+          });
+          attrStateMap[attribute.name] = styles;
+        } else {
+          attrStateMap[attribute.name] = attribute.value;
+        }
       }
     }
+    if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
     if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
 
     if (Object.keys(sm).length > 0) return sm;
@@ -72,6 +84,10 @@ const Parser = {
               } else {
                 dom[event] = eventLis;
               }
+            }
+          } else if (key === 'style') {
+            for (let k in data.attributes.style) {
+              dom.style[k] = Parser.evaluateString(data.attributes.style[k], element);
             }
           } else {
             const val = Parser.evaluateString(data.attributes[key], element);

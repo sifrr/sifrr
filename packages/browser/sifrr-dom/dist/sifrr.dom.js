@@ -98,26 +98,15 @@
   };
 
   function updateAttribute(element, name, newValue) {
-    if (name === 'class') {
-      const fromValue = element.className;
-      if (fromValue != newValue) {
-        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-          element.className = '';
-        } else {
-          element.className = newValue;
-        }
+    const fromValue = element.getAttribute(name);
+    if (fromValue != newValue) {
+      if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+        if (fromValue) element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, newValue);
       }
-    } else {
-      const fromValue = element.getAttribute(name);
-      if (fromValue != newValue) {
-        if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-          if (fromValue) element.removeAttribute(name);
-        } else {
-          element.setAttribute(name, newValue);
-        }
-      }
-      if ((element.nodeName == 'SELECT' || element.nodeName == 'INPUT') && name == 'value') element.value = newValue;
     }
+    if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
   }
   var update = {
     updateAttribute
@@ -282,9 +271,21 @@
         if (attribute.name[0] === '$') {
           attrStateMap.events[attribute.name] = attribute.value;
         } else if (attribute.value.indexOf('${') >= 0) {
-          attrStateMap[attribute.name] = attribute.value;
+          if (attribute.name === 'style') {
+            const styles = {};
+            attribute.value.split(';').forEach(s => {
+              const [n, v] = s.split(/:(?!\/\/)/);
+              if (n && v && v.indexOf('${') >= 0) {
+                styles[n.trim()] = v.trim();
+              }
+            });
+            attrStateMap[attribute.name] = styles;
+          } else {
+            attrStateMap[attribute.name] = attribute.value;
+          }
         }
       }
+      if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
       if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
       if (Object.keys(sm).length > 0) return sm;
     }
@@ -311,6 +312,10 @@
                 } else {
                   dom[event] = eventLis;
                 }
+              }
+            } else if (key === 'style') {
+              for (let k in data.attributes.style) {
+                dom.style[k] = Parser.evaluateString(data.attributes.style[k], element);
               }
             } else {
               const val = Parser.evaluateString(data.attributes[key], element);
