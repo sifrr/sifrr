@@ -73,14 +73,14 @@ describe('sifrr-route', () => {
     assert.equal(await page.$eval('#test', el => el.i), 0);
   });
 
-  it('refreshes once when data-sifrr-path is changed', async () => {
-    await page.$eval('#test', el => {
-      el.i = 0;
-      el.refresh = () => el.i = el.i + 1;
-      el.dataset.sifrrPath = '/ancd';
-    });
+  it('refreshes once when path is changed', async () => {
+    await page.goto(`${PATH}/`);
 
-    assert.equal(await page.$eval('#test', el => el.i), 1);
+    expect(await isActive('#test')).to.be.true;
+
+    await page.$eval('#test', el => el.setAttribute('path', '/abcd'));
+
+    expect(await isActive('#test')).to.be.false;
   });
 
   it('changes title when clicked on a link and first title when title is not present', async () => {
@@ -144,12 +144,12 @@ describe('sifrr-route', () => {
   it('opens in new tab when clicked with control key', async () => {
     const oldP = (await browser.current.pages()).length;
     // Not working in macOS
-    await page.keyboard.down('MetaLeft');
+    await page.keyboard.down('Control');
     await page.click('a[target="_self"]');
-    await page.keyboard.up('MetaLeft');
+    await page.keyboard.up('Control');
     const newP = (await browser.current.pages()).length;
 
-    // assert.equal(newP - oldP, 1);
+    assert.equal(newP - oldP, 1);
   });
 
   it('changes routes when clicked on back/forward button', async () => {

@@ -59,22 +59,22 @@
   <a href="/efgh" title="efgh">/efgh</a>
   <a href="/notitle">/notitle</a>
   <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
-  <sifrr-route id='test' data-sifrr-path='/'>
+  <sifrr-route id='test' path='/'>
     <p>test</p>
   </sifrr-route>
-  <sifrr-route id='everywhere' data-sifrr-path='**'>
+  <sifrr-route id='everywhere' path='**'>
     <p>a</p>
     <p>Visible everywhere</p>
     <p>e</p>
   </sifrr-route>
-  <sifrr-route id='abcd' title='abcd' data-sifrr-path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
+  <sifrr-route id='abcd' title='abcd' path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
     <p>/abcd</p>
     <sifrr-test data-sifrr-state='{"route":{}}'></sifrr-test>
   </sifrr-route>
-  <sifrr-route id='efgh' data-sifrr-path='/efgh'>
+  <sifrr-route id='efgh' path='/efgh'>
     /efgh
   </sifrr-route>
-  <sifrr-route id="complex" data-sifrr-path='/:x/*/**/mnop/*/:k' data-sifrr-elements='sifrr-test'>
+  <sifrr-route id="complex" path='/:x/*/**/mnop/*/:k' data-sifrr-elements='sifrr-test'>
     Route state check
     <sifrr-test data-sifrr-route-state="true"></sifrr-test>
   </sifrr-route>

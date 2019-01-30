@@ -32,10 +32,10 @@ Good way can be to serve `index.html` to all routes and define all routes in thi
 
 ### Routing
 
-Add sifrr-route tag in your html, this will only be shown when `window.location.pathname` is same as `data-sifrr-path` unless it has `target` attribute and it is not equal to `_self` or link is of some other domain.
+Add sifrr-route tag in your html, this will only be shown when `window.location.pathname` is same as `path` unless it has `target` attribute and it is not equal to `_self` or link is of some other domain.
 
 ```html
-<sifrr-route data-sifrr-path='/some-path'>
+<sifrr-route path='/some-path'>
   <!-- Contents -->
 </sifrr-route>
 ```
@@ -43,7 +43,7 @@ Add sifrr-route tag in your html, this will only be shown when `window.location.
 Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname.
 
 -   You can use `sifrr-route` inside another `sifrr-route`.
--   you can also use regex in `data-sifrr-path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
+-   you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
 -   Query variables are not matched
 -   You can also you special syntax if you want to parse pathname and use it:
     -   `:alphanumeric` matches anything without `/` as alphanumeric variable.
@@ -58,7 +58,7 @@ Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the 
         k: "klm"
       }
     ```
-    and make `sifrr-route` tag with `data-sifrr-path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
+    and make `sifrr-route` tag with `path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
 
 ### Class
 
@@ -87,7 +87,7 @@ Any child elements with `[data-sifrr-route-state="true"]` will get passed state 
 eg.
 
 ```html
-<sifrr-route id="complex" data-sifrr-path='/test/:id' data-sifrr-elements='sifrr-test'>
+<sifrr-route id="complex" path='/test/:id' data-sifrr-elements='sifrr-test'>
   Route state check
   <sifrr-test data-sifrr-route-state="true"></sifrr-test>
 </sifrr-route>

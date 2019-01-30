@@ -68,7 +68,7 @@
       return template;
     }
     static observedAttrs() {
-      return ['data-sifrr-path'];
+      return ['path'];
     }
     onConnect() {
       this.loaded = false;
@@ -78,12 +78,13 @@
       this.constructor.all.splice(this.constructor.all.indexOf(this), 1);
     }
     onAttributeChange(attrName) {
-      if (attrName == 'data-sifrr-path') {
+      if (attrName === 'path') {
+        this._routeRegex = new Sifrr.Dom.Route.RegexPath(this.getAttribute('path'));
         this.refresh();
       }
     }
     get routeRegex() {
-      this._routeRegex = this._routeRegex || new Sifrr.Dom.Route.RegexPath(this.dataset.sifrrPath);
+      this._routeRegex = this._routeRegex || new Sifrr.Dom.Route.RegexPath(this.getAttribute('path'));
       return this._routeRegex;
     }
     refresh() {
