@@ -2510,8 +2510,8 @@ class Renderer {
         res(false);
       } else {
         this.cache.get(key, (err, val) => {
+          /* istanbul ignore if */
           if (err) {
-            /* istanbul ignore next */
             rej(err);
           } else if (!val) {
             this.renderOnPuppeteer(req).then(resp => {
@@ -2554,6 +2554,7 @@ class Renderer {
 
         const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
         me.cache.set(key, resp, err => {
+          /* istanbul ignore next */
           if (err) throw err;
         });
         ret = resp;
