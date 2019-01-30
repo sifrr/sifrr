@@ -25,7 +25,7 @@ global.delay = (time) => {
 
 // check if should inspect or not
 const shouldInspect = process.argv.indexOf('-i') > 0 || process.argv.indexOf('--inspect') > 0;
-if (shouldInspect) inspector.open();
+if (shouldInspect) inspector.open(undefined, undefined, true);
 
 // Check if need coverage
 const toCover = process.env.COVERAGE === 'true';

@@ -72,6 +72,19 @@ function sss(p) {
     </html>
     `);
   });
+  server.get('/nothtml', (req, res) => {
+    res.set('content-type', 'text/random');
+    res.send('nothtml');
+  });
+
+  server.post('/post', (req, res) => {
+    res.set('content-type', 'text/html');
+    res.send(`
+    <html>
+    <body>post<body>
+    </html>
+    `);
+  });
   server.use(serveStatic(__dirname));
   server.use(serveStatic(path.join(__dirname, '../../dist')));
   server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));

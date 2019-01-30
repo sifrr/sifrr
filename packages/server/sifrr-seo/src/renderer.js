@@ -1,3 +1,4 @@
+const { noop } = require('./constants');
 const puppeteer = require('puppeteer');
 const Cache = require('cache-manager');
 const PageRequest = require('./pagerequest');
@@ -15,7 +16,15 @@ class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
     this.puppeteerOptions = puppeteerOptions;
-    this.options = options;
+    this.options = Object.assign({
+      cache: 'memory',
+      maxCacheSize: 100,
+      ttl: 0,
+      cacheKey: (req) => req.fullUrl,
+      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`,
+      beforeRender: noop,
+      afterRender: noop
+    }, options);
     this.cache = getCache(this.options);
     this.shouldRenderCache = {};
   }
@@ -31,7 +40,8 @@ class Renderer {
   }
 
   close() {
-    if (this.launched) this.browser.close();
+    if (this.launched) return this.browser.close();
+    else return Promise.resolve(true);
   }
 
   render(req) {
@@ -47,8 +57,10 @@ class Renderer {
           } else if (!val) {
             this.renderOnPuppeteer(req).then((resp) => {
               res(resp);
-            /* istanbul ignore next */
-            }).catch(err => rej(err));
+            }).catch(err => {
+              /* istanbul ignore next */
+              rej(err);
+            });
           } else {
             res(val);
           }
@@ -67,7 +79,7 @@ class Renderer {
     return pro.then(() => this.browser.newPage()).then(async (newp) => {
       const fetches = new PageRequest(newp);
 
-      const headers = req.headers;
+      const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
       await newp.evaluateOnNewDocument(me.options.beforeRender);
@@ -80,7 +92,6 @@ class Renderer {
         process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         /* istanbul ignore next */
         await newp.evaluate(me.options.afterRender);
-
         /* istanbul ignore next */
         const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
         me.cache.set(key, resp, (err) => {
@@ -93,7 +104,7 @@ class Renderer {
       }
 
       me.shouldRenderCache[key] = sRC;
-      newp.close();
+      await newp.close();
       return ret;
     });
   }

@@ -67,7 +67,7 @@ const sss = function(port, dirS = dir) {
   server.use(serveStatic(path.join(baseDir, './packages/browser/sifrr-fetch/dist')));
   process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
-  server.use((req, res) => res.sendFile(path.join(dirS, './index.html')));
+  server.get('/**', (req, res) => res.sendFile(path.join(dirS, './index.html')));
 
   return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirS));
 };

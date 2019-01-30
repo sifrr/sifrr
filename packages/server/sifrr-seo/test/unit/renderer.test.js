@@ -32,7 +32,7 @@ describe('Renderer', () => {
     assert(renderer.renderOnPuppeteer.calledWith(req));
   });
 
-  it('renders false if res is not html', async () => {
+  it('renders false if shouldRenderCache is false', async () => {
     const r = new Renderer({}, {
       cacheKey: (req) => req.fullUrl
     });
@@ -42,6 +42,17 @@ describe('Renderer', () => {
     r.shouldRenderCache[r.options.cacheKey(reqq)] = false;
 
     assert.equal(await r.render(reqq), false);
+  });
+
+  it('has default options', () => {
+    const r = new Renderer();
+    const reqq = {
+      fullUrl: '/image',
+      originalUrl: '/original'
+    };
+
+    expect(r.options.cacheKey(reqq)).to.equal('/image');
+    expect(r.options.fullUrl(reqq)).to.equal('http://127.0.0.1:80/original');
   });
 
   it('launches puppeteer with given options', async () => {
@@ -57,7 +68,7 @@ describe('Renderer', () => {
     sinon.stub(puppeteer, 'launch').resolves({ close: close, on: () => {} });
     r.close();
 
-    assert.notEqual(close.called, true); // Not close if not launches
+    assert.notEqual(close.called, true); // Not close if not launched
 
     await r.launchBrowser();
     r.close();

@@ -2411,8 +2411,8 @@ function isTypeOf(request, types) {
 }
 
 class PageRequest {
-  constructor(page) {
-    this.page = page;
+  constructor(npage) {
+    this.npage = npage;
     this.pendingRequests = 0;
     this.pendingPromise = Promise.resolve(true);
     this.pendingResolver = constants.noop;
@@ -2422,8 +2422,8 @@ class PageRequest {
 
   addOnRequestListener() {
     const me = this;
-    this.page.setRequestInterception(true).then(() => {
-      me.page.on('request', request => {
+    this.npage.setRequestInterception(true).then(() => {
+      me.npage.on('request', request => {
         if (isTypeOf(request, mediaTypes)) {
           request.abort();
         } else if (isTypeOf(request, fetchTypes)) {
@@ -2440,10 +2440,10 @@ class PageRequest {
   addEndRequestListener() {
     // resolve pending fetch/xhrs
     const me = this;
-    this.page.on('requestfailed', request => {
+    this.npage.on('requestfailed', request => {
       me.onEnd(request);
     });
-    this.page.on('requestfinished', request => {
+    this.npage.on('requestfinished', request => {
       me.onEnd(request);
     });
   }
@@ -2471,6 +2471,10 @@ class PageRequest {
 
 var pagerequest = PageRequest;
 
+const {
+  noop
+} = constants;
+
 const getCache = ops => cacheManager$1.caching({
   store: ops.cacheStore,
   ttl: ops.ttl || 0,
@@ -2484,7 +2488,15 @@ class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
     this.puppeteerOptions = puppeteerOptions;
-    this.options = options;
+    this.options = Object.assign({
+      cache: 'memory',
+      maxCacheSize: 100,
+      ttl: 0,
+      cacheKey: req => req.fullUrl,
+      fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`,
+      beforeRender: noop,
+      afterRender: noop
+    }, options);
     this.cache = getCache(this.options);
     this.shouldRenderCache = {};
   }
@@ -2500,7 +2512,7 @@ class Renderer {
   }
 
   close() {
-    if (this.launched) this.browser.close();
+    if (this.launched) return this.browser.close();else return Promise.resolve(true);
   }
 
   render(req) {
@@ -2516,8 +2528,10 @@ class Renderer {
           } else if (!val) {
             this.renderOnPuppeteer(req).then(resp => {
               res(resp);
+            }).catch(err => {
               /* istanbul ignore next */
-            }).catch(err => rej(err));
+              rej(err);
+            });
           } else {
             res(val);
           }
@@ -2534,7 +2548,7 @@ class Renderer {
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async newp => {
       const fetches = new pagerequest(newp);
-      const headers = req.headers;
+      const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
       await newp.evaluateOnNewDocument(me.options.beforeRender);
@@ -2563,7 +2577,7 @@ class Renderer {
       }
 
       me.shouldRenderCache[key] = sRC;
-      newp.close();
+      await newp.close();
       return ret;
     });
   }
@@ -2587,9 +2601,6 @@ class Renderer {
 
 var renderer = Renderer;
 
-const {
-  noop
-} = constants;
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('(headless|Headless)');
 
@@ -2603,15 +2614,7 @@ class SifrrSeo {
   'Sogou', // Sogou
   'Exabot'], options = {}) {
     this._uas = userAgents.map(ua => new RegExp(ua));
-    this.options = Object.assign({
-      cache: 'memory',
-      maxCacheSize: 100,
-      ttl: 0,
-      cacheKey: req => req.fullUrl,
-      fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`,
-      beforeRender: noop,
-      afterRender: noop
-    }, options);
+    this.options = options;
   }
 
   get middleware() {
@@ -2619,7 +2622,7 @@ class SifrrSeo {
       // Don't render other requests than GET
       if (req.method !== 'GET') return next();
       const renderReq = {
-        fullUrl: this.options.fullUrl(req),
+        fullUrl: this.renderer.options.fullUrl(req),
         headers: req.headers
       };
 
@@ -2641,7 +2644,7 @@ class SifrrSeo {
         };
       }
 
-      this.render(renderReq).then(html => {
+      return this.render(renderReq).then(html => {
         if (html) res.send(html + footer);else next();
       }).catch(e => {
         process.stdout.write(e);
@@ -2683,11 +2686,11 @@ class SifrrSeo {
 
   clearCache() {
     this.shouldRenderCache = {};
-    this.renderer.cache.flushAll();
+    this.renderer.cache.reset();
   }
 
   close() {
-    this.renderer.close();
+    return this.renderer.close();
   }
 
   setPuppeteerOption(name, value) {
@@ -2698,7 +2701,6 @@ class SifrrSeo {
   get puppeteerOptions() {
     const newOpts = Object.assign({
       headless: process.env.HEADLESS !== 'false',
-      devtools: process.env.HEADLESS !== 'false',
       args: []
     }, this._poptions || {});
     newOpts.args.push('--no-sandbox', '--disable-setuid-sandbox');
@@ -2714,7 +2716,7 @@ class SifrrSeo {
   }
 
   get renderer() {
-    this._renderer = this._renderer || new renderer(this.puppeteerOptions, this.options);
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this.puppeteerOptions, this.options);
     return this._renderer;
   }
 

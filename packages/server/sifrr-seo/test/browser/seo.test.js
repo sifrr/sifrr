@@ -1,3 +1,5 @@
+const Renderer = require('../../src/renderer');
+
 async function loadTime(page) {
   return page.evaluate(() => {
     return window.performance.timing.responseEnd - window.performance.timing.requestStart;
@@ -90,14 +92,35 @@ describe('sifrr-seo', () => {
     });
   });
 
-  describe('non html files', () => {
-    it("doesn't render non html files", async () => {
-      await page.goto(`${PATH}/index.js`, { waitUntil: 'load' });
-      const html = await page.$eval('body', async el => {
-        return el.innerHTML;
-      });
-
-      expect(html).to.not.have.string('@sifrr/seo');
+  it("doesn't render non html files", async () => {
+    await page.goto(`${PATH}/nothtml`, { waitUntil: 'load' });
+    const html = await page.$eval('body', async el => {
+      return el.innerHTML;
     });
+
+    expect(html).to.have.string('nothtml');
+    expect(html).to.not.have.string('@sifrr/seo');
+  });
+
+  it("doesn't render other requests than GET", async () => {
+    const html = await page.evaluate((path) => {
+      return fetch(`${path}/post`, {
+        method: 'POST',
+        referrer: 'no-referrer'
+      }).then(resp => resp.text());
+    }, PATH);
+
+    expect(html).to.have.string('post');
+    expect(html).to.not.have.string('@sifrr/seo');
+  });
+
+  it('renders false if res is not html', async () => {
+    const r = new Renderer({}, {
+      cacheKey: (req) => req.fullUrl
+    });
+    const reqq = {
+      fullUrl: PATH
+    };
+    r.isHTML = () => false;
   });
 });

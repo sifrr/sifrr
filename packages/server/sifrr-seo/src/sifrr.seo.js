@@ -1,4 +1,3 @@
-const { noop } = require('./constants');
 const Renderer = require('./renderer');
 const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('(headless|Headless)');
@@ -15,15 +14,7 @@ class SifrrSeo {
     'Exabot', // Exalead
   ], options = {}) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
-    this.options = Object.assign({
-      cache: 'memory',
-      maxCacheSize: 100,
-      ttl: 0,
-      cacheKey: (req) => req.fullUrl,
-      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`,
-      beforeRender: noop,
-      afterRender: noop
-    }, options);
+    this.options = options;
   }
 
   get middleware() {
@@ -32,7 +23,7 @@ class SifrrSeo {
       if (req.method !== 'GET') return next();
 
       const renderReq = {
-        fullUrl: this.options.fullUrl(req),
+        fullUrl: this.renderer.options.fullUrl(req),
         headers: req.headers
       };
 
@@ -51,7 +42,7 @@ class SifrrSeo {
         };
       }
 
-      this.render(renderReq).then((html) => {
+      return this.render(renderReq).then((html) => {
         if (html) res.send(html + footer);
         else next();
       }).catch((e) => {
@@ -91,11 +82,11 @@ class SifrrSeo {
 
   clearCache() {
     this.shouldRenderCache = {};
-    this.renderer.cache.flushAll();
+    this.renderer.cache.reset();
   }
 
   close() {
-    this.renderer.close();
+    return this.renderer.close();
   }
 
   setPuppeteerOption(name, value) {
@@ -106,7 +97,6 @@ class SifrrSeo {
   get puppeteerOptions() {
     const newOpts = Object.assign({
       headless: process.env.HEADLESS !== 'false',
-      devtools: process.env.HEADLESS !== 'false',
       args: [],
     }, this._poptions || {});
     newOpts.args.push(
@@ -125,7 +115,7 @@ class SifrrSeo {
   }
 
   get renderer() {
-    this._renderer = this._renderer || new Renderer(this.puppeteerOptions, this.options);
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this.puppeteerOptions, this.options);
     return this._renderer;
   }
 }

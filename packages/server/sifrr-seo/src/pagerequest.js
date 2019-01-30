@@ -7,8 +7,8 @@ function isTypeOf(request, types) {
 }
 
 class PageRequest {
-  constructor(page) {
-    this.page = page;
+  constructor(npage) {
+    this.npage = npage;
     this.pendingRequests = 0;
     this.pendingPromise = Promise.resolve(true);
     this.pendingResolver = require('./constants').noop;
@@ -18,8 +18,8 @@ class PageRequest {
 
   addOnRequestListener() {
     const me = this;
-    this.page.setRequestInterception(true).then(() => {
-      me.page.on('request', (request) => {
+    this.npage.setRequestInterception(true).then(() => {
+      me.npage.on('request', (request) => {
         if (isTypeOf(request, mediaTypes)) {
           request.abort();
         } else if (isTypeOf(request, fetchTypes)) {
@@ -36,10 +36,10 @@ class PageRequest {
   addEndRequestListener() {
     // resolve pending fetch/xhrs
     const me = this;
-    this.page.on('requestfailed', request => {
+    this.npage.on('requestfailed', request => {
       me.onEnd(request);
     });
-    this.page.on('requestfinished', request => {
+    this.npage.on('requestfinished', request => {
       me.onEnd(request);
     });
   }
