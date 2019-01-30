@@ -14,6 +14,7 @@ class Json {
         ans[i] = this.parse(v);
       });
     } else if (typeof data == 'object') {
+      if (data === null) return null;
       for (const k in data) {
         ans[k] = this.parse(data[k]);
       }

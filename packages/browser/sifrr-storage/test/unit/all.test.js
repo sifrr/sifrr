@@ -1,5 +1,6 @@
 const SifrrStorage = require('../../src/sifrr.storage');
 const JsonStorage = require('../../src/storages/jsonstorage'),
+  JSONP = require('../../src/utils/json'),
   Storage = require('../../src/storages/storage');
 
 describe('SifrrStorage', () => {
@@ -76,5 +77,12 @@ describe('Storage', () => {
     it('should return object if key is string and value is string', () => {
       assert.deepEqual(x._parseKeyValue('a', 'b'), {a: 'b'});
     });
+  });
+});
+
+describe('JSON', () => {
+  it('returns value if not parsable', () => {
+    assert.equal(JSONP.parse(null), null);
+    assert.equal(JSONP.parse(undefined), undefined);
   });
 });

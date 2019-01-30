@@ -13,7 +13,7 @@ class Cookies extends Storage {
     let result = this.store, ans = {};
     result.split('; ').forEach((value) => {
       let [k, v] = value.split('=');
-      if (v) ans[k] = this.constructor.parse(v);
+      ans[k] = this.constructor.parse(v);
     });
     return ans[this.tableName] || {};
   }
