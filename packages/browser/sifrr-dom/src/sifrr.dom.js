@@ -1,6 +1,5 @@
 const UrlExt = require('./utils/url');
 const JsonExt = require('./utils/json');
-const { TEMPLATE } = require('./dom/constants');
 
 // Empty SifrrDom
 let SifrrDom = {};
@@ -21,22 +20,7 @@ SifrrDom.Url = UrlExt;
 SifrrDom.Json = JsonExt;
 
 // HTML to template
-SifrrDom.html = (str, ...extra) => {
-  const tmp = TEMPLATE();
-  if (typeof str === 'string') {
-    tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
-  } else if (str[0] && typeof str[0] === 'string') {
-    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-    tmp.innerHTML = str;
-  } else if (str[0]) {
-    Array.from(str).forEach((s) => {
-      tmp.appendChild(s);
-    });
-  } else {
-    return str;
-  }
-  return tmp;
-};
+SifrrDom.template = require('./dom/template');
 
 // Register Custom Element Function
 SifrrDom.register = (Element, options) => {
@@ -74,10 +58,10 @@ SifrrDom.setup = function(config) {
 };
 
 // Load Element HTML and execute script in it
-SifrrDom.load = function(elemName, config = { baseUrl: SifrrDom.config.baseUrl }) {
-  let loader = new SifrrDom.Loader(elemName, config);
+SifrrDom.load = function(elemName, { url, js = false } = {}) {
+  let loader = new SifrrDom.Loader(elemName, url);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
-  return loader.executeScripts();
+  return loader.executeScripts(js);
 };
 
 SifrrDom.loading = () => {

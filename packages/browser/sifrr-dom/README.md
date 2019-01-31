@@ -10,16 +10,16 @@ A &lt; 5KB DOM library for creating user interfaces for websites using Custom El
 | Minified (`dist/sifrr.dom.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js)              |
 | Minified + Gzipped (`dist/sifrr.dom.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
 
-## Fetures
+## Features
 
--   Simple API based on web components v1, custom elements v1, shadow dom v1 (optional) with callbacks
+-   Simple DOM API based on web components v1, custom elements v1, shadow dom v1 (optional)
 -   Pure DOM bindings (no virtual DOM) still faster than react, no special syntax like jsx etc. only vanilla HTML, CSS, JS
--   synthetic event listener
+-   synthetic event listener, custom events
 -   simpler querySelector for custom elements/web components
 
 ## Performance Comparison
 
-Run locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark). Latest benchmark implementation [here](./test/public/speedtest.html)
+Ran locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark). Latest benchmark implementation [here](./test/public/speedtest.html)
 
 <img src="./performance.png" alt="Performance" height='400'>
 
@@ -51,6 +51,8 @@ If custom elements v1 API is supported by browsers, it is very likely that other
 Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `package.json` file.
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
+
+__Note__: Do not set `sifrr-dom` to any other global variable than `window.Sifrr.Dom`.
 
 #### Commonjs
 
@@ -135,8 +137,8 @@ Sifrr.Dom.setup(config);
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
   static get template() {
-    // Note that bindings are defined by {{}} in js template.
-    return Sifrr.Dom.html`<style media="screen">
+    // Note that bindings can only be defined by {{}} in js template. Because ${}'s value will be resolved before passing to Sifrr.
+    return Sifrr.Dom.template`<style media="screen">
       p {
         color: blue;
       }
@@ -166,9 +168,11 @@ const config = {
   baseUrl: ''
 }
 // Requires Sifrr.Fetch
-Sifrr.Dom.load('custom-tag', config); // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
+Sifrr.Dom.load('custom-tag', config = { url, js });
+// If url is given in config, custom-tag element is loaded from that url, else
+// custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
 // or  ${baseUrl}/elements/custom/tag.js whichever is present
-// If no baseUrl is given in config, baseUrl from setup config is used
+// set js to true if element file is js instead of html
 ```
 
 or as module

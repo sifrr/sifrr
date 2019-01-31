@@ -69,7 +69,7 @@ const firstTitle = window.document.title;
 
 class SifrrRoute extends Sifrr.Dom.Element {
   static get template() {
-    return Sifrr.Dom.html('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+    return Sifrr.Dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
   }
 
   static observedAttrs() {

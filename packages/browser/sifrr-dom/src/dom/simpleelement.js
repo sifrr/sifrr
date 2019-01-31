@@ -1,5 +1,5 @@
 const { collect, create } = require('./ref');
-const TEMPLATE = require('./constants').TEMPLATE();
+const template = require('./template');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 function creator(node) {
@@ -51,8 +51,8 @@ function updateState(simpleEl) {
 
 function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
-    TEMPLATE.innerHTML = content;
-    content = TEMPLATE.content.firstElementChild || TEMPLATE.content.firstChild;
+    const templ = template(content);
+    content = templ.content.firstElementChild || templ.content.firstChild;
     const oldDisplay = content.style.display;
     content.style.display = 'none';
     window.document.body.appendChild(content);

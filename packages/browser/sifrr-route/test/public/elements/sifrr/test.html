@@ -1,12 +1,8 @@
-<script>
-class SifrrTest extends Sifrr.Dom.Element {
-  static get template() {
-    return Sifrr.Dom.html`
-    <p>Simple lement testststfdgdh</p>
-    {{JSON.stringify(this.state.route)}}
-    `;
+<script type="text/javascript">
+  class SifrrTest extends Sifrr.Dom.Element {
+    static get template() {
+      return Sifrr.Dom.template('<p>Simple lement testststfdgdh</p>{{JSON.stringify(this.state.route)}}');
+    }
   }
-}
-
-Sifrr.Dom.register(SifrrTest);
+  Sifrr.Dom.register(SifrrTest);
 </script>

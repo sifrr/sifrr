@@ -10,8 +10,8 @@ describe('sifrr-route', () => {
     await page.goto(`${PATH}/`);
   });
 
-  it('has `Sifrr.Dom.html`', async () => {
-    const type = await page.evaluate(() => typeof Sifrr.Dom.html);
+  it('has `Sifrr.Dom.template`', async () => {
+    const type = await page.evaluate(() => typeof Sifrr.Dom.template);
 
     expect(type).to.equal('function');
   });
@@ -24,7 +24,7 @@ describe('sifrr-route', () => {
     expect(regex).to.equal('function');
   });
 
-  it('makes el active on refresh if it test is true', async () => {
+  it('makes el active on refresh if regex test is true', async () => {
     await page.$eval('#test', el => {
       el.routeRegex.test = () => {
         return { match: true };

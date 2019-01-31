@@ -1,12 +1,12 @@
 const fetch = require('@sifrr/fetch');
-const TEMPLATE = require('./constants').TEMPLATE();
+const template = require('./template');
 
 class Loader {
-  constructor(elemName, config = {}) {
+  constructor(elemName, url) {
     if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
     this.elementName = elemName;
-    this.config = config;
+    this.url = url;
     this.constructor.urls[elemName] = this.htmlUrl;
   }
 
@@ -15,10 +15,7 @@ class Loader {
     if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
     const html = fetch.file(this.htmlUrl)
       .then((resp) => resp.text())
-      .then((file) => {
-        TEMPLATE.innerHTML = file;
-        return TEMPLATE.content;
-      }).then((html) => {
+      .then((file) => template(file).content).then((html) => {
         Loader._all[me.elementName].template = html.querySelector('template');
         return html;
       });
@@ -36,32 +33,38 @@ class Loader {
   }
 
   get htmlUrl() {
-    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
+    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
   }
 
   get jsUrl() {
-    return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
+    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
   }
 
-  executeScripts() {
-    return this.html.then((file) => {
-      file.querySelectorAll('script').forEach((script) => {
-        if (script.hasAttribute('src')) {
-          window.document.body.appendChild(script);
+  executeScripts(js) {
+    if (js) {
+      return this.js.then((script) => {
+        new Function(script).bind(window)();
+      });
+    } else {
+      return this.html.then((file) => {
+        file.querySelectorAll('script').forEach((script) => {
+          if (script.hasAttribute('src')) {
+            window.document.body.appendChild(script);
+          } else {
+            new Function(script.text).bind(window)();
+          }
+        });
+      }).catch((e) => {
+        if (e.message === 'Not Found') {
+          window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
+          this.js.then((script) => {
+            new Function(script).bind(window)();
+          });
         } else {
-          new Function(script.text).bind(window)();
+          window.console.warn(e);
         }
       });
-    }).catch((e) => {
-      if (e.message === 'Not Found') {
-        window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
-        this.js.then((script) => {
-          new Function(script).bind(window)();
-        });
-      } else {
-        window.console.warn(e);
-      }
-    });
+    }
   }
 
   static add(elemName, instance) {

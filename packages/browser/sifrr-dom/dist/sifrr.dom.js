@@ -87,16 +87,6 @@
   };
   var json = Json;
 
-  const temp = window.document.createElement('template');
-  const sfn = window.document.createElement('sifrr-node');
-  var constants = {
-    SIFRR_NODE: () => sfn.cloneNode(),
-    TEMPLATE: () => temp.cloneNode(),
-    TEXT_NODE: 3,
-    COMMENT_NODE: 8,
-    ELEMENT_NODE: 1
-  };
-
   function updateAttribute(element, name, newValue) {
     const fromValue = element.getAttribute(name);
     if (fromValue != newValue) {
@@ -110,6 +100,16 @@
   }
   var update = {
     updateAttribute
+  };
+
+  const temp = window.document.createElement('template');
+  const sfn = window.document.createElement('sifrr-node');
+  var constants = {
+    SIFRR_NODE: () => sfn.cloneNode(),
+    TEMPLATE: () => temp.cloneNode(),
+    TEXT_NODE: 3,
+    COMMENT_NODE: 8,
+    ELEMENT_NODE: 1
   };
 
   const {
@@ -384,22 +384,38 @@
   };
   var parser = Parser;
 
-  const TEMPLATE$1 = constants.TEMPLATE();
+  const {
+    TEMPLATE: TEMPLATE$1
+  } = constants;
+  var template = (str, ...extra) => {
+    const tmp = TEMPLATE$1();
+    if (typeof str === 'string') {
+      tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
+    } else if (str[0] && typeof str[0] === 'string') {
+      str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
+      tmp.innerHTML = str;
+    } else if (str[0]) {
+      Array.from(str).forEach(s => {
+        tmp.appendChild(s);
+      });
+    } else {
+      return str;
+    }
+    return tmp;
+  };
+
   class Loader {
-    constructor(elemName, config = {}) {
+    constructor(elemName, url) {
       if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
       if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
       this.elementName = elemName;
-      this.config = config;
+      this.url = url;
       this.constructor.urls[elemName] = this.htmlUrl;
     }
     get html() {
       const me = this;
       if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
-      const html = fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => {
-        TEMPLATE$1.innerHTML = file;
-        return TEMPLATE$1.content;
-      }).then(html => {
+      const html = fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => template(file).content).then(html => {
         Loader._all[me.elementName].template = html.querySelector('template');
         return html;
       });
@@ -420,30 +436,36 @@
       return js;
     }
     get htmlUrl() {
-      return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
+      return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
     }
     get jsUrl() {
-      return this.config.url || `${this.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
+      return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
     }
-    executeScripts() {
-      return this.html.then(file => {
-        file.querySelectorAll('script').forEach(script => {
-          if (script.hasAttribute('src')) {
-            window.document.body.appendChild(script);
+    executeScripts(js) {
+      if (js) {
+        return this.js.then(script => {
+          new Function(script).bind(window)();
+        });
+      } else {
+        return this.html.then(file => {
+          file.querySelectorAll('script').forEach(script => {
+            if (script.hasAttribute('src')) {
+              window.document.body.appendChild(script);
+            } else {
+              new Function(script.text).bind(window)();
+            }
+          });
+        }).catch(e => {
+          if (e.message === 'Not Found') {
+            window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
+            this.js.then(script => {
+              new Function(script).bind(window)();
+            });
           } else {
-            new Function(script.text).bind(window)();
+            window.console.warn(e);
           }
         });
-      }).catch(e => {
-        if (e.message === 'Not Found') {
-          window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
-          this.js.then(script => {
-            new Function(script).bind(window)();
-          });
-        } else {
-          window.console.warn(e);
-        }
-      });
+      }
     }
     static add(elemName, instance) {
       Loader._all[elemName] = Object.assign(Loader._all[elemName] || {}, instance);
@@ -460,7 +482,6 @@
     collect: collect$2,
     create: create$2
   } = ref;
-  const TEMPLATE$2 = constants.TEMPLATE();
   function creator$1(node) {
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
@@ -512,8 +533,8 @@
   }
   function SimpleElement(content, defaultState) {
     if (typeof content === 'string') {
-      TEMPLATE$2.innerHTML = content;
-      content = TEMPLATE$2.content.firstElementChild || TEMPLATE$2.content.firstChild;
+      const templ = template(content);
+      content = templ.content.firstElementChild || templ.content.firstChild;
       const oldDisplay = content.style.display;
       content.style.display = 'none';
       window.document.body.appendChild(content);
@@ -745,9 +766,6 @@
   };
   var event = Event;
 
-  const {
-    TEMPLATE: TEMPLATE$3
-  } = constants;
   let SifrrDom = {};
   SifrrDom.elements = {};
   SifrrDom.loadingElements = [];
@@ -759,22 +777,7 @@
   SifrrDom.makeEqual = makeequal;
   SifrrDom.Url = url;
   SifrrDom.Json = json;
-  SifrrDom.html = (str, ...extra) => {
-    const tmp = TEMPLATE$3();
-    if (typeof str === 'string') {
-      tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
-    } else if (str[0] && typeof str[0] === 'string') {
-      str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-      tmp.innerHTML = str;
-    } else if (str[0]) {
-      Array.from(str).forEach(s => {
-        tmp.appendChild(s);
-      });
-    } else {
-      return str;
-    }
-    return tmp;
-  };
+  SifrrDom.template = template;
   SifrrDom.register = (Element, options) => {
     Element.useSR = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
@@ -806,12 +809,13 @@
     SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
     SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   };
-  SifrrDom.load = function (elemName, config = {
-    baseUrl: SifrrDom.config.baseUrl
-  }) {
-    let loader$$1 = new SifrrDom.Loader(elemName, config);
+  SifrrDom.load = function (elemName, {
+    url: url$$1,
+    js = false
+  } = {}) {
+    let loader$$1 = new SifrrDom.Loader(elemName, url$$1);
     SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
-    return loader$$1.executeScripts();
+    return loader$$1.executeScripts(js);
   };
   SifrrDom.loading = () => {
     return Promise.all(SifrrDom.loadingElements);
