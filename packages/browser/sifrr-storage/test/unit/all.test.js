@@ -23,7 +23,7 @@ describe('SifrrStorage', () => {
       });
 
       it("doesn't return the storage if not supported", () => {
-        sinon.stub(SifrrStorage.availableStores[type].prototype, 'isSupported');
+        sinon.stub(SifrrStorage.availableStores[type].prototype, 'isSupported').returns(undefined);
 
         let y = new SifrrStorage(type);
 
@@ -106,11 +106,14 @@ describe('Storage', () => {
     });
   });
 
-  it('returns false on isSupported if store is undefined', () => {
+  it('isSupported', () => {
     global.window = true;
-    x.store = undefined;
 
-    expect(x.isSupported(false)).to.be.false;
+    expect(x.isSupported(false), 'returns false on isSupported if store is undefined').to.be.false;
+    expect(x.isSupported(true), 'returns true on isSupported if document is undefined').to.be.true;
+
+    x.store = true;
+    expect(x.isSupported(false), 'returns true on isSupported if store is not undefined').to.be.true;
 
     global.window = undefined;
   });
