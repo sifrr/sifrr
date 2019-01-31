@@ -56,18 +56,20 @@ class RegexPath {
 
 var regexpath = RegexPath;
 
-const Sifrr = window.Sifrr || {
-  Dom: dom
-};
-const template = Sifrr.Dom.html('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+const Sifrr = window.Sifrr ||
+/* istanbul ignore next */
+{};
+Sifrr.Dom = Sifrr.Dom ||
+/* istanbul ignore next */
+dom;
 Sifrr.Dom.Route = {
   RegexPath: regexpath
 };
-const firstTitle = document.title;
+const firstTitle = window.document.title;
 
 class SifrrRoute extends Sifrr.Dom.Element {
   static get template() {
-    return template;
+    return Sifrr.Dom.html('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
   }
 
   static observedAttrs() {
@@ -91,7 +93,6 @@ class SifrrRoute extends Sifrr.Dom.Element {
   }
 
   get routeRegex() {
-    this._routeRegex = this._routeRegex || new Sifrr.Dom.Route.RegexPath(this.getAttribute('path'));
     return this._routeRegex;
   }
 
@@ -148,35 +149,40 @@ class SifrrRoute extends Sifrr.Dom.Element {
 
   static onRouteChange() {}
 
+  static clickEventListener(e) {
+    if (!(window.history && window.history.pushState)) return false;
+    const target = e.composedPath ? e.composedPath()[0] : e.target; // composedPath works in safari too
+
+    if (e.metaKey || e.ctrlKey) return false;
+    if (!target.matches('a')) return false;
+    if (target.host !== window.location.host) return false;
+    if (target.target && target.target !== '_self') return false;
+    e.preventDefault(); // replace title with First title if there's no attribute
+
+    const title = target.getAttribute('title') || firstTitle;
+    const state = {
+      location: target.pathname,
+      title: title
+    };
+    window.document.title = title;
+    window.history.pushState(state, title, target.pathname);
+    SifrrRoute.refreshAll();
+    return true;
+  }
+
+  static popstateEventListener(e) {
+    if (e.state && e.state.title) window.document.title = e.state.title; // replace title with First title if there's no state title
+    else window.document.title = firstTitle;
+    SifrrRoute.refreshAll();
+  }
+
 }
 
 SifrrRoute.all = [];
 Sifrr.Dom.Route.Element = SifrrRoute;
 Sifrr.Dom.register(SifrrRoute);
-document.addEventListener('click', e => {
-  if (!(window.history && window.history.pushState)) return;
-  const target = e.composedPath ? e.composedPath()[0] : e.target; // composedPath works in safari too
-
-  if (e.metaKey || e.ctrlKey) return;
-  if (!target.matches('a')) return;
-  if (target.host !== window.location.host) return;
-  if (target.target && target.target !== '_self') return;
-  e.preventDefault(); // replace title with First title if there's no attribute
-
-  const title = target.getAttribute('title') || firstTitle;
-  const state = {
-    location: target.pathname,
-    title: title
-  };
-  document.title = title;
-  window.history.pushState(state, title, target.pathname);
-  SifrrRoute.refreshAll();
-});
-window.addEventListener('popstate', event => {
-  if (event.state && event.state.title) document.title = event.state.title; // replace title with First title if there's no state title
-  else document.title = firstTitle;
-  SifrrRoute.refreshAll();
-});
+window.addEventListener('popstate', SifrrRoute.popstateEventListener);
+window.document.addEventListener('click', SifrrRoute.clickEventListener);
 var sifrr_route = SifrrRoute;
 
 export default sifrr_route;
