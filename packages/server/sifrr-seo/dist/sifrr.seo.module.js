@@ -1,4 +1,4 @@
-/*! Sifrr.Seo v0.0.2-alpha - sifrr project */
+/*! Sifrr.Seo v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import puppeteer from 'puppeteer';
 
 var constants = {

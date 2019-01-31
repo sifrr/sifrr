@@ -6,10 +6,10 @@ sifrr is a set of libraries for creating modern webapps.
 
 ### Browser
 
-| Package                                                       | Description                                                                                   | NPM                                                                                                                         | Documentation                                       |                       Tests                       |
-| :------------------------------------------------------------ | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------- | :-----------------------------------------------: |
-| [sifrr-dom](./packages/browser/sifrr-dom)                     | A &lt; 5KB DOM library using Custom Elements, one way/two way data binding, faster than react | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)                     | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-dom#readme)           |                       [WIP]                       |
-| [sifrr-fetch](./packages/browser/sifrr-fetch)                 | Wrapper library for Browser fetch API                                                         | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch)                 | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-fetch)         |     [OK](./packages/browser/sifrr-fetch/test#readme#readme)     |
+| Package                                                       | Description                                                                                   | NPM                                                                                                                         | Documentation                                                                                                  |                           Tests                          |
+| :------------------------------------------------------------ | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------: |
+| [sifrr-dom](./packages/browser/sifrr-dom)                     | A &lt; 5KB DOM library using Custom Elements, one way/two way data binding, faster than react | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)                     | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-dom#readme)    |                           [WIP]                          |
+| [sifrr-fetch](./packages/browser/sifrr-fetch)                 | Wrapper library for Browser fetch API                                                         | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch)                 | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-fetch)         |  [OK](./packages/browser/sifrr-fetch/test#readme#readme) |
 | [sifrr-route](./packages/browser/sifrr-route)                 | Routing for sifrr-dom                                                                         | [![npm version](https://img.shields.io/npm/v/@sifrr/route.svg)](https://www.npmjs.com/package/@sifrr/route)                 | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-route)         |     [OK](./packages/browser/sifrr-route/test#readme)     |
 | [sifrr-serviceworker](./packages/browser/sifrr-serviceworker) | Service worker wrapper library                                                                | [![npm version](https://img.shields.io/npm/v/@sifrr/serviceworker.svg)](https://www.npmjs.com/package/@sifrr/serviceworker) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-serviceworker) | [OK](./packages/browser/sifrr-serviceworker/test#readme) |
 | [sifrr-storage](./packages/browser/sifrr-storage)             | Browser persisted storage library                                                             | [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage)             | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/browser/sifrr-storage)       |    [OK](./packages/browser/sifrr-storage/test#readme)    |
@@ -18,11 +18,11 @@ sifrr is a set of libraries for creating modern webapps.
 
 ### Server
 
-| Package                                  | Description                                                                          | NPM                                                                                                     | Documentation                            |                  Tests                 |
-| :--------------------------------------- | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :--------------------------------------- | :------------------------------------: |
-| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express                 | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-api#readme) |                  [WIP]                 |
-| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr                                           | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-cli#readme) |                  [WIP]                 |
-| [sifrr-seo](./packages/server/sifrr-seo) | Connect/Express Middleware for serving pre-rendered html to crawl bots/lite browsers | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-seo) | [OK](./packages/server/sifrr-seo/test#readme) |
+| Package                                  | Description                                                          | NPM                                                                                                     | Documentation                                                                                              |                     Tests                     |
+| :--------------------------------------- | :------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------- | :-------------------------------------------: |
+| [sifrr-api](./packages/server/sifrr-api) | Create normal/GraphQL APIs using sequelize/graphql-sequelize/express | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-api#readme) |                     [WIP]                     |
+| [sifrr-cli](./packages/server/sifrr-cli) | Sifrr cli for creating webapps using sifrr                           | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-cli#readme) |                     [WIP]                     |
+| [sifrr-seo](./packages/server/sifrr-seo) | Server side rendering using puppeteer with caching                   | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-seo)        | [OK](./packages/server/sifrr-seo/test#readme) |
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
@@ -61,6 +61,15 @@ To support mini browsers (opera mini, uc browser etc.), You can use sifrr-seo to
 ## [WIP] Contributing
 
 [Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/CONTRIBUTORS)
+
+Contributing guidelines, Open a Pull Request if it:
+
+-   Fixes a bug
+-   Doesn't decrease performance or increase package size
+-   Decreases size of package without compromising on features or performance
+-   Simplifies the API
+-   Improve documentation
+-   Improves testing or increase test coverage
 
 ## License
 

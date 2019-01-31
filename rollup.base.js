@@ -8,7 +8,7 @@ const cleanup = require('rollup-plugin-cleanup');
 
 module.exports = function getRollupConfig(name, isBrowser = true) {
   let fileName = name.toLowerCase();
-  let banner = `/*! ${name} v${version} - sifrr project */`;
+  let banner = `/*! ${name} v${version} - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */`;
   let footer = '/*! (c) @aadityataparia */';
   let ret = [];
   const external = [
