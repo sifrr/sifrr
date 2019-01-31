@@ -93,9 +93,7 @@ Sifrr.Dom.setup(config);
 
 **Note**: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
 
-#### Basic sifrr element
-
-1.  HTML element
+#### HTML Element
 
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html  -->
@@ -106,10 +104,10 @@ Sifrr.Dom.setup(config);
       color: blue; // Only applies to p's inside this element if useShadowRoot is true in setup config
     }
   </style>
-  <!-- Contents for element, this in binding ${} refers to the custom element itself -->
+  <!-- Contents for element, this in binding ${} or {{}} refers to the custom element itself -->
   <!-- Bindings are updated automatically on state change -->
   <p attr=${this.state.attr}>${this.state.id}</p>
-  <p>${this.data()}</p>
+  <p>{{this.data()}}</p>
   <!-- If you are using any custom methods in bindings, it is better they are based on state so that they are updated on state change -->
 </template>
 <script type="text/javascript">
@@ -130,8 +128,7 @@ Sifrr.Dom.setup(config);
 </script>
 ```
 
-**OR**
-2. JS Element
+#### JS Element
 
 ```js
 // ${baseUrl}/elements/custom/tag.js
@@ -159,7 +156,9 @@ CustomTag.defaultState = {
 Sifrr.Dom.register(CustomTag);
 ```
 
-Then load in your js
+#### Loading element
+
+##### Sifrr.Dom.load() - html elements or js elements
 
 ```js
 // index.js
@@ -171,27 +170,31 @@ const config = {
 Sifrr.Dom.load('custom-tag', config = { url, js });
 // If url is given in config, custom-tag element is loaded from that url, else
 // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
-// or  ${baseUrl}/elements/custom/tag.js whichever is present
+// or ${baseUrl}/elements/custom/tag.js if html gives 404
+//
 // set js to true if element file is js instead of html
 ```
 
-or as module
+##### As module - js elements only
 
 ```js
 // index.html
 <script type="module">
   import '${baseUrl}/elements/custom/tag';
 </script>
+
+<script src="${baseUrl}/elements/custom/tag.js" type="module">
 ```
 
-or as normal js
+##### Normal script tag - js elements only
 
 ```js
 // index.html
 <script src="${baseUrl}/elements/custom/tag"></script>
 ```
 
-Then this html
+#### Rendering
+This html
 
 ```html
 <!DOCTYPE html>
@@ -221,6 +224,11 @@ will render to
     <custom-tag>
       #shadow-root
       <!-- Content will be rendered in shadow root if useShadowRoot is set to true in setup config -->
+        <style media="screen">
+          p {
+            color: blue; // Only applies to p inside this element
+          }
+        </style>
         <p>1</p>
         <p attr="abcd">2</p>
     </custom-tag>
@@ -247,7 +255,9 @@ This will change custom-tag to
 </custom-tag>
 ```
 
--   To force update element bindings
+Changing state automatically triggers `element.update()` which updates the bindings.
+
+#### Force update element bindings
 
 ```js
 customtag.update();
@@ -255,7 +265,7 @@ customtag.update();
 
 ### Components Without shadow root
 
-#### If you don't want to use shadow root by default
+#### If you don't want to use shadow root for all elements
 
 Don't use shadow-root if you want to serve server rendered files with sifrr-seo.
 
@@ -282,13 +292,13 @@ Sifrr.Dom.setup(config);
 <script type="text/javascript">
   class CustomTag {
     static get useShadowRoot {
-      return false;
+      return false; // Set to true if you want to use shadow-root event if default config is false
     }
   }
 </script>
 ```
 
-### Sifrr Element (Sifrr.Dom.Element) API
+### Sifrr Element (Sifrr.Dom.Element) Methods
 
 #### Callbacks
 

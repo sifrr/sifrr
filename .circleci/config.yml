@@ -33,6 +33,9 @@ jobs:
           paths:
             - ~/.cache/yarn
       - run:
+          name: Check chrome version
+          command: google-chrome --version
+      - run:
           name: Run tests
           command: COVERAGE=true LCOV=true yarn test -j
       - run:

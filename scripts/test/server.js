@@ -25,8 +25,6 @@ const sss = function(port, dirS = dir) {
 
   const toCover = process.env.COVERAGE === 'true';
 
-
-
   if (toCover) {
     const { createInstrumenter } = require('istanbul-lib-instrument');
     const instrumenter = createInstrumenter();

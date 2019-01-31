@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head is="sifrr-head">
+  </head>
+  <body>
+    <h1>OK</h1>
+
+    <loading-load></loading-load>
+    <loading-loadjs></loading-loadjs>
+    <loading-module></loading-module>
+    <loading-module2></loading-module2>
+    <loading-custom></loading-custom>
+    <loading-custom2></loading-custom2>
+    <loading-src></loading-src>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script src="/index.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.load('loading-load');
+      Sifrr.Dom.load('loading-loadjs', { js: true });
+      Sifrr.Dom.load('loading-custom', { url: '/elements/loading/some-custom-url.html' });
+      Sifrr.Dom.load('loading-custom2', { url: '/elements/loading/custom-url.js', js: true });
+    </script>
+    <script src="/elements/loading/module.js" type="module"></script>
+    <script type="module">
+      import '/elements/loading/modulenew.js';
+    </script>
+    <script src="/elements/loading/src.js" charset="utf-8"></script>
+  </body>
+</html>

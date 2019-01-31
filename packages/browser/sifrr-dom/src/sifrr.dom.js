@@ -38,7 +38,7 @@ SifrrDom.register = (Element, options) => {
       SifrrDom.elements[name] = Element;
       return true;
     } catch (error) {
-      window.console.error(`Error creating Custom Element: ${name} - ${error}`);
+      window.console.error(`Error creating Custom Element: ${name} - ${error}`, error.trace);
       return false;
     }
   }
