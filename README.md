@@ -69,7 +69,7 @@ Contributing guidelines, Open a Pull Request if it:
 -   Decreases size of package without compromising on features or performance
 -   Simplifies the API
 -   Improve documentation
--   Improves testing or increase test coverage
+-   Improves testing or increases test coverage
 
 ## License
 

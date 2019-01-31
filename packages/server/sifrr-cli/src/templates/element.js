@@ -1,19 +1,19 @@
 module.exports = (name, ext) => {
-  return `<template>
-  <!-- Content -->
-</template>
-<script type="text/javascript">
-  class ${name} extends Sifrr.Dom.Element${ext ? `.extends(${ext})` : ''} {
-    onConnect() {
+  return `const Sifrr = window.Sifrr || {};
+Sifrr.Dom = Sifrr.Dom || require('@sifrr/dom');
 
-    }
+const template = Sifrr.Dom.template\`<!-- Content -->\`
 
-    onDisconnect() {
+class ${name} extends Sifrr.Dom.Element${ext ? `.extends(${ext})` : ''} {
+  onConnect() {
 
-    }
   }
-  ${name}.defaultState = {};
-  Sifrr.Dom.register(${name}${ext ? ', { extends: \'/* tag of html to extend, eg. tr */\' }' : ''});
-</script>
+
+  onDisconnect() {
+
+  }
+}
+${name}.defaultState = {};
+Sifrr.Dom.register(${name}${ext ? ', { extends: \'/* tag of html to extend, eg. tr */\' }' : ''});
 `;
 };
