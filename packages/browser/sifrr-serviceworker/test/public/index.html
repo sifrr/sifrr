@@ -23,7 +23,8 @@
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.bundled.js').then(function(registration) {
+        const sw = window.location.href.split('?')[1] || 'sw.bundled.js';
+        navigator.serviceWorker.register(sw).then(function(registration) {
           // Registration was successful
           window.console.log('ServiceWorker registration successful with scope: ', registration.scope);
           registration.pushManager.subscribe({
@@ -41,7 +42,7 @@
           // registration failed :(
           window.console.log('ServiceWorker registration failed: ', err);
         }).then(() => {
-          function send_message_to_sw(msg) {
+          window.send_message_to_sw = function(msg) {
             return new Promise(function(resolve, reject) {
               // Create a Message Channel
               var msg_chan = new MessageChannel();
@@ -58,10 +59,10 @@
               // Send message to service worker along with port for reply
               navigator.serviceWorker.controller.postMessage(msg, [msg_chan.port2]);
             });
-          }
+          };
           Object.defineProperty(window, '__coverage__', {
             get: () => {
-              return send_message_to_sw('coverage');
+              return window.send_message_to_sw('coverage');
             }
           });
         });

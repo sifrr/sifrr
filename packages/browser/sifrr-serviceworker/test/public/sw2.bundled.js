@@ -160,41 +160,10 @@
   var sifrr_serviceworker = SW;
 
   const sw = new sifrr_serviceworker({
-    version: 1,
-    fallbackCacheName: 'ffff',
-    defaultCacheName: 'dddd',
-    policies: {
-      cachefirst: {
-        policy: 'CACHE_FIRST'
-      },
-      networkfirst: {
-        policy: 'NETWORK_FIRST',
-        cacheName: 'bangbang'
-      },
-      networkonly: {
-        policy: 'NETWORK_ONLY'
-      },
-      server: {
-        policy: 'NETWORK_ONLY'
-      },
-      cacheonly: {
-        policy: 'CACHE_ONLY',
-        cacheName: 'bangbang2'
-      },
-      precache: {
-        policy: 'CACHE_ONLY',
-        cacheName: 'bangbang2'
-      }
-    },
-    fallbacks: {
-      networkonly: '/offline.html'
-    },
-    precacheUrls: ['/precache.js', '/cacheonly.js']
+    version: 2,
+    fallbackCacheName: 'ffff'
   });
   sw.setup();
-  sw.setupPushNotification('default title', {
-    body: 'default body'
-  });
   self.addEventListener('message', async e => {
     if (e.data === 'coverage') {
       e.ports[0].postMessage(self.__coverage__);
@@ -202,9 +171,9 @@
       e.ports[0].postMessage((await caches.keys()));
     }
   });
-  var sw_1 = sw;
+  var sw2 = sw;
 
-  return sw_1;
+  return sw2;
 
 }));
-//# sourceMappingURL=sw.bundled.js.map
+//# sourceMappingURL=sw2.bundled.js.map

@@ -1,7 +1,7 @@
 const SW = require('../../src/sifrr.serviceworker');
 
 const sw = new SW({
-  version: 2,
+  version: 1,
   fallbackCacheName: 'ffff',
   defaultCacheName: 'dddd',
   policies: {
@@ -35,9 +35,11 @@ const sw = new SW({
 
 sw.setup();
 sw.setupPushNotification('default title', { body: 'default body' });
-self.addEventListener('message', (e) => {
+self.addEventListener('message', async (e) => {
   if (e.data === 'coverage') {
     e.ports[0].postMessage(self.__coverage__);
+  } else if (e.data === 'caches') {
+    e.ports[0].postMessage(await caches.keys());
   }
 });
 module.exports = sw;
