@@ -8,6 +8,7 @@ const tag = 'v' + version;
   await exec('git pull');
   exec(`git rev-parse ${tag}^{tag}`).then(() => {
     process.stdout.write(`Tag ${tag} already exists.`);
+    process.exitCode = 1;
   }).catch(async () => {
     await exec(`git tag -a ${tag} -m "Release of ${tag}"`);
     process.stdout.write('---------');

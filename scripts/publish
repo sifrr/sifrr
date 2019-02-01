@@ -4,6 +4,6 @@ set -ex
 
 ./scripts/release/config
 ./scripts/yarn build
-./scripts/release/tag
-# ./node_modules/.bin/semantic-release
+./scripts/release/tag || exit 0
+./node_modules/.bin/semantic-release
 ./scripts/repeat "./packages/*/*" "npm publish --access=public"

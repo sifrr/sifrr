@@ -46,7 +46,7 @@ jobs:
       - run:
           name: New Release
           command: |
-            if [ "${CIRCLE_BRANCH}" == "not-yet-master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               ./scripts/publish
             fi
       - store_test_results:
