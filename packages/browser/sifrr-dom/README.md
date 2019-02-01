@@ -35,14 +35,14 @@ Add script tag in your website.
 
 #### Browser API support needed for
 
-| APIs                                                 | caniuse                                       | polyfills                                          |
-| :--------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------- |
-| Custom Elements v1                                   | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
-| Promises API                                         | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
-| Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
-| Shadow DOM CSS v1 (if you are using ShadyCSS)        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadycss>        |
-| ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
-| Fetch API (if you use `Sifrr.Dom.load`)              | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
+| APIs                                                   | caniuse                                       | polyfills                                          |
+| :----------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------- |
+| Custom Elements v1                                     | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
+| Promises API                                           | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
+| Shadow DOM v1                                          | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
+| Shadow DOM CSS v1 (if you are using ShadyDOM polyfill) | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadycss>        |
+| ES6 Modules (if you use type='module' on script tag)   | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
+| Fetch API (if you use `Sifrr.Dom.load`)                | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
 
 If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
@@ -52,7 +52,7 @@ Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `packa
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
 
-__Note__: Do not set `sifrr-dom` to any other global variable than `window.Sifrr.Dom`.
+**Note**: Do not set `sifrr-dom` to any other global variable than `window.Sifrr.Dom`.
 
 #### Commonjs
 
@@ -134,7 +134,7 @@ Sifrr.Dom.setup(config);
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
   static get template() {
-    // Note that bindings can only be defined by {{}} in js template. Because ${}'s value will be resolved before passing to Sifrr.
+    // Note that bindings can only be wrapped by {{}} in js template literals. Because ${}'s value will be resolved before passing to Sifrr.
     return Sifrr.Dom.template`<style media="screen">
       p {
         color: blue;
@@ -158,7 +158,7 @@ Sifrr.Dom.register(CustomTag);
 
 #### Loading element
 
-##### Sifrr.Dom.load() - html elements or js elements
+1.  Sifrr.Dom.load() - html elements or js elements
 
 ```js
 // index.js
@@ -175,7 +175,7 @@ Sifrr.Dom.load('custom-tag', config = { url, js });
 // set js to true if element file is js instead of html
 ```
 
-##### As module - js elements only
+2.  As module - js elements only
 
 ```js
 // index.html
@@ -186,14 +186,21 @@ Sifrr.Dom.load('custom-tag', config = { url, js });
 <script src="${baseUrl}/elements/custom/tag.js" type="module">
 ```
 
-##### Normal script tag - js elements only
+3.  Normal script tag - js elements only (recommended for best browser support)
 
 ```js
 // index.html
 <script src="${baseUrl}/elements/custom/tag"></script>
 ```
 
+4.  HTML imports - html elements only (not recommended - deprecated by browsers)
+
+```html
+<link rel="import" href="${baseUrl}/elements/custom/tag.html">
+```
+
 #### Rendering
+
 This html
 
 ```html
