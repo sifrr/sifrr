@@ -25,7 +25,7 @@
       let promises = [];
       urls.forEach(u => {
         let req = me.requestFromURL(u);
-        return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName || me.options.defaultCacheName));
+        return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName));
       });
       for (let value of Object.values(fbs)) {
         let req = this.requestFromURL(value);
@@ -88,7 +88,7 @@
     respondWithPolicy(request) {
       const newreq = request.clone();
       const config = this.findRegex(request.url, this.options.policies);
-      const policy = config.policy || 'NETWORK_FIRST';
+      const policy = config.policy;
       const cacheName = config.cacheName || this.options.defaultCacheName;
       let resp;
       switch (policy) {
@@ -98,9 +98,6 @@
         case 'CACHE_FIRST':
         case 'CACHE_ONLY':
           resp = this.responseFromCache(newreq, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
-          break;
-        case 'NETWORK_FIRST':
-          resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));
           break;
         default:
           resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));

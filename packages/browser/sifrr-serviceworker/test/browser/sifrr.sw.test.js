@@ -25,7 +25,7 @@ describe('sifrr-serviceworker', () => {
     // wait for service worker ready
     const resp = await page.goto(`${PATH}/index.html`);
 
-    assert.equal(resp.fromServiceWorker(), true);
+    assert(resp.fromServiceWorker());
   });
 
   it('has precached files in sw cache', async () => {
@@ -33,8 +33,8 @@ describe('sifrr-serviceworker', () => {
     const resp2 = await page.goto(`${PATH}/cacheonly.js`);
     const resp3 = await page.goto(`${PATH}/networkonly.js`);
 
-    assert.equal(resp1.fromCache(), true);
-    assert.equal(resp2.fromCache(), true);
+    assert(resp1.fromCache());
+    assert(resp2.fromCache());
     assert.equal(resp3.fromCache(), false);
   });
 
@@ -51,7 +51,7 @@ describe('sifrr-serviceworker', () => {
     const resp2 = await page.goto(`${PATH}/cachefirst.js`);
 
     assert.equal(resp1.fromCache(), false);
-    assert.equal(resp2.fromCache(), true);
+    assert(resp2.fromCache());
   });
 
   // can't test these before https://github.com/GoogleChrome/puppeteer/issues/2469 is solved
@@ -140,5 +140,10 @@ describe('sifrr-serviceworker', () => {
     caches.forEach((k) => {
       expect(cachesNew).to.not.include(k);
     });
+  });
+
+  it('saves in default cache', async () => {
+    const resp = await page.goto(`${PATH}/?sw2.bundled.js`);
+    assert(resp.fromServiceWorker());
   });
 });
