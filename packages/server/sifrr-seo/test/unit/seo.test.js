@@ -55,11 +55,7 @@ describe('SifrrSeo', () => {
       s.renderer;
       s.close();
 
-      assert(stubRen.calledWith({
-        headless: process.env.HEADLESS !== 'false',
-        args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
-        h: false
-      }, { c: 'd' }));
+      assert(stubRen.calledWith({ h: false }, { c: 'd' }));
     });
   });
 

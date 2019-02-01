@@ -15,7 +15,14 @@ const getCache = (ops) => Cache.caching({
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
-    this.puppeteerOptions = puppeteerOptions;
+    this.puppeteerOptions = Object.assign({
+      headless: process.env.HEADLESS !== 'false',
+      args: [],
+    }, puppeteerOptions);
+    this.puppeteerOptions.args.push(
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    );
     this.options = Object.assign({
       cache: 'memory',
       maxCacheSize: 100,

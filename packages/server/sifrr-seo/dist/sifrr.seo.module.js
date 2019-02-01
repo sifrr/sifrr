@@ -2487,7 +2487,11 @@ const getCache = ops => cacheManager$1.caching({
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
-    this.puppeteerOptions = puppeteerOptions;
+    this.puppeteerOptions = Object.assign({
+      headless: process.env.HEADLESS !== 'false',
+      args: []
+    }, puppeteerOptions);
+    this.puppeteerOptions.args.push('--no-sandbox', '--disable-setuid-sandbox');
     this.options = Object.assign({
       cache: 'memory',
       maxCacheSize: 100,
@@ -2698,15 +2702,6 @@ class SifrrSeo {
     this._poptions[name] = value;
   }
 
-  get puppeteerOptions() {
-    const newOpts = Object.assign({
-      headless: process.env.HEADLESS !== 'false',
-      args: []
-    }, this._poptions || {});
-    newOpts.args.push('--no-sandbox', '--disable-setuid-sandbox');
-    return newOpts;
-  }
-
   async render(req) {
     if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
       return this.renderer.render(req);
@@ -2716,7 +2711,7 @@ class SifrrSeo {
   }
 
   get renderer() {
-    this._renderer = this._renderer || new SifrrSeo.Renderer(this.puppeteerOptions, this.options);
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
     return this._renderer;
   }
 

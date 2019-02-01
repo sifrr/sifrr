@@ -59,7 +59,11 @@ describe('Renderer', () => {
     sinon.stub(puppeteer, 'launch').resolves({ on: () => {} });
     await renderer.launchBrowser();
 
-    assert(puppeteer.launch.calledWith({ damn: true }));
+    assert(puppeteer.launch.calledWith({
+      headless: process.env.HEADLESS !== 'false',
+      args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
+      damn: true
+    }));
   });
 
   it('close', async () => {

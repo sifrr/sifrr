@@ -94,18 +94,6 @@ class SifrrSeo {
     this._poptions[name] = value;
   }
 
-  get puppeteerOptions() {
-    const newOpts = Object.assign({
-      headless: process.env.HEADLESS !== 'false',
-      args: [],
-    }, this._poptions || {});
-    newOpts.args.push(
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
-    );
-    return newOpts;
-  }
-
   async render(req) {
     if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
       return this.renderer.render(req);
@@ -115,7 +103,7 @@ class SifrrSeo {
   }
 
   get renderer() {
-    this._renderer = this._renderer || new SifrrSeo.Renderer(this.puppeteerOptions, this.options);
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
     return this._renderer;
   }
 }
