@@ -99,7 +99,8 @@
     }
 
     respondWithPolicy(request) {
-      const newreq = request.clone();
+      const req1 = request.clone();
+      const req2 = request.clone();
       const config = this.findRegex(request.url, this.options.policies);
       const policy = config.policy;
       const cacheName = config.cacheName || this.options.defaultCacheName;
@@ -107,16 +108,21 @@
 
       switch (policy) {
         case 'NETWORK_ONLY':
-          resp = this.responseFromNetwork(newreq, cacheName, false);
+          resp = this.responseFromNetwork(req1, cacheName, false);
           break;
 
         case 'CACHE_FIRST':
         case 'CACHE_ONLY':
-          resp = this.responseFromCache(newreq, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          break;
+
+        case 'CACHE_AND_UPDATE':
+          resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          this.responseFromNetwork(req2, cacheName);
           break;
 
         default:
-          resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));
+          resp = this.responseFromNetwork(req1, cacheName).catch(() => this.responseFromCache(request, cacheName));
           break;
       }
 
@@ -177,19 +183,35 @@
         policy: 'CACHE_ONLY',
         cacheName: 'bangbang2'
       },
+      cacheupdate: {
+        policy: 'CACHE_AND_UPDATE'
+      },
       precache: {
         policy: 'CACHE_ONLY',
         cacheName: 'bangbang2'
       }
     },
     fallbacks: {
-      networkonly: '/offline.html'
+      status404: '/offline.html'
     },
     precacheUrls: ['/precache.js', '/cacheonly.js']
   });
   sw.setup();
   sw.setupPushNotification('default title', {
     body: 'default body'
+  }, event => {
+    event.notification.close();
+    event.waitUntil(self.clients.matchAll({
+      type: 'window'
+    }).then(function (clientList) {
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        const url = new URL(client.url);
+        if (url.pathname == '/' && 'focus' in client) return client.focus();
+      }
+
+      if (self.clients.openWindow) return self.clients.openWindow('/');
+    }));
   });
   self.addEventListener('message', async e => {
     if (e.data === 'coverage') {

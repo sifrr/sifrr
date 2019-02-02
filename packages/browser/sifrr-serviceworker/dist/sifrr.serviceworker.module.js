@@ -70,6 +70,7 @@ class SW {
     body: ''
   }, onNotificationClick) {
     self.addEventListener('push', function (event) {
+      console.log(event);
       let data = {};
 
       if (event.data) {
@@ -78,6 +79,12 @@ class SW {
 
       const title = data.title || defaultTitle;
       const options = Object.assign(defaultOptions, data);
+
+      for (let k in options) {
+        if (k.indexOf('on') === 0) options[k] = new Function(options[k]);
+        console.log(k, options[k]);
+      }
+
       event.waitUntil(self.registration.showNotification(title, options));
     });
     self.addEventListener('notificationclick', onNotificationClick);
@@ -94,7 +101,8 @@ class SW {
   }
 
   respondWithPolicy(request) {
-    const newreq = request.clone();
+    const req1 = request.clone();
+    const req2 = request.clone();
     const config = this.findRegex(request.url, this.options.policies);
     const policy = config.policy;
     const cacheName = config.cacheName || this.options.defaultCacheName;
@@ -102,16 +110,21 @@ class SW {
 
     switch (policy) {
       case 'NETWORK_ONLY':
-        resp = this.responseFromNetwork(newreq, cacheName, false);
+        resp = this.responseFromNetwork(req1, cacheName, false);
         break;
 
       case 'CACHE_FIRST':
       case 'CACHE_ONLY':
-        resp = this.responseFromCache(newreq, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+        resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+        break;
+
+      case 'CACHE_AND_UPDATE':
+        resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+        this.responseFromNetwork(req2, cacheName);
         break;
 
       default:
-        resp = this.responseFromNetwork(newreq, cacheName).catch(() => this.responseFromCache(request, cacheName));
+        resp = this.responseFromNetwork(req1, cacheName).catch(() => this.responseFromCache(request, cacheName));
         break;
     }
 

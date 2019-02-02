@@ -89,7 +89,8 @@ class SW {
   }
 
   respondWithPolicy(request) {
-    const newreq = request.clone();
+    const req1 = request.clone();
+    const req2 = request.clone();
     const config = this.findRegex(request.url, this.options.policies);
     const policy = config.policy;
     const cacheName = config.cacheName || this.options.defaultCacheName;
@@ -97,15 +98,20 @@ class SW {
     let resp;
     switch (policy) {
     case 'NETWORK_ONLY':
-      resp = this.responseFromNetwork(newreq, cacheName, false);
+      resp = this.responseFromNetwork(req1, cacheName, false);
       break;
     case 'CACHE_FIRST':
     case 'CACHE_ONLY':
-      resp = this.responseFromCache(newreq, cacheName)
+      resp = this.responseFromCache(req1, cacheName)
         .catch(() => this.responseFromNetwork(request, cacheName));
       break;
+    case 'CACHE_AND_UPDATE':
+      resp = this.responseFromCache(req1, cacheName)
+        .catch(() => this.responseFromNetwork(request, cacheName));
+      this.responseFromNetwork(req2, cacheName);
+      break;
     default:
-      resp = this.responseFromNetwork(newreq, cacheName)
+      resp = this.responseFromNetwork(req1, cacheName)
         .catch(() => this.responseFromCache(request, cacheName));
       break;
     }

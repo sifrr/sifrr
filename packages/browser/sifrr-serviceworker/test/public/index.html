@@ -8,6 +8,7 @@
 
 <body>
   <h1>OK</h1>
+  <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
   <script type="text/javascript">
     function base64UrlToUint8Array(base64UrlData) {
       const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
@@ -32,7 +33,8 @@
             applicationServerKey: base64UrlToUint8Array('BA5yK_1yHG2nmv1yJoVJY51zvXauoquAbPV2EwgdAkmiiUZEQeWpSKHv5DqGJkm_WU47GHBPfDkDR6qkG7s4BUM')
           })
             .then(function(subscription) {
-              window.console.log(JSON.stringify(subscription));
+              window.pushSubscription = JSON.parse(JSON.stringify(subscription));
+              window.console.log(window.pushSubscription);
               window.console.log('User is subscribed.');
             })
             .catch(function(err) {

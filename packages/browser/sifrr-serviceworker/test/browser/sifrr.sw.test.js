@@ -46,39 +46,17 @@ describe('sifrr-serviceworker', () => {
     assert.equal(resp2.fromCache(), false);
   });
 
-  it('gets from cache for cache_first files after first request', async () => {
-    const resp1 = await page.goto(`${PATH}/cachefirst.js`);
-    const resp2 = await page.goto(`${PATH}/cachefirst.js`);
+  it('gets network_first files from network when available', async () => {
+    const resp1 = await page.goto(`${PATH}/networkfirst.js`);
+    const resp2 = await page.goto(`${PATH}/networkfirst.js`);
 
     assert.equal(resp1.fromCache(), false);
-    assert(resp2.fromCache());
-  });
-
-  // can't test these before https://github.com/GoogleChrome/puppeteer/issues/2469 is solved
-  it('responds non cached files with assigned fallbacks when offline', async () => {
-    page.__offline = true;
-
-    const resp = await page.goto(`${PATH}/networkonly.js`);
-    const respText = await resp.text();
-
-    page.__offline = false;
-
-    // expect(respText.indexOf('OFFLINE') >= 0).to.be.true;
-  });
-
-  it('responds not ok for non cached files with no assigned fallbacks when offline', async () => {
-    await page.setOfflineMode(true);
-
-    const resp = await page.goto(`${PATH}/server.js`);
-
-    await page.setOfflineMode(false);
-
-    // expect(resp.ok()).to.be.false;
+    assert.equal(resp2.fromCache(), false);
   });
 
   it('gets from cache for network_first files when offline', async () => {
-    const resp1 = await page.goto(`${PATH}/networkfirst.js`);
-    const respText1 = await resp1.text();
+    // [TODO] Fix
+    // can't test these before https://github.com/GoogleChrome/puppeteer/issues/2469 is solved
 
     await page.setOfflineMode(true);
 
@@ -87,21 +65,37 @@ describe('sifrr-serviceworker', () => {
 
     await page.setOfflineMode(false);
 
-    assert.equal(respText1, respText2);
+    expect(respText2).to.not.have.string('OFFLINE');
   });
 
-  it('throws error for network_only files when offline', async () => {
-    const resp1 = await page.goto(`${PATH}/networkonly.js`);
-    const respText1 = await resp1.text();
+  it('gets from cache for cache_first files after first request', async () => {
+    const resp1 = await page.goto(`${PATH}/cachefirst.js`);
+    const resp2 = await page.goto(`${PATH}/cachefirst.js`);
 
-    await page.setOfflineMode(true);
+    assert.equal(resp1.fromCache(), false);
+    assert(resp2.fromCache());
+  });
 
-    const resp2 = await page.goto(`${PATH}/networkonly.js`);
-    const respText2 = await resp2.text();
+  it('gets from cache for cache_and_update files after first request but updates cache', async () => {
+    const resp1 = await page.goto(`${PATH}/cacheupdate.js`);
+    const resp2 = await page.goto(`${PATH}/cacheupdate.js`);
 
-    await page.setOfflineMode(false);
+    // [TODO]: Add test for updated cache
 
-    // assert.notEqual(respText1, respText2);
+    assert.equal(resp1.fromCache(), false);
+    assert(resp2.fromCache());
+  });
+
+  it('responds with assigned fallbacks when offline/not found', async () => {
+    const respText = await (await page.goto(`${PATH}/status404`)).text();
+
+    expect(respText).to.have.string('OFFLINE');
+  });
+
+  it('responds not ok for non cached files with no assigned fallbacks when offline/not found', async () => {
+    const respText = await (await page.goto(`${PATH}/abcd404`)).text();
+
+    expect(respText).to.have.string('Not Found');
   });
 
   it('deletes old cache versions when version is changed', async () => {
