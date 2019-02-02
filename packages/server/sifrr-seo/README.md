@@ -149,9 +149,7 @@ sifrrSeo.puppeteerOptions;
 -   How to use with sifrr-dom:
 
     -   Add web components (shadowdom v1 spec) polyfills from [here](https://github.com/webcomponents/webcomponentsjs). Needs [ShadyDOM](https://github.com/webcomponents/shadydom) and [ShadyCSS](https://github.com/webcomponents/shadycss) polyfills.
-
     -   Change options to force shadyDOM in server render.
-
     -   Example in [tests](./test/public/server.js)
 
 ```js

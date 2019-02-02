@@ -4,16 +4,13 @@ class Request {
     this._options = options;
     this._url = url;
   }
-
   get response() {
     return window.fetch(this.url, this.options).then(resp => {
       let contentType = resp.headers.get('content-type');
-
       if (resp.ok) {
         if (contentType && contentType.includes('application/json')) {
           resp = resp.json();
         }
-
         return resp;
       } else {
         let error = Error(resp.statusText);
@@ -22,17 +19,14 @@ class Request {
       }
     });
   }
-
   get url() {
     const params = this._options.params;
-
     if (params && Object.keys(params).length > 0) {
       return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
     } else {
       return this._url;
     }
   }
-
   get options() {
     const options = Object.assign({
       mode: 'cors',
@@ -42,16 +36,12 @@ class Request {
     options.headers = Object.assign({
       accept: 'application/json'
     }, this._options.headers || {});
-
     if (typeof options.body === 'object') {
       options.body = JSON.stringify(options.body);
     }
-
     return options;
   }
-
 }
-
 var request = Request;
 
 class SifrrFetch {
@@ -62,7 +52,6 @@ class SifrrFetch {
     } = this.afterUse(purl, poptions, 'GET');
     return new request(url, options).response;
   }
-
   static post(purl, poptions) {
     const {
       url,
@@ -70,7 +59,6 @@ class SifrrFetch {
     } = this.afterUse(purl, poptions, 'POST');
     return new request(url, options).response;
   }
-
   static put(purl, poptions) {
     const {
       url,
@@ -78,7 +66,6 @@ class SifrrFetch {
     } = this.afterUse(purl, poptions, 'PUT');
     return new request(url, options).response;
   }
-
   static delete(purl, poptions) {
     const {
       url,
@@ -86,7 +73,6 @@ class SifrrFetch {
     } = this.afterUse(purl, poptions, 'DELETE');
     return new request(url, options).response;
   }
-
   static graphql(purl, poptions) {
     const {
       url,
@@ -107,7 +93,6 @@ class SifrrFetch {
     };
     return new request(url, options).response;
   }
-
   static file(purl, poptions) {
     const {
       url,
@@ -117,30 +102,25 @@ class SifrrFetch {
     options.headers.accept = options.headers.accept || '*/*';
     return new request(url, options).response;
   }
-
   static use(fxn) {
     SifrrFetch._middlewares.push(fxn);
   }
-
   static afterUse(url, options = {}, method) {
     options.method = method;
-
     SifrrFetch._middlewares.forEach(fxn => {
       const res = fxn(url, options);
       url = res.url;
       options = res.options;
     });
-
     return {
       url,
       options
     };
   }
-
 }
-
 SifrrFetch._middlewares = [];
 var sifrr_fetch = SifrrFetch;
 
 export default sifrr_fetch;
 /*! (c) @aadityataparia */
+//# sourceMappingURL=sifrr.fetch.module.js.map

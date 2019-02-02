@@ -19,6 +19,21 @@ if (diri !== -1) {
 
 const server = express();
 
+const instrumenter = require('istanbul-lib-instrument').createInstrumenter();
+function staticTMiddleware(directory) {
+  return staticTransform({
+    root: directory,
+    match: /.+\.js/,
+    transform: function (path, text, send) {
+      if (fs.existsSync(path + '.map')) {
+        send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
+      } else {
+        send(text);
+      }
+    }
+  });
+}
+
 // export server for importing
 const sss = function(port, dirS = dir) {
   server.use(compression());
@@ -26,32 +41,8 @@ const sss = function(port, dirS = dir) {
   const toCover = process.env.COVERAGE === 'true';
 
   if (toCover) {
-    const { createInstrumenter } = require('istanbul-lib-instrument');
-    const instrumenter = createInstrumenter();
-    const st = staticTransform({
-      root: path.join(dirS),
-      match: /.+\.js/,
-      transform: function (path, text, send) {
-        if (fs.existsSync(path + '.map')) {
-          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
-        } else {
-          send(text);
-        }
-      }
-    });
-    const st2 = staticTransform({
-      root: path.join(dirS, '../../dist'),
-      match: /.+\.js/,
-      transform: function (path, text, send) {
-        if (fs.existsSync(path + '.map')) {
-          send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
-        } else {
-          send(text);
-        }
-      }
-    });
-    server.use(st);
-    server.use(st2);
+    server.use(staticTMiddleware(dirS));
+    server.use(staticTMiddleware(path.join(dirS, '../../dist')));
     server.use(serveStatic(dirS));
   } else {
     // serve test public directories

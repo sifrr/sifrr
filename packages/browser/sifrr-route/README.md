@@ -71,8 +71,7 @@ Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the 
 ### Class
 
 -   Sifrr-routes matching `window.location.pathname` will have `active` class
--   Sifrr-routes not matching `window.location.pathname` will not have `active` class.
-    You can add animations etc, based on this.
+-   Sifrr-routes not matching `window.location.pathname` will not have `active` class. You can add animations etc, based on this.
 
 ### State of element
 

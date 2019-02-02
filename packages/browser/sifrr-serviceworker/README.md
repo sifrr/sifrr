@@ -45,7 +45,7 @@ sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event l
 module.exports = sw;
 ```
 
-##### [Example here.](./test/public/sw.js)
+##### [Example here](./test/public/sw.js)
 
 #### ES modules
 

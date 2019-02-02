@@ -221,7 +221,7 @@ loadRoutes(app, path.join(__dirname, './routes'),{ ignore: [ 'index.js' ], baseP
 
 These routes will be added to express app:
 
-```
+```sh
 // v1, v2 from user routes file
 // v3 from loadRoutes
 
