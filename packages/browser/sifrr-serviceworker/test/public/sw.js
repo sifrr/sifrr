@@ -37,7 +37,11 @@ const sw = new SW({
 });
 
 sw.setup();
-sw.setupPushNotification('default title', { body: 'default body' }, (event) => {
+sw.onInstall = () => {
+  self.skipWaiting();
+};
+sw.setupPushNotification('default title', { body: 'default body' });
+sw.onNotificationClick = (event) => {
   event.notification.close();
   event.waitUntil(self.clients.matchAll({
     type: 'window'
@@ -51,12 +55,14 @@ sw.setupPushNotification('default title', { body: 'default body' }, (event) => {
     if (self.clients.openWindow)
       return self.clients.openWindow('/');
   }));
-});
+};
 self.addEventListener('message', async (e) => {
   if (e.data === 'coverage') {
     e.ports[0].postMessage(self.__coverage__);
   } else if (e.data === 'caches') {
     e.ports[0].postMessage(await caches.keys());
+  } else if (e.data.type && e.data.type === 'push') {
+    sw.pushEventListener(e.data.event).then(() => e.ports[0].postMessage('ok'));
   }
 });
 module.exports = sw;

@@ -70,6 +70,14 @@
         });
       });
     }
+    window.sendPush = async function(json) {
+      const event = {
+        data: {
+          json: json
+        }
+      };
+      await window.send_message_to_sw({ type: 'push', event: event });
+    };
   </script>
 </body>
 

@@ -20,6 +20,74 @@
       });
     }
 
+    setup() {
+      self.addEventListener('install', this.installEventListener.bind(this));
+      self.addEventListener('activate', this.activateEventListener.bind(this));
+      self.addEventListener('fetch', this.fetchEventListener.bind(this));
+    }
+
+    setupPushNotification(defaultTitle = '', defaultOptions = {
+      body: ''
+    }) {
+      this.defaultPushTitle = defaultTitle;
+      this.defaultPushOptions = defaultOptions;
+      self.addEventListener('push', this.pushEventListener.bind(this));
+      self.addEventListener('notificationclick', this.onNotificationClick.bind(this));
+    }
+
+    installEventListener(event) {
+      event.waitUntil(this.precache());
+      this.onInstall(event);
+    }
+    /* istanbul ignore next */
+
+
+    onInstall() {}
+
+    activateEventListener() {
+      const version = '-v' + this.options.version; // remove old version caches
+
+      caches.keys().then(cacheNames => {
+        return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
+      }).then(cachesToDelete => {
+        return Promise.all(cachesToDelete.map(cacheToDelete => {
+          return caches.delete(cacheToDelete);
+        }));
+      }).then(() => self.clients.claim());
+    }
+
+    fetchEventListener(event) {
+      const request = event.request;
+      const otherReq = request.clone();
+      const oreq = request.clone();
+
+      if (request.method === 'GET') {
+        event.respondWith(this.respondWithPolicy(request).then(response => {
+          if (!response.ok && response.status > 0 && this.findRegex(oreq.url, this.options.fallbacks)) {
+            throw Error('response status ' + response.status);
+          }
+
+          return response;
+        }).catch(e => this.respondWithFallback(otherReq, e)));
+      }
+    }
+
+    pushEventListener(event) {
+      let data = {};
+
+      if (event.data) {
+        if (typeof event.data.json === 'function') data = event.data.json();else data = event.data.json;
+      }
+
+      const title = data.title || this.defaultPushTitle;
+      const options = Object.assign(this.defaultPushOptions, data);
+      return self.registration.showNotification(title, options);
+    }
+    /* istanbul ignore next */
+
+
+    onNotificationClick() {}
+
     precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
       const me = this;
       let promises = [];
@@ -36,64 +104,13 @@
       return Promise.all(promises);
     }
 
-    setup(skipWaiting = true) {
-      let me = this;
-      self.addEventListener('install', event => {
-        // replace old sw ASAP
-        if (skipWaiting) self.skipWaiting();
-        event.waitUntil(me.precache());
-      });
-      self.addEventListener('activate', () => {
-        const version = '-v' + me.options.version; // remove old version caches
-
-        caches.keys().then(cacheNames => {
-          return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
-        }).then(cachesToDelete => {
-          return Promise.all(cachesToDelete.map(cacheToDelete => {
-            return caches.delete(cacheToDelete);
-          }));
-        }).then(() => self.clients.claim());
-      });
-      self.addEventListener('fetch', event => {
-        const request = event.request;
-        const otherReq = request.clone();
-        const oreq = request.clone();
-
-        if (request.method === 'GET') {
-          event.respondWith(me.respondWithPolicy(request).then(response => {
-            if (!response.ok && response.status > 0 && me.findRegex(oreq.url, me.options.fallbacks)) {
-              throw Error('response status ' + response.status);
-            }
-
-            return response;
-          }).catch(e => me.respondWithFallback(otherReq, e)));
-        }
-      });
-    }
-
-    setupPushNotification(defaultTitle = '', defaultOptions = {
-      body: ''
-    }, onNotificationClick) {
-      self.addEventListener('push', function (event) {
-        let data = {};
-
-        if (event.data) {
-          data = event.data.json();
-        }
-
-        const title = data.title || defaultTitle;
-        const options = Object.assign(defaultOptions, data);
-        event.waitUntil(self.registration.showNotification(title, options));
-      });
-      self.addEventListener('notificationclick', onNotificationClick);
-    }
-
     respondWithFallback(request, error) {
       const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
 
       if (fallback !== undefined) {
         return this.responseFromCache(fallback, this.options.fallbackCacheName);
       } else {
+        /* istanbul ignore next */
         throw error;
       }
     }
@@ -197,9 +214,16 @@
     precacheUrls: ['/precache.js', '/cacheonly.js']
   });
   sw.setup();
+
+  sw.onInstall = () => {
+    self.skipWaiting();
+  };
+
   sw.setupPushNotification('default title', {
     body: 'default body'
-  }, event => {
+  });
+
+  sw.onNotificationClick = event => {
     event.notification.close();
     event.waitUntil(self.clients.matchAll({
       type: 'window'
@@ -212,12 +236,15 @@
 
       if (self.clients.openWindow) return self.clients.openWindow('/');
     }));
-  });
+  };
+
   self.addEventListener('message', async e => {
     if (e.data === 'coverage') {
       e.ports[0].postMessage(self.__coverage__);
     } else if (e.data === 'caches') {
       e.ports[0].postMessage((await caches.keys()));
+    } else if (e.data.type && e.data.type === 'push') {
+      sw.pushEventListener(e.data.event).then(() => e.ports[0].postMessage('ok'));
     }
   });
   var sw_1 = sw;

@@ -1,8 +1,7 @@
 function stubRequests() {
   page.on('request', request => {
-    request.continue();
-    if (page.__offline === false) {
-      request.abort();
+    if (page.__post) {
+      request.continue({ method: 'POST' });
     } else {
       request.continue();
     }
@@ -22,10 +21,27 @@ describe('sifrr-serviceworker', () => {
   });
 
   it('registers service worker', async () => {
-    // wait for service worker ready
     const resp = await page.goto(`${PATH}/index.html`);
 
     assert(resp.fromServiceWorker());
+  });
+
+  it('only response with sw when method is GET', async () => {
+    // Test when stubbing starts working on puppeteer
+    page.__post = true;
+
+    const response = await page.goto(`${PATH}/index.html`);
+
+    assert.equal(response.fromServiceWorker(), false);
+
+    page.__post = false;
+  });
+
+  it('shows push notification on payload', async () => {
+    // [TODO]
+    // Can't test till https://github.com/GoogleChrome/puppeteer/issues/3432
+    // await page.evaluate(async () => await window.sendPush());
+    // const notifications = await page.evaluate('(await navigator.serviceWorker.getRegistration()).getNotifications()');
   });
 
   it('has precached files in sw cache', async () => {
@@ -55,15 +71,13 @@ describe('sifrr-serviceworker', () => {
   });
 
   it('gets from cache for network_first files when offline', async () => {
-    // [TODO] Fix
-    // can't test these before https://github.com/GoogleChrome/puppeteer/issues/2469 is solved
-
-    await page.setOfflineMode(true);
+    // Should pass when offline starts working
+    page.__offline = true;
 
     const resp2 = await page.goto(`${PATH}/networkfirst.js`);
     const respText2 = await resp2.text();
 
-    await page.setOfflineMode(false);
+    page.__offline = false;
 
     expect(respText2).to.not.have.string('OFFLINE');
   });

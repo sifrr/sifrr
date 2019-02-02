@@ -45,7 +45,7 @@ sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event l
 module.exports = sw;
 ```
 
-example: [sw.js](./test/public/sw.js)
+##### [Example here.](./test/public/sw.js)
 
 #### ES modules
 
@@ -119,6 +119,7 @@ When a request is sent, if the url matches the regex string then it will be fetc
 -   `NETWORK_FIRST`: Try to resolve request from network, if fails then resolve from cache.
 -   `CACHE_ONLY`: Only to resolve request from cache.
 -   `CACHE_FIRST`: Try to resolve request from cache, if fails then resolve from network.
+-   `CACHE_AND_UPDATE`: Send response from cache if available and then updates cache with new network response.
 
 ## Push Notification
 
@@ -171,12 +172,19 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
-## More manual handling
+## More manual configuring
 In your sw file
 ```js
 const sw = new SW(/* config */);
 
-self.addEventListener(...); // You can add methods on self if you need
+// this method will be called when new service worker is available to install
+sw.onInstall = () => self.skipWaiting();
+
+// this method will be called when a notification is clicked
+sw.onNotificationClick = (event) => event.notification.close();
+
+// You can add methods on self if you need
+self.addEventListener(...);
 ```
 
 ### Tutorials
