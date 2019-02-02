@@ -2,7 +2,7 @@
 
 Browser key-value(JSON) storage library with cow powers.
 
-### Size
+## Size
 
 | Type                                             |                                                                                                                              Size                                                                                                                              |
 | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -89,11 +89,13 @@ let options = {
 storage = new Sifrr.Storage(options)
 ```
 
-### Get details
+### Details
 
-    storage.type; // type of storage
-    storage.name; // name of storage
-    storage.version; // version number
+```js
+storage.type; // type of storage
+storage.name; // name of storage
+storage.version; // version number
+```
 
 ### Inserting key-value
 

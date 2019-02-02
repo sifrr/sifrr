@@ -2,7 +2,7 @@
 
 History API based Routing library for building One Page Applications with sifrr.
 
-### Size
+## Size
 
 | Type                                           |                                                                                                                          Size                                                                                                                          |
 | :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -43,13 +43,20 @@ Add sifrr-route tag in your html, this will only be shown when `window.location.
 Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname.
 
 -   You can use `sifrr-route` inside another `sifrr-route`.
+
 -   you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
+
 -   Query variables are not matched
+
 -   You can also you special syntax if you want to parse pathname and use it:
+
     -   `:alphanumeric` matches anything without `/` as alphanumeric variable.
+
     -   `*` matches anything without `/` as star variable.
+
     -   `**` matches everything
         eg. `/:x/*/**/mnop/*/:k` will match `/new/def/ghi/klm/mnop/sdf/klm` and parse it as
+
     ```js
       {
         star: [ "def", "sdf" ],
@@ -58,6 +65,7 @@ Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the 
         k: "klm"
       }
     ```
+
     and make `sifrr-route` tag with `path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
 
 ### Class

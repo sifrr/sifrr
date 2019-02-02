@@ -135,16 +135,24 @@ this.addQuery('createUser', {
 ```
 
 -   Predefined resolvers:
+
     -   `Model.getQueryResolver`
         Gets data from table, this is essentially `resolver(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize), with with one upgrade. You can pass `association__column` in where argument to query based on that association. Returns `[Model.gqName]` type result. eg.
           `User.getQueryResolver(null, { where: { 'pets__id': 1 } })` will return User whose pets id is 1. You can even branch the associations like `'pets__owner__id': 1`, this will return User whose pets' owner's id is 1.
+
     -   `Model.createMutationResolver`
         Creates new row in db table. Takes all column names as arguments. Returns `Model.gqName` type result. eg. `User.createMutationResolver(null, { name: 'Aaditya' })` will create a user with name = Aaditya and returns it.
+
     -   `Model.updateMutationResolver` Takes all column names as arguments, requires `id` of row to update. Returns `Model.gqName`.
+
     -   `Model.upsertMutationResolver` Takes all column names as arguments, requires `id` of row to update/insert. Returns `Model.gqName`.
+
     -   `Model.deleteMutationResolver` Takes only id as arguments, requires `id` of row to delete. Returns `1` of row was deleted and `0` if not.
+
 -   `Model.gqArgs` - key-value object of argument name to graphqlObjects. Has `defaultArgs(this)` and `defaultListArgs()` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+
 -   `Model.gqAttrs` - key-value object of argument name to graphqlObjects. Has `attributeFields(this)` from [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+
 -   `Model.argsToString(gqArgs, { required: [], allowed: [] })` takes key-value object of argument name to graphqlObjects as gqArgs and return string to be used by options.args of addQuery/addMutation. Add `!` at end of a argument if it is in required. If allowed is given, only args in allowed are returned.
 
 ### createSchemaFromModels
@@ -211,22 +219,24 @@ const { loadRoutes } = require('@sifrr/api');
 loadRoutes(app, path.join(__dirname, './routes'),{ ignore: [ 'index.js' ], basePath: 'v3' });
 ```
 
-This will add these routes to express app:
+These routes will be added to express app:
 
-    // v1, v2 from user routes file
-    // v3 from loadRoutes
+```
+// v1, v2 from user routes file
+// v3 from loadRoutes
 
-    POST /v1/user
-    POST /v2/user
-    POST /v3/user
+POST /v1/user
+POST /v2/user
+POST /v3/user
 
-    GET /v1/users
-    GET /v2/users
-    GET /v3/users
+GET /v1/users
+GET /v2/users
+GET /v3/users
 
-    GET /v1/user/:id
-    GET /v2/user/:id
-    GET /v3/user/:id
+GET /v1/user/:id
+GET /v2/user/:id
+GET /v3/user/:id
+```
 
 ### reqToGraphqlArgs
 
@@ -289,4 +299,4 @@ app.use('/user/:id', (req, res) => {
 }
 ```
 
-### Working Example using all of them together is [here](https://github.com/sifrr/sifrr-api-demo).
+### Working Example using all of them together is [here](https://github.com/sifrr/sifrr-api-demo)

@@ -2,7 +2,7 @@
 
 A &lt; 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding. Alternative to React/Vue/Angular etc.
 
-### Size
+## Size
 
 | Type                                         |                                                                                                                      Size                                                                                                                      |
 | :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -460,7 +460,7 @@ this will render
 </div>
 ```
 
-#### arrayToDom,
+#### arrayToDom
 
 parses array to dom nodes in bindings
 
@@ -547,7 +547,7 @@ then you can use custom-tag as button in html like:
 
 -   <https://developers.google.com/web/fundamentals/web-components/customelements>
 
-## Special thanks to:
+## Special thanks to
 
 -   <https://github.com/Freak613/stage0> for optimization ideas
 -   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr elementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)

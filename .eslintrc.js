@@ -56,6 +56,12 @@ module.exports = {
     'quote-props': [
       'error',
       'as-needed'
+    ],
+    'no-var': [
+      'error'
+    ],
+    'no-unsafe-regex': [
+      'error'
     ]
   },
   plugins: [

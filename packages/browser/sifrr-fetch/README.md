@@ -2,7 +2,7 @@
 
 Fetch based http requests library for browsers.
 
-### Size
+## Size
 
 | Type                                           |                                                                                                                          Size                                                                                                                          |
 | :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -97,7 +97,6 @@ Sifrr.Fetch.file(url, options).then((response) => {
 options are Fetch API options some extra keys:
 
 -   **params** `json object` key, value pairs will be added to url as ?key=value
-
 -   POST GRAPHQL request
 
 ```js

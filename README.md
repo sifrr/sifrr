@@ -1,6 +1,18 @@
-# sifrr · [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sifrr/sifrr/blob/master/LICENSE) [![CircleCI](https://circleci.com/gh/sifrr/sifrr.svg?style=shield)](https://circleci.com/gh/sifrr/sifrr) [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom) [![No PRs yet](https://img.shields.io/badge/PRs-Not%20yet-red.svg)](<>) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield) [![Greenkeeper badge](https://badges.greenkeeper.io/sifrr/sifrr.svg)](https://greenkeeper.io/) [![Coverage Status](https://coveralls.io/repos/github/sifrr/sifrr/badge.svg?branch=master)](https://coveralls.io/github/sifrr/sifrr?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c7e9c6f6e0734118abb68f9d59529b73)](https://www.codacy.com/app/aadityataparia/sifrr?utm_source=github.com&utm_medium=referral&utm_content=sifrr/sifrr&utm_campaign=Badge_Grade)
+<h1 align="center"> sifrr </h1>
+<p align="center">
+  <a href="https://github.com/sifrr/sifrr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" /></a>
+  <a href="https://circleci.com/gh/sifrr/sifrr"><img src="https://circleci.com/gh/sifrr/sifrr.svg?style=shield" alt="CircleCI" /></a>
+  <a href="https://www.npmjs.com/package/@sifrr/dom"><img src="https://img.shields.io/npm/v/@sifrr/dom.svg" alt="npm version" /></a>
+  <a href="./docs/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Not%20yet-red.svg" alt="No PRs yet" /></a>
+  <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield" alt="FOSSA Status" /></a>
+  <a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/sifrr/sifrr.svg" alt="Greenkeeper badge" /></a>
+  <a href="https://coveralls.io/github/sifrr/sifrr?branch=master"><img src="https://coveralls.io/repos/github/sifrr/sifrr/badge.svg?branch=master" alt="Coverage Status" /></a>
+  <a href="https://www.codacy.com/app/aadityataparia/sifrr"><img src="https://api.codacy.com/project/badge/Grade/c7e9c6f6e0734118abb68f9d59529b73" alt="Codacy Badge" /></a>
+</p>
 
-sifrr is a set of libraries for creating modern webapps.
+* * *
+
+sifrr is a set of customizable, independent libraries for creating modern webapps.
 
 ## Packages
 
@@ -26,7 +38,7 @@ sifrr is a set of libraries for creating modern webapps.
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
-#### Packages that have tests have a working example of that package in `test/public` folder.
+#### Packages that have tests have a working example of that package in `test/public` folder
 
 ## Node support
 
