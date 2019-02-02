@@ -59,9 +59,6 @@ module.exports = {
     ],
     'no-var': [
       'error'
-    ],
-    'no-unsafe-regex': [
-      'error'
     ]
   },
   plugins: [
