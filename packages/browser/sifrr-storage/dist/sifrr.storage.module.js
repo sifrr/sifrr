@@ -5,7 +5,7 @@ class Json {
     if (typeof data == 'string') {
       try {
         ans = JSON.parse(data);
-      } catch (e) {
+      } catch(e) {
         return data;
       }
       return this.parse(ans);
@@ -47,8 +47,7 @@ class Storage {
         return [key];
       } else if (key.constructor === jsonConstructor) {
         return key;
-      }
-      {
+      } {
         throw Error('Invalid Key');
       }
     } else if (typeof key === 'string') {
@@ -60,9 +59,9 @@ class Storage {
     }
   }
   _select(keys) {
-    return this.data().then(data => {
+    return this.data().then((data) => {
       let ans = {};
-      keys.forEach(key => ans[key] = data[key]);
+      keys.forEach((key) => ans[key] = data[key]);
       return ans;
     });
   }
@@ -75,18 +74,15 @@ class Storage {
   }
   _delete(keys) {
     let table = this.table;
-    keys.forEach(key => delete table[key]);
+    keys.forEach((key) => delete table[key]);
     this.table = table;
   }
   _clear() {
     this.table = {};
   }
   _isEqual(options, type) {
-    if (this.tableName == options.name + options.version && this.type == type) {
-      return true;
-    } else {
-      return false;
-    }
+    if (this.tableName == options.name + options.version && this.type == type) { return true; }
+    else { return false; }
   }
   get tableName() {
     return this.name + this.version;
@@ -104,13 +100,9 @@ class Storage {
     return this.constructor.type;
   }
   isSupported(force = true) {
-    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
-      return true;
-    } else if (window && typeof this.store !== 'undefined') {
-      return true;
-    } else {
-      return false;
-    }
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) { return true; }
+    else if (window && typeof this.store !== 'undefined') { return true; }
+    else { return false; }
   }
   all() {
     return this.data();
@@ -153,28 +145,22 @@ class IndexedDB extends storage {
     super(options);
   }
   _parsedData() {
-    return this._tx('readonly', 'getAll').then(result => this.parse(result));
+    return this._tx('readonly', 'getAll').then((result) => this.parse(result));
   }
   _select(keys) {
     let ans = {};
     let promises = [];
-    keys.forEach(key => promises.push(this._tx('readonly', 'get', key).then(r => ans[key] = this.parse(r))));
+    keys.forEach((key) => promises.push(this._tx('readonly', 'get', key).then((r) => ans[key] = this.parse(r))));
     return Promise.all(promises).then(() => ans);
   }
   _upsert(data) {
     let promises = [];
     for (let key in data) {
-      let promise = this._tx('readonly', 'get', key).then(oldResult => {
+      let promise = this._tx('readonly', 'get', key).then((oldResult) => {
         if (oldResult && oldResult.key == key) {
-          return this._tx('readwrite', 'put', {
-            key: key,
-            value: data[key]
-          });
+          return this._tx('readwrite', 'put', { key: key, value: data[key] });
         } else {
-          return this._tx('readwrite', 'add', {
-            key: key,
-            value: data[key]
-          });
+          return this._tx('readwrite', 'add', { key: key, value: data[key] });
         }
       });
       promises.push(promise);
@@ -183,7 +169,7 @@ class IndexedDB extends storage {
   }
   _delete(keys) {
     let promises = [];
-    keys.forEach(key => promises.push(this._tx('readwrite', 'delete', key)));
+    keys.forEach((key) => promises.push(this._tx('readwrite', 'delete', key)));
     return Promise.all(promises);
   }
   _clear() {
@@ -191,12 +177,12 @@ class IndexedDB extends storage {
   }
   _tx(scope, fn, params) {
     let me = this;
-    return this.createStore(me.tableName).then(db => {
+    return this.createStore(me.tableName).then((db) => {
       return new Promise((resolve, reject) => {
         let tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
         let request = tx[fn].call(tx, params);
-        request.onsuccess = event => resolve(event.target.result);
-        request.onerror = event => reject(event.error);
+        request.onsuccess = (event) =>  resolve(event.target.result);
+        request.onerror = (event) => reject(event.error);
       });
     });
   }
@@ -206,11 +192,9 @@ class IndexedDB extends storage {
   createStore(table) {
     return new Promise((resolve, reject) => {
       const request = this.store.open(table, 1);
-      request.onupgradeneeded = event => {
+      request.onupgradeneeded = (event) => {
         let db = event.target.result;
-        db.createObjectStore(table, {
-          keyPath: 'key'
-        });
+        db.createObjectStore(table, { keyPath: 'key' });
       };
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -219,7 +203,7 @@ class IndexedDB extends storage {
   parse(data) {
     let ans = {};
     if (Array.isArray(data)) {
-      data.forEach(row => {
+      data.forEach((row) => {
         ans[row.key] = row.value;
       });
     } else if (data && data.value) {
@@ -242,7 +226,7 @@ class WebSQL extends storage {
   }
   _parsedData() {
     let me = this;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.store.transaction(function (tx) {
         tx.executeSql(`SELECT * FROM ${me.tableName}`, [], (txn, results) => {
           resolve(me.parse(results));
@@ -257,7 +241,7 @@ class WebSQL extends storage {
   }
   _upsert(data) {
     let table = this.tableName;
-    this.store.transaction(tx => {
+    this.store.transaction((tx) => {
       for (let key in data) {
         tx.executeSql(`INSERT OR IGNORE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
         tx.executeSql(`UPDATE ${table} SET value = ? WHERE key = ?`, [this.constructor.stringify(data[key]), key]);
@@ -283,7 +267,7 @@ class WebSQL extends storage {
   }
   execSql(query, args = []) {
     let me = this;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       me.store.transaction(function (tx) {
         tx.executeSql(query, args, (txn, results) => {
           resolve(me.parse(results));
@@ -293,8 +277,7 @@ class WebSQL extends storage {
   }
   parse(results) {
     let ans = {};
-    let len = results.rows.length,
-        i;
+    let len = results.rows.length, i;
     for (i = 0; i < len; i++) {
       ans[results.rows.item(i).key] = this.constructor.parse(results.rows.item(i).value);
     }
@@ -336,9 +319,8 @@ class Cookies extends storage {
     return this.table;
   }
   get table() {
-    let result = this.store,
-        ans = {};
-    result.split('; ').forEach(value => {
+    let result = this.store, ans = {};
+    result.split('; ').forEach((value) => {
       let [k, v] = value.split('=');
       ans[k] = this.constructor.parse(v);
     });
@@ -389,9 +371,7 @@ var storages_1 = storages;
 
 class SifrrStorage {
   constructor(options) {
-    if (typeof options === 'string') options = {
-      priority: [options]
-    };else options = options || {};
+    if (typeof options === 'string') options = { priority: [options] }; else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);
     return this.storage;
   }
@@ -399,9 +379,8 @@ class SifrrStorage {
     let storage = this.supportedStore();
     if (typeof storage === 'undefined') throw Error('No available storage supported in this browser');
     let matchingInstance = this.constructor._matchingInstance(this._options, storage.type);
-    if (matchingInstance) {
-      return matchingInstance;
-    } else {
+    if (matchingInstance) { return matchingInstance; }
+    else {
       let storageInstance = new storage(this._options);
       this.constructor._add(storageInstance);
       return storageInstance;
@@ -417,8 +396,7 @@ class SifrrStorage {
     }
   }
   static _matchingInstance(options, type) {
-    let allInstances = this.all,
-        i;
+    let allInstances = this.all, i;
     let length = allInstances.length;
     for (i = 0; i < length; i++) {
       if (allInstances[i]._isEqual(options, type)) return allInstances[i];

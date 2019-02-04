@@ -23,14 +23,14 @@ const globals = {
 };
 const footer = '/*! (c) @aadityataparia */';
 
-function moduleConfig(name, min = false, module = false) {
+function moduleConfig(name, min = false, isModule = false) {
   const filename = name.toLowerCase();
   const banner = `/*! ${name} v${version} - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */`;
   const ret = {
     input: `src/${filename}.js`,
     output: {
-      file: `dist/${filename + (module ? '.module' : '') + (min ? '.min' : '')}.js`,
-      format: module ? 'es' : 'umd',
+      file: `dist/${filename + (isModule ? '.module' : '') + (min ? '.min' : '')}.js`,
+      format: isModule ? 'es' : 'umd',
       name: name,
       banner: banner,
       footer: footer,
@@ -41,15 +41,18 @@ function moduleConfig(name, min = false, module = false) {
     external: external,
     plugins: [
       resolve({
-        browser: !module
+        browser: !isModule
       }),
       commonjs()
     ]
   };
 
-  ret.plugins.push(babel({
-    exclude: 'node_modules/**',
-  }));
+  if (!isModule) {
+    ret.plugins.push(babel({
+      exclude: 'node_modules/**',
+      rootMode: 'upward'
+    }));
+  }
 
   ret.plugins.push(cleanup());
 

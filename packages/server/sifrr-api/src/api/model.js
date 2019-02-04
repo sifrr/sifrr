@@ -100,7 +100,7 @@ class Model extends Sequelize.Model {
     for (let arg in args.where) {
       if (arg.indexOf('__') >= 0) {
         const assocs = arg.split('__');
-        args.where[`$${assocs.join('.')}$`] = args.where[arg];
+        args.where['$' + assocs.join('.') + '$'] = args.where[arg];
         include = this._assocsToInclude(assocs);
         delete args.where[arg];
       }

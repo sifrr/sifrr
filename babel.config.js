@@ -1,21 +1,18 @@
-module.exports = function () {
+module.exports = function (api) {
+  api.cache(true);
   const presets = [
     ['@babel/env', {
+      modules: false,
       targets: {
         chrome: 55,
         safari: 11,
         opera: 42,
-        firefox: 53
-      },
-      modules: false
+        firefox: 63
+      }
     }]
-  ];
-  const plugins = [
-    '@babel/plugin-external-helpers'
   ];
 
   return {
-    presets,
-    plugins
+    presets
   };
 };

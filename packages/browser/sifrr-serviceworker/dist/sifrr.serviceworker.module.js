@@ -19,9 +19,7 @@ class SW {
     self.addEventListener('activate', this.activateEventListener.bind(this));
     self.addEventListener('fetch', this.fetchEventListener.bind(this));
   }
-  setupPushNotification(defaultTitle = '', defaultOptions = {
-    body: ''
-  }) {
+  setupPushNotification(defaultTitle = '', defaultOptions = { body: '' }) {
     this.defaultPushTitle = defaultTitle;
     this.defaultPushOptions = defaultOptions;
     self.addEventListener('push', this.pushEventListener.bind(this));
@@ -52,13 +50,14 @@ class SW {
           throw Error('response status ' + response.status);
         }
         return response;
-      }).catch(e => this.respondWithFallback(otherReq, e)));
+      }).catch((e) => this.respondWithFallback(otherReq, e)));
     }
   }
   pushEventListener(event) {
     let data = {};
     if (event.data) {
-      if (typeof event.data.json === 'function') data = event.data.json();else data = event.data.json;
+      if (typeof event.data.json === 'function') data = event.data.json();
+      else data = event.data.json;
     }
     const title = data.title || this.defaultPushTitle;
     const options = Object.assign(this.defaultPushOptions, data);
@@ -94,20 +93,23 @@ class SW {
     const cacheName = config.cacheName || this.options.defaultCacheName;
     let resp;
     switch (policy) {
-      case 'NETWORK_ONLY':
-        resp = this.responseFromNetwork(req1, cacheName, false);
-        break;
-      case 'CACHE_FIRST':
-      case 'CACHE_ONLY':
-        resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
-        break;
-      case 'CACHE_AND_UPDATE':
-        resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
-        this.responseFromNetwork(req2, cacheName);
-        break;
-      default:
-        resp = this.responseFromNetwork(req1, cacheName).catch(() => this.responseFromCache(request, cacheName));
-        break;
+    case 'NETWORK_ONLY':
+      resp = this.responseFromNetwork(req1, cacheName, false);
+      break;
+    case 'CACHE_FIRST':
+    case 'CACHE_ONLY':
+      resp = this.responseFromCache(req1, cacheName)
+        .catch(() => this.responseFromNetwork(request, cacheName));
+      break;
+    case 'CACHE_AND_UPDATE':
+      resp = this.responseFromCache(req1, cacheName)
+        .catch(() => this.responseFromNetwork(request, cacheName));
+      this.responseFromNetwork(req2, cacheName);
+      break;
+    default:
+      resp = this.responseFromNetwork(req1, cacheName)
+        .catch(() => this.responseFromCache(request, cacheName));
+      break;
     }
     return resp;
   }
@@ -119,7 +121,8 @@ class SW {
   }
   responseFromCache(request, cache) {
     return caches.open(cache + '-v' + this.options.version).then(cache => cache.match(request)).then(resp => {
-      if (resp) return resp;else throw 'Cache not found for ' + request.url;
+      if (resp) return resp;
+      else throw 'Cache not found for ' + request.url;
     });
   }
   requestFromURL(url, method = 'GET') {

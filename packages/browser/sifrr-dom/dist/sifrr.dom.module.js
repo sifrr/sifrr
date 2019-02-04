@@ -4,15 +4,19 @@ import fetch from '@sifrr/fetch';
 const URLExt = {
   absolute: (base, relative) => {
     let stack = base.split('/'),
-        parts = relative.split('/');
+      parts = relative.split('/');
     stack.pop();
     for (let i = 0; i < parts.length; i++) {
-      if (parts[i] == '.') continue;
-      if (parts[i] == '..') stack.pop();else stack.push(parts[i]);
+      if (parts[i] == '.')
+        continue;
+      if (parts[i] == '..')
+        stack.pop();
+      else
+        stack.push(parts[i]);
     }
     return stack.join('/');
   },
-  getRoutes: url => {
+  getRoutes: (url) => {
     if (url[0] != '/') {
       url = '/' + url;
     }
@@ -26,12 +30,12 @@ const URLExt = {
 var url = URLExt;
 
 const Json = {
-  parse: data => {
+  parse: (data) => {
     let ans = {};
     if (typeof data == 'string') {
       try {
         ans = JSON.parse(data);
-      } catch (e) {
+      } catch(e) {
         return data;
       }
       return Json.parse(ans);
@@ -49,7 +53,7 @@ const Json = {
     }
     return ans;
   },
-  stringify: data => {
+  stringify: (data) => {
     if (typeof data == 'string') {
       return data;
     } else {
@@ -57,20 +61,20 @@ const Json = {
     }
   },
   shallowEqual: (a, b) => {
-    for (let key in a) {
-      if (!(key in b) || a[key] != b[key]) {
+    for(let key in a) {
+      if(!(key in b) || a[key] != b[key]) {
         return false;
       }
     }
-    for (let key in b) {
-      if (!(key in a) || a[key] != b[key]) {
+    for(let key in b) {
+      if(!(key in a) || a[key] != b[key]) {
         return false;
       }
     }
     return true;
   },
-  deepClone: json => {
-    if (Array.isArray(json)) return json.map(i => Json.deepClone(i));
+  deepClone: (json) => {
+    if (Array.isArray(json)) return json.map((i) => Json.deepClone(i));
     if (typeof json !== 'object' || json === null) return json;
     let clone = {};
     for (let key in json) {
@@ -106,34 +110,26 @@ var constants = {
   ELEMENT_NODE: 1
 };
 
-const {
-  updateAttribute: updateAttribute$1
-} = update;
-const {
-  shallowEqual
-} = json;
-const {
-  TEXT_NODE,
-  COMMENT_NODE
-} = constants;
+const { updateAttribute: updateAttribute$1 } = update;
+const { shallowEqual } = json;
+const { TEXT_NODE, COMMENT_NODE } = constants;
 function makeChildrenEqual(parent, newChildren) {
-  const oldL = parent.childNodes.length,
-        newL = newChildren.length;
+  const oldL = parent.childNodes.length, newL = newChildren.length;
   if (oldL > newL) {
     let i = oldL;
-    while (i > newL) {
+    while(i > newL) {
       parent.removeChild(parent.lastChild);
       i--;
     }
   } else if (oldL < newL) {
     let i = oldL;
-    while (i < newL) {
+    while(i < newL) {
       parent.appendChild(newChildren[i]);
       i++;
     }
   }
   const l = Math.min(newL, oldL);
-  for (let i = 0, item, head = parent.firstChild; i < l; i++) {
+  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
     item = newChildren[i];
     head = makeEqual(head, item).nextSibling;
   }
@@ -155,9 +151,7 @@ function makeEqual(oldNode, newNode) {
     return oldNode;
   }
   if (newNode.state) oldNode.state = newNode.state;
-  let oldAttrs = oldNode.attributes,
-      newAttrs = newNode.attributes,
-      attr;
+  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
   for (let i = newAttrs.length - 1; i >= 0; --i) {
     updateAttribute$1(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
@@ -174,10 +168,10 @@ var makeequal = {
 };
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-TREE_WALKER.roll = function (n, filter = false) {
+TREE_WALKER.roll = function(n, filter = false) {
   let node = this.currentNode;
-  while (--n) {
-    if (filter && filter(node)) {
+  while(--n) {
+    if (filter && filter(node)){
       node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
     } else node = TREE_WALKER.nextNode();
   }
@@ -196,18 +190,16 @@ class Ref {
   }
 }
 function create(node, fxn, filter = false) {
-  let indices = [],
-      ref,
-      idx = 0;
+  let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
-  while (node) {
+  while(node) {
     if (ref = fxn(node)) {
-      indices.push(new Ref(idx + 1, ref));
+      indices.push(new Ref(idx+1, ref));
       idx = 1;
     } else {
       idx++;
     }
-    if (filter && filter(node)) {
+    if (filter && filter(node)){
       node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
     } else node = TREE_WALKER.nextNode();
   }
@@ -220,24 +212,17 @@ var ref = {
   Ref
 };
 
-const {
-  makeChildrenEqual: makeChildrenEqual$1
-} = makeequal;
-const {
-  updateAttribute: updateAttribute$2
-} = update;
-const {
-  collect: collect$1,
-  create: create$1
-} = ref;
-const {
-  TEXT_NODE: TEXT_NODE$1,
-  COMMENT_NODE: COMMENT_NODE$1,
-  ELEMENT_NODE
-} = constants;
+const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
+const { updateAttribute: updateAttribute$2 } = update;
+const { collect: collect$1, create: create$1 } = ref;
+const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE } = constants;
 const TEMPLATE = constants.TEMPLATE();
 function isHtml(el) {
-  return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
+  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
+    el.contentEditable == 'true' ||
+    el.nodeName == 'TEXTAREA' ||
+    el.nodeName == 'STYLE' ||
+    (el.dataset && el.dataset.sifrrRepeat);
 }
 function creator(el) {
   if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
@@ -255,11 +240,8 @@ function creator(el) {
         sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
       }
     }
-    const attrs = el.attributes || [],
-          l = attrs.length;
-    const attrStateMap = {
-      events: {}
-    };
+    const attrs = el.attributes || [], l = attrs.length;
+    const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '$') {
@@ -267,7 +249,7 @@ function creator(el) {
       } else if (attribute.value.indexOf('${') >= 0) {
         if (attribute.name === 'style') {
           const styles = {};
-          attribute.value.split(';').forEach(s => {
+          attribute.value.split(';').forEach((s) => {
             const [n, v] = s.split(/:(?!\/\/)/);
             if (n && v && v.indexOf('${') >= 0) {
               styles[n.trim()] = v.trim();
@@ -287,8 +269,8 @@ function creator(el) {
 }
 const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
-  createStateMap: element => create$1(element, creator, isHtml),
-  update: element => {
+  createStateMap: (element) => create$1(element, creator, isHtml),
+  update: (element) => {
     if (!element._refs) {
       return false;
     }
@@ -297,9 +279,9 @@ const Parser = {
       const data = element.constructor.stateMap[i].ref;
       const dom = element._refs[i];
       if (data.attributes) {
-        for (let key in data.attributes) {
+        for(let key in data.attributes) {
           if (key === 'events') {
-            for (let event in data.attributes.events) {
+            for(let event in data.attributes.events) {
               const eventLis = Parser.evaluateString(data.attributes.events[event], element, true);
               if (data.attributes.events[event].slice(0, 6) === '${this') {
                 dom[event] = eventLis.bind(element);
@@ -319,10 +301,7 @@ const Parser = {
       }
       if (data.html === undefined) continue;
       const newValue = Parser.evaluateString(data.text, element);
-      if (!newValue) {
-        dom.textContent = '';
-        continue;
-      }
+      if (!newValue) { dom.textContent = ''; continue; }
       if (data.html) {
         let children;
         if (Array.isArray(newValue)) {
@@ -331,11 +310,12 @@ const Parser = {
           children = [newValue];
         } else {
           TEMPLATE.innerHTML = newValue.toString()
-          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-          .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
           children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
         }
-        if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
+        if (children.length < 1) dom.textContent = '';
+        else makeChildrenEqual$1(dom, children);
       } else {
         if (dom.nodeValue != newValue) {
           dom.nodeValue = newValue;
@@ -343,7 +323,7 @@ const Parser = {
       }
     }
   },
-  twoWayBind: e => {
+  twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
     const value = target.value === undefined ? target.innerHTML : target.value;
@@ -353,7 +333,7 @@ const Parser = {
       root = target._root;
     } else {
       root = target;
-      while (!root.isSifrr) root = root.parentNode || root.host;
+      while(!root.isSifrr) root = root.parentNode || root.host;
       target._root = root;
     }
     state[target.dataset.sifrrBind] = value;
@@ -378,9 +358,7 @@ const Parser = {
 };
 var parser = Parser;
 
-const {
-  TEMPLATE: TEMPLATE$1
-} = constants;
+const { TEMPLATE: TEMPLATE$1 } = constants;
 var template = (str, ...extra) => {
   const tmp = TEMPLATE$1();
   if (typeof str === 'string') {
@@ -389,7 +367,7 @@ var template = (str, ...extra) => {
     str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
     tmp.innerHTML = str;
   } else if (str[0]) {
-    Array.from(str).forEach(s => {
+    Array.from(str).forEach((s) => {
       tmp.appendChild(s);
     });
   } else {
@@ -409,24 +387,21 @@ class Loader {
   get html() {
     const me = this;
     if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
-    const html = fetch.file(this.htmlUrl).then(resp => resp.text()).then(file => template(file).content).then(html => {
-      Loader._all[me.elementName].template = html.querySelector('template');
-      return html;
-    });
-    Loader.add(me.elementName, {
-      instance: me,
-      html: html
-    });
+    const html = fetch.file(this.htmlUrl)
+      .then((resp) => resp.text())
+      .then((file) => template(file).content).then((html) => {
+        Loader._all[me.elementName].template = html.querySelector('template');
+        return html;
+      });
+    Loader.add(me.elementName, { instance: me, html: html });
     return html;
   }
   get js() {
     const me = this;
     if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].js) return this.constructor.all[this.elementName].js;
-    const js = fetch.file(this.jsUrl).then(resp => resp.text());
-    Loader.add(me.elementName, {
-      instance: me,
-      js: js
-    });
+    const js = fetch.file(this.jsUrl)
+      .then((resp) => resp.text());
+    Loader.add(me.elementName, { instance: me, js: js });
     return js;
   }
   get htmlUrl() {
@@ -437,22 +412,22 @@ class Loader {
   }
   executeScripts(js) {
     if (js) {
-      return this.js.then(script => {
+      return this.js.then((script) => {
         new Function(script).bind(window)();
       });
     } else {
-      return this.html.then(file => {
-        file.querySelectorAll('script').forEach(script => {
+      return this.html.then((file) => {
+        file.querySelectorAll('script').forEach((script) => {
           if (script.hasAttribute('src')) {
             window.document.body.appendChild(script);
           } else {
             new Function(script.text).bind(window)();
           }
         });
-      }).catch(e => {
+      }).catch((e) => {
         if (e.message === 'Not Found') {
           window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
-          this.js.then(script => {
+          this.js.then((script) => {
             new Function(script).bind(window)();
           });
         } else {
@@ -472,15 +447,11 @@ Loader._all = {};
 Loader.urls = {};
 var loader = Loader;
 
-const {
-  collect: collect$2,
-  create: create$2
-} = ref;
+const { collect: collect$2, create: create$2 } = ref;
 function creator$1(node) {
   if (node.nodeType !== 3) {
     if (node.attributes !== undefined) {
-      const attrs = Array.from(node.attributes),
-            l = attrs.length;
+      const attrs = Array.from(node.attributes), l = attrs.length;
       const ret = [];
       for (let i = 0; i < l; i++) {
         const avalue = attrs[i].value;
@@ -504,20 +475,17 @@ function creator$1(node) {
   }
 }
 function updateState(simpleEl) {
-  const doms = simpleEl._refs,
-        refs = simpleEl.stateMap,
-        l = refs.length;
-  const newState = simpleEl.state,
-        oldState = simpleEl._oldState;
+  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
+  const newState = simpleEl.state, oldState = simpleEl._oldState;
   for (let i = 0; i < l; i++) {
-    const data = refs[i].ref,
-          dom = doms[i];
+    const data = refs[i].ref, dom = doms[i];
     if (Array.isArray(data)) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
         if (oldState[attr.text] !== newState[attr.text]) {
-          if (attr.name === 'class') dom.className = newState[attr.text] || '';else dom.setAttribute(attr.name, newState[attr.text]);
+          if (attr.name === 'class') dom.className = newState[attr.text] || '';
+          else dom.setAttribute(attr.name, newState[attr.text]);
         }
       }
     } else {
@@ -535,25 +503,27 @@ function SimpleElement(content, defaultState) {
     content.remove();
     content.style.display = oldDisplay;
   }
-  if (content.nodeName.indexOf('-') !== -1 || content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0 || content.isSifrr && content.isSifrr()) return content;
+  if (content.nodeName.indexOf('-') !== -1 ||
+    (content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
+    (content.isSifrr && content.isSifrr())) return content;
   content.stateMap = create$2(content, creator$1);
   content._refs = collect$2(content, content.stateMap);
   Object.defineProperty(content, 'state', {
     get: () => content._state,
-    set: v => {
+    set: (v) => {
       content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
       updateState(content);
     }
   });
   if (defaultState) content.state = defaultState;
-  content.sifrrClone = function (deep) {
+  content.sifrrClone = function(deep) {
     const clone = content.cloneNode(deep);
     clone.stateMap = content.stateMap;
     clone._refs = collect$2(clone, content.stateMap);
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,
-      set: v => {
+      set: (v) => {
         clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
         updateState(clone);
@@ -578,9 +548,7 @@ function elementClassFactory(baseClass) {
       return [];
     }
     static get template() {
-      const temp = (loader.all[this.elementName] || {
-        template: false
-      }).template;
+      const temp = (loader.all[this.elementName] || { template: false }).template;
       if (window.ShadyCSS && this.useShadowRoot) window.ShadyCSS.prepareTemplate(temp, this.elementName);
       return temp;
     }
@@ -602,7 +570,7 @@ function elementClassFactory(baseClass) {
     constructor() {
       super();
       if (!this.constructor.ctemp) ; else {
-        if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         if (this.constructor.useShadowRoot) {
           this._refs = parser.collectRefs(content, this.constructor.stateMap);
@@ -613,17 +581,16 @@ function elementClassFactory(baseClass) {
           this.shadowRoot.addEventListener('change', parser.twoWayBind);
         } else {
           this.__content = content;
-        }
-      }
+        }}
     }
     connectedCallback() {
-      if (!this.constructor.useShadowRoot) {
+      if(!this.constructor.useShadowRoot) {
         this.textContent = '';
         this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
         if (this._state || this.hasAttribute('data-sifrr-state')) this.update();
       } else {
-        if (!this.hasAttribute('data-sifrr-state') && this._state) this.update();
+        if(!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }
       this.onConnect();
     }
@@ -655,7 +622,8 @@ function elementClassFactory(baseClass) {
     }
     onStateChange() {}
     isSifrr(name = null) {
-      if (name) return name === this.constructor.elementName;else return true;
+      if (name) return name === this.constructor.elementName;
+      else return true;
     }
     sifrrClone(deep) {
       return this.cloneNode(deep);
@@ -665,10 +633,12 @@ function elementClassFactory(baseClass) {
       this.update();
     }
     $(args, sr = true) {
-      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
+      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelector(args);
+      else return this.querySelector(args);
     }
     $$(args, sr = true) {
-      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
+      if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
+      else return this.querySelectorAll(args);
     }
     static addArrayToDom(key, template) {
       this._arrayToDom = this._arrayToDom || {};
@@ -683,15 +653,12 @@ function elementClassFactory(baseClass) {
       let temp;
       try {
         temp = this.constructor._arrayToDom[this.constructor.elementName][key];
-      } catch (e) {
+      } catch(e) {
         return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
       }
       for (let i = 0; i < newL; i++) {
         if (i < oldL) {
-          domArray.push({
-            type: 'stateChange',
-            state: newState[i]
-          });
+          domArray.push({ type: 'stateChange', state: newState[i] });
         } else {
           const el = temp.sifrrClone(true);
           el.state = newState[i];
@@ -710,7 +677,7 @@ const nativeToSyntheticEvent = (e, name) => {
   return Promise.resolve((() => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
-    while (dom) {
+    while(dom) {
       const eventHandler = dom[`$${name}`];
       if (eventHandler) {
         eventHandler(e, target);
@@ -722,19 +689,17 @@ const nativeToSyntheticEvent = (e, name) => {
 };
 const cssMatchEvent = (e, name, dom, target) => {
   function callEach(fxns) {
-    fxns.forEach(fxn => fxn(e, target, dom));
+    fxns.forEach((fxn) => fxn(e, target, dom));
   }
   for (let css in SYNTHETIC_EVENTS[name]) {
-    if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document') callEach(SYNTHETIC_EVENTS[name][css]);
+    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
+      (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);
   }
 };
 const Event = {
-  add: name => {
+  add: (name) => {
     if (SYNTHETIC_EVENTS[name]) return false;
-    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), {
-      capture: true,
-      passive: true
-    });
+    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
     SYNTHETIC_EVENTS[name] = {};
     return true;
   },
@@ -745,17 +710,13 @@ const Event = {
     return true;
   },
   removeListener: (name, css, fxn) => {
-    const fxns = SYNTHETIC_EVENTS[name][css] || [],
-          i = fxns.indexOf(fxn);
+    const fxns = SYNTHETIC_EVENTS[name][css] || [], i = fxns.indexOf(fxn);
     if (i >= 0) fxns.splice(i, 1);
     SYNTHETIC_EVENTS[name][css] = fxns;
     return true;
   },
   trigger: (el, name, options) => {
-    el.dispatchEvent(new window.Event(name, Object.assign({
-      bubbles: true,
-      composed: true
-    }, options)));
+    el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
   }
 };
 var event = Event;
@@ -793,7 +754,7 @@ SifrrDom.register = (Element, options) => {
   }
   return false;
 };
-SifrrDom.setup = function (config) {
+SifrrDom.setup = function(config) {
   SifrrDom.config = Object.assign({
     baseUrl: '',
     useShadowRoot: true
@@ -803,10 +764,7 @@ SifrrDom.setup = function (config) {
   SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
 };
-SifrrDom.load = function (elemName, {
-  url: url$$1,
-  js = false
-} = {}) {
+SifrrDom.load = function(elemName, { url: url$$1, js = false } = {}) {
   let loader$$1 = new SifrrDom.Loader(elemName, url$$1);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader$$1.executeScripts(js);
@@ -814,7 +772,7 @@ SifrrDom.load = function (elemName, {
 SifrrDom.loading = () => {
   return Promise.all(SifrrDom.loadingElements);
 };
-SifrrDom.relativeTo = function (elemName, relativeUrl) {
+SifrrDom.relativeTo = function(elemName, relativeUrl) {
   if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
 };
 var sifrr_dom = SifrrDom;
