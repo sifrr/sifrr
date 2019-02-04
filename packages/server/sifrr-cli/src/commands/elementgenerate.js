@@ -8,9 +8,8 @@ module.exports = (argv) => {
   // Loader
   const elemPath = path.resolve(argv.path, `./${elemName.split('-').join('/')}.js`);
   const className = elemName.replace(/-([a-z])/g, (g) => g[1].toUpperCase()).replace(/^([a-z])/, (g) => g[0].toUpperCase());
-  const extend = argv.extends ? `(${argv.extends})` : '';
 
-  const elemHtml = elemTemplate(className, extend);
+  const elemHtml = elemTemplate(className, argv.extends);
 
-  createFile(elemPath, elemHtml, argv.force);
+  createFile(elemPath, elemHtml, argv.force === 'true');
 };

@@ -37,3 +37,5 @@ const cli = program
 
 const args = cli.argv;
 if (!args._[0]) cli.showHelp();
+
+module.exports = args;
