@@ -64,7 +64,7 @@ function moduleConfig(name, min = false, module = false) {
   return ret;
 }
 
-module.exports = function getRollupConfig(name, isBrowser = true) {
+module.exports = (name, isBrowser = true) => {
   let ret = [];
   if (isBrowser) {
     ret = [

@@ -1,6 +1,6 @@
 # sifrr-dom · [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
-A &lt; 5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding. Alternative to React/Vue/Angular etc.
+A ~5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding. Alternative to React/Vue/Angular etc.
 
 ## Size
 
@@ -10,10 +10,11 @@ A &lt; 5KB DOM library for creating user interfaces for websites using Custom El
 | Minified (`dist/sifrr.dom.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js)              |
 | Minified + Gzipped (`dist/sifrr.dom.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
 
-## Features
+## Top Features
 
 -   Simple DOM API based on web components v1, custom elements v1, shadow dom v1 (optional)
--   Pure DOM bindings (no virtual DOM) still faster than react, no special syntax like jsx etc. only vanilla HTML, CSS, JS
+-   Pure DOM bindings (one-way, two-way), without any virtual DOM, still [fast(er)](#performance-comparison)
+-   no special syntax to learn like jsx etc. only use pure HTML, CSS, JS
 -   synthetic event listener, custom events
 -   simpler querySelector for custom elements/web components
 
@@ -550,4 +551,4 @@ then you can use custom-tag as button in html like:
 ## Special thanks to
 
 -   <https://github.com/Freak613/stage0> for optimization ideas
--   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr elementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)
+-   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)

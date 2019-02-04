@@ -32,10 +32,10 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {},
-  "peerDependencies": {
+  "dependencies": {
     "@sifrr/dom": "0.0.2-alpha"
   },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",

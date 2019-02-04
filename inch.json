@@ -1,0 +1,8 @@
+{
+  "files": {
+    "included": [
+      "packages/**/src/*.js",
+      "packages/**/src/*/*.js"
+    ]
+  }
+}

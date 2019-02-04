@@ -134,7 +134,10 @@ describe('sifrr-route', () => {
   it('reloads when clicked on a link with target has different host', async () => {
     expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.equal(PATH);
 
-    await page.click('a#external');
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click('a#external')
+    ]);
 
     expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.not.equal(PATH);
 
