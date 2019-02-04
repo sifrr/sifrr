@@ -13,6 +13,7 @@ describe('sifrr-serviceworker', () => {
     // Doesn't work because of https://github.com/GoogleChrome/puppeteer/issues/3715
     // await page.setRequestInterception(true);
     // stubRequests();
+    // [TODO]: Change status 404 to offline tests
     await page.goto(`${PATH}/`);
     await page.evaluate('navigator.serviceWorker.ready');
   });

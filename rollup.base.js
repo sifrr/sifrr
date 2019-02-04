@@ -1,6 +1,5 @@
 const version = require('./package.json').version;
 const babel = require('rollup-plugin-babel');
-const eslint = require('rollup-plugin-eslint').eslint;
 const terser = require('rollup-plugin-terser').terser;
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
@@ -25,7 +24,6 @@ const globals = {
 const footer = '/*! (c) @aadityataparia */';
 
 function moduleConfig(name, min = false, module = false) {
-  const lint = !min;
   const filename = name.toLowerCase();
   const banner = `/*! ${name} v${version} - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */`;
   const ret = {
@@ -48,8 +46,6 @@ function moduleConfig(name, min = false, module = false) {
       commonjs()
     ]
   };
-
-  if (!module && lint) ret.plugins.push(eslint());
 
   ret.plugins.push(babel({
     exclude: 'node_modules/**',
