@@ -44,6 +44,7 @@
     "connect-static-transform": "^0.9.1",
     "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
+    "eslint": "^5.13.0",
     "eslint-plugin-html": "^5.0.0",
     "express": "^4.16.4",
     "file-url": "^2.0.2",
