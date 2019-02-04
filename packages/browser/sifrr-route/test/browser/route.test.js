@@ -71,6 +71,14 @@ describe('sifrr-route', () => {
     await page.click('a[href="/abcd"]');
 
     assert.equal(await page.$eval('#test', el => el.i), 0);
+
+    await page.click('a[href="/abcd?query=random"]');
+
+    assert.equal(await page.$eval('#test', el => el.i), 0);
+
+    await page.click('a[href="/abcd#hash_random"]');
+
+    assert.equal(await page.$eval('#test', el => el.i), 0);
   });
 
   it('refreshes once when path is changed', async () => {

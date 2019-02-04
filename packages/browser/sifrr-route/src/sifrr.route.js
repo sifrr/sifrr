@@ -75,12 +75,12 @@ class SifrrRoute extends Sifrr.Dom.Element {
   }
 
   static refreshAll() {
-    if (window.location.href === this.currentUrl) return;
+    if (window.location.pathname === this.currentUrl) return;
     this.all.forEach((sfr) => {
       sfr.refresh();
     });
     this.onRouteChange();
-    this.currentUrl = window.location.href;
+    this.currentUrl = window.location.pathname;
   }
 
   static onRouteChange() {}
@@ -97,11 +97,12 @@ class SifrrRoute extends Sifrr.Dom.Element {
     // replace title with First title if there's no attribute
     const title = target.getAttribute('title') || firstTitle;
     const state = {
-      location: target.pathname,
+      pathname: target.pathname,
+      href: target.href,
       title: title
     };
     window.document.title = title;
-    window.history.pushState(state, title, target.pathname);
+    window.history.pushState(state, title, target.href);
     SifrrRoute.refreshAll();
 
     return true;

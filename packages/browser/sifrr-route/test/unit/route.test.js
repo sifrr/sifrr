@@ -106,16 +106,18 @@ describe('Route', () => {
           host: 'localhost',
           matches: () => true,
           getAttribute: () => 'new title',
-          pathname: '/'
+          pathname: '/',
+          href: '/?bang#hash'
         },
         preventDefault: spy
       });
 
       assert(spy.calledOnce);
       assert(window.history.pushState.calledWith({
-        location: '/',
-        title: 'new title'
-      }, 'new title', '/'));
+        pathname: '/',
+        title: 'new title',
+        href: '/?bang#hash'
+      }, 'new title', '/?bang#hash'));
       assert.equal(window.document.title, 'new title');
     });
   });
