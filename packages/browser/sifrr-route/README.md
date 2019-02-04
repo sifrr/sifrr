@@ -10,6 +10,12 @@ History API based Routing library for building One Page Applications with sifrr.
 | Minified (`dist/sifrr.route.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js)              |
 | Minified + Gzipped (`dist/sifrr.route.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js) |
 
+#### Browser API support needed for
+
+| APIs        | caniuse                             | polyfills                                    |
+| :---------- | :---------------------------------- | :------------------------------------------- |
+| History API | <https://caniuse.com/#feat=history> | <https://github.com/browserstate/history.js> |
+
 ## How to use
 
 1.  Copy contents of `dist/sifrr.route.js` to `elements/sifrr/route.js` folder in your sifrr app. And use `Sifrr.Dom.load('sifrr-route')` to load sifrr-route.
@@ -40,13 +46,13 @@ Add sifrr-route tag in your html, this will only be shown when `window.location.
 </sifrr-route>
 ```
 
-Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname.
+Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname. If you want the page to reload add `target='_top'` to `a` tag.
 
 -   You can use `sifrr-route` inside another `sifrr-route`.
 
 -   you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
 
--   Query variables are not matched
+-   URL Query string is not matched
 
 -   You can also you special syntax if you want to parse pathname and use it:
 
@@ -59,8 +65,8 @@ Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the 
 
     ```js
       {
-        star: [ "def", "sdf" ],
-        doubleStar: [ "ghi/klm" ],
+        '*': [ "def", "sdf" ],
+        '**': [ "ghi/klm" ],
         x: "new",
         k: "klm"
       }

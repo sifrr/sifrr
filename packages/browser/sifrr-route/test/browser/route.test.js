@@ -189,16 +189,9 @@ describe('sifrr-route', () => {
     expect(state).to.deep.equal({
       x: 'new',
       k: 'klm',
-      star: [
-        'def',
-        'sdf'
-      ],
       '*': [
         'def',
         'sdf'
-      ],
-      doubleStar: [
-        'ghi/klm'
       ],
       '**': [
         'ghi/klm'

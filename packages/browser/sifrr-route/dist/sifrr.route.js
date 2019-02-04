@@ -22,31 +22,33 @@
       if (this._dataMap) return this._dataMap;
       this._dataMap = [];
       this.path.split('/').forEach(r => {
-        if (r[0] === ':' || r === '*' || r === '**') {
+        if (r[0] === ':') {
+          this._dataMap.push(r);
+        } else if (r === '*' || r === '**' || r.match(/\(.*\)/)) {
           this._dataMap.push(r);
         }
       });
       return this._dataMap;
     }
     test(route) {
-      const data = {
-        '*': [],
-        '**': []
-      },
+      const data = {},
             match = this.regex.exec(route);
       if (match) {
         this.dataMap.forEach((d, i) => {
           if (d === '*') {
+            data['*'] = data['*'] || [];
             data['*'].push(match[i + 1]);
           } else if (d === '**') {
+            data['**'] = data['**'] || [];
             data['**'].push(match[i + 1]);
-          } else {
+          } else if (d[0] === ':') {
             data[d.substr(1)] = match[i + 1];
+          } else {
+            data.regexGroups = data.regexGroups || [];
+            data.regexGroups.push(match[i + 1]);
           }
         });
       }
-      data.star = data['*'];
-      data.doubleStar = data['**'];
       return {
         match: !!match,
         data: data

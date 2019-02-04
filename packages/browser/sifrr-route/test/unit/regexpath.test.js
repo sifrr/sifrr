@@ -4,6 +4,7 @@ describe('Regex', () => {
   it('works with :name', () => {
     const reg = new Regex('/abcd/:name/yz');
     const res = reg.test('/abcd/name/yz');
+    console.log(res);
     assert(res.match);
     assert.equal(res.data.name, 'name');
   });
@@ -23,7 +24,6 @@ describe('Regex', () => {
     const res = reg.test('/abcd/name/yz');
     assert(res.match);
     assert.equal(res.data['*'][0], 'name');
-    assert.equal(res.data.star[0], 'name');
   });
 
   it('works with **', () => {
@@ -31,13 +31,20 @@ describe('Regex', () => {
     const res = reg.test('/abcd/mnop/qrst/aaa/yz');
     assert(res.match);
     assert.equal(res.data['**'][0], 'mnop/qrst/aaa');
-    assert.equal(res.data.doubleStar[0], 'mnop/qrst/aaa');
   });
 
   it('works with custom regex', () => {
     const reg = new Regex('/[a-zA-Z]+/.+');
     expect(reg.test('/abcd/mnop/qrst/aaa/yz').match).to.be.true;
     expect(reg.test('/abcd112/mnop/qrst/aaa/yz').match).to.be.false;
+
+    const reg2 = new Regex('/([a-zA-Z]+)/:name/*/.+');
+    const match = reg2.test('/abcd/mnop/qrst/aaa/yz');
+    expect(match.data).to.deep.equal({
+      '*': ['qrst'],
+      name: 'mnop',
+      regexGroups: ['abcd']
+    });
   });
 
   it('works with complex example', () => {
@@ -46,20 +53,13 @@ describe('Regex', () => {
     expect(res.data).to.deep.equal({
       x: 'new',
       k: 'klm',
-      star: [
-        'def',
-        'sdf'
-      ],
       '*': [
         'def',
         'sdf'
       ],
-      doubleStar: [
-        'ghi/klm'
-      ],
       '**': [
         'ghi/klm'
-      ]
+      ],
     });
   });
 });
