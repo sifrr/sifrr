@@ -41,30 +41,29 @@ class Loader {
   }
 
   executeScripts(js) {
-    if (js) {
+    if (!js) {
+      return this.executeHTMLScripts();
+    } else {
       return this.js.then((script) => {
         new Function(script).bind(window)();
-      });
-    } else {
-      return this.html.then((file) => {
-        file.querySelectorAll('script').forEach((script) => {
-          if (script.hasAttribute('src')) {
-            window.document.body.appendChild(script);
-          } else {
-            new Function(script.text).bind(window)();
-          }
-        });
       }).catch((e) => {
-        if (e.message === 'Not Found') {
-          window.console.log(`HTML file not found. Trying to get js file for ${this.elementName}.`);
-          this.js.then((script) => {
-            new Function(script).bind(window)();
-          });
-        } else {
-          window.console.warn(e);
-        }
+        window.console.error(e);
+        window.console.log(`JS file gave error. Trying to get html file for ${this.elementName}.`);
+        return this.executeHTMLScripts();
       });
     }
+  }
+
+  executeHTMLScripts() {
+    return this.html.then((file) => {
+      file.querySelectorAll('script').forEach((script) => {
+        if (script.hasAttribute('src')) {
+          window.document.body.appendChild(script);
+        } else {
+          new Function(script.text).bind(window)();
+        }
+      });
+    }).catch(e => { throw e; });
   }
 
   static add(elemName, instance) {

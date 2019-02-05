@@ -58,7 +58,7 @@ SifrrDom.setup = function(config) {
 };
 
 // Load Element HTML and execute script in it
-SifrrDom.load = function(elemName, { url, js = false } = {}) {
+SifrrDom.load = function(elemName, { url, js = true } = {}) {
   let loader = new SifrrDom.Loader(elemName, url);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader.executeScripts(js);
