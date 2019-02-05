@@ -128,7 +128,7 @@ class Renderer {
   }
 
   isHTML(puppeteerResp) {
-    return !!(puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+    return (puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
   }
 }
 

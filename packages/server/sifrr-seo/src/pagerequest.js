@@ -10,8 +10,7 @@ class PageRequest {
   constructor(npage) {
     this.npage = npage;
     this.pendingRequests = 0;
-    this.pendingPromise = Promise.resolve(true);
-    this.pendingResolver = require('./constants').noop;
+    this.pendingPromise = new Promise(res => this.pendingResolver = res);
     this.addOnRequestListener();
     this.addEndRequestListener();
   }
@@ -24,7 +23,6 @@ class PageRequest {
           request.abort();
         } else if (isTypeOf(request, fetchTypes)) {
           me.pendingRequests++;
-          me.pendingPromise = new Promise(res => me.pendingResolver = res);
           request.continue();
         } else {
           request.continue();
@@ -53,12 +51,9 @@ class PageRequest {
     }
   }
 
-  async all() {
-    if (this.pendingRequests === 0) {
-      return true;
-    }
-    await this.pendingPromise;
-    return true;
+  all() {
+    if (this.pendingRequests === 0) return Promise.resolve(true);
+    return this.pendingPromise;
   }
 }
 
