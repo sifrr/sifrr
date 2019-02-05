@@ -92,12 +92,12 @@
       const me = this;
       let promises = [];
       urls.forEach(u => {
-        let req = me.requestFromURL(u);
+        let req = me.createRequest(u);
         return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName));
       });
 
       for (let value of Object.values(fbs)) {
-        let req = this.requestFromURL(value);
+        let req = this.createRequest(value);
         promises.push(this.responseFromNetwork(req, this.options.fallbackCacheName));
       }
 
@@ -105,7 +105,7 @@
     }
 
     respondWithFallback(request, error) {
-      const fallback = this.requestFromURL(this.findRegex(request.url, this.options.fallbacks));
+      const fallback = this.createRequest(this.findRegex(request.url, this.options.fallbacks));
 
       if (fallback !== undefined) {
         return this.responseFromCache(fallback, this.options.fallbackCacheName);
@@ -159,10 +159,10 @@
       });
     }
 
-    requestFromURL(url, method = 'GET') {
-      return new Request(url, {
-        method: method
-      });
+    createRequest(url, data = {
+      method: 'GET'
+    }) {
+      return new Request(url, data);
     }
 
     findRegex(url, policies) {

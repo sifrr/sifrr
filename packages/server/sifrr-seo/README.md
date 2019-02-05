@@ -128,6 +128,8 @@ sifrrSeo.close();
 
 adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
 
+Example: `sifrrSeo.addPuppeteerOption('headless', false)` to run it without headless mode
+
 ```js
 sifrrSeo.addPuppeteerOption('headless', false);
 ```

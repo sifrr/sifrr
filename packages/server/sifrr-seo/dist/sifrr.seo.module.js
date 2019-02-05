@@ -1737,7 +1737,7 @@ class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.launched = false;
     this.puppeteerOptions = Object.assign({
-      headless: process.env.HEADLESS !== 'false',
+      headless: true,
       args: [],
     }, puppeteerOptions);
     this.puppeteerOptions.args.push(
