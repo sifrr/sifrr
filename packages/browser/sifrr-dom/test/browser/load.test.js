@@ -6,7 +6,7 @@ async function testElement(elName, str) {
 describe('Sifrr.Dom.load', () => {
   before(async () => {
     await page.goto(`${PATH}/loading.html`);
-    // await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
   });
 
   it('has all defined elements', async () => {
