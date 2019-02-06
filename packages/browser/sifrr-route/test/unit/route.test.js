@@ -1,24 +1,3 @@
-// Stub Sifrr
-global.window = {
-  document: {
-    addEventListener: sinon.stub(),
-    createElement: sinon.stub()
-  },
-  addEventListener: sinon.stub(),
-  location: {
-    href: '/',
-    host: 'localhost'
-  },
-  Sifrr: {
-    Dom: {
-      Element: Object,
-      html: sinon.stub(),
-      register: sinon.stub()
-    }
-  },
-  history: { pushState: sinon.stub() }
-};
-
 const Route = require('../../src/sifrr.route');
 
 describe('Route', () => {

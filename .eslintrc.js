@@ -15,6 +15,7 @@ module.exports = {
     assert: false,
     expect: false,
     should: false,
+    window: false,
     delay: false,
     puppeteer: false,
     server: false,

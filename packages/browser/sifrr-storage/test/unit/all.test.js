@@ -107,15 +107,11 @@ describe('Storage', () => {
   });
 
   it('isSupported', () => {
-    global.window = true;
-
     expect(x.isSupported(false), 'returns false on isSupported if store is undefined').to.be.false;
     expect(x.isSupported(true), 'returns true on isSupported if document is undefined').to.be.true;
 
     x.store = true;
     expect(x.isSupported(false), 'returns true on isSupported if store is not undefined').to.be.true;
-
-    global.window = undefined;
   });
 });
 

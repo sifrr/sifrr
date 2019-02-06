@@ -23,6 +23,27 @@ global.delay = (time) => {
   });
 };
 
+// Stub window in unit tests
+global.window = {
+  document: {
+    addEventListener: sinon.stub(),
+    createElement: sinon.stub()
+  },
+  addEventListener: sinon.stub(),
+  location: {
+    href: '/',
+    host: 'localhost'
+  },
+  Sifrr: {
+    Dom: {
+      Element: Object,
+      html: sinon.stub(),
+      register: sinon.stub()
+    }
+  },
+  history: { pushState: sinon.stub() }
+};
+
 // check if should inspect or not
 const shouldInspect = process.argv.indexOf('-i') > 0 || process.argv.indexOf('--inspect') > 0;
 if (shouldInspect) inspector.open(undefined, undefined, true);
