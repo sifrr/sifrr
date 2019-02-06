@@ -702,6 +702,7 @@
     }
   };
   const Event = {
+    all: SYNTHETIC_EVENTS,
     add: name => {
       if (SYNTHETIC_EVENTS[name]) return false;
       window.addEventListener(name, event => nativeToSyntheticEvent(event, name), {
