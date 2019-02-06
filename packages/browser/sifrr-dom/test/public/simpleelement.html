@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head is="sifrr-head">
+  </head>
+  <body>
+    <h1>OK</h1>
+    <sifrr-small></sifrr-small>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      /* eslint-disable */
+      var seText = Sifrr.Dom.SimpleElement('abcd');
+      var seTextState = Sifrr.Dom.SimpleElement('${text}', { text: 'yay' });
+      var seBasic = Sifrr.Dom.SimpleElement('<div><p>abcd</p></div>');
+      var seMultipleChild = Sifrr.Dom.SimpleElement('<div></div><p></p>');
+      var seState = Sifrr.Dom.SimpleElement('<p>${p}</p>', { p: 'default' });
+      var seExtra = Sifrr.Dom.SimpleElement('<div><p>${p}</p><span></span></div>', { p: 'default' });
+      var seAttr = Sifrr.Dom.SimpleElement('<div><p data-attr=${attr} class="${class}"></p></div>');
+      var seComplex = Sifrr.Dom.SimpleElement('<div><p data-attr=${attr} class="${class}"></p>${some}</div>');
+      var seComment = Sifrr.Dom.SimpleElement('<p>${before}<!-- comm -->${after}</p>', { before: 'b', after: 'a' });
+
+      const p = document.createElement('p');
+      p.innerHTML = '${p}';
+      var seDom = Sifrr.Dom.SimpleElement(p);
+
+      var seClone = seComplex.sifrrClone();
+      var seStateClone = seState.sifrrClone();
+      /* eslint-enable */
+    </script>
+    <script>
+      Sifrr.Dom.setup({
+        useShadowRoot: true
+      });
+      Sifrr.Dom.load('sifrr-small');
+    </script>
+  </body>
+</html>

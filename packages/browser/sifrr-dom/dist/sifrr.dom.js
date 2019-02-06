@@ -449,6 +449,9 @@
     collect: collect$2,
     create: create$2
   } = ref;
+  const {
+    ELEMENT_NODE: ELEMENT_NODE$1
+  } = constants;
   function creator$1(node) {
     if (node.nodeType !== 3) {
       if (node.attributes !== undefined) {
@@ -462,6 +465,7 @@
               name: attrs[i].name,
               text: avalue.slice(2, -1)
             });
+            node.setAttribute(attrs[i].name, '');
           }
         }
         if (ret.length > 0) return ret;
@@ -490,7 +494,7 @@
         for (let i = 0; i < l; i++) {
           const attr = data[i];
           if (oldState[attr.text] !== newState[attr.text]) {
-            if (attr.name === 'class') dom.className = newState[attr.text] || '';else dom.setAttribute(attr.name, newState[attr.text]);
+            if (attr.name === 'class') dom.className = newState[attr.text];else dom.setAttribute(attr.name, newState[attr.text]);
           }
         }
       } else {
@@ -502,13 +506,17 @@
     if (typeof content === 'string') {
       const templ = template(content);
       content = templ.content.firstElementChild || templ.content.firstChild;
-      const oldDisplay = content.style.display;
-      content.style.display = 'none';
-      window.document.body.appendChild(content);
-      content.remove();
-      content.style.display = oldDisplay;
+      if (content.nodeType === ELEMENT_NODE$1) {
+        const oldDisplay = content.style.display;
+        content.style.display = 'none';
+        window.document.body.appendChild(content);
+        content.remove();
+        content.style.display = oldDisplay;
+      }
+    } else if (!content.nodeType) {
+      throw TypeError('First argument for SimpleElement should be of type string or DOM element');
     }
-    if (content.nodeName.indexOf('-') !== -1 || content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0 || content.isSifrr && content.isSifrr()) return content;
+    if (content.nodeName.indexOf('-') !== -1 || content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) return content;
     content.stateMap = create$2(content, creator$1);
     content._refs = collect$2(content, content.stateMap);
     Object.defineProperty(content, 'state', {
@@ -520,7 +528,7 @@
       }
     });
     if (defaultState) content.state = defaultState;
-    content.sifrrClone = function (deep) {
+    content.sifrrClone = function (deep = true) {
       const clone = content.cloneNode(deep);
       clone.stateMap = content.stateMap;
       clone._refs = collect$2(clone, content.stateMap);

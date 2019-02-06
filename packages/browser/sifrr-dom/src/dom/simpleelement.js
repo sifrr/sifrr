@@ -1,5 +1,6 @@
 const { collect, create } = require('./ref');
 const template = require('./template');
+const { ELEMENT_NODE } = require('./constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 function creator(node) {
@@ -14,6 +15,7 @@ function creator(node) {
             name: attrs[i].name,
             text: avalue.slice(2, -1)
           });
+          node.setAttribute(attrs[i].name, '');
         }
       }
       if (ret.length > 0) return ret;
@@ -39,7 +41,7 @@ function updateState(simpleEl) {
       for (let i = 0; i < l; i++) {
         const attr = data[i];
         if (oldState[attr.text] !== newState[attr.text]) {
-          if (attr.name === 'class') dom.className = newState[attr.text] || '';
+          if (attr.name === 'class') dom.className = newState[attr.text];
           else dom.setAttribute(attr.name, newState[attr.text]);
         }
       }
@@ -53,15 +55,18 @@ function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     const templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
-    const oldDisplay = content.style.display;
-    content.style.display = 'none';
-    window.document.body.appendChild(content);
-    content.remove();
-    content.style.display = oldDisplay;
+    if (content.nodeType === ELEMENT_NODE) {
+      const oldDisplay = content.style.display;
+      content.style.display = 'none';
+      window.document.body.appendChild(content);
+      content.remove();
+      content.style.display = oldDisplay;
+    }
+  } else if (!content.nodeType) {
+    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
   }
   if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
-    (content.isSifrr && content.isSifrr())) return content;
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)) return content;
   content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {
@@ -74,7 +79,7 @@ function SimpleElement(content, defaultState) {
   });
   if (defaultState) content.state = defaultState;
 
-  content.sifrrClone = function(deep) {
+  content.sifrrClone = function(deep = true) {
     const clone = content.cloneNode(deep);
     clone.stateMap = content.stateMap;
     clone._refs = collect(clone, content.stateMap);
