@@ -2,6 +2,12 @@
 
 Server Side Redering for any js based app using puppeteer (headless chrome) with caching.
 
+## Features
+
+- Works with Custom Elements, Shadow DOM
+- Add custom JS to execute before or after rendering
+- Time based Caching
+
 ## How to use
 
 Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `package.json` file.
