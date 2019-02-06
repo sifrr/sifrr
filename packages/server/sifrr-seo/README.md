@@ -4,9 +4,9 @@ Server Side Redering for any js based app using puppeteer (headless chrome) with
 
 ## Features
 
-- Works with Custom Elements, Shadow DOM
-- Add custom JS to execute before or after rendering
-- Time based Caching
+-   Works with Custom Elements, Shadow DOM
+-   Add custom JS to execute before or after rendering
+-   Time based Caching
 
 ## How to use
 

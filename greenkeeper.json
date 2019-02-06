@@ -1,16 +1,24 @@
 {
   "groups": {
-    "default": {
+    "browser": {
       "packages": [
-        "package.json",
         "packages/browser/sifrr-dom/package.json",
         "packages/browser/sifrr-fetch/package.json",
         "packages/browser/sifrr-route/package.json",
         "packages/browser/sifrr-serviceworker/package.json",
-        "packages/browser/sifrr-storage/package.json",
+        "packages/browser/sifrr-storage/package.json"
+      ]
+    },
+    "server": {
+      "packages": [
         "packages/server/sifrr-api/package.json",
         "packages/server/sifrr-cli/package.json",
         "packages/server/sifrr-seo/package.json"
+      ]
+    },
+    "main": {
+      "packages": [
+        "package.json"
       ]
     }
   }
