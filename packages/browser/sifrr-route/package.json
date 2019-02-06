@@ -32,10 +32,10 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
     "@sifrr/dom": "0.0.2-alpha"
   },
-  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
@@ -62,7 +62,7 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "mock-require": "^3.0.3",
-    "puppeteer": "^1.11.0",
+    "puppeteer": "^1.12.2",
     "repl": "^0.1.3",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.0.1",
