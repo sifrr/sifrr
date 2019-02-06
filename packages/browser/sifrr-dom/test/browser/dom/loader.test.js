@@ -3,7 +3,7 @@ async function testElement(elName, str) {
   expect(await page.$eval(elName, el => el.shadowRoot.innerHTML)).to.have.string(str);
 }
 
-describe('Sifrr.Dom.load', () => {
+describe('Sifrr.Dom.load and Loader', () => {
   before(async () => {
     await page.goto(`${PATH}/loading.html`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });
