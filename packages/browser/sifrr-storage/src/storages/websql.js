@@ -51,7 +51,7 @@ class WebSQL extends Storage {
 
   createStore() {
     let table = this.tableName;
-    if (typeof window == 'undefined') return;
+    if (!window || typeof window.openDatabase !== 'function') return;
     return this.execSql(`CREATE TABLE IF NOT EXISTS ${table} (key unique, value)`);
   }
 

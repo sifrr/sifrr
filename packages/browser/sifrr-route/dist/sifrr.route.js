@@ -57,10 +57,9 @@
   }
   var regexpath = RegexPath;
 
-  const Sifrr = window.Sifrr ||
-  {};
-  Sifrr.Dom = Sifrr.Dom ||
-  dom;
+  window.Sifrr = window.Sifrr || {};
+  window.Sifrr.Dom = window.Sifrr.Dom || dom;
+  const Sifrr = window.Sifrr;
   Sifrr.Dom.Route = {
     RegexPath: regexpath
   };
