@@ -29,6 +29,7 @@ function create(node, fxn, filter = false) {
   let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
   while(node) {
+    // eslint-disable-next-line no-cond-assign
     if (ref = fxn(node)) {
       indices.push(new Ref(idx+1, ref));
       idx = 1;

@@ -41,7 +41,12 @@ global.window = {
       register: sinon.stub()
     }
   },
-  history: { pushState: sinon.stub() }
+  history: { pushState: sinon.stub() },
+  console: {
+    log: sinon.stub(),
+    error: sinon.stub(),
+    warn: sinon.stub()
+  }
 };
 
 // check if should inspect or not

@@ -60,6 +60,10 @@ module.exports = {
     ],
     'no-var': [
       'error'
+    ],
+    'max-lines': [
+      'error',
+      220 // Change to 200 after refactoring API.Model
     ]
   },
   plugins: [

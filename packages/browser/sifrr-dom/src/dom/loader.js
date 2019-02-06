@@ -65,7 +65,7 @@ class Loader {
           new Function(script.text).bind(window)();
         }
       });
-    }).catch(e => { throw e; });
+    }).catch(e => window.console.error(e));
   }
 
   static add(elemName, instance) {
