@@ -1,34 +1,6 @@
 /*! Sifrr.Dom v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import fetch from '@sifrr/fetch';
 
-const URLExt = {
-  absolute: (base, relative) => {
-    let stack = base.split('/'),
-      parts = relative.split('/');
-    stack.pop();
-    for (let i = 0; i < parts.length; i++) {
-      if (parts[i] == '.')
-        continue;
-      if (parts[i] == '..')
-        stack.pop();
-      else
-        stack.push(parts[i]);
-    }
-    return stack.join('/');
-  },
-  getRoutes: (url) => {
-    if (url[0] != '/') {
-      url = '/' + url;
-    }
-    let qIndex = url.indexOf('?');
-    if (qIndex != -1) {
-      url = url.substring(0, qIndex);
-    }
-    return url.split('/');
-  }
-};
-var url = URLExt;
-
 const Json = {
   parse: (data) => {
     let ans = {};
@@ -101,9 +73,7 @@ var update = {
 };
 
 const temp = window.document.createElement('template');
-const sfn = window.document.createElement('sifrr-node');
 var constants = {
-  SIFRR_NODE: () => sfn.cloneNode(),
   TEMPLATE: () => temp.cloneNode(),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
@@ -728,7 +698,6 @@ SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
 SifrrDom.Event = event;
 SifrrDom.makeEqual = makeequal;
-SifrrDom.Url = url;
 SifrrDom.Json = json;
 SifrrDom.template = template;
 SifrrDom.register = (Element, options) => {
@@ -763,8 +732,8 @@ SifrrDom.setup = function(config) {
   SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
 };
-SifrrDom.load = function(elemName, { url: url$$1, js = true } = {}) {
-  let loader$$1 = new SifrrDom.Loader(elemName, url$$1);
+SifrrDom.load = function(elemName, { url, js = true } = {}) {
+  let loader$$1 = new SifrrDom.Loader(elemName, url);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader$$1.executeScripts(js);
 };

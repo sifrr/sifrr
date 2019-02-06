@@ -1,4 +1,3 @@
-const UrlExt = require('./utils/url');
 const JsonExt = require('./utils/json');
 
 // Empty SifrrDom
@@ -16,7 +15,6 @@ SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
 SifrrDom.makeEqual = require('./dom/makeequal');
-SifrrDom.Url = UrlExt;
 SifrrDom.Json = JsonExt;
 
 // HTML to template
@@ -51,6 +49,7 @@ SifrrDom.setup = function(config) {
     baseUrl: '',
     useShadowRoot: true
   }, config);
+  if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.Event.add('input');
   SifrrDom.Event.add('change');
   SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
@@ -66,11 +65,6 @@ SifrrDom.load = function(elemName, { url, js = true } = {}) {
 
 SifrrDom.loading = () => {
   return Promise.all(SifrrDom.loadingElements);
-};
-
-// Relative path to element html
-SifrrDom.relativeTo = function(elemName, relativeUrl) {
-  if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
 };
 
 module.exports = SifrrDom;
