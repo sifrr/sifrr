@@ -28,7 +28,7 @@ function staticTMiddleware(directory) {
       if (fs.existsSync(path + '.map')) {
         send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });
       } else {
-        send(text);
+        send(text, { 'content-type': 'application/javascript; charset=UTF-8' });
       }
     }
   });

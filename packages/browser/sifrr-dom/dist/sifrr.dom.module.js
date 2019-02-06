@@ -379,36 +379,34 @@ var template = (str, ...extra) => {
 class Loader {
   constructor(elemName, url) {
     if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
-    if (this.constructor.all[elemName]) return this.constructor.all[elemName].instance;
+    if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     this.url = url;
-    this.constructor.urls[elemName] = this.htmlUrl;
   }
   get html() {
+    if (this._html) return this._html;
+    Loader.add(this.elementName, this);
     const me = this;
-    if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].html) return this.constructor.all[this.elementName].html;
-    const html = fetch.file(this.htmlUrl)
+    this._html = fetch.file(this.htmlUrl)
       .then((resp) => resp.text())
-      .then((file) => template(file).content).then((html) => {
-        Loader._all[me.elementName].template = html.querySelector('template');
-        return html;
+      .then((file) => template(file).content).then((content) => {
+        me.template = content.querySelector('template');
+        return content;
       });
-    Loader.add(me.elementName, { instance: me, html: html });
-    return html;
+    return this._html;
   }
   get js() {
-    const me = this;
-    if (this.constructor.all[this.elementName] && this.constructor.all[this.elementName].js) return this.constructor.all[this.elementName].js;
-    const js = fetch.file(this.jsUrl)
+    if (this._js) return this._js;
+    Loader.add(this.elementName, this);
+    this._js = fetch.file(this.jsUrl)
       .then((resp) => resp.text());
-    Loader.add(me.elementName, { instance: me, js: js });
-    return js;
+    return this._js;
   }
   get htmlUrl() {
-    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.html`;
+    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.html`;
   }
   get jsUrl() {
-    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/' || ''}elements/${this.elementName.split('-').join('/')}.js`;
+    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
   }
   executeScripts(js) {
     if (!js) {
@@ -426,8 +424,11 @@ class Loader {
   executeHTMLScripts() {
     return this.html.then((file) => {
       file.querySelectorAll('script').forEach((script) => {
-        if (script.hasAttribute('src')) {
-          window.document.body.appendChild(script);
+        if (script.src) {
+          const newScript = window.document.createElement('script');
+          newScript.src = script.src;
+          newScript.type = script.type;
+          window.document.querySelector('head').appendChild(newScript);
         } else {
           new Function(script.text).bind(window)();
         }
@@ -435,14 +436,13 @@ class Loader {
     }).catch(e => { throw e; });
   }
   static add(elemName, instance) {
-    Loader._all[elemName] = Object.assign(Loader._all[elemName] || {}, instance);
+    Loader._all[elemName] = instance;
   }
   static get all() {
     return Loader._all;
   }
 }
 Loader._all = {};
-Loader.urls = {};
 var loader = Loader;
 
 const { collect: collect$2, create: create$2 } = ref;
@@ -757,6 +757,7 @@ SifrrDom.setup = function(config) {
     baseUrl: '',
     useShadowRoot: true
   }, config);
+  if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.Event.add('input');
   SifrrDom.Event.add('change');
   SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
@@ -769,9 +770,6 @@ SifrrDom.load = function(elemName, { url: url$$1, js = true } = {}) {
 };
 SifrrDom.loading = () => {
   return Promise.all(SifrrDom.loadingElements);
-};
-SifrrDom.relativeTo = function(elemName, relativeUrl) {
-  if (typeof elemName === 'string') return SifrrDom.Url.absolute(SifrrDom.Loader.urls[elemName], relativeUrl);
 };
 var sifrr_dom = SifrrDom;
 

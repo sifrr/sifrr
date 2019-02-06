@@ -129,7 +129,7 @@ Sifrr.Dom.setup(config);
 </script>
 ```
 
-#### JS Element
+#### JS Element (recommended for ES6 import capabilities)
 
 ```js
 // ${baseUrl}/elements/custom/tag.js
@@ -168,12 +168,12 @@ const config = {
   baseUrl: ''
 }
 // Requires Sifrr.Fetch
-Sifrr.Dom.load('custom-tag', config = { url, js });
+Sifrr.Dom.load('custom-tag', config = { url, js: true });
 // If url is given in config, custom-tag element is loaded from that url, else
 // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
 // or ${baseUrl}/elements/custom/tag.js if html gives 404
 //
-// set js to true if element file is js instead of html
+// set js to false if element file is html instead of js
 ```
 
 2.  As module - js elements only
