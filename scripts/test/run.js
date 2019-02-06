@@ -161,7 +161,7 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
     });
   } catch(e) {
     process.exitCode = 1;
-    throw e;
+    global.console.error(e);
   }
 })();
 

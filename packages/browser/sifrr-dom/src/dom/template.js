@@ -3,16 +3,24 @@ const { TEMPLATE } = require('./constants');
 module.exports = (str, ...extra) => {
   const tmp = TEMPLATE();
   if (typeof str === 'string') {
-    tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
+    // nothing
   } else if (str[0] && typeof str[0] === 'string') {
-    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-    tmp.innerHTML = str;
+    str = String.raw(str, ...extra);
   } else if (str[0]) {
     Array.from(str).forEach((s) => {
-      tmp.appendChild(s);
+      tmp.content.appendChild(s);
     });
+    return tmp;
   } else {
     return str;
   }
+  str = str
+    // Unexpected behaviour when replacing ${} after minifying
+    .replace(/>\n+/g, '>')
+    .replace(/\s+</g, '<')
+    .replace(/>\s+/g, '>')
+    .replace(/\n\s+/g, '')
+    .replace(/(\\)?\$(\\)?\{/g, '${');
+  tmp.innerHTML = str;
   return tmp;
 };

@@ -105,10 +105,10 @@ Sifrr.Dom.setup(config);
       color: blue; // Only applies to p's inside this element if useShadowRoot is true in setup config
     }
   </style>
-  <!-- Contents for element, this in binding ${} or {{}} refers to the custom element itself -->
+  <!-- Contents for element, this in binding ${} refers to the custom element itself -->
   <!-- Bindings are updated automatically on state change -->
   <p attr=${this.state.attr}>${this.state.id}</p>
-  <p>{{this.data()}}</p>
+  <p>${this.data()}</p>
   <!-- If you are using any custom methods in bindings, it is better they are based on state so that they are updated on state change -->
 </template>
 <script type="text/javascript">
@@ -135,14 +135,14 @@ Sifrr.Dom.setup(config);
 // ${baseUrl}/elements/custom/tag.js
 class CustomTag extends Sifrr.Dom.Element {
   static get template() {
-    // Note that bindings can only be wrapped by {{}} in js template literals. Because ${}'s value will be resolved before passing to Sifrr.
+    // Note if you use ${} in js template literals, you should escape it. Because ${}'s value will be resolved before being passing to Sifrr.
     return Sifrr.Dom.template`<style media="screen">
       p {
         color: blue;
       }
     </style>
-    <p attr={{this.state.attr}}>{{this.state.id}}</p>
-    <p>{{this.data()}}</p>`;
+    <p attr=\${this.state.attr}>\${this.state.id}</p>
+    <p>\${this.data()}</p>`;
   }
   // other methods for the custom element
   data() {

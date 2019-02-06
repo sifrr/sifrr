@@ -331,18 +331,23 @@ var parser = Parser;
 const { TEMPLATE: TEMPLATE$1 } = constants;
 var template = (str, ...extra) => {
   const tmp = TEMPLATE$1();
-  if (typeof str === 'string') {
-    tmp.innerHTML = str.replace(/{{(.*)}}/g, '${$1}');
-  } else if (str[0] && typeof str[0] === 'string') {
-    str = String.raw(str, ...extra).replace(/{{(.*)}}/g, '${$1}');
-    tmp.innerHTML = str;
+  if (typeof str === 'string') ; else if (str[0] && typeof str[0] === 'string') {
+    str = String.raw(str, ...extra);
   } else if (str[0]) {
     Array.from(str).forEach((s) => {
-      tmp.appendChild(s);
+      tmp.content.appendChild(s);
     });
+    return tmp;
   } else {
     return str;
   }
+  str = str
+    .replace(/>\n+/g, '>')
+    .replace(/\s+</g, '<')
+    .replace(/>\s+/g, '>')
+    .replace(/\n\s+/g, '')
+    .replace(/(\\)?\$(\\)?\{/g, '${');
+  tmp.innerHTML = str;
   return tmp;
 };
 
