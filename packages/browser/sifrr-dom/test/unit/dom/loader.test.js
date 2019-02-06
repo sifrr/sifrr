@@ -45,4 +45,16 @@ describe('Loader', () => {
 
     mock.stop('@sifrr/fetch');
   });
+
+  it('throws error on html execute script fail', async () => {
+    mock('@sifrr/fetch', true);
+    const Loader = require('../../../src/dom/loader');
+    const l = new Loader('random', 'ok');
+    l._html = Promise.reject('err');
+    await l.executeHTMLScripts();
+
+    assert(window.console.error.calledWith('err'));
+
+    mock.stop('@sifrr/fetch');
+  });
 });
