@@ -7,7 +7,7 @@ class WebSQL extends Storage {
   }
 
   _parsedData() {
-    let me = this;
+    const me = this;
     return new Promise((resolve) => {
       this.store.transaction(function (tx) {
         tx.executeSql(`SELECT * FROM ${me.tableName}`, [], (txn, results) => {
@@ -18,14 +18,14 @@ class WebSQL extends Storage {
   }
 
   _select(keys) {
-    let me = this;
-    let q = keys.map(() => '?').join(', ');
+    const me = this;
+    const q = keys.map(() => '?').join(', ');
     // Need to give array for ? values in executeSql's 2nd argument
     return this.execSql(`SELECT key, value FROM ${me.tableName} WHERE key in (${q})`, keys);
   }
 
   _upsert(data) {
-    let table = this.tableName;
+    const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
         tx.executeSql(`INSERT OR IGNORE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
@@ -35,13 +35,13 @@ class WebSQL extends Storage {
   }
 
   _delete(keys) {
-    let table = this.tableName;
-    let q = keys.map(() => '?').join(', ');
+    const table = this.tableName;
+    const q = keys.map(() => '?').join(', ');
     return this.execSql(`DELETE FROM ${table} WHERE key in (${q})`, keys);
   }
 
   _clear() {
-    let table = this.tableName;
+    const table = this.tableName;
     return this.execSql(`DELETE FROM ${table}`);
   }
 
@@ -50,13 +50,13 @@ class WebSQL extends Storage {
   }
 
   createStore() {
-    let table = this.tableName;
+    const table = this.tableName;
     if (!window || typeof window.openDatabase !== 'function') return;
     return this.execSql(`CREATE TABLE IF NOT EXISTS ${table} (key unique, value)`);
   }
 
   execSql(query, args = []) {
-    let me = this;
+    const me = this;
     return new Promise((resolve) => {
       me.store.transaction(function (tx) {
         tx.executeSql(query, args, (txn, results) => {
@@ -67,9 +67,9 @@ class WebSQL extends Storage {
   }
 
   parse(results) {
-    let ans = {};
-    let len = results.rows.length, i;
-    for (i = 0; i < len; i++) {
+    const ans = {};
+    const len = results.rows.length;
+    for (let i = 0; i < len; i++) {
       ans[results.rows.item(i).key] = this.constructor.parse(results.rows.item(i).value);
     }
     return ans;

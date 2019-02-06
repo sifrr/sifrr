@@ -42,7 +42,7 @@ class IndexedDB extends Storage {
   }
 
   _tx(scope, fn, params) {
-    let me = this;
+    const me = this;
     return this.createStore(me.tableName).then((db) => {
       return new Promise((resolve, reject) => {
         let tx = db.transaction(me.tableName, scope).objectStore(me.tableName);

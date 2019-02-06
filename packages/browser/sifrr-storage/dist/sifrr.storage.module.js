@@ -176,7 +176,7 @@ class IndexedDB extends storage {
     return this._tx('readwrite', 'clear');
   }
   _tx(scope, fn, params) {
-    let me = this;
+    const me = this;
     return this.createStore(me.tableName).then((db) => {
       return new Promise((resolve, reject) => {
         let tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
@@ -225,7 +225,7 @@ class WebSQL extends storage {
     this.createStore();
   }
   _parsedData() {
-    let me = this;
+    const me = this;
     return new Promise((resolve) => {
       this.store.transaction(function (tx) {
         tx.executeSql(`SELECT * FROM ${me.tableName}`, [], (txn, results) => {
@@ -235,12 +235,12 @@ class WebSQL extends storage {
     });
   }
   _select(keys) {
-    let me = this;
-    let q = keys.map(() => '?').join(', ');
+    const me = this;
+    const q = keys.map(() => '?').join(', ');
     return this.execSql(`SELECT key, value FROM ${me.tableName} WHERE key in (${q})`, keys);
   }
   _upsert(data) {
-    let table = this.tableName;
+    const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
         tx.executeSql(`INSERT OR IGNORE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
@@ -249,24 +249,24 @@ class WebSQL extends storage {
     });
   }
   _delete(keys) {
-    let table = this.tableName;
-    let q = keys.map(() => '?').join(', ');
+    const table = this.tableName;
+    const q = keys.map(() => '?').join(', ');
     return this.execSql(`DELETE FROM ${table} WHERE key in (${q})`, keys);
   }
   _clear() {
-    let table = this.tableName;
+    const table = this.tableName;
     return this.execSql(`DELETE FROM ${table}`);
   }
   get store() {
     return window.openDatabase('bs', 1, this._options.description, this._options.size);
   }
   createStore() {
-    let table = this.tableName;
+    const table = this.tableName;
     if (!window || typeof window.openDatabase !== 'function') return;
     return this.execSql(`CREATE TABLE IF NOT EXISTS ${table} (key unique, value)`);
   }
   execSql(query, args = []) {
-    let me = this;
+    const me = this;
     return new Promise((resolve) => {
       me.store.transaction(function (tx) {
         tx.executeSql(query, args, (txn, results) => {
@@ -276,9 +276,9 @@ class WebSQL extends storage {
     });
   }
   parse(results) {
-    let ans = {};
-    let len = results.rows.length, i;
-    for (i = 0; i < len; i++) {
+    const ans = {};
+    const len = results.rows.length;
+    for (let i = 0; i < len; i++) {
       ans[results.rows.item(i).key] = this.constructor.parse(results.rows.item(i).value);
     }
     return ans;

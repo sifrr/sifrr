@@ -17,7 +17,7 @@ function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
       if (typeof basePaths === 'string') basePaths = [basePaths];
 
       basePaths.forEach((basep) => {
-        for (let method in routes) {
+        for (const method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
             app[method](basePath + basep + r, methodRoutes[r]);
