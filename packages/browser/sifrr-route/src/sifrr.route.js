@@ -1,5 +1,6 @@
-const Sifrr = window.Sifrr || /* istanbul ignore next */ {};
-Sifrr.Dom = Sifrr.Dom || /* istanbul ignore next */ require('@sifrr/dom');
+window.Sifrr = window.Sifrr || {};
+window.Sifrr.Dom = window.Sifrr.Dom || require('@sifrr/dom');
+const Sifrr = window.Sifrr;
 
 Sifrr.Dom.Route =  {
   RegexPath: require('./regexpath')

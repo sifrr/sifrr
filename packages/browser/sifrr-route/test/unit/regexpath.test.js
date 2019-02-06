@@ -4,7 +4,6 @@ describe('Regex', () => {
   it('works with :name', () => {
     const reg = new Regex('/abcd/:name/yz');
     const res = reg.test('/abcd/name/yz');
-    console.log(res);
     assert(res.match);
     assert.equal(res.data.name, 'name');
   });
