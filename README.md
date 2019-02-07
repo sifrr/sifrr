@@ -12,7 +12,7 @@
 
 * * *
 
-sifrr is a set of customizable, independent libraries for creating modern webapps.
+sifrr is a set of customizable, independent libraries for creating modern and fast webapps.
 
 ## Packages
 
