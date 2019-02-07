@@ -154,42 +154,50 @@
   };
 
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-  TREE_WALKER.roll = function (n, filter = false) {
-    let node = this.currentNode;
-    while (--n) {
-      if (filter && filter(node)) {
-        node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
-      } else node = TREE_WALKER.nextNode();
-    }
-    return node;
-  };
-  function collect(element, stateMap = element.stateMap, filter) {
-    const refs = [];
-    TREE_WALKER.currentNode = element;
-    stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
-    return refs;
-  }
   class Ref {
     constructor(idx, ref) {
       this.idx = idx;
       this.ref = ref;
     }
   }
+  function collect(element, stateMap = element.stateMap, filter) {
+    const refs = [];
+    TREE_WALKER.currentNode = element;
+    stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
+    return refs;
+  }
+  function filterTW(TW, node, filter) {
+    if (filter && filter(node)) {
+      node = TW.nextSibling();
+      if (!node) {
+        TW.parentNode();
+        node = TW.nextSibling();
+      }
+    } else node = TW.nextNode();
+    return node;
+  }
+  TREE_WALKER.roll = function (n, filter = false) {
+    let node = this.currentNode;
+    while (--n) {
+      node = filterTW(TREE_WALKER, node, filter);
+    }
+    return node;
+  };
   function create(node, fxn, filter = false) {
     let indices = [],
         ref,
-        idx = 0;
+        idx = 0,
+        i = 0;
     TREE_WALKER.currentNode = node;
-    while (node) {
+    while (node && i < 5000) {
       if (ref = fxn(node)) {
         indices.push(new Ref(idx + 1, ref));
         idx = 1;
       } else {
         idx++;
       }
-      if (filter && filter(node)) {
-        node = TREE_WALKER.nextSibling() || TREE_WALKER.parentNode();
-      } else node = TREE_WALKER.nextNode();
+      node = filterTW(TREE_WALKER, node, filter);
+      i++;
     }
     return indices;
   }
@@ -426,14 +434,17 @@
     executeHTMLScripts() {
       return this.html.then(file => {
         file.querySelectorAll('script').forEach(script => {
+          let newScript;
           if (script.src) {
-            const newScript = window.document.createElement('script');
+            newScript = window.document.createElement('script');
             newScript.src = script.src;
             newScript.type = script.type;
-            window.document.querySelector('head').appendChild(newScript);
           } else {
-            new Function(script.text).bind(window)();
+            newScript = window.document.createElement('script');
+            newScript.text = script.text;
+            newScript.type = script.type;
           }
+          window.document.querySelector('head').appendChild(newScript);
         });
       }).catch(e => window.console.error(e));
     }
@@ -657,6 +668,7 @@
         let temp;
         try {
           temp = this.constructor._arrayToDom[this.constructor.elementName][key];
+          if (!temp) throw Error('');
         } catch (e) {
           return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
         }

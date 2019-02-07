@@ -34,6 +34,11 @@
   <div data-sifrr-html="true">
     <!-- ${this.arrayToDom('data')} -->
   </div>
+  <div class="">
+    <div data-sifrr-html="true">
+      <!-- ${this.arrayToDom('data2', this.state.data)} -->
+    </div>
+  </div>
   <div class="html" data-sifrr-html="true">
     ${this.state.html}
   </div>
@@ -64,8 +69,10 @@
     padding: 'padding-top',
     margin: '5px'
   };
-  Sifrr.Dom.load('sifrr-row');
-  Sifrr.Dom.load('sifrr-small').then(() => {
+  Promise.all([
+    Sifrr.Dom.load('sifrr-small'),
+    Sifrr.Dom.load('sifrr-row')
+  ]).then(() => {
     SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
     SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-row' }));
 

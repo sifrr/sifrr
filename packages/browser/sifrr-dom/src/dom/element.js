@@ -153,6 +153,7 @@ function elementClassFactory(baseClass) {
       let temp;
       try {
         temp = this.constructor._arrayToDom[this.constructor.elementName][key];
+        if (!temp) throw Error('');
       } catch(e) {
         return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
       }

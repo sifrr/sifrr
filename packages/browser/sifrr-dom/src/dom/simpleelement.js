@@ -1,6 +1,5 @@
 const { collect, create } = require('./ref');
 const template = require('./template');
-const { ELEMENT_NODE } = require('./constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 function creator(node) {
