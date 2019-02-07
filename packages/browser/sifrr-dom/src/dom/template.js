@@ -19,7 +19,6 @@ module.exports = (str, ...extra) => {
     .replace(/>\n+/g, '>')
     .replace(/\s+</g, '<')
     .replace(/>\s+/g, '>')
-    .replace(/\n\s+/g, '')
     .replace(/(\\)?\$(\\)?\{/g, '${');
   tmp.innerHTML = str;
   return tmp;

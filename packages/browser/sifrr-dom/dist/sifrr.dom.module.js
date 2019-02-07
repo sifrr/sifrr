@@ -352,7 +352,6 @@ var template = (str, ...extra) => {
     .replace(/>\n+/g, '>')
     .replace(/\s+</g, '<')
     .replace(/>\s+/g, '>')
-    .replace(/\n\s+/g, '')
     .replace(/(\\)?\$(\\)?\{/g, '${');
   tmp.innerHTML = str;
   return tmp;
@@ -408,17 +407,14 @@ class Loader {
   executeHTMLScripts() {
     return this.html.then((file) => {
       file.querySelectorAll('script').forEach((script) => {
-        let newScript;
         if (script.src) {
-          newScript = window.document.createElement('script');
+          const newScript = window.document.createElement('script');
           newScript.src = script.src;
           newScript.type = script.type;
+          window.document.body.appendChild(newScript);
         } else {
-          newScript = window.document.createElement('script');
-          newScript.text = script.text;
-          newScript.type = script.type;
+          new Function(script.text).bind(window)();
         }
-        window.document.querySelector('head').appendChild(newScript);
       });
     }).catch(e => window.console.error(e));
   }
