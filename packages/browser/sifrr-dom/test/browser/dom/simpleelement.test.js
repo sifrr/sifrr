@@ -180,10 +180,16 @@ describe('Sifrr.Dom.SimpleElement', () => {
       });
     });
 
-    it('clones state if given', async () => {
+    it('clones state if base element has state', async () => {
       const eq = await page.evaluate('seStateClone.state.p');
 
       expect(eq).to.eq('default');
+    });
+
+    it('clones defaultState if base element has no state', async () => {
+      const eq = await page.evaluate('seNoStateClone.state.p');
+
+      expect(eq).to.eq('nostate');
     });
   });
 });

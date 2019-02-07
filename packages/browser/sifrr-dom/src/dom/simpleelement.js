@@ -50,6 +50,21 @@ function updateState(simpleEl) {
   }
 }
 
+const setupEl = (el, baseState, baseEl) => {
+  const state = el.state || baseEl ? baseEl.state : baseState;
+  el.stateMap = baseEl ? baseEl.stateMap : create(el, creator);
+  el._refs = collect(el, el.stateMap);
+  Object.defineProperty(el, 'state', {
+    get: () => el._state,
+    set: (v) => {
+      el._oldState = Object.assign({}, el._state);
+      el._state = Object.assign(el._state || {}, v);
+      updateState(el);
+    }
+  });
+  if (state) el.state = state;
+};
+
 function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     const templ = template(content);
@@ -61,31 +76,11 @@ function SimpleElement(content, defaultState) {
     (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
     // for document.createElement('tag', { is: 'custom-element' })
     content.isSifrr) return content;
-  content.stateMap = create(content, creator);
-  content._refs = collect(content, content.stateMap);
-  Object.defineProperty(content, 'state', {
-    get: () => content._state,
-    set: (v) => {
-      content._oldState = Object.assign({}, content._state);
-      content._state = Object.assign(content._state || {}, v);
-      updateState(content);
-    }
-  });
-  if (defaultState) content.state = defaultState;
+  setupEl(content, defaultState);
 
   content.sifrrClone = function(deep = true) {
     const clone = content.cloneNode(deep);
-    clone.stateMap = content.stateMap;
-    clone._refs = collect(clone, content.stateMap);
-    Object.defineProperty(clone, 'state', {
-      get: () => clone._state,
-      set: (v) => {
-        clone._oldState = Object.assign({}, clone._state);
-        clone._state = Object.assign(clone._state || {}, v);
-        updateState(clone);
-      }
-    });
-    if (content.state) clone.state = content.state;
+    setupEl(clone, defaultState, content);
     return clone;
   };
 
