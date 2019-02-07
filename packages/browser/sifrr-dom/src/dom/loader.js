@@ -39,6 +39,8 @@ class Loader {
   }
 
   executeScripts(js) {
+    if (this._executed) return window.console.log(`${this.elementName} was already executed`);
+    this._executed = true;
     if (!js) {
       return this.executeHTMLScripts();
     } else {

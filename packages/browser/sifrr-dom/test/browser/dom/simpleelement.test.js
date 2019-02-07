@@ -124,10 +124,15 @@ describe('Sifrr.Dom.SimpleElement', () => {
       const se = Sifrr.Dom.SimpleElement(document.createElement('sifrr-small'));
       return typeof se.stateMap;
     });
+    const type4 = await page.evaluate(async () => {
+      const se = Sifrr.Dom.SimpleElement(document.createElement('tr', { is: 'sifrr-row' }));
+      return typeof se.stateMap;
+    });
 
     expect(type1).to.eq('undefined');
     expect(type2).to.eq('undefined');
     expect(type3).to.eq('undefined');
+    expect(type4).to.eq('undefined');
   });
 
   describe('sifrrClone', async () => {

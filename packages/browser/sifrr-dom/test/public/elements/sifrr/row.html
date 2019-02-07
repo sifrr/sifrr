@@ -5,12 +5,12 @@
   <td class='col-md-6'></td>
 </template>
 <script type="text/javascript">
-  class SifrrSmaller extends Sifrr.Dom.Element.extends(HTMLTableRowElement) {
+  class SifrrRow extends Sifrr.Dom.Element.extends(HTMLTableRowElement) {
     static get useShadowRoot() {
       return false;
     }
   }
-  Sifrr.Dom.register(SifrrSmaller, {
+  Sifrr.Dom.register(SifrrRow, {
     extends: 'tr'
   });
 </script>

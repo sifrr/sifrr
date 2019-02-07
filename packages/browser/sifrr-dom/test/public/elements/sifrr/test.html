@@ -4,7 +4,7 @@
       color: ${this.state.color};
     }
   </style>
-  <link rel="stylesheet" href="${Sifrr.Dom.relativeTo('sifrr-test', './test.css')}">
+  <link rel="stylesheet" href="/elements/sifrr/test.css">
   okokok____ok ${this.state.text}
   <slot></slot>
   <a href="#">${
@@ -34,11 +34,6 @@
   <div data-sifrr-html="true">
     <!-- ${this.arrayToDom('data')} -->
   </div>
-  <table class="table table-hover table-striped test-data">
-    <tbody data-sifrr-html="true">
-      <!-- ${this.arrayToDom('data2', this.state.data)} -->
-    </tbody>
-  </table>
   <div class="html" data-sifrr-html="true">
     ${this.state.html}
   </div>

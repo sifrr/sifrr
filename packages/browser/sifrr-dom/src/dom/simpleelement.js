@@ -55,18 +55,13 @@ function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     const templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
-    if (content.nodeType === ELEMENT_NODE) {
-      const oldDisplay = content.style.display;
-      content.style.display = 'none';
-      window.document.body.appendChild(content);
-      content.remove();
-      content.style.display = oldDisplay;
-    }
   } else if (!content.nodeType) {
     throw TypeError('First argument for SimpleElement should be of type string or DOM element');
   }
   if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)) return content;
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
+    // for document.createElement('tag', { is: 'custom-element' })
+    content.isSifrr) return content;
   content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {

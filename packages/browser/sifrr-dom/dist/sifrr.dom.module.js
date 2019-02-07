@@ -384,6 +384,8 @@ class Loader {
     return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
   }
   executeScripts(js) {
+    if (this._executed) return window.console.log(`${this.elementName} was already executed`);
+    this._executed = true;
     if (!js) {
       return this.executeHTMLScripts();
     } else {
@@ -421,7 +423,6 @@ Loader._all = {};
 var loader = Loader;
 
 const { collect: collect$2, create: create$2 } = ref;
-const { ELEMENT_NODE: ELEMENT_NODE$1 } = constants;
 function creator$1(node) {
   if (node.nodeType !== 3) {
     if (node.attributes !== undefined) {
@@ -472,18 +473,12 @@ function SimpleElement(content, defaultState) {
   if (typeof content === 'string') {
     const templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
-    if (content.nodeType === ELEMENT_NODE$1) {
-      const oldDisplay = content.style.display;
-      content.style.display = 'none';
-      window.document.body.appendChild(content);
-      content.remove();
-      content.style.display = oldDisplay;
-    }
   } else if (!content.nodeType) {
     throw TypeError('First argument for SimpleElement should be of type string or DOM element');
   }
   if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)) return content;
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
+    content.isSifrr) return content;
   content.stateMap = create$2(content, creator$1);
   content._refs = collect$2(content, content.stateMap);
   Object.defineProperty(content, 'state', {
