@@ -18,13 +18,11 @@ class PageRequest {
     const me = this;
     this.npage.setRequestInterception(true).then(() => {
       me.npage.on('request', (request) => {
-        if (!isTypeOf(request, whiteTypes)) {
-          request.abort();
-        } else if (isTypeOf(request, whiteTypes)) {
+        if (isTypeOf(request, whiteTypes)) {
           me.pendingRequests++;
           request.continue();
         } else {
-          request.continue();
+          request.abort();
         }
       });
     });

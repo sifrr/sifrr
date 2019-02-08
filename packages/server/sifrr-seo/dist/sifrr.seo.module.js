@@ -1666,8 +1666,7 @@ var lib = cacheManager;
 
 var cacheManager$1 = lib;
 
-const mediaTypes = ['image'];
-const fetchTypes = ['xhr', 'fetch'];
+const whiteTypes = ['document', 'script', 'xhr', 'fetch'];
 function isTypeOf(request, types) {
   const resType = request.resourceType();
   return types.indexOf(resType) !== -1;
@@ -1684,13 +1683,11 @@ class PageRequest {
     const me = this;
     this.npage.setRequestInterception(true).then(() => {
       me.npage.on('request', (request) => {
-        if (isTypeOf(request, mediaTypes)) {
-          request.abort();
-        } else if (isTypeOf(request, fetchTypes)) {
+        if (isTypeOf(request, whiteTypes)) {
           me.pendingRequests++;
           request.continue();
         } else {
-          request.continue();
+          request.abort();
         }
       });
     });
@@ -1705,7 +1702,7 @@ class PageRequest {
     });
   }
   onEnd(req) {
-    if (isTypeOf(req, fetchTypes)) {
+    if (isTypeOf(req, whiteTypes)) {
       this.pendingRequests--;
       if (this.pendingRequests === 0) {
         this.pendingResolver();
