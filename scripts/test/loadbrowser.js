@@ -1,6 +1,6 @@
 global.puppeteer = require('puppeteer');
 
-module.exports = async function() {
+module.exports = async function(slowMo) {
   // set browser and page global variables
   let pBrowser = await puppeteer.launch({
     // to make it work in circleci
@@ -9,7 +9,8 @@ module.exports = async function() {
       '--disable-setuid-sandbox'
     ],
     headless: process.env.HEADLESS !== 'false',
-    devtools: false
+    devtools: false,
+    slowMo
   });
   let page = await pBrowser.newPage();
   await page.setViewport( { width: 1280, height: 800} );

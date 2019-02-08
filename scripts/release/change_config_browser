@@ -41,6 +41,7 @@ try {
   pkgToMerge.peerDependencies = dependencyVersion(pkgFile.peerDependencies, pkg.version);
   pkgToMerge.dependencies = dependencyVersion(pkgFile.dependencies, pkg.version);
 
+  pkgToMerge.scripts = Object.assign(pkgFile.scripts, pkgToMerge.scripts);
   Object.assign(pkgFile, pkgToMerge);
   fs.writeFileSync(__dirname + '/' + pkgFileString, JSON.stringify(pkgFile, null, 2) + '\n');
   process.stdout.write('Done: package.json');

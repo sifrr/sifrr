@@ -1,0 +1,29 @@
+const Benchmark = require('./benchmark');
+
+class OnekRun extends Benchmark {
+  static beforeAll() {
+    return this.prototype.mainClick('#run');
+  }
+
+  static beforeAllWait() {
+    return `${this.prototype.main} && ${this.prototype.main}.$$('tr').length === 1000`;
+  }
+
+  before() {
+    return this.mainClick('#swaprows');
+  }
+
+  beforeWait() {
+    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '999'`;
+  }
+
+  run() {
+    return this.mainClick('#swaprows');
+  }
+
+  runWait() {
+    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '2'`;
+  }
+}
+
+module.exports = OnekRun;
