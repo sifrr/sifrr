@@ -1,7 +1,7 @@
 const loadBrowser = require('../../../../scripts/test/loadbrowser');
 
 const speedMetrics = {};
-async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['LayoutDuration', 'ScriptDuration', 'RecalcStyleDuration']) {
+async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['LayoutDuration', 'ScriptDuration', 'RecalcStyleDuration', 'LayoutCount']) {
   const BM = require(`./benchmarks/${benchmark}`);
   let totals = {};
   process.stdout.write(`Running ${benchmark} benchmark for ${warmups} warmups and ${runs} runs: \n`);
@@ -49,6 +49,7 @@ async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['L
   }
 
   // Save metrics
+  global.console.table(totals);
   speedMetrics[benchmark] = totals;
 }
 

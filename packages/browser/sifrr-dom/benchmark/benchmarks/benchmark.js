@@ -24,7 +24,7 @@ class Benchmark {
   static async metrics() {
     const ret = {};
     const ms = (await page._client.send('Performance.getMetrics')).metrics;
-    ms.forEach(m => ret[m.name] = m.value * 1000);
+    ms.forEach(m => ret[m.name] = m.value * (m.name.indexOf('Duration') >= 0 ? 1000 : 1));
     return ret;
   }
 
