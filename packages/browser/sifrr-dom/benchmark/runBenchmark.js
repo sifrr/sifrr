@@ -59,7 +59,9 @@ async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['L
 
   // benchmarks
   await runClickBenchmark('1k-run');
+  await runClickBenchmark('1k-update');
   await runClickBenchmark('10k-run');
+  await runClickBenchmark('10k-update');
   await runClickBenchmark('1k-clear');
   await runClickBenchmark('10k-clear');
   await runClickBenchmark('1k-swap');
