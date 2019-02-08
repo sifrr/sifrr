@@ -59,12 +59,12 @@ class Loader {
       file.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           // Appending script node directly doesn't work
-          const newScript = window.document.createElement('script');
+          const newScript = require('./constants').SCRIPT();
           newScript.src = script.src;
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text).bind(window)();
+          new Function(script.text).call(window);
         }
       });
     }).catch(e => window.console.error(e));

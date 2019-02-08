@@ -79,8 +79,10 @@
   };
 
   const temp = window.document.createElement('template');
+  const script = window.document.createElement('script');
   var constants = {
     TEMPLATE: () => temp.cloneNode(),
+    SCRIPT: () => script.cloneNode(),
     TEXT_NODE: 3,
     COMMENT_NODE: 8,
     ELEMENT_NODE: 1
@@ -435,12 +437,12 @@
       return this.html.then(file => {
         file.querySelectorAll('script').forEach(script => {
           if (script.src) {
-            const newScript = window.document.createElement('script');
+            const newScript = constants.SCRIPT();
             newScript.src = script.src;
             newScript.type = script.type;
             window.document.body.appendChild(newScript);
           } else {
-            new Function(script.text).bind(window)();
+            new Function(script.text).call(window);
           }
         });
       }).catch(e => window.console.error(e));

@@ -8,12 +8,6 @@ async function runClickBenchmark(name, before, after, metrics = ['LayoutDuration
   for (let i = 0; i < times; i++) {
     process.stdout.write(`${i + 1} `);
 
-    // Reload page
-    await page._client.send('Performance.disable');
-    await page.goto(`http://localhost:1111/speedtest.html`);
-    await page.evaluate(async () => await Sifrr.Dom.loading());
-    await page._client.send('Performance.enable');
-
     // Run before
     await page.$eval('main-element', (el, before) => el.$(before).click(), before);
     const beforeMetrics = (await page._client.send('Performance.getMetrics')).metrics;
@@ -48,6 +42,8 @@ async function runClickBenchmark(name, before, after, metrics = ['LayoutDuration
   await loadBrowser();
 
   await page._client.send('Performance.enable');
+  await page.goto(`http://localhost:1111/speedtest.html`);
+  await page.evaluate(async () => await Sifrr.Dom.loading());
 
   // benchmarks
   await runClickBenchmark('1k-run', '#clear', '#run');
