@@ -10,7 +10,7 @@ class OnekRun extends Benchmark {
   }
 
   run() {
-    return page.evaluate(`${this.main}.$$('tr .lbl')[${this.i + 5}].click()`);
+    return page.evaluate(`${this.main}.$$('tr td:nth-child(2) a')[${this.i + 5}].click()`);
   }
 
   runWait() {

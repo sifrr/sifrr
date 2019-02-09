@@ -1,4 +1,5 @@
 .DS_STORE
+.DS_Store
 node_modules
 yarn-error*
 test-results

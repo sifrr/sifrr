@@ -18,7 +18,7 @@
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-dom/test/public -p 1111",
     "test-server": "yarn test-build; yarn test-server-only",
-    "benchmark": "HEADLESS=false node benchmark/runBenchmark.js"
+    "benchmark": "HEADLESS=false node benchmark/runbenchmark.js"
   },
   "repository": {
     "type": "git",

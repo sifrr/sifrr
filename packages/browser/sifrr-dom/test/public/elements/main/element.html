@@ -69,8 +69,6 @@
     onConnect() {
       const self = this;
       Sifrr.Dom.Event.addListener('click', '.remove', (e, target) => {
-        const parent = getParent(target);
-        parent.remove();
         const id = getParent(target).state.id;
         const data = self.state.data;
         for(let i = data.length - 1; i >= 0; i--){

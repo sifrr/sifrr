@@ -10,11 +10,11 @@ class OnekRun extends Benchmark {
   }
 
   run() {
-    return page.evaluate(`${this.main}.$$('tr .remove')[5].click()`);
+    return page.evaluate(`${this.main}.$$('tr td:nth-child(3) a')[5].click()`);
   }
 
   runWait() {
-    return `${this.main}.$$('tr .id')[5].textContent == ${this.i + 7}`;
+    return `${this.main}.$$('tr td:first-child')[5].textContent == ${this.i + 7}`;
   }
 }
 

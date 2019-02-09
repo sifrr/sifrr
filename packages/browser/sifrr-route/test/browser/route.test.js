@@ -133,7 +133,10 @@ describe('sifrr-route', () => {
 
     await page.goto(`${PATH}/`);
     await page.$eval('#complexlink', el => el.i = 5);
-    await page.click('a[target="_parent"]');
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click('a[target="_parent"]')
+    ]);
 
     expect(page.url()).to.equal(`${PATH}/target`);
     expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(5);

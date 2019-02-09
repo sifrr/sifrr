@@ -14,11 +14,11 @@ class Benchmark {
   runWait() { return '1 === 1'; }
 
   get main() {
-    return "document.querySelector('main-element')";
+    return "document.querySelector('#main')";
   }
 
   mainClick(selector) {
-    return page.$eval('main-element', (el, selector) => el.$(selector).click(), selector);
+    return page.$eval('#main', (el, selector) => el.$(selector).click(), selector);
   }
 
   static async metrics() {

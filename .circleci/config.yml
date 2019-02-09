@@ -47,7 +47,7 @@ jobs:
           name: New Release
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              yarn dom-benchmark
+              yarn dom-benchmark -r 2
               echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
               ./scripts/publish
             fi
