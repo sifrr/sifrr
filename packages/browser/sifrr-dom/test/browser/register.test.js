@@ -43,16 +43,18 @@ describe('Sifrr.Dom.Element', () => {
     expect(error).to.eq('Error creating Element: nodash - Custom Element name must have one dash \'-\'');
   });
 
-  it('warns if element-name already taken', async () => {
-    const warn = await page.evaluate(() => {
-      let warning;
-      window.console.warn = (x) => warning = x;
-      window.customElements.define('random-name', class extends HTMLElement {});
-      Sifrr.Dom.register({ elementName: 'random-name' });
-      return warning;
+  it('throws error if element-name already taken', async () => {
+    const error = await page.evaluate(() => {
+      try {
+        window.customElements.define('random-name', class extends HTMLElement {});
+        Sifrr.Dom.register({ elementName: 'random-name' });
+        return true;
+      } catch(e) {
+        return e.message;
+      }
     });
 
-    expect(warn).to.eq('Error creating Element: random-name - Custom Element with this name is already defined.');
+    expect(error).to.eq('Error creating Element: random-name - Custom Element with this name is already defined.');
   });
 
   it('consoles error if customElements define throws error', async () => {

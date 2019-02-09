@@ -16,7 +16,7 @@
       var seState = Sifrr.Dom.SimpleElement('<p>${p}</p>', { p: 'default' });
       var seExtra = Sifrr.Dom.SimpleElement('<div><p>${p}</p><span></span></div>', { p: 'default' });
       var seAttr = Sifrr.Dom.SimpleElement('<div><p data-attr=${attr} class="${class}"></p></div>');
-      var seComplex = Sifrr.Dom.SimpleElement('<div><p data-attr=${attr} class="${class}"></p>${some}</div>');
+      var seComplex = Sifrr.Dom.SimpleElement('<div><p data-attr=${attr} class="${class}" id="ok"></p>${some}</div>');
       var seComment = Sifrr.Dom.SimpleElement('<p>${before}<!-- comm -->${after}</p>', { before: 'b', after: 'a' });
 
       const p = document.createElement('p');

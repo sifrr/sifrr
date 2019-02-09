@@ -19,4 +19,17 @@ describe('Sifrr.Dom.load and Loader', () => {
     await testElement('loading-module2', 'Loading Module Import');
     await testElement('loading-separatejs', 'Loading Separate JS');
   });
+
+  it("doesn't try to register element if it is already loaded", async () => {
+    const error = await page.evaluate(() => {
+      try {
+        Sifrr.Dom.load('loading-load');
+        return false;
+      } catch(e) {
+        return e.message;
+      }
+    });
+
+    assert.equal(error, false);
+  });
 });
