@@ -1,4 +1,7 @@
+const path =require('path');
 const loadBrowser = require('../../../../scripts/test/loadbrowser');
+const server = require('../../../../scripts/test/server');
+const port = 1111;
 
 const speedMetrics = {};
 async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['LayoutDuration', 'ScriptDuration', 'RecalcStyleDuration', 'LayoutCount']) {
@@ -7,7 +10,7 @@ async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['L
   process.stdout.write(`Running ${benchmark} benchmark for ${warmups} warmups and ${runs} runs: \n`);
 
   // Reload page
-  await page.goto(`http://localhost:1111/speedtest.html`);
+  await page.goto(`http://localhost:${port}/speedtest.html`);
   await page.evaluate(async () => await Sifrr.Dom.loading());
 
   // Run before all
@@ -49,11 +52,11 @@ async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['L
   }
 
   // Save metrics
-  global.console.table(totals);
   speedMetrics[benchmark] = totals;
 }
 
 (async () => {
+  const s = server(port, path.join(__dirname, '../test/public'));
   await loadBrowser(process.env.HEADLESS === 'false' ? 10 : 0);
 
   await page._client.send('Performance.enable');
@@ -64,11 +67,14 @@ async function runClickBenchmark(benchmark, warmups = 5, runs = 5, metrics = ['L
   await runClickBenchmark('10k-run');
   await runClickBenchmark('10k-update');
   await runClickBenchmark('1k-clear');
+  await runClickBenchmark('1k-select');
+  await runClickBenchmark('1k-delete');
   await runClickBenchmark('10k-clear');
   await runClickBenchmark('1k-swap');
   await runClickBenchmark('10k-update10th');
   await runClickBenchmark('10k-append');
 
   await browser.close();
+  s.close();
   global.console.table(speedMetrics);
 })();

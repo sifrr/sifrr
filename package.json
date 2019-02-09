@@ -16,7 +16,8 @@
   "scripts": {
     "test": "./scripts/test/runall",
     "build": "./scripts/yarn build",
-    "publish": "./scripts/yarn publish"
+    "publish": "./scripts/yarn publish",
+    "dom-benchmark": "cd packages/browser/sifrr-dom && yarn benchmark"
   },
   "repository": {
     "type": "git",
