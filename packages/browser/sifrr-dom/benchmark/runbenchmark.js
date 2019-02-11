@@ -32,4 +32,17 @@ const port = getArg('server');
 const runs = parseInt(getArg('runs') || 5);
 const url = getArg('url');
 
-new BenchmarkRunner(benchmarks, { port, runs, url }).run();
+(async function() {
+  const results = await new BenchmarkRunner(benchmarks, { port, runs, url }).run();
+
+  for (let bm in results) {
+    const bmd = results[bm];
+    let total = 0;
+    for (let dur in bmd) {
+      if (dur.indexOf('Duration')) total += bmd[dur];
+    }
+    bmd['TotalDuration'] = total;
+  }
+
+  global.console.table(results);
+})();

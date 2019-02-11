@@ -34,7 +34,7 @@ class BenchmarkRunner {
 
     await browser.close();
     this.closeServer();
-    global.console.table(this.speedMetrics);
+    return this.speedMetrics;
   }
 
   async loadBrowser() {
