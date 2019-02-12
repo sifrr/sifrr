@@ -64,6 +64,7 @@ if (toCover) {
 
 const nycReport = path.join(__dirname, '../../.nyc_output');
 const loadBrowser = async function() {
+  if (global.browser && global.browser.current) await global.browser.close();
   // set browser and page global variables
   let pBrowser = await puppeteer.launch({
     // to make it work in circleci

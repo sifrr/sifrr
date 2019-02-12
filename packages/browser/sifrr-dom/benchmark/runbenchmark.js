@@ -1,4 +1,5 @@
 const BenchmarkRunner = require('./benchmarkrunner');
+const loadTestBrowser = require('../../../../scripts/test/loadbrowser');
 
 function getArg(name) {
   const argi = Math.max(process.argv.indexOf(`--${name}`), process.argv.indexOf(`-${name[0]}`));
@@ -33,7 +34,8 @@ const runs = parseInt(getArg('runs') || 5);
 const url = getArg('url');
 
 (async function() {
-  const results = await new BenchmarkRunner(benchmarks, { port, runs, url }).run();
+  await loadTestBrowser(process.env.HEADLESS === 'false' ? 10 : 0);
+  const results = await new BenchmarkRunner(benchmarks, { port, runs, url }, false).run();
 
   for (let bm in results) {
     const bmd = results[bm];
@@ -44,5 +46,6 @@ const url = getArg('url');
     bmd['TotalDuration'] = total;
   }
 
+  await browser.close();
   global.console.table(results);
 })();

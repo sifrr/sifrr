@@ -1,5 +1,4 @@
 const path =require('path');
-const loadBrowser = require('../../../../scripts/test/loadbrowser');
 const server = require('../../../../scripts/test/server');
 const runClickBenchmark = require('./runclickbenchmark');
 
@@ -22,7 +21,6 @@ class BenchmarkRunner {
 
   async run() {
     if (!this.url) this.startServer();
-    await this.loadBrowser();
 
     await page._client.send('Performance.enable');
 
@@ -32,13 +30,8 @@ class BenchmarkRunner {
       this.speedMetrics[b] = await runClickBenchmark(b, this.port, this.runs, this.url);
     }
 
-    await browser.close();
     this.closeServer();
     return this.speedMetrics;
-  }
-
-  async loadBrowser() {
-    await loadBrowser(process.env.HEADLESS === 'false' ? 10 : 0);
   }
 }
 
