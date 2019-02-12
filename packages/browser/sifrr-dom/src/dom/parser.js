@@ -107,6 +107,8 @@ const Parser = {
         let children;
         if (Array.isArray(newValue)) {
           children = newValue;
+        } else if (newValue.nodeType === 1) {
+          children = Array.prototype.slice.call(newValue.content.childNodes);
         } else if (newValue.nodeType) {
           children = [newValue];
         } else {

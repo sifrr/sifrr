@@ -317,6 +317,8 @@
           let children;
           if (Array.isArray(newValue)) {
             children = newValue;
+          } else if (newValue.nodeType === 1) {
+            children = Array.prototype.slice.call(newValue.content.childNodes);
           } else if (newValue.nodeType) {
             children = [newValue];
           } else {
@@ -678,7 +680,7 @@
               state: newState[i]
             });
           } else {
-            const el = temp.sifrrClone(true);
+            const el = temp.sifrrClone ? temp.sifrrClone(true) : temp.cloneNode(true);
             el.state = newState[i];
             domArray.push(el);
           }
