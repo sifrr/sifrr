@@ -3,6 +3,7 @@ before_install: yarn config set workspaces-experimental true
 script: yarn test
 cache: yarn
 node_js:
-  - '11'
-  - '10'
-  - '9'
+  - '11.9.0'
+  - '10.15.0'
+  - '8.15.0'
+  - '6.16.0'
