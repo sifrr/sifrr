@@ -3,12 +3,7 @@ module.exports = function (api) {
   const presets = [
     ['@babel/env', {
       modules: false,
-      targets: {
-        chrome: 55,
-        safari: 11,
-        opera: 42,
-        firefox: 63
-      }
+      targets: require('./package.json').browserslist
     }]
   ];
 

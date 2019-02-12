@@ -27,7 +27,7 @@ const cssMatchEvent = (e, name, dom, target) => {
 };
 
 const Event = {
-  all: SYNTHETIC_EVENTS, 
+  all: SYNTHETIC_EVENTS,
   add: (name) => {
     if (SYNTHETIC_EVENTS[name]) return false;
     window.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
