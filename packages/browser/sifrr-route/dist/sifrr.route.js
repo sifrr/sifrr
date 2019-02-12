@@ -94,9 +94,9 @@
         this.activate();
         this.state = parsed.data;
         this.$$('[data-sifrr-route-state=true]', false).forEach(el => {
-          el.dataset.sifrrState = JSON.stringify({
+          el.state = {
             route: parsed.data
-          });
+          };
         });
       } else this.deactivate();
     }
