@@ -1,7 +1,7 @@
 const { TEXT_NODE, ELEMENT_NODE, COMMENT_NODE } = require('./constants');
 
 // Inspired by https://github.com/Freak613/stage0/blob/master/index.js
-function creator(el, isHtml = false) {
+module.exports = (el, isHtml = false) => {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
     const x = el.nodeValue;
@@ -47,8 +47,4 @@ function creator(el, isHtml = false) {
     if (Object.keys(sm).length > 0) return sm;
   }
   return 0;
-}
-
-module.exports = {
-  creator
 };

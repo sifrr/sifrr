@@ -63,98 +63,6 @@
   };
   var json = Json;
 
-  function updateAttribute(element, name, newValue) {
-    const fromValue = element.getAttribute(name);
-    if (fromValue != newValue) {
-      if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-        if (fromValue) element.removeAttribute(name);
-      } else {
-        element.setAttribute(name, newValue);
-      }
-    }
-    if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
-  }
-  var update = {
-    updateAttribute
-  };
-
-  const temp = window.document.createElement('template');
-  const script = window.document.createElement('script');
-  var constants = {
-    TEMPLATE: () => temp.cloneNode(),
-    SCRIPT: () => script.cloneNode(),
-    TEXT_NODE: 3,
-    COMMENT_NODE: 8,
-    ELEMENT_NODE: 1
-  };
-
-  const {
-    updateAttribute: updateAttribute$1
-  } = update;
-  const {
-    shallowEqual
-  } = json;
-  const {
-    TEXT_NODE,
-    COMMENT_NODE
-  } = constants;
-  function makeChildrenEqual(parent, newChildren) {
-    const oldL = parent.childNodes.length,
-          newL = newChildren.length;
-    if (oldL > newL) {
-      let i = oldL;
-      while (i > newL) {
-        parent.removeChild(parent.lastChild);
-        i--;
-      }
-    } else if (oldL < newL) {
-      let i = oldL;
-      while (i < newL) {
-        parent.appendChild(newChildren[i]);
-        i++;
-      }
-    }
-    const l = Math.min(newL, oldL);
-    for (let i = 0, item, head = parent.firstChild; i < l; i++) {
-      item = newChildren[i];
-      head = makeEqual(head, item).nextSibling;
-    }
-  }
-  function makeEqual(oldNode, newNode) {
-    if (newNode === null) return oldNode;
-    if (newNode.type === 'stateChange') {
-      if (!shallowEqual(oldNode.state, newNode.state)) {
-        oldNode.state = newNode.state;
-      }
-      return oldNode;
-    }
-    if (oldNode.nodeName !== newNode.nodeName) {
-      oldNode.replaceWith(newNode);
-      return newNode;
-    }
-    if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
-      if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
-      return oldNode;
-    }
-    if (newNode.state) oldNode.state = newNode.state;
-    let oldAttrs = oldNode.attributes,
-        newAttrs = newNode.attributes,
-        attr;
-    for (let i = newAttrs.length - 1; i >= 0; --i) {
-      updateAttribute$1(oldNode, newAttrs[i].name, newAttrs[i].value);
-    }
-    for (let j = oldAttrs.length - 1; j >= 0; --j) {
-      attr = oldAttrs[j];
-      if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
-    }
-    makeChildrenEqual(oldNode, newNode.childNodes);
-    return oldNode;
-  }
-  var makeequal = {
-    makeEqual,
-    makeChildrenEqual
-  };
-
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   class Ref {
     constructor(idx, ref) {
@@ -169,7 +77,7 @@
     return refs;
   }
   function filterTW(TW, node, filter) {
-    if (filter && filter(node)) {
+    if (filter) {
       node = TW.nextSibling();
       if (!node) {
         TW.parentNode();
@@ -181,7 +89,7 @@
   TREE_WALKER.roll = function (n, filter = false) {
     let node = this.currentNode;
     while (--n) {
-      node = filterTW(TREE_WALKER, node, filter);
+      node = filterTW(TREE_WALKER, node, filter && filter(node));
     }
     return node;
   };
@@ -192,13 +100,14 @@
         i = 0;
     TREE_WALKER.currentNode = node;
     while (node && i < 5000) {
-      if (ref = fxn(node)) {
+      const f = filter && filter(node);
+      if (ref = fxn(node, f)) {
         indices.push(new Ref(idx + 1, ref));
         idx = 1;
       } else {
         idx++;
       }
-      node = filterTW(TREE_WALKER, node, filter);
+      node = filterTW(TREE_WALKER, node, f);
       i++;
     }
     return indices;
@@ -210,27 +119,23 @@
     Ref
   };
 
+  const temp = window.document.createElement('template');
+  const script = window.document.createElement('script');
+  var constants = {
+    TEMPLATE: () => temp.cloneNode(),
+    SCRIPT: () => script.cloneNode(),
+    TEXT_NODE: 3,
+    COMMENT_NODE: 8,
+    ELEMENT_NODE: 1
+  };
+
   const {
-    makeChildrenEqual: makeChildrenEqual$1
-  } = makeequal;
-  const {
-    updateAttribute: updateAttribute$2
-  } = update;
-  const {
-    collect: collect$1,
-    create: create$1
-  } = ref;
-  const {
-    TEXT_NODE: TEXT_NODE$1,
-    COMMENT_NODE: COMMENT_NODE$1,
-    ELEMENT_NODE
+    TEXT_NODE,
+    ELEMENT_NODE,
+    COMMENT_NODE
   } = constants;
-  const TEMPLATE = constants.TEMPLATE();
-  function isHtml(el) {
-    return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
-  }
-  function creator(el) {
-    if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
+  var creator = (el, isHtml = false) => {
+    if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
       const x = el.nodeValue;
       if (x.indexOf('${') > -1) return {
         html: false,
@@ -238,7 +143,7 @@
       };
     } else if (el.nodeType === ELEMENT_NODE) {
       const sm = {};
-      if (isHtml(el)) {
+      if (isHtml) {
         const innerHTML = el.innerHTML;
         if (innerHTML.indexOf('${') >= 0) {
           sm.html = true;
@@ -274,67 +179,18 @@
       if (Object.keys(sm).length > 0) return sm;
     }
     return 0;
+  };
+
+  const {
+    collect: collect$1,
+    create: create$1
+  } = ref;
+  function isHtml(el) {
+    return el.dataset && el.dataset.sifrrHtml == 'true' || el.contentEditable == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE';
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
     createStateMap: element => create$1(element, creator, isHtml),
-    update: element => {
-      if (!element._refs) {
-        return false;
-      }
-      const l = element._refs.length;
-      for (let i = 0; i < l; i++) {
-        const data = element.constructor.stateMap[i].ref;
-        const dom = element._refs[i];
-        if (data.attributes) {
-          for (let key in data.attributes) {
-            if (key === 'events') {
-              for (let event in data.attributes.events) {
-                const eventLis = Parser.evaluateString(data.attributes.events[event], element, true);
-                if (data.attributes.events[event].slice(0, 6) === '${this') {
-                  dom[event] = eventLis.bind(element);
-                } else {
-                  dom[event] = eventLis;
-                }
-              }
-            } else if (key === 'style') {
-              for (let k in data.attributes.style) {
-                dom.style[k] = Parser.evaluateString(data.attributes.style[k], element);
-              }
-            } else {
-              const val = Parser.evaluateString(data.attributes[key], element);
-              updateAttribute$2(dom, key, val);
-            }
-          }
-        }
-        if (data.html === undefined) continue;
-        const newValue = Parser.evaluateString(data.text, element);
-        if (!newValue) {
-          dom.textContent = '';
-          continue;
-        }
-        if (data.html) {
-          let children;
-          if (Array.isArray(newValue)) {
-            children = newValue;
-          } else if (newValue.nodeType === 1) {
-            children = Array.prototype.slice.call(newValue.content.childNodes);
-          } else if (newValue.nodeType) {
-            children = [newValue];
-          } else {
-            TEMPLATE.innerHTML = newValue.toString()
-            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-            children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
-          }
-          if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
-        } else {
-          if (dom.nodeValue != newValue) {
-            dom.nodeValue = newValue;
-          }
-        }
-      }
-    },
     twoWayBind: e => {
       const target = e.path ? e.path[0] : e.target;
       if (!target.dataset.sifrrBind) return;
@@ -351,7 +207,8 @@
       state[target.dataset.sifrrBind] = value;
       root.state = state;
     },
-    evaluateString: (string, element) => {
+    evaluateString: (string, element, isSimple) => {
+      if (isSimple) return element.state[string.slice(2, -1)];
       if (string.indexOf('${') < 0) return string;
       string = string.trim();
       if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
@@ -369,6 +226,148 @@
     }
   };
   var parser = Parser;
+
+  function updateAttribute(element, name, newValue) {
+    const fromValue = element.getAttribute(name);
+    if (fromValue != newValue) {
+      if (!newValue) {
+        if (fromValue) element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, newValue);
+      }
+    }
+    if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
+  }
+  var updateattribute = updateAttribute;
+
+  const {
+    shallowEqual
+  } = json;
+  const {
+    TEXT_NODE: TEXT_NODE$1,
+    COMMENT_NODE: COMMENT_NODE$1
+  } = constants;
+  function makeChildrenEqual(parent, newChildren) {
+    const oldL = parent.childNodes.length,
+          newL = newChildren.length;
+    if (oldL > newL) {
+      let i = oldL;
+      while (i > newL) {
+        parent.removeChild(parent.lastChild);
+        i--;
+      }
+    } else if (oldL < newL) {
+      let i = oldL;
+      while (i < newL) {
+        parent.appendChild(newChildren[i]);
+        i++;
+      }
+    }
+    const l = Math.min(newL, oldL);
+    for (let i = 0, item, head = parent.firstChild; i < l; i++) {
+      item = newChildren[i];
+      head = makeEqual(head, item).nextSibling;
+    }
+  }
+  function makeEqual(oldNode, newNode) {
+    if (newNode === null) return oldNode;
+    if (newNode.type === 'stateChange') {
+      if (!shallowEqual(oldNode.state, newNode.state)) {
+        oldNode.state = newNode.state;
+      }
+      return oldNode;
+    }
+    if (oldNode.nodeName !== newNode.nodeName) {
+      oldNode.replaceWith(newNode);
+      return newNode;
+    }
+    if (oldNode.nodeType === TEXT_NODE$1 || oldNode.nodeType === COMMENT_NODE$1) {
+      if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
+      return oldNode;
+    }
+    if (newNode.state) oldNode.state = newNode.state;
+    let oldAttrs = oldNode.attributes,
+        newAttrs = newNode.attributes,
+        attr;
+    for (let i = newAttrs.length - 1; i >= 0; --i) {
+      updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
+    }
+    for (let j = oldAttrs.length - 1; j >= 0; --j) {
+      attr = oldAttrs[j];
+      if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
+    }
+    makeChildrenEqual(oldNode, newNode.childNodes);
+    return oldNode;
+  }
+  var makeequal = {
+    makeEqual,
+    makeChildrenEqual
+  };
+
+  const {
+    makeChildrenEqual: makeChildrenEqual$1
+  } = makeequal;
+  const {
+    evaluateString
+  } = parser;
+  const TEMPLATE = constants.TEMPLATE();
+  function update(element, stateMap = element.constructor.stateMap, isSimple = false) {
+    if (!element._refs) {
+      return false;
+    }
+    const l = element._refs.length;
+    for (let i = 0; i < l; i++) {
+      const data = stateMap[i].ref;
+      const dom = element._refs[i];
+      if (data.attributes) {
+        for (let key in data.attributes) {
+          if (key === 'events') {
+            for (let event in data.attributes.events) {
+              const eventLis = evaluateString(data.attributes.events[event], element, isSimple);
+              if (data.attributes.events[event].slice(0, 6) === '${this') {
+                dom[event] = eventLis.bind(element);
+              } else {
+                dom[event] = eventLis;
+              }
+            }
+            delete data.attributes.events;
+          } else if (key === 'style') {
+            for (let k in data.attributes.style) {
+              dom.style[k] = evaluateString(data.attributes.style[k], element, isSimple);
+            }
+          } else {
+            const val = evaluateString(data.attributes[key], element, isSimple);
+            updateattribute(dom, key, val);
+          }
+        }
+      }
+      if (data.html === undefined) continue;
+      const newValue = evaluateString(data.text, element, isSimple);
+      if (!newValue) {
+        dom.textContent = '';
+        continue;
+      }
+      if (data.html) {
+        let children;
+        if (Array.isArray(newValue)) {
+          children = newValue;
+        } else if (newValue.nodeType) {
+          children = [newValue];
+        } else {
+          TEMPLATE.innerHTML = newValue.toString()
+          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+          .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+          children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
+        }
+        if (children.length < 1) dom.textContent = '';else makeChildrenEqual$1(dom, children);
+      } else {
+        if (dom.nodeValue != newValue) {
+          dom.nodeValue = newValue;
+        }
+      }
+    }
+  }
+  var update_1 = update;
 
   const {
     TEMPLATE: TEMPLATE$1
@@ -463,66 +462,16 @@
     collect: collect$2,
     create: create$2
   } = ref;
-  function creator$1(node) {
-    if (node.nodeType !== 3) {
-      if (node.attributes !== undefined) {
-        const attrs = Array.from(node.attributes),
-              l = attrs.length;
-        const ret = [];
-        for (let i = 0; i < l; i++) {
-          const avalue = attrs[i].value;
-          if (avalue[0] === '$') {
-            ret.push({
-              name: attrs[i].name,
-              text: avalue.slice(2, -1)
-            });
-            node.setAttribute(attrs[i].name, '');
-          }
-        }
-        if (ret.length > 0) return ret;
-      }
-      return 0;
-    } else {
-      let nodeData = node.nodeValue;
-      if (nodeData[0] === '$') {
-        node.nodeValue = '';
-        return nodeData.slice(2, -1);
-      }
-      return 0;
-    }
-  }
-  function updateState(simpleEl) {
-    const doms = simpleEl._refs,
-          refs = simpleEl.stateMap,
-          l = refs.length;
-    const newState = simpleEl.state,
-          oldState = simpleEl._oldState;
-    for (let i = 0; i < l; i++) {
-      const data = refs[i].ref,
-            dom = doms[i];
-      if (Array.isArray(data)) {
-        const l = data.length;
-        for (let i = 0; i < l; i++) {
-          const attr = data[i];
-          if (oldState[attr.text] !== newState[attr.text]) {
-            if (attr.name === 'class') dom.className = newState[attr.text];else dom.setAttribute(attr.name, newState[attr.text]);
-          }
-        }
-      } else {
-        if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
-      }
-    }
-  }
   const setupEl = (el, baseState, baseEl) => {
     const state = el.state || baseEl ? baseEl.state : baseState;
-    el.stateMap = baseEl ? baseEl.stateMap : create$2(el, creator$1);
+    el.stateMap = baseEl ? baseEl.stateMap : create$2(el, creator);
     el._refs = collect$2(el, el.stateMap);
     Object.defineProperty(el, 'state', {
       get: () => el._state,
       set: v => {
         el._oldState = Object.assign({}, el._state);
         el._state = Object.assign(el._state || {}, v);
-        updateState(el);
+        update_1(el, el.stateMap, true);
       }
     });
     if (state) el.state = state;
@@ -629,7 +578,7 @@
         this.update();
       }
       update() {
-        parser.update(this);
+        update_1(this);
         this.onStateChange();
         this.constructor.onStateChange(this);
       }

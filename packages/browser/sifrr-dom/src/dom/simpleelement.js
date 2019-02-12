@@ -1,54 +1,7 @@
 const { collect, create } = require('./ref');
 const template = require('./template');
-
-// Inspired from https://github.com/Freak613/stage0/blob/master/index.js
-function creator(node) {
-  if (node.nodeType !== 3) {
-    if (node.attributes !== undefined) {
-      const attrs = Array.from(node.attributes), l = attrs.length;
-      const ret = [];
-      for (let i = 0; i < l; i++) {
-        const avalue = attrs[i].value;
-        if (avalue[0] === '$') {
-          ret.push({
-            name: attrs[i].name,
-            text: avalue.slice(2, -1)
-          });
-          node.setAttribute(attrs[i].name, '');
-        }
-      }
-      if (ret.length > 0) return ret;
-    }
-    return 0;
-  } else {
-    let nodeData = node.nodeValue;
-    if (nodeData[0] === '$') {
-      node.nodeValue = '';
-      return nodeData.slice(2, -1);
-    }
-    return 0;
-  }
-}
-
-function updateState(simpleEl) {
-  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
-  const newState = simpleEl.state, oldState = simpleEl._oldState;
-  for (let i = 0; i < l; i++) {
-    const data = refs[i].ref, dom = doms[i];
-    if (Array.isArray(data)) {
-      const l = data.length;
-      for (let i = 0; i < l; i++) {
-        const attr = data[i];
-        if (oldState[attr.text] !== newState[attr.text]) {
-          if (attr.name === 'class') dom.className = newState[attr.text];
-          else dom.setAttribute(attr.name, newState[attr.text]);
-        }
-      }
-    } else {
-      if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
-    }
-  }
-}
+const creator = require('./creator');
+const update = require('./update');
 
 const setupEl = (el, baseState, baseEl) => {
   const state = el.state || baseEl ? baseEl.state : baseState;
@@ -59,7 +12,7 @@ const setupEl = (el, baseState, baseEl) => {
     set: (v) => {
       el._oldState = Object.assign({}, el._state);
       el._state = Object.assign(el._state || {}, v);
-      updateState(el);
+      update(el, el.stateMap, true);
     }
   });
   if (state) el.state = state;

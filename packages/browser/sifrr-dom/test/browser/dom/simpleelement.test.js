@@ -21,14 +21,6 @@ describe('Sifrr.Dom.SimpleElement', () => {
     expect(data).to.eq('yay');
   });
 
-  it('renders empty if no state given', async () => {
-    const attr = await page.evaluate('seComplex.querySelector("p").getAttribute("data-attr")');
-    const data = await page.evaluate('seComplex.childNodes[1].data');
-
-    expect(attr).to.eq('');
-    expect(data).to.eq('');
-  });
-
   it('renders again when state is changed', async () => {
     /* eslint-disable no-undef */
     await page.evaluate(() => { seState.state = { p: 'new' }; return seState.innerHTML; });
@@ -68,7 +60,16 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
     /* eslint-enable no-undef */
 
-    expect(state).to.eq('null');
+    expect(state).to.eq('');
+
+    /* eslint-disable no-undef */
+    const state2 = await page.evaluate(() => {
+      seAttr.state = { class: 'null' };
+      return seAttr.querySelector('p').className;
+    });
+    /* eslint-enable no-undef */
+
+    expect(state2).to.eq('null');
   });
 
   it('only updates binding when state is changed', async () => {
