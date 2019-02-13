@@ -2,11 +2,11 @@ const Benchmark = require('./benchmark');
 
 class OnekRun extends Benchmark {
   before() {
-    return this.mainClick('#clear').then(() => this.mainClick('#runlots'));
+    return this.mainClick('#clear').then(() => this.mainClick('#run'));
   }
 
   beforeWait() {
-    return `${this.main}.$$('tr').length === 10000`;
+    return `${this.main}.$$('tr').length === 1000`;
   }
 
   run() {
@@ -14,7 +14,7 @@ class OnekRun extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$$('tr').length === 11000`;
+    return `${this.main}.$$('tr').length === 2000`;
   }
 }
 

@@ -57,88 +57,6 @@ const Json = {
 };
 var json = Json;
 
-function updateAttribute(element, name, newValue) {
-  const fromValue = element.getAttribute(name);
-  if (fromValue != newValue) {
-    if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-      if (fromValue) element.removeAttribute(name);
-    } else {
-      element.setAttribute(name, newValue);
-    }
-  }
-  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
-}
-var update = {
-  updateAttribute
-};
-
-const temp = window.document.createElement('template');
-const script = window.document.createElement('script');
-var constants = {
-  TEMPLATE: () => temp.cloneNode(false),
-  SCRIPT: () => script.cloneNode(false),
-  TEXT_NODE: 3,
-  COMMENT_NODE: 8,
-  ELEMENT_NODE: 1
-};
-
-const { updateAttribute: updateAttribute$1 } = update;
-const { shallowEqual } = json;
-const { TEXT_NODE, COMMENT_NODE } = constants;
-function makeChildrenEqual(parent, newChildren) {
-  const oldL = parent.childNodes.length, newL = newChildren.length;
-  if (oldL > newL) {
-    let i = oldL;
-    while(i > newL) {
-      parent.removeChild(parent.lastChild);
-      i--;
-    }
-  } else if (oldL < newL) {
-    let i = oldL;
-    while(i < newL) {
-      parent.appendChild(newChildren[i]);
-      i++;
-    }
-  }
-  const l = Math.min(newL, oldL);
-  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
-    item = newChildren[i];
-    head = makeEqual(head, item).nextSibling;
-  }
-}
-function makeEqual(oldNode, newNode) {
-  if (newNode === null) return oldNode;
-  if (newNode.type === 'stateChange') {
-    if (!shallowEqual(oldNode.state, newNode.state)) {
-      oldNode.state = newNode.state;
-    }
-    return oldNode;
-  }
-  if (oldNode.nodeName !== newNode.nodeName) {
-    oldNode.replaceWith(newNode);
-    return newNode;
-  }
-  if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
-    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
-    return oldNode;
-  }
-  if (newNode.state) oldNode.state = newNode.state;
-  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
-  for (let i = newAttrs.length - 1; i >= 0; --i) {
-    updateAttribute$1(oldNode, newAttrs[i].name, newAttrs[i].value);
-  }
-  for (let j = oldAttrs.length - 1; j >= 0; --j) {
-    attr = oldAttrs[j];
-    if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
-  }
-  makeChildrenEqual(oldNode, newNode.childNodes);
-  return oldNode;
-}
-var makeequal = {
-  makeEqual,
-  makeChildrenEqual
-};
-
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
 TREE_WALKER.nextNonfilterNode = function(fxn) {
   let node = this.currentNode;
@@ -186,11 +104,18 @@ var ref = {
   Ref
 };
 
-const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
-const { updateAttribute: updateAttribute$2 } = update;
+const temp = window.document.createElement('template');
+const script = window.document.createElement('script');
+var constants = {
+  TEMPLATE: () => temp.cloneNode(false),
+  SCRIPT: () => script.cloneNode(false),
+  TEXT_NODE: 3,
+  COMMENT_NODE: 8,
+  ELEMENT_NODE: 1
+};
+
 const { collect: collect$1, create: create$1 } = ref;
-const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE } = constants;
-const TEMPLATE = constants.TEMPLATE();
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
     el.contentEditable == 'true' ||
@@ -199,11 +124,11 @@ function isHtml(el) {
     (el.dataset && el.dataset.sifrrRepeat);
 }
 function creator(el) {
-  if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
-    const x = el.nodeValue;
+  if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
+    const x = el.data;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x.trim()
+      text: x
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
@@ -214,7 +139,7 @@ function creator(el) {
         sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
       }
     }
-    const attrs = el.attributes || [], l = attrs.length;
+    const attrs = el.attributes, l = attrs.length;
     const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
@@ -244,62 +169,6 @@ function creator(el) {
 const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
   createStateMap: (element) => create$1(element, creator, isHtml),
-  update: (element) => {
-    if (!element._refs) {
-      return false;
-    }
-    const l = element._refs.length;
-    for (let i = 0; i < l; i++) {
-      const data = element.constructor.stateMap[i].ref;
-      const dom = element._refs[i];
-      if (data.attributes) {
-        for(let key in data.attributes) {
-          if (key === 'events') {
-            for(let event in data.attributes.events) {
-              const eventLis = Parser.evaluateString(data.attributes.events[event], element, true);
-              if (data.attributes.events[event].slice(0, 6) === '${this') {
-                dom[event] = eventLis.bind(element);
-              } else {
-                dom[event] = eventLis;
-              }
-            }
-          } else if (key === 'style') {
-            for (let k in data.attributes.style) {
-              dom.style[k] = Parser.evaluateString(data.attributes.style[k], element);
-            }
-          } else {
-            const val = Parser.evaluateString(data.attributes[key], element);
-            updateAttribute$2(dom, key, val);
-          }
-        }
-      }
-      if (data.html === undefined) continue;
-      const newValue = Parser.evaluateString(data.text, element);
-      if (!newValue) { dom.textContent = ''; continue; }
-      if (data.html) {
-        let children;
-        if (Array.isArray(newValue)) {
-          children = newValue;
-        } else if (newValue.nodeType === 1) {
-          children = Array.prototype.slice.call(newValue.content.childNodes);
-        } else if (newValue.nodeType) {
-          children = [newValue];
-        } else {
-          TEMPLATE.innerHTML = newValue.toString()
-            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
-        }
-        if (children.length < 1) dom.textContent = '';
-        else makeChildrenEqual$1(dom, children);
-      } else {
-        if (dom.nodeValue != newValue) {
-          dom.nodeValue = newValue || '';
-        }
-      }
-    }
-    element.onUpdate();
-  },
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
@@ -334,6 +203,133 @@ const Parser = {
   }
 };
 var parser = Parser;
+
+var updateattribute = (element, name, newValue) => {
+  const fromValue = element.getAttribute(name);
+  if (fromValue != newValue) {
+    if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
+      if (fromValue) element.removeAttribute(name);
+    } else {
+      element.setAttribute(name, newValue);
+    }
+  }
+  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
+};
+
+const { shallowEqual } = json;
+const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1 } = constants;
+function makeChildrenEqual(parent, newChildren) {
+  const oldL = parent.childNodes.length, newL = newChildren.length;
+  if (oldL > newL) {
+    let i = oldL;
+    while(i > newL) {
+      parent.removeChild(parent.lastChild);
+      i--;
+    }
+  } else if (oldL < newL) {
+    let i = oldL;
+    while(i < newL) {
+      parent.appendChild(newChildren[i]);
+      i++;
+    }
+  }
+  const l = Math.min(newL, oldL);
+  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
+    item = newChildren[i];
+    head = makeEqual(head, item).nextSibling;
+  }
+}
+function makeEqual(oldNode, newNode) {
+  if (newNode === null) return oldNode;
+  if (newNode.type === 'stateChange') {
+    if (!shallowEqual(oldNode.state, newNode.state)) {
+      oldNode.state = newNode.state;
+    }
+    return oldNode;
+  }
+  if (oldNode.nodeName !== newNode.nodeName) {
+    oldNode.replaceWith(newNode);
+    return newNode;
+  }
+  if (oldNode.nodeType === TEXT_NODE$1 || oldNode.nodeType === COMMENT_NODE$1) {
+    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
+    return oldNode;
+  }
+  if (newNode.state) oldNode.state = newNode.state;
+  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
+  for (let i = newAttrs.length - 1; i >= 0; --i) {
+    updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
+  }
+  for (let j = oldAttrs.length - 1; j >= 0; --j) {
+    attr = oldAttrs[j];
+    if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
+  }
+  makeChildrenEqual(oldNode, newNode.childNodes);
+  return oldNode;
+}
+var makeequal = {
+  makeEqual,
+  makeChildrenEqual
+};
+
+const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
+const { evaluateString } = parser;
+const TEMPLATE = constants.TEMPLATE();
+var update = (element) => {
+  if (!element._refs) {
+    return false;
+  }
+  const l = element._refs.length;
+  for (let i = 0; i < l; i++) {
+    const data = element.constructor.stateMap[i].ref;
+    const dom = element._refs[i];
+    if (data.attributes) {
+      for(let key in data.attributes) {
+        if (key === 'events') {
+          for(let event in data.attributes.events) {
+            const eventLis = evaluateString(data.attributes.events[event], element, true);
+            if (data.attributes.events[event].slice(0, 6) === '${this') {
+              dom[event] = eventLis.bind(element);
+            } else {
+              dom[event] = eventLis;
+            }
+          }
+        } else if (key === 'style') {
+          for (let k in data.attributes.style) {
+            dom.style[k] = evaluateString(data.attributes.style[k], element);
+          }
+        } else {
+          const val = evaluateString(data.attributes[key], element);
+          updateattribute(dom, key, val);
+        }
+      }
+    }
+    if (data.html === undefined) continue;
+    const newValue = evaluateString(data.text, element);
+    if (!newValue) { dom.textContent = ''; continue; }
+    if (data.html) {
+      let children;
+      if (Array.isArray(newValue)) {
+        children = newValue;
+      } else if (newValue.nodeType === 1) {
+        children = Array.prototype.slice.call(newValue.content.childNodes);
+      } else if (newValue.nodeType) {
+        children = [newValue];
+      } else {
+        TEMPLATE.innerHTML = newValue.toString()
+          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
+          .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+        children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
+      }
+      makeChildrenEqual$1(dom, children);
+    } else {
+      if (dom.data != newValue) {
+        dom.data = newValue || '';
+      }
+    }
+  }
+  element.onUpdate();
+};
 
 const { TEMPLATE: TEMPLATE$1 } = constants;
 var template = (str, ...extra) => {
@@ -429,8 +425,9 @@ Loader._all = {};
 var loader = Loader;
 
 const { collect: collect$2, create: create$2 } = ref;
+const { ELEMENT_NODE: ELEMENT_NODE$1 } = constants;
 function creator$1(node) {
-  if (node.nodeType !== 3) {
+  if (node.nodeType === ELEMENT_NODE$1) {
     if (node.attributes !== undefined) {
       const attrs = Array.from(node.attributes), l = attrs.length;
       const ret = [];
@@ -448,9 +445,9 @@ function creator$1(node) {
     }
     return 0;
   } else {
-    let nodeData = node.nodeValue;
+    let nodeData = node.data;
     if (nodeData[0] === '$') {
-      node.nodeValue = '';
+      node.data = '';
       return nodeData.slice(2, -1);
     }
     return 0;
@@ -471,7 +468,7 @@ function updateState(simpleEl) {
         }
       }
     } else {
-      if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
+      if (oldState[data] != newState[data]) dom.data = newState[data];
     }
   }
 }
@@ -656,7 +653,7 @@ function elementClassFactory(baseClass) {
     }
     onStateChange() {}
     update() {
-      parser.update(this);
+      update(this);
     }
     onUpdate() {}
     isSifrr(name = null) {

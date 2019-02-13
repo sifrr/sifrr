@@ -11,7 +11,7 @@ const benchmarks = [
     '1k-select',
     '1k-delete',
     '10k-update10th',
-    '10k-append'
+    '1k-append'
   ], bl = benchmarks.length,
   url = `${PATH}/speedtest.html`;
 
@@ -26,7 +26,7 @@ const ExpectedLayoutCounts = {
   '1k-select': 0,
   '1k-delete': 1,
   '10k-update10th': 1,
-  '10k-append': 1
+  '1k-append': 1
 };
 
 describe('Siffr.Dom', () => {

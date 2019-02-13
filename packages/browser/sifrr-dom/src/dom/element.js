@@ -1,4 +1,5 @@
 const Parser = require('./parser');
+const update = require('./update');
 const JsonExt = require('../utils/json');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
@@ -106,7 +107,7 @@ function elementClassFactory(baseClass) {
     onStateChange() {}
 
     update() {
-      Parser.update(this);
+      update(this);
     }
 
     onUpdate() {}

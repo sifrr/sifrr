@@ -1,8 +1,5 @@
-const { makeChildrenEqual } = require('./makeequal');
-const { updateAttribute } = require('./update');
 const { collect, create } = require('./ref');
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
-const TEMPLATE = require('./constants').TEMPLATE();
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
@@ -15,10 +12,10 @@ function isHtml(el) {
 function creator(el) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
-    const x = el.nodeValue;
+    const x = el.data;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x.trim()
+      text: x
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
@@ -31,7 +28,7 @@ function creator(el) {
       }
     }
     // attributes
-    const attrs = el.attributes || [], l = attrs.length;
+    const attrs = el.attributes, l = attrs.length;
     const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
@@ -63,74 +60,6 @@ function creator(el) {
 const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
   createStateMap: (element) => create(element, creator, isHtml),
-  update: (element) => {
-    if (!element._refs) {
-      return false;
-    }
-    // Update nodes
-    const l = element._refs.length;
-    for (let i = 0; i < l; i++) {
-      const data = element.constructor.stateMap[i].ref;
-      const dom = element._refs[i];
-
-      // update attributes
-      if (data.attributes) {
-        for(let key in data.attributes) {
-          if (key === 'events') {
-            for(let event in data.attributes.events) {
-              const eventLis = Parser.evaluateString(data.attributes.events[event], element, true);
-              if (data.attributes.events[event].slice(0, 6) === '${this') {
-                dom[event] = eventLis.bind(element);
-              } else {
-                dom[event] = eventLis;
-              }
-            }
-          } else if (key === 'style') {
-            for (let k in data.attributes.style) {
-              dom.style[k] = Parser.evaluateString(data.attributes.style[k], element);
-            }
-          } else {
-            const val = Parser.evaluateString(data.attributes[key], element);
-            updateAttribute(dom, key, val);
-          }
-        }
-      }
-
-      if (data.html === undefined) continue;
-
-      // update element
-      const newValue = Parser.evaluateString(data.text, element);
-      if (!newValue) { dom.textContent = ''; continue; }
-
-      if (data.html) {
-        // html node
-        let children;
-        if (Array.isArray(newValue)) {
-          children = newValue;
-        } else if (newValue.nodeType === 1) {
-          children = Array.prototype.slice.call(newValue.content.childNodes);
-        } else if (newValue.nodeType) {
-          children = [newValue];
-        } else {
-          // Replace html tags in input from input/contenteditable/textarea
-          TEMPLATE.innerHTML = newValue.toString()
-            // All closing tags
-            .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-            // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-            .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
-          children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
-        }
-        if (children.length < 1) dom.textContent = '';
-        else makeChildrenEqual(dom, children);
-      } else {
-        // text node
-        if (dom.nodeValue != newValue) {
-          dom.nodeValue = newValue || '';
-        }
-      }
-    }
-    element.onUpdate();
-  },
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;

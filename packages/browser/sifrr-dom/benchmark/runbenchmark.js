@@ -19,8 +19,8 @@ let benchmarks = [
   '1k-swap',
   '1k-select',
   '1k-delete',
-  '10k-update10th',
-  '10k-append'
+  '1k-append',
+  '10k-update10th'
 ];
 
 const benchmarkFilters = (getArg('benchmarks') || '').split(',');
@@ -28,7 +28,7 @@ benchmarks = benchmarks.filter((b) => {
   return benchmarkFilters.map(bf => b.indexOf(bf) >= 0).indexOf(true) >= 0;
 });
 
-const port = getArg('server');
+const port = getArg('server') || 1111;
 const runs = parseInt(getArg('runs') || 5, 10);
 const url = getArg('url');
 

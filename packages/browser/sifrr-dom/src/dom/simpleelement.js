@@ -1,9 +1,10 @@
 const { collect, create } = require('./ref');
 const template = require('./template');
+const { ELEMENT_NODE } = require('./constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/index.js
 function creator(node) {
-  if (node.nodeType !== 3) {
+  if (node.nodeType === ELEMENT_NODE) {
     if (node.attributes !== undefined) {
       const attrs = Array.from(node.attributes), l = attrs.length;
       const ret = [];
@@ -21,9 +22,9 @@ function creator(node) {
     }
     return 0;
   } else {
-    let nodeData = node.nodeValue;
+    let nodeData = node.data;
     if (nodeData[0] === '$') {
-      node.nodeValue = '';
+      node.data = '';
       return nodeData.slice(2, -1);
     }
     return 0;
@@ -45,7 +46,7 @@ function updateState(simpleEl) {
         }
       }
     } else {
-      if (oldState[data] != newState[data]) dom.nodeValue = newState[data];
+      if (oldState[data] != newState[data]) dom.data = newState[data];
     }
   }
 }
