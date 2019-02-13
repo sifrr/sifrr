@@ -50,7 +50,7 @@ function updateState(simpleEl) {
   }
 }
 
-function SimpleElement(content, defaultState) {
+function SimpleElement(content, defaultState = null) {
   let templ;
   if (typeof content === 'string') {
     templ = template(content);

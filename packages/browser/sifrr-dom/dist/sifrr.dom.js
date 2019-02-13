@@ -81,8 +81,8 @@
   const temp = window.document.createElement('template');
   const script = window.document.createElement('script');
   var constants = {
-    TEMPLATE: () => temp.cloneNode(),
-    SCRIPT: () => script.cloneNode(),
+    TEMPLATE: () => temp.cloneNode(false),
+    SCRIPT: () => script.cloneNode(false),
     TEXT_NODE: 3,
     COMMENT_NODE: 8,
     ELEMENT_NODE: 1
@@ -156,18 +156,6 @@
   };
 
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-  class Ref {
-    constructor(idx, ref) {
-      this.idx = idx;
-      this.ref = ref;
-    }
-  }
-  function collect(element, stateMap = element.stateMap, filter) {
-    const refs = [];
-    TREE_WALKER.currentNode = element;
-    stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
-    return refs;
-  }
   TREE_WALKER.nextNonfilterNode = function (fxn) {
     let node = this.currentNode;
     if (fxn && fxn(node)) {
@@ -175,13 +163,25 @@
     } else node = this.nextNode();
     return node;
   };
-  TREE_WALKER.roll = function (n, filter = false) {
+  TREE_WALKER.roll = function (n, filter) {
     let node = this.currentNode;
     while (--n) {
       node = this.nextNonfilterNode(filter);
     }
     return node;
   };
+  class Ref {
+    constructor(idx, ref) {
+      this.idx = idx;
+      this.ref = ref;
+    }
+  }
+  function collect(element, stateMap, filter = false) {
+    const refs = [];
+    TREE_WALKER.currentNode = element;
+    stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
+    return refs;
+  }
   function create(node, fxn, filter = false) {
     let indices = [],
         ref,
@@ -199,7 +199,6 @@
     return indices;
   }
   var ref = {
-    walker: TREE_WALKER,
     collect,
     create,
     Ref
@@ -381,8 +380,7 @@
     } else {
       return str;
     }
-    str = str
-    .replace(/>\n+/g, '>').replace(/\s+</g, '<').replace(/>\s+/g, '>').replace(/(\\)?\$(\\)?\{/g, '${');
+    str = str.replace(/>\n+/g, '>').replace(/\s+</g, '<').replace(/>\s+/g, '>').replace(/(\\)?\$(\\)?\{/g, '${');
     tmp.innerHTML = str;
     return tmp;
   };
@@ -509,7 +507,7 @@
       }
     }
   }
-  function SimpleElement(content, defaultState) {
+  function SimpleElement(content, defaultState = null) {
     let templ;
     if (typeof content === 'string') {
       templ = template(content);
@@ -588,7 +586,7 @@
       }
       constructor() {
         super();
-        if (!this.constructor.ctemp) ; else {
+        if (this.constructor.ctemp) {
           if (this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
           const content = this.constructor.ctemp.content.cloneNode(true);
           if (this.constructor.useShadowRoot) {

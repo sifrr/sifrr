@@ -15,7 +15,6 @@ module.exports = (str, ...extra) => {
     return str;
   }
   str = str
-    // Unexpected behaviour when replacing ${} after minifying
     .replace(/>\n+/g, '>')
     .replace(/\s+</g, '<')
     .replace(/>\s+/g, '>')

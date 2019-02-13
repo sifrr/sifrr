@@ -43,9 +43,7 @@ function elementClassFactory(baseClass) {
 
     constructor() {
       super();
-      if (!this.constructor.ctemp) {
-        // no content
-      } else {
+      if (this.constructor.ctemp) {
         // this._oldState = {};
         if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
@@ -58,7 +56,8 @@ function elementClassFactory(baseClass) {
           this.shadowRoot.addEventListener('change', Parser.twoWayBind);
         } else {
           this.__content = content;
-        }}
+        }
+      }
     }
 
     connectedCallback() {

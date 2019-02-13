@@ -2,20 +2,6 @@
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
 
-class Ref {
-  constructor(idx, ref) {
-    this.idx = idx;
-    this.ref = ref;
-  }
-}
-
-function collect(element, stateMap = element.stateMap, filter) {
-  const refs = [];
-  TREE_WALKER.currentNode = element;
-  stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
-  return refs;
-}
-
 TREE_WALKER.nextNonfilterNode = function(fxn) {
   let node = this.currentNode;
   if (fxn && fxn(node)){
@@ -24,13 +10,27 @@ TREE_WALKER.nextNonfilterNode = function(fxn) {
   return node;
 };
 
-TREE_WALKER.roll = function(n, filter = false) {
+TREE_WALKER.roll = function(n, filter) {
   let node = this.currentNode;
   while(--n) {
     node = this.nextNonfilterNode(filter);
   }
   return node;
 };
+
+class Ref {
+  constructor(idx, ref) {
+    this.idx = idx;
+    this.ref = ref;
+  }
+}
+
+function collect(element, stateMap, filter = false) {
+  const refs = [];
+  TREE_WALKER.currentNode = element;
+  stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
+  return refs;
+}
 
 function create(node, fxn, filter = false) {
   let indices = [], ref, idx = 0;
@@ -50,7 +50,6 @@ function create(node, fxn, filter = false) {
 }
 
 module.exports = {
-  walker: TREE_WALKER,
   collect,
   create,
   Ref
