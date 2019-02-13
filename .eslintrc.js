@@ -64,10 +64,12 @@ module.exports = {
     'max-lines': [
       'error',
       220 // Change to 200 after refactoring API.Model
-    ]
+    ],
+    'mocha/no-exclusive-tests': 'error'
   },
   plugins: [
-    'html'
+    'html',
+    'mocha'
   ],
   settings: {
     'html/indent': '+2'
