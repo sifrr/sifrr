@@ -42,12 +42,13 @@ sifrr is a set of customizable, independent libraries for creating modern and fa
 
 ## Node support
 
-Sifrr officially supports node v10 (LTS) and higher (including development). Other versions should work as well without development support.
+Sifrr officially supports node v8 (Maintanence), v10 (LTS), v11 (current). Other versions might work.
 
 | Node Version | CI                                                                                                                       |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
-| v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
-| v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/3)](https://travis-ci.org/sifrr/sifrr) |
+| v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
+| v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
+| v8           | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/3)](https://travis-ci.org/sifrr/sifrr) |
 
 ## Browser Support
 

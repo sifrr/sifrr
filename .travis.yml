@@ -1,9 +1,8 @@
 language: node_js
-before_install: yarn config set workspaces-experimental true
+before_install: yarn config set workspaces-experimental true && yarn config set ignore-engines true
 script: yarn test
 cache: yarn
 node_js:
   - '11.9.0'
   - '10.15.0'
   - '8.15.0'
-  - '6.16.0'

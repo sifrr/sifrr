@@ -46,7 +46,8 @@ class SifrrSeo {
         if (html) res.send(html + footer);
         else next();
       }).catch((e) => {
-        process.stdout.write(e);
+        if (e.message === 'No Render') global.console.log(`Not rendering for ${renderReq.fullUrl}`);
+        else global.console.error(e);
         next();
       });
     }

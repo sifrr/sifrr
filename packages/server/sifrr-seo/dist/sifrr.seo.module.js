@@ -1,10 +1,6 @@
 /*! Sifrr.Seo v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import puppeteer from 'puppeteer';
 
-var constants = {
-  noop: () => {}
-};
-
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function commonjsRequire () {
@@ -14,6 +10,10 @@ function commonjsRequire () {
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
+
+var constants = {
+  noop: () => {}
+};
 
 function CallbackFiller() {
     this.queues = {};
@@ -1870,7 +1870,8 @@ class SifrrSeo {
         if (html) res.send(html + footer);
         else next();
       }).catch((e) => {
-        process.stdout.write(e);
+        if (e.message === 'No Render') commonjsGlobal.console.log(`Not rendering for ${renderReq.fullUrl}`);
+        else commonjsGlobal.console.error(e);
         next();
       });
     }
