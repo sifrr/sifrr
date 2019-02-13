@@ -152,35 +152,31 @@ function collect(element, stateMap = element.stateMap, filter) {
   stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
   return refs;
 }
-function filterTW(TW, node, filter) {
-  if (filter && filter(node)){
-    node = TW.nextSibling();
-    if (!node) {
-      TW.parentNode();
-      node = TW.nextSibling();
-    }
-  } else node = TW.nextNode();
+TREE_WALKER.nextNonfilterNode = function(fxn) {
+  let node;
+  if (fxn && fxn(this.currentNode)){
+    node = this.nextSibling() || (this.parentNode(), this.nextSibling());
+  } else node = this.nextNode();
   return node;
-}
+};
 TREE_WALKER.roll = function(n, filter = false) {
-  let node = this.currentNode;
+  let node;
   while(--n) {
-    node = filterTW(TREE_WALKER, node, filter);
+    node = this.nextNonfilterNode(filter);
   }
   return node;
 };
 function create(node, fxn, filter = false) {
-  let indices = [], ref, idx = 0, i = 0;
+  let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
-  while(node && i < 5000) {
+  while(node) {
     if (ref = fxn(node)) {
       indices.push(new Ref(idx+1, ref));
       idx = 1;
     } else {
       idx++;
     }
-    node = filterTW(TREE_WALKER, node, filter);
-    i++;
+    node = TREE_WALKER.nextNonfilterNode(filter);
   }
   return indices;
 }
@@ -552,6 +548,7 @@ function elementClassFactory(baseClass) {
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     }
+    static onStateChange() {}
     static get useShadowRoot() {
       return this.useSR;
     }
@@ -580,18 +577,21 @@ function elementClassFactory(baseClass) {
       } else {
         if(!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }
-      if (this.onConnect) this.onConnect();
+      this.onConnect();
     }
+    onConnect() {}
     disconnectedCallback() {
       if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-      if (this.onDisconnect) this.onDisconnect();
+      this.onDisconnect();
     }
+    onDisconnect() {}
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
         this.state = json.parse(newVal);
       }
-      if (this.onAttributeChange) this.onAttributeChange(attrName, oldVal, newVal);
+      this.onAttributeChange(attrName, oldVal, newVal);
     }
+    onAttributeChange() {}
     get state() {
       return this._state;
     }
@@ -602,9 +602,10 @@ function elementClassFactory(baseClass) {
     }
     update() {
       parser.update(this);
-      if (this.onStateChange) this.onStateChange();
-      if (this.constructor.onStateChange) this.constructor.onStateChange(this);
+      this.onStateChange();
+      this.constructor.onStateChange(this);
     }
+    onStateChange() {}
     isSifrr(name = null) {
       if (name) return name === this.constructor.elementName;
       else return true;

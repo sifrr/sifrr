@@ -32,7 +32,7 @@ const ExpectedLayoutCounts = {
 describe('Siffr.Dom', () => {
   for (let i = 0; i < bl; i++) {
     const bm = benchmarks[i];
-    it(`passes ${bm} Speedtest with shadowRoot`, async () => {
+    it(`passes ${bm} Speedtest with simpleElement`, async () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url }, false).run();
       const bmd = results[bm];
       assert.equal(bmd['LayoutCount'], ExpectedLayoutCounts[bm]);
@@ -40,7 +40,7 @@ describe('Siffr.Dom', () => {
       global.console.log(bm, '(total duration in ms): ', bmd['ScriptDuration']);
     });
 
-    it(`passes ${bm} Speedtest with sifrrHtml`, async () => {
+    it(`passes ${bm} Speedtest with sifrrElement`, async () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url: url + '?useSifrr' }, false).run();
       const bmd = results[bm];
       global.console.log(bm, '(total duration in ms): ', bmd['ScriptDuration']);
