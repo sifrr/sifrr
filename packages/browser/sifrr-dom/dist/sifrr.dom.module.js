@@ -294,7 +294,7 @@ const Parser = {
         else makeChildrenEqual$1(dom, children);
       } else {
         if (dom.nodeValue != newValue) {
-          dom.nodeValue = newValue;
+          dom.nodeValue = newValue || '';
         }
       }
     }
@@ -521,6 +521,60 @@ function SimpleElement(content, defaultState = null) {
 }
 var simpleelement = SimpleElement;
 
+const SYNTHETIC_EVENTS = {};
+const opts = { capture: true, passive: true };
+const nativeToSyntheticEvent = (e, name) => {
+  return Promise.resolve((() => {
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    let dom = target;
+    while(dom) {
+      const eventHandler = dom[`$${name}`];
+      if (eventHandler) {
+        eventHandler(e, target);
+      }
+      cssMatchEvent(e, name, dom, target);
+      dom = dom.parentNode || dom.host;
+    }
+  })());
+};
+const cssMatchEvent = (e, name, dom, target) => {
+  function callEach(fxns) {
+    fxns.forEach((fxn) => fxn(e, target, dom));
+  }
+  for (let css in SYNTHETIC_EVENTS[name]) {
+    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
+      (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);
+  }
+};
+const Event = {
+  all: SYNTHETIC_EVENTS,
+  add: (name) => {
+    if (SYNTHETIC_EVENTS[name]) return false;
+    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), opts);
+    SYNTHETIC_EVENTS[name] = {};
+    return true;
+  },
+  addListener: (name, css, fxn) => {
+    const fxns = SYNTHETIC_EVENTS[name][css] || [];
+    if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
+    SYNTHETIC_EVENTS[name][css] = fxns;
+    return true;
+  },
+  removeListener: (name, css, fxn) => {
+    const fxns = SYNTHETIC_EVENTS[name][css] || [], i = fxns.indexOf(fxn);
+    if (i >= 0) fxns.splice(i, 1);
+    SYNTHETIC_EVENTS[name][css] = fxns;
+    return true;
+  },
+  trigger: (el, name, options) => {
+    if (typeof el === 'string') el = document.querySelector(el);
+    el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
+  },
+  opts: opts
+};
+var event = Event;
+
+const { opts: opts$1 } = event;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
     static extends(htmlElementClass) {
@@ -533,12 +587,14 @@ function elementClassFactory(baseClass) {
       return [];
     }
     static get template() {
-      const temp = (loader.all[this.elementName] || { template: false }).template;
-      if (window.ShadyCSS && this.useShadowRoot) window.ShadyCSS.prepareTemplate(temp, this.elementName);
-      return temp;
+      return (loader.all[this.elementName] || { template: false }).template;
     }
     static get ctemp() {
       this._ctemp = this._ctemp || this.template;
+      if (window.ShadyCSS && this.useShadowRoot && !this._ctemp.shady) {
+        window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+        this._ctemp.shady = true;
+      }
       return this._ctemp;
     }
     static get stateMap() {
@@ -554,7 +610,7 @@ function elementClassFactory(baseClass) {
     constructor() {
       super();
       if (this.constructor.ctemp) {
-        if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         if (this.constructor.useShadowRoot) {
           this._refs = parser.collectRefs(content, this.constructor.stateMap);
@@ -562,7 +618,7 @@ function elementClassFactory(baseClass) {
             mode: 'open'
           });
           this.shadowRoot.appendChild(content);
-          this.shadowRoot.addEventListener('change', parser.twoWayBind);
+          this.shadowRoot.addEventListener('change', parser.twoWayBind, opts$1);
         } else {
           this.__content = content;
         }
@@ -573,15 +629,13 @@ function elementClassFactory(baseClass) {
         this.textContent = '';
         this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
-        if (this._state || this.hasAttribute('data-sifrr-state')) this.update();
-      } else {
-        if(!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }
+      if (!this.hasAttribute('data-sifrr-state') || !this.constructor.useShadowRoot) this.update();
       this.onConnect();
     }
     onConnect() {}
     disconnectedCallback() {
-      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
+      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind, opts$1);
       this.onDisconnect();
     }
     onDisconnect() {}
@@ -596,7 +650,6 @@ function elementClassFactory(baseClass) {
       return this._state;
     }
     set state(v) {
-      this._state = this._state || {};
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
       this.onStateChange();
@@ -657,57 +710,6 @@ function elementClassFactory(baseClass) {
   };
 }
 var element = elementClassFactory(window.HTMLElement);
-
-const SYNTHETIC_EVENTS = {};
-const nativeToSyntheticEvent = (e, name) => {
-  return Promise.resolve((() => {
-    const target = e.composedPath ? e.composedPath()[0] : e.target;
-    let dom = target;
-    while(dom) {
-      const eventHandler = dom[`$${name}`];
-      if (eventHandler) {
-        eventHandler(e, target);
-      }
-      cssMatchEvent(e, name, dom, target);
-      dom = dom.parentNode || dom.host;
-    }
-  })());
-};
-const cssMatchEvent = (e, name, dom, target) => {
-  function callEach(fxns) {
-    fxns.forEach((fxn) => fxn(e, target, dom));
-  }
-  for (let css in SYNTHETIC_EVENTS[name]) {
-    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
-      (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);
-  }
-};
-const Event = {
-  all: SYNTHETIC_EVENTS,
-  add: (name) => {
-    if (SYNTHETIC_EVENTS[name]) return false;
-    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
-    SYNTHETIC_EVENTS[name] = {};
-    return true;
-  },
-  addListener: (name, css, fxn) => {
-    const fxns = SYNTHETIC_EVENTS[name][css] || [];
-    if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
-    SYNTHETIC_EVENTS[name][css] = fxns;
-    return true;
-  },
-  removeListener: (name, css, fxn) => {
-    const fxns = SYNTHETIC_EVENTS[name][css] || [], i = fxns.indexOf(fxn);
-    if (i >= 0) fxns.splice(i, 1);
-    SYNTHETIC_EVENTS[name][css] = fxns;
-    return true;
-  },
-  trigger: (el, name, options) => {
-    if (typeof el === 'string') el = document.querySelector(el);
-    el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
-  }
-};
-var event = Event;
 
 let SifrrDom = {};
 SifrrDom.elements = {};

@@ -2,6 +2,7 @@ const Parser = require('./parser');
 const JsonExt = require('../utils/json');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
+const { opts } = require('./event');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -18,13 +19,15 @@ function elementClassFactory(baseClass) {
     }
 
     static get template() {
-      const temp = (Loader.all[this.elementName] || { template: false }).template;
-      if (window.ShadyCSS && this.useShadowRoot) window.ShadyCSS.prepareTemplate(temp, this.elementName);
-      return temp;
+      return (Loader.all[this.elementName] || { template: false }).template;
     }
 
     static get ctemp() {
       this._ctemp = this._ctemp || this.template;
+      if (window.ShadyCSS && this.useShadowRoot && !this._ctemp.shady) {
+        window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+        this._ctemp.shady = true;
+      }
       return this._ctemp;
     }
 
@@ -45,7 +48,7 @@ function elementClassFactory(baseClass) {
       super();
       if (this.constructor.ctemp) {
         // this._oldState = {};
-        if(this.constructor.defaultState || this.state) this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         if (this.constructor.useShadowRoot) {
           this._refs = Parser.collectRefs(content, this.constructor.stateMap);
@@ -53,7 +56,7 @@ function elementClassFactory(baseClass) {
             mode: 'open'
           });
           this.shadowRoot.appendChild(content);
-          this.shadowRoot.addEventListener('change', Parser.twoWayBind);
+          this.shadowRoot.addEventListener('change', Parser.twoWayBind, opts);
         } else {
           this.__content = content;
         }
@@ -65,17 +68,15 @@ function elementClassFactory(baseClass) {
         this.textContent = '';
         this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
         this.appendChild(this.__content);
-        if (this._state || this.hasAttribute('data-sifrr-state')) this.update();
-      } else {
-        if(!this.hasAttribute('data-sifrr-state') && this._state) this.update();
       }
+      if (!this.hasAttribute('data-sifrr-state') || !this.constructor.useShadowRoot) this.update();
       this.onConnect();
     }
 
     onConnect() {}
 
     disconnectedCallback() {
-      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind);
+      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind, opts);
       this.onDisconnect();
     }
 
@@ -97,7 +98,6 @@ function elementClassFactory(baseClass) {
 
     set state(v) {
       // this._oldState = this.state;
-      this._state = this._state || {};
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
       this.onStateChange();

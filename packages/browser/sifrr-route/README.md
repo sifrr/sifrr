@@ -10,7 +10,7 @@ History API based Routing library for building One Page Applications with sifrr.
 | Minified (`dist/sifrr.route.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js)              |
 | Minified + Gzipped (`dist/sifrr.route.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js) |
 
-#### Browser API support needed for
+### Browser API support needed for
 
 | APIs        | caniuse                             | polyfills                                    |
 | :---------- | :---------------------------------- | :------------------------------------------- |

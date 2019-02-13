@@ -125,7 +125,7 @@ const Parser = {
       } else {
         // text node
         if (dom.nodeValue != newValue) {
-          dom.nodeValue = newValue;
+          dom.nodeValue = newValue || '';
         }
       }
     }

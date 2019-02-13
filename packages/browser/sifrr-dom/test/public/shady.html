@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <shady-sr></shady-sr>
+    <shady-nosr></shady-nosr>
+    <p>Normal</p>
+    <script type="text/javascript">
+      ShadyDOM = { force: true };
+    </script>
+    <script src="https://unpkg.com/@webcomponents/shadydom@1.4.2/shadydom.min.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/@webcomponents/shadycss@1.8.0/scoping-shim.min.js" charset="utf-8"></script>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      Sifrr.Dom.setup();
+      Sifrr.Dom.load('shady-sr');
+      Sifrr.Dom.load('shady-nosr');
+    </script>
+  </body>
+</html>

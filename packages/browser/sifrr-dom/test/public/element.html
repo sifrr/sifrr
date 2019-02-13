@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <element-empty></element-empty>
+
+    <element-nods-sr></element-nods-sr>
+    <element-nods-nosr></element-nods-nosr>
+
+    <element-ds-sr></element-ds-sr>
+    <element-ds-nosr></element-ds-nosr>
+
+    <element-as-sr data-sifrr-state='{"ok":"as"}'></element-as-sr>
+    <element-as-nosr data-sifrr-state='{"ok":"as"}'></element-as-nosr>
+
+    <element-sel-sr></element-sel-sr>
+    <element-sel-nosr></element-sel-nosr>
+
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup();
+      Sifrr.Dom.Element.prototype.onUpdate = function() { this.updateCount = this.updateCount + 1 || 1; };
+
+      const pssr = document.createElement('element-ps-sr');
+      pssr.state = { ok: 'ps' };
+      const psnosr = document.createElement('element-ps-nosr');
+      psnosr.state = { ok: 'ps' };
+      document.body.appendChild(pssr);
+      document.body.appendChild(psnosr);
+
+      Sifrr.Dom.load('element-div');
+      Sifrr.Dom.load('element-html');
+      Sifrr.Dom.load('element-attrs');
+
+      Sifrr.Dom.load('element-nods-sr');
+      Sifrr.Dom.load('element-nods-nosr');
+
+      Sifrr.Dom.load('element-ds-sr');
+      Sifrr.Dom.load('element-ds-nosr');
+
+      Sifrr.Dom.load('element-ps-sr');
+      Sifrr.Dom.load('element-ps-nosr');
+
+      Sifrr.Dom.load('element-as-sr');
+      Sifrr.Dom.load('element-as-nosr');
+
+      Sifrr.Dom.load('element-sel-sr');
+      Sifrr.Dom.load('element-sel-nosr');
+    </script>
+    <script src="/elements/element/empty.js" charset="utf-8"></script>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 // Taken from https://github.com/Freak6133/stage0/blob/master/syntheticEvents.js
 const SYNTHETIC_EVENTS = {};
+const opts = { capture: true, passive: true };
 
 const nativeToSyntheticEvent = (e, name) => {
   return Promise.resolve((() => {
@@ -30,7 +31,7 @@ const Event = {
   all: SYNTHETIC_EVENTS,
   add: (name) => {
     if (SYNTHETIC_EVENTS[name]) return false;
-    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), { capture: true, passive: true });
+    window.addEventListener(name, event => nativeToSyntheticEvent(event, name), opts);
     SYNTHETIC_EVENTS[name] = {};
     return true;
   },
@@ -49,7 +50,8 @@ const Event = {
   trigger: (el, name, options) => {
     if (typeof el === 'string') el = document.querySelector(el);
     el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
-  }
+  },
+  opts: opts
 };
 
 module.exports = Event;

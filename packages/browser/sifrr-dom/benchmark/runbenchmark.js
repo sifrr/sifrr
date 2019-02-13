@@ -5,9 +5,8 @@ function getArg(name) {
   const argi = Math.max(process.argv.indexOf(`--${name}`), process.argv.indexOf(`-${name[0]}`));
   if (argi !== -1) {
     return process.argv[argi + 1];
-  } else {
-    return;
   }
+  return false;
 }
 
 let benchmarks = [
@@ -30,7 +29,7 @@ benchmarks = benchmarks.filter((b) => {
 });
 
 const port = getArg('server');
-const runs = parseInt(getArg('runs') || 5);
+const runs = parseInt(getArg('runs') || 5, 10);
 const url = getArg('url');
 
 (async function() {
