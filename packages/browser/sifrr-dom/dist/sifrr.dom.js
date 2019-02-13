@@ -169,14 +169,14 @@
     return refs;
   }
   TREE_WALKER.nextNonfilterNode = function (fxn) {
-    let node;
-    if (fxn && fxn(this.currentNode)) {
+    let node = this.currentNode;
+    if (fxn && fxn(node)) {
       node = this.nextSibling() || (this.parentNode(), this.nextSibling());
     } else node = this.nextNode();
     return node;
   };
   TREE_WALKER.roll = function (n, filter = false) {
-    let node;
+    let node = this.currentNode;
     while (--n) {
       node = this.nextNonfilterNode(filter);
     }
@@ -329,6 +329,7 @@
           }
         }
       }
+      element.onUpdate();
     },
     twoWayBind: e => {
       const target = e.path ? e.path[0] : e.target;
@@ -582,7 +583,6 @@
       static get elementName() {
         return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
       }
-      static onStateChange() {}
       static get useShadowRoot() {
         return this.useSR;
       }
@@ -634,13 +634,13 @@
         this._state = this._state || {};
         if (this._state !== v) Object.assign(this._state, v);
         this.update();
-      }
-      update() {
-        parser.update(this);
         this.onStateChange();
-        this.constructor.onStateChange(this);
       }
       onStateChange() {}
+      update() {
+        parser.update(this);
+      }
+      onUpdate() {}
       isSifrr(name = null) {
         if (name) return name === this.constructor.elementName;else return true;
       }

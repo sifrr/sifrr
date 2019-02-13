@@ -17,15 +17,15 @@ function collect(element, stateMap = element.stateMap, filter) {
 }
 
 TREE_WALKER.nextNonfilterNode = function(fxn) {
-  let node;
-  if (fxn && fxn(this.currentNode)){
+  let node = this.currentNode;
+  if (fxn && fxn(node)){
     node = this.nextSibling() || (this.parentNode(), this.nextSibling());
   } else node = this.nextNode();
   return node;
 };
 
 TREE_WALKER.roll = function(n, filter = false) {
-  let node;
+  let node = this.currentNode;
   while(--n) {
     node = this.nextNonfilterNode(filter);
   }

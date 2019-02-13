@@ -37,8 +37,6 @@ function elementClassFactory(baseClass) {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     }
 
-    static onStateChange() {}
-
     static get useShadowRoot() {
       return this.useSR;
     }
@@ -103,15 +101,16 @@ function elementClassFactory(baseClass) {
       this._state = this._state || {};
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
-    }
-
-    update() {
-      Parser.update(this);
       this.onStateChange();
-      this.constructor.onStateChange(this);
     }
 
     onStateChange() {}
+
+    update() {
+      Parser.update(this);
+    }
+
+    onUpdate() {}
 
     isSifrr(name = null) {
       if (name) return name === this.constructor.elementName;

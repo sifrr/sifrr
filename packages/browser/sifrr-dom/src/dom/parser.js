@@ -129,6 +129,7 @@ const Parser = {
         }
       }
     }
+    element.onUpdate();
   },
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
