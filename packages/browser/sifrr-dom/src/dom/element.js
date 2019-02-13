@@ -161,7 +161,7 @@ function elementClassFactory(baseClass) {
         if (i < oldL) {
           domArray.push({ type: 'stateChange', state: newState[i] });
         } else {
-          const el = temp.sifrrClone ? temp.sifrrClone(true) : temp.cloneNode(true);
+          const el = temp.sifrrClone(true);
           el.state = newState[i];
           domArray.push(el);
         }

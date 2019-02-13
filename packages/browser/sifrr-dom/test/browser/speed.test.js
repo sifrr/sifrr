@@ -32,17 +32,20 @@ const ExpectedLayoutCounts = {
 describe('Siffr.Dom', () => {
   for (let i = 0; i < bl; i++) {
     const bm = benchmarks[i];
-    it(`passes ${bm} Speedtest`, async () => {
+    it(`passes ${bm} Speedtest with shadowRoot`, async () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url }, false).run();
-
-      let bmd = results[bm];
-      let total = 0;
-      for (let dur in bmd) {
-        if (dur.indexOf('Duration')) total += bmd[dur];
-      }
+      const bmd = results[bm];
       assert.equal(bmd['LayoutCount'], ExpectedLayoutCounts[bm]);
 
-      global.console.log(bm, '(total duration in ms): ', total);
+      global.console.log(bm, '(total duration in ms): ', bmd['ScriptDuration']);
+    });
+
+    it(`passes ${bm} Speedtest with sifrrHtml`, async () => {
+      const results = await new BenchmarkRunner([bm], { port, runs: 1, url: url + '?useSifrr' }, false).run();
+      const bmd = results[bm];
+      global.console.log(bm, '(total duration in ms): ', bmd['ScriptDuration']);
+
+      assert.equal(bmd['LayoutCount'], ExpectedLayoutCounts[bm]);
     });
   }
 });

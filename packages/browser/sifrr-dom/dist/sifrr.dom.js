@@ -514,14 +514,20 @@
     }
   }
   function SimpleElement(content, defaultState) {
+    let templ;
     if (typeof content === 'string') {
-      const templ = template(content);
+      templ = template(content);
       content = templ.content.firstElementChild || templ.content.firstChild;
     } else if (!content.nodeType) {
       throw TypeError('First argument for SimpleElement should be of type string or DOM element');
     }
-    if (content.nodeName.indexOf('-') !== -1 || content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0 ||
-    content.isSifrr) return content;
+    if (content.isSifrr) return content;
+    if (content.nodeName.indexOf('-') !== -1 ||
+    content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) {
+      window.document.body.appendChild(content);
+      content.remove();
+      return content;
+    }
     content.stateMap = create$2(content, creator$1);
     content._refs = collect$2(content, content.stateMap);
     Object.defineProperty(content, 'state', {
@@ -581,7 +587,6 @@
       static get elementName() {
         return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
       }
-      static onStateChange() {}
       static get useShadowRoot() {
         return this.useSR;
       }
@@ -611,21 +616,18 @@
         } else {
           if (!this.hasAttribute('data-sifrr-state') && this._state) this.update();
         }
-        this.onConnect();
+        if (this.onConnect) this.onConnect();
       }
-      onConnect() {}
       disconnectedCallback() {
         if (this.shadowRoot) this.shadowRoot.removeEventListener('change', parser.twoWayBind);
-        this.onDisconnect();
+        if (this.onDisconnect) this.onDisconnect();
       }
-      onDisconnect() {}
       attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName === 'data-sifrr-state') {
           this.state = json.parse(newVal);
         }
-        this.onAttributeChange(attrName, oldVal, newVal);
+        if (this.onAttributeChange) this.onAttributeChange(attrName, oldVal, newVal);
       }
-      onAttributeChange() {}
       get state() {
         return this._state;
       }
@@ -636,10 +638,9 @@
       }
       update() {
         parser.update(this);
-        this.onStateChange();
-        this.constructor.onStateChange(this);
+        if (this.onStateChange) this.onStateChange();
+        if (this.constructor.onStateChange) this.constructor.onStateChange(this);
       }
-      onStateChange() {}
       isSifrr(name = null) {
         if (name) return name === this.constructor.elementName;else return true;
       }
@@ -680,7 +681,7 @@
               state: newState[i]
             });
           } else {
-            const el = temp.sifrrClone ? temp.sifrrClone(true) : temp.cloneNode(true);
+            const el = temp.sifrrClone(true);
             el.state = newState[i];
             domArray.push(el);
           }

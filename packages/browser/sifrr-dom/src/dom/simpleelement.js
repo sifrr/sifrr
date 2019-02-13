@@ -51,16 +51,24 @@ function updateState(simpleEl) {
 }
 
 function SimpleElement(content, defaultState) {
+  let templ;
   if (typeof content === 'string') {
-    const templ = template(content);
+    templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
   } else if (!content.nodeType) {
     throw TypeError('First argument for SimpleElement should be of type string or DOM element');
   }
+  // Already sifrr element
+  if (content.isSifrr) return content;
   if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0) ||
-    // for document.createElement('tag', { is: 'custom-element' })
-    content.isSifrr) return content;
+    // for '<tag is=custom-element></tag>'
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)
+  ) {
+    // render node to make it sifrr element
+    window.document.body.appendChild(content);
+    content.remove();
+    return content;
+  }
   content.stateMap = create(content, creator);
   content._refs = collect(content, content.stateMap);
   Object.defineProperty(content, 'state', {
