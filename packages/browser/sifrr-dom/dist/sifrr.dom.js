@@ -739,6 +739,7 @@
       return true;
     },
     trigger: (el, name, options) => {
+      if (typeof el === 'string') el = document.querySelector(el);
       el.dispatchEvent(new window.Event(name, Object.assign({
         bubbles: true,
         composed: true
