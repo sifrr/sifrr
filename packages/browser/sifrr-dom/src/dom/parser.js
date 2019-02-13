@@ -3,7 +3,6 @@ const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    el.contentEditable == 'true' ||
     el.nodeName == 'TEXTAREA' ||
     el.nodeName == 'STYLE' ||
     (el.dataset && el.dataset.sifrrRepeat);
@@ -63,7 +62,7 @@ const Parser = {
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
-    const value = target.value === undefined ? target.innerHTML : target.value;
+    const value = target.value || target.textContent;
     let state = {};
     let root;
     if (target._root) {

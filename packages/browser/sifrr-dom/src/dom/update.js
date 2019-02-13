@@ -52,12 +52,7 @@ module.exports = (element) => {
       } else if (newValue.nodeType) {
         children = [newValue];
       } else {
-        // Replace html tags in input from input/contenteditable/textarea
-        TEMPLATE.innerHTML = newValue.toString()
-        // All closing tags
-          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-        // Self closing tags (void elements) from https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-          .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+        TEMPLATE.innerHTML = newValue.toString();
         children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
       }
       makeChildrenEqual(dom, children);

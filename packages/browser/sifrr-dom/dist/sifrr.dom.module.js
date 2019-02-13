@@ -118,7 +118,6 @@ const { collect: collect$1, create: create$1 } = ref;
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    el.contentEditable == 'true' ||
     el.nodeName == 'TEXTAREA' ||
     el.nodeName == 'STYLE' ||
     (el.dataset && el.dataset.sifrrRepeat);
@@ -172,7 +171,7 @@ const Parser = {
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
-    const value = target.value === undefined ? target.innerHTML : target.value;
+    const value = target.value || target.textContent;
     let state = {};
     let root;
     if (target._root) {
@@ -316,9 +315,7 @@ var update = (element) => {
       } else if (newValue.nodeType) {
         children = [newValue];
       } else {
-        TEMPLATE.innerHTML = newValue.toString()
-          .replace(/(&lt;)(((?!&gt;).)*)(&gt;)(((?!&lt;).)*)(&lt;)\/(((?!&gt;).)*)(&gt;)/g, '<$2>$5</$8>')
-          .replace(/(&lt;)(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(((?!&gt;).)*)(&gt;)/g, '<$2$3>');
+        TEMPLATE.innerHTML = newValue.toString();
         children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
       }
       makeChildrenEqual$1(dom, children);

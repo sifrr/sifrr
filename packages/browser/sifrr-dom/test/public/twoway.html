@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head is="sifrr-head">
+  </head>
+  <body>
+    <h1>OK</h1>
+    <twoway-input></twoway-input>
+    <twoway-textarea></twoway-textarea>
+    <twoway-select></twoway-select>
+    <twoway-content></twoway-content>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup({
+        useShadowRoot: true
+      });
+      Sifrr.Dom.load('twoway-input');
+      Sifrr.Dom.load('twoway-textarea');
+      Sifrr.Dom.load('twoway-content');
+      Sifrr.Dom.load('twoway-select');
+    </script>
+  </body>
+</html>
