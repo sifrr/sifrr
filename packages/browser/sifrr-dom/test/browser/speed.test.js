@@ -29,6 +29,20 @@ const ExpectedLayoutCounts = {
   '1k-append': 1
 };
 
+const ExpectedTotalDurations = {
+  '1k-run': 120,
+  '10k-run': 1100,
+  '1k-update': 40,
+  '10k-update': 370,
+  '1k-clear': 25,
+  '10k-clear': 150,
+  '1k-swap': 12,
+  '1k-select': 1,
+  '1k-delete': 35,
+  '10k-update10th': 80,
+  '1k-append': 110
+};
+
 describe('Siffr.Dom', () => {
   for (let i = 0; i < bl; i++) {
     const bm = benchmarks[i];
@@ -36,6 +50,7 @@ describe('Siffr.Dom', () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url }, false).run();
       const bmd = results[bm];
       assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
+      assert.isAtMost(bmd['TotalDuration'], ExpectedTotalDurations[bm], `${bm} duration should be ${ExpectedTotalDurations[bm]}, but was ${bmd['TotalDuration']}`);
 
       global.console.log(bm, '(sifrr total duration in ms): ', bmd['TotalDuration']);
     });
