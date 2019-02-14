@@ -45,10 +45,6 @@ function customElementUpdate(element) {
               dom[event] = eventLis;
             }
           }
-        } else if (key === 'style') {
-          for (let k in data.attributes.style) {
-            dom.style[k] = evaluateString(data.attributes.style[k], element);
-          }
         } else {
           const val = evaluateString(data.attributes[key], element);
           updateAttribute(dom, key, val);

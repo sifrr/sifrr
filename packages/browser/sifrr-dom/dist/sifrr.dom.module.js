@@ -107,18 +107,7 @@ function customElementCreator(el, filter) {
       if (attribute.name[0] === '$') {
         attrStateMap.events[attribute.name] = attribute.value;
       } else if (attribute.value.indexOf('${') >= 0) {
-        if (attribute.name === 'style') {
-          const styles = {};
-          attribute.value.split(';').forEach((s) => {
-            const [n, v] = s.split(/:(?!\/\/)/);
-            if (n && v && v.indexOf('${') >= 0) {
-              styles[n.trim()] = v.trim();
-            }
-          });
-          attrStateMap[attribute.name] = styles;
-        } else {
-          attrStateMap[attribute.name] = attribute.value;
-        }
+        attrStateMap[attribute.name] = attribute.value;
       }
     }
     if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
@@ -302,10 +291,6 @@ function customElementUpdate(element) {
             } else {
               dom[event] = eventLis;
             }
-          }
-        } else if (key === 'style') {
-          for (let k in data.attributes.style) {
-            dom.style[k] = evaluateString(data.attributes.style[k], element);
           }
         } else {
           const val = evaluateString(data.attributes[key], element);
