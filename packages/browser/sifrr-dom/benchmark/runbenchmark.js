@@ -36,15 +36,6 @@ const url = getArg('url');
   await loadTestBrowser(process.env.HEADLESS === 'false' ? 10 : 0);
   const results = await new BenchmarkRunner(benchmarks, { port, runs, url }, false).run();
 
-  for (let bm in results) {
-    const bmd = results[bm];
-    let total = 0;
-    for (let dur in bmd) {
-      if (dur.indexOf('Duration')) total += bmd[dur];
-    }
-    bmd['TotalDuration'] = total;
-  }
-
   await browser.close();
   global.console.table(results);
 })();

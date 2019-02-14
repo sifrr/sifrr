@@ -28,6 +28,13 @@ class BenchmarkRunner {
     for (let i = 0; i < l; i++) {
       const b = this.benchmarks[i];
       this.speedMetrics[b] = await runClickBenchmark(b, this.port, this.runs, this.url);
+      let total = 0;
+      for (let dur in this.speedMetrics[b]) {
+        if (dur.indexOf('Duration')) {
+          total += this.speedMetrics[b][dur];
+        }
+      }
+      this.speedMetrics[b].TotalDuration = total;
     }
 
     this.closeServer();

@@ -35,17 +35,17 @@ describe('Siffr.Dom', () => {
     it(`passes ${bm} Speedtest with simpleElement`, async () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url }, false).run();
       const bmd = results[bm];
-      assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm]);
+      assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-      global.console.log(bm, '(script duration in ms): ', bmd['ScriptDuration']);
+      global.console.log(bm, '(sifrr total duration in ms): ', bmd['TotalDuration']);
     });
 
     it(`passes ${bm} Speedtest with sifrrElement`, async () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url: url + '?useSifrr' }, false).run();
       const bmd = results[bm];
-      global.console.log(bm, '(script duration in ms): ', bmd['ScriptDuration']);
+      assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-      assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm]);
+      global.console.log(bm, '(html total duration in ms): ', bmd['TotalDuration']);
     });
   }
 });
