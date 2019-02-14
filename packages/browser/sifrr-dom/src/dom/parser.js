@@ -29,18 +29,22 @@ const Parser = {
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
-    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
-    return replacer('`' + string + '`');
+    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
+    return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
 
-    function replacer(match) {
-      if (match[0] == '$') match = match.slice(2, -1);
+    function replacer(_, match) {
       let f;
       if (match.indexOf('return ') >= 0) {
         f = new Function(match).bind(element);
       } else {
         f = new Function('return ' + match).bind(element);
       }
-      return f();
+      try {
+        return f();
+      } catch(e) {
+        window.console.error(e);
+        window.console.log(`Error running '${'return ' + match}'`);
+      }
     }
   }
 };

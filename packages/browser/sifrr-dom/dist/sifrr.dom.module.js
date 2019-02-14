@@ -150,17 +150,21 @@ const Parser = {
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
     string = string.trim();
-    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(string);
-    return replacer('`' + string + '`');
-    function replacer(match) {
-      if (match[0] == '$') match = match.slice(2, -1);
+    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
+    return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
+    function replacer(_, match) {
       let f;
       if (match.indexOf('return ') >= 0) {
         f = new Function(match).bind(element);
       } else {
         f = new Function('return ' + match).bind(element);
       }
-      return f();
+      try {
+        return f();
+      } catch(e) {
+        window.console.error(e);
+        window.console.log(`Error running '${'return ' + match}'`);
+      }
     }
   }
 };
@@ -285,13 +289,14 @@ function customElementUpdate(element) {
       for(let key in data.attributes) {
         if (key === 'events') {
           for(let event in data.attributes.events) {
-            const eventLis = evaluateString(data.attributes.events[event], element, true);
+            const eventLis = evaluateString(data.attributes.events[event], element);
             if (data.attributes.events[event].slice(0, 6) === '${this') {
               dom[event] = eventLis.bind(element);
             } else {
               dom[event] = eventLis;
             }
           }
+          delete data.attributes['events'];
         } else {
           const val = evaluateString(data.attributes[key], element);
           updateattribute(dom, key, val);
