@@ -37,7 +37,7 @@ function create(node, fxn, filter = false) {
   TREE_WALKER.currentNode = node;
   while(node) {
     // eslint-disable-next-line no-cond-assign
-    if (ref = fxn(node)) {
+    if (ref = fxn(node, filter)) {
       indices.push(new Ref(idx+1, ref));
       idx = 1;
     } else {

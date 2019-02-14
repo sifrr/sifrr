@@ -3,7 +3,27 @@ const updateAttribute = require('./updateattribute');
 const { evaluateString } = require('./parser');
 const TEMPLATE = require('./constants').TEMPLATE();
 
-module.exports = (element) => {
+function simpleElementUpdate(simpleEl) {
+  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
+  const newState = simpleEl.state, oldState = simpleEl._oldState;
+  for (let i = 0; i < l; i++) {
+    const data = refs[i].ref, dom = doms[i];
+    if (Array.isArray(data)) {
+      const l = data.length;
+      for (let i = 0; i < l; i++) {
+        const attr = data[i];
+        if (oldState[attr.text] !== newState[attr.text]) {
+          if (attr.name === 'class') dom.className = newState[attr.text];
+          else dom.setAttribute(attr.name, newState[attr.text]);
+        }
+      }
+    } else {
+      if (oldState[data] != newState[data]) dom.data = newState[data];
+    }
+  }
+}
+
+function customElementUpdate(element) {
   if (!element._refs) {
     return false;
   }
@@ -64,4 +84,9 @@ module.exports = (element) => {
     }
   }
   element.onUpdate();
+}
+
+module.exports = {
+  update: customElementUpdate,
+  simpleUpdate: simpleElementUpdate
 };

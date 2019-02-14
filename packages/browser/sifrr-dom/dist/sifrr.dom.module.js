@@ -32,7 +32,7 @@ function create(node, fxn, filter = false) {
   let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
   while(node) {
-    if (ref = fxn(node)) {
+    if (ref = fxn(node, filter)) {
       indices.push(new Ref(idx+1, ref));
       idx = 1;
     } else {
@@ -58,15 +58,35 @@ var constants = {
   ELEMENT_NODE: 1
 };
 
-const { collect: collect$1, create: create$1 } = ref;
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
-function isHtml(el) {
-  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    el.nodeName == 'TEXTAREA' ||
-    el.nodeName == 'STYLE' ||
-    (el.dataset && el.dataset.sifrrRepeat);
+function simpleElementCreator(node) {
+  if (node.nodeType === ELEMENT_NODE) {
+    if (node.attributes !== undefined) {
+      const attrs = Array.from(node.attributes), l = attrs.length;
+      const ret = [];
+      for (let i = 0; i < l; i++) {
+        const avalue = attrs[i].value;
+        if (avalue[0] === '$') {
+          ret.push({
+            name: attrs[i].name,
+            text: avalue.slice(2, -1)
+          });
+          node.setAttribute(attrs[i].name, '');
+        }
+      }
+      if (ret.length > 0) return ret;
+    }
+    return 0;
+  } else {
+    let nodeData = node.data;
+    if (nodeData[0] === '$') {
+      node.data = '';
+      return nodeData.slice(2, -1);
+    }
+    return 0;
+  }
 }
-function creator(el) {
+function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
     if (x.indexOf('${') > -1) return {
@@ -75,7 +95,7 @@ function creator(el) {
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
-    if (isHtml(el)) {
+    if (filter(el)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.html = true;
@@ -109,9 +129,22 @@ function creator(el) {
   }
   return 0;
 }
+var creator = {
+  creator: customElementCreator,
+  simpleCreator: simpleElementCreator
+};
+
+const { collect: collect$1, create: create$1 } = ref;
+const { creator: creator$1 } = creator;
+function isHtml(el) {
+  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
+    el.nodeName == 'TEXTAREA' ||
+    el.nodeName == 'STYLE' ||
+    (el.dataset && el.dataset.sifrrRepeat);
+}
 const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
-  createStateMap: (element) => create$1(element, creator, isHtml),
+  createStateMap: (element) => create$1(element, creator$1, isHtml),
   twoWayBind: (e) => {
     const target = e.path ? e.path[0] : e.target;
     if (!target.dataset.sifrrBind) return;
@@ -235,7 +268,26 @@ var makeequal = {
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { evaluateString } = parser;
 const TEMPLATE = constants.TEMPLATE();
-var update = (element) => {
+function simpleElementUpdate(simpleEl) {
+  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
+  const newState = simpleEl.state, oldState = simpleEl._oldState;
+  for (let i = 0; i < l; i++) {
+    const data = refs[i].ref, dom = doms[i];
+    if (Array.isArray(data)) {
+      const l = data.length;
+      for (let i = 0; i < l; i++) {
+        const attr = data[i];
+        if (oldState[attr.text] !== newState[attr.text]) {
+          if (attr.name === 'class') dom.className = newState[attr.text];
+          else dom.setAttribute(attr.name, newState[attr.text]);
+        }
+      }
+    } else {
+      if (oldState[data] != newState[data]) dom.data = newState[data];
+    }
+  }
+}
+function customElementUpdate(element) {
   if (!element._refs) {
     return false;
   }
@@ -287,6 +339,10 @@ var update = (element) => {
     }
   }
   element.onUpdate();
+}
+var update = {
+  update: customElementUpdate,
+  simpleUpdate: simpleElementUpdate
 };
 
 const { TEMPLATE: TEMPLATE$1 } = constants;
@@ -383,53 +439,8 @@ Loader._all = {};
 var loader = Loader;
 
 const { collect: collect$2, create: create$2 } = ref;
-const { ELEMENT_NODE: ELEMENT_NODE$1 } = constants;
-function creator$1(node) {
-  if (node.nodeType === ELEMENT_NODE$1) {
-    if (node.attributes !== undefined) {
-      const attrs = Array.from(node.attributes), l = attrs.length;
-      const ret = [];
-      for (let i = 0; i < l; i++) {
-        const avalue = attrs[i].value;
-        if (avalue[0] === '$') {
-          ret.push({
-            name: attrs[i].name,
-            text: avalue.slice(2, -1)
-          });
-          node.setAttribute(attrs[i].name, '');
-        }
-      }
-      if (ret.length > 0) return ret;
-    }
-    return 0;
-  } else {
-    let nodeData = node.data;
-    if (nodeData[0] === '$') {
-      node.data = '';
-      return nodeData.slice(2, -1);
-    }
-    return 0;
-  }
-}
-function updateState(simpleEl) {
-  const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
-  const newState = simpleEl.state, oldState = simpleEl._oldState;
-  for (let i = 0; i < l; i++) {
-    const data = refs[i].ref, dom = doms[i];
-    if (Array.isArray(data)) {
-      const l = data.length;
-      for (let i = 0; i < l; i++) {
-        const attr = data[i];
-        if (oldState[attr.text] !== newState[attr.text]) {
-          if (attr.name === 'class') dom.className = newState[attr.text];
-          else dom.setAttribute(attr.name, newState[attr.text]);
-        }
-      }
-    } else {
-      if (oldState[data] != newState[data]) dom.data = newState[data];
-    }
-  }
-}
+const { simpleUpdate } = update;
+const { simpleCreator } = creator;
 function SimpleElement(content, defaultState = null) {
   let templ;
   if (typeof content === 'string') {
@@ -446,14 +457,14 @@ function SimpleElement(content, defaultState = null) {
     content.remove();
     return content;
   }
-  content.stateMap = create$2(content, creator$1);
+  content.stateMap = create$2(content, simpleCreator);
   content._refs = collect$2(content, content.stateMap);
   Object.defineProperty(content, 'state', {
     get: () => content._state,
     set: (v) => {
       content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
-      updateState(content);
+      simpleUpdate(content);
     }
   });
   if (defaultState) content.state = defaultState;
@@ -466,7 +477,7 @@ function SimpleElement(content, defaultState = null) {
       set: (v) => {
         clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
-        updateState(clone);
+        simpleUpdate(clone);
       }
     });
     if (content.state) clone.state = content.state;
@@ -529,6 +540,7 @@ const Event = {
 };
 var event = Event;
 
+const { update: update$1 } = update;
 const { opts: opts$1 } = event;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -611,7 +623,7 @@ function elementClassFactory(baseClass) {
     }
     onStateChange() {}
     update() {
-      update(this);
+      update$1(this);
     }
     onUpdate() {}
     isSifrr(name = null) {

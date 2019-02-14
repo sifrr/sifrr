@@ -1,5 +1,5 @@
 const Parser = require('./parser');
-const update = require('./update');
+const { update } = require('./update');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
 const { opts } = require('./event');
