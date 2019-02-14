@@ -3,7 +3,6 @@ const script = window.document.createElement('script');
 // const sfn = window.document.createElement('sifrr-node');
 
 module.exports = {
-  // SIFRR_NODE: () => sfn.cloneNode(),
   TEMPLATE: () => temp.cloneNode(false),
   SCRIPT: () => script.cloneNode(false),
   TEXT_NODE: 3,
