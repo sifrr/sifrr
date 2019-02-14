@@ -61,21 +61,19 @@ var constants = {
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
 function simpleElementCreator(node) {
   if (node.nodeType === ELEMENT_NODE) {
-    if (node.attributes !== undefined) {
-      const attrs = Array.from(node.attributes), l = attrs.length;
-      const ret = [];
-      for (let i = 0; i < l; i++) {
-        const avalue = attrs[i].value;
-        if (avalue[0] === '$') {
-          ret.push({
-            name: attrs[i].name,
-            text: avalue.slice(2, -1)
-          });
-          node.setAttribute(attrs[i].name, '');
-        }
+    const attrs = Array.prototype.slice.call(node.attributes), l = attrs.length;
+    const ret = [];
+    for (let i = 0; i < l; i++) {
+      const avalue = attrs[i].value;
+      if (avalue[0] === '$') {
+        ret.push({
+          name: attrs[i].name,
+          text: avalue.slice(2, -1)
+        });
+        node.setAttribute(attrs[i].name, '');
       }
-      if (ret.length > 0) return ret;
     }
+    if (ret.length > 0) return ret;
     return 0;
   } else {
     let nodeData = node.data;
