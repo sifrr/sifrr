@@ -1,6 +1,5 @@
 const Parser = require('./parser');
 const update = require('./update');
-const JsonExt = require('../utils/json');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
 const { opts } = require('./event');
@@ -85,7 +84,7 @@ function elementClassFactory(baseClass) {
 
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
-        this.state = JsonExt.parse(newVal);
+        this.state = JSON.parse(newVal);
       }
       this.onAttributeChange(attrName, oldVal, newVal);
     }
@@ -93,7 +92,7 @@ function elementClassFactory(baseClass) {
     onAttributeChange() {}
 
     get state() {
-      // return JsonExt.deepClone(this._state);
+      // return Json.deepClone(this._state);
       return this._state;
     }
 

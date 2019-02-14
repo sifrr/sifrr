@@ -7,62 +7,6 @@
 
   fetch = fetch && fetch.hasOwnProperty('default') ? fetch['default'] : fetch;
 
-  const Json = {
-    parse: data => {
-      let ans = {};
-      if (typeof data == 'string') {
-        try {
-          ans = JSON.parse(data);
-        } catch (e) {
-          return data;
-        }
-        return Json.parse(ans);
-      } else if (Array.isArray(data)) {
-        ans = [];
-        data.forEach((v, i) => {
-          ans[i] = Json.parse(v);
-        });
-      } else if (typeof data == 'object') {
-        for (const k in data) {
-          ans[k] = Json.parse(data[k]);
-        }
-      } else {
-        return data;
-      }
-      return ans;
-    },
-    stringify: data => {
-      if (typeof data == 'string') {
-        return data;
-      } else {
-        return JSON.stringify(data);
-      }
-    },
-    shallowEqual: (a, b) => {
-      for (let key in a) {
-        if (!(key in b) || a[key] != b[key]) {
-          return false;
-        }
-      }
-      for (let key in b) {
-        if (!(key in a) || a[key] != b[key]) {
-          return false;
-        }
-      }
-      return true;
-    },
-    deepClone: json => {
-      if (Array.isArray(json)) return json.map(i => Json.deepClone(i));
-      if (typeof json !== 'object' || json === null) return json;
-      let clone = {};
-      for (let key in json) {
-        clone[key] = Json.deepClone(json[key]);
-      }
-      return clone;
-    }
-  };
-  var json = Json;
-
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   TREE_WALKER.nextNonfilterNode = function (fxn) {
     let node = this.currentNode;
@@ -229,6 +173,23 @@
     }
     if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
   };
+
+  const Json = {
+    shallowEqual: (a, b) => {
+      for (let key in a) {
+        if (!(key in b) || a[key] != b[key]) {
+          return false;
+        }
+      }
+      for (let key in b) {
+        if (!(key in a) || a[key] != b[key]) {
+          return false;
+        }
+      }
+      return true;
+    }
+  };
+  var json = Json;
 
   const {
     shallowEqual
@@ -678,7 +639,7 @@
       onDisconnect() {}
       attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName === 'data-sifrr-state') {
-          this.state = json.parse(newVal);
+          this.state = JSON.parse(newVal);
         }
         this.onAttributeChange(attrName, oldVal, newVal);
       }
@@ -757,7 +718,6 @@
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event;
   SifrrDom.makeEqual = makeequal;
-  SifrrDom.Json = json;
   SifrrDom.template = template;
   SifrrDom.register = (Element, options) => {
     Element.useSR = SifrrDom.config.useShadowRoot;

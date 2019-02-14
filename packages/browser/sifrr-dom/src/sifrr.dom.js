@@ -1,5 +1,3 @@
-const JsonExt = require('./utils/json');
-
 // Empty SifrrDom
 let SifrrDom = {};
 
@@ -15,7 +13,6 @@ SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
 SifrrDom.makeEqual = require('./dom/makeequal');
-SifrrDom.Json = JsonExt;
 
 // HTML to template
 SifrrDom.template = require('./dom/template');
