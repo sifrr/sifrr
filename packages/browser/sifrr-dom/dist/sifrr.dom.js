@@ -158,7 +158,7 @@
     creator: creator$1
   } = creator;
   function isHtml(el) {
-    return el.dataset && el.dataset.sifrrHtml == 'true' || el.nodeName == 'TEXTAREA' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
+    return el.dataset && el.dataset.sifrrHtml == 'true' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
@@ -257,7 +257,7 @@
     }
   }
   function makeEqual(oldNode, newNode) {
-    if (newNode === null) return oldNode;
+    if (!newNode) return oldNode;
     if (newNode.type === 'stateChange') {
       if (!shallowEqual(oldNode.state, newNode.state)) {
         oldNode.state = newNode.state;

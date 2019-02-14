@@ -138,7 +138,6 @@ const { collect: collect$1, create: create$1 } = ref;
 const { creator: creator$1 } = creator;
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    el.nodeName == 'TEXTAREA' ||
     el.nodeName == 'STYLE' ||
     (el.dataset && el.dataset.sifrrRepeat);
 }
@@ -233,7 +232,7 @@ function makeChildrenEqual(parent, newChildren) {
   }
 }
 function makeEqual(oldNode, newNode) {
-  if (newNode === null) return oldNode;
+  if (!newNode) return oldNode;
   if (newNode.type === 'stateChange') {
     if (!shallowEqual(oldNode.state, newNode.state)) {
       oldNode.state = newNode.state;
