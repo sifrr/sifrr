@@ -7,9 +7,11 @@ const nativeToSyntheticEvent = (e, name) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
     while(dom) {
-      const eventHandler = dom[`$${name}`];
-      if (eventHandler) {
-        eventHandler(e, target);
+      const eventHandler = dom[`_${name}`] || (dom.getAttribute ? dom.getAttribute(`_${name}`) : null);
+      if (typeof eventHandler === 'function') {
+        eventHandler.call(dom._root || window, e, target);
+      } else if (typeof eventHandler === 'string') {
+        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
       }
       cssMatchEvent(e, name, dom, target);
       dom = dom.parentNode || dom.host;

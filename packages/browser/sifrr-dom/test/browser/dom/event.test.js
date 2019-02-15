@@ -28,10 +28,10 @@ describe('Sifrr.Dom.Event', () => {
     assert.equal(listeners2.length, 1, 'should not add listener again');
   });
 
-  it('works with $event properties', async () => {
+  it('works with _event properties', async () => {
     const ret = await page.$eval('a', el => {
       let i = 0, sameEl = false;
-      el.$click = (e, target) => {
+      el._click = (e, target) => {
         sameEl = target === el;
         i++;
       };
@@ -41,6 +41,26 @@ describe('Sifrr.Dom.Event', () => {
 
     assert.equal(ret[0], 1);
     assert.equal(ret[1], true);
+  });
+
+  it('works with _event attribute', async () => {
+    const ret = await page.$eval('a', el => {
+      el._click = undefined;
+      let i = 0, sameEl, ev;
+      // eslint-disable-next-line no-unused-vars
+      window.clickEvent = (e, target) => {
+        ev = !!e;
+        sameEl = target === el;
+        i++;
+      };
+      el.setAttribute('_click', 'clickEvent(event, target)');
+      el.click();
+      return { i, sameEl, ev };
+    });
+
+    assert.equal(ret.i, 1);
+    assert.equal(ret.sameEl, true);
+    assert.equal(ret.ev, true);
   });
 
   it('works with addListener', async () => {
@@ -105,7 +125,7 @@ describe('Sifrr.Dom.Event', () => {
     const ret = await page.evaluate(() => {
       let i = 0;
       Sifrr.Dom.Event.add('randomevent');
-      document.querySelector('a.ok').$randomevent = () => i++;
+      document.querySelector('a.ok')._randomevent = () => i++;
       Sifrr.Dom.Event.trigger('a.ok', 'randomevent');
       Sifrr.Dom.Event.trigger(document.querySelector('a.ok'), 'randomevent');
       return i;

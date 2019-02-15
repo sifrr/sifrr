@@ -354,14 +354,17 @@ customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root
 ### Synthetic events
 
 ```js
-// example for adding 'click' event listeners can be replaced with any type of event
+// example for adding 'click' event listeners, can be replaced with any type of event (even custom events)
 
 // Add synthetic event listerner (only need to be called once for one type of event)
 Sifrr.Dom.Event.add('click');
 
 // Adding event callback on an element (any html element), works inside shadowRoots also
-el.$click = fxn;
-// fxn will be called with two arguments `fxn(event, target)`
+el._click = fxn;
+// fxn will be called with two arguments `fxn(event, target)` and `this` inside function will be it's parent custom element if available, else window.
+
+// Add _click attribute to html directly
+// <a _click="console.log(this, event, target)"></a>
 
 // Adding a generic event callback
 Sifrr.Dom.Event.addListener('click', selector, fxn);
@@ -371,6 +374,7 @@ Sifrr.Dom.Event.addListener('click', selector, fxn);
 Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 // options are same as options for new window.Event(target, 'custom:event', options);
 ```
+__Note__: Synthetic event listeners are always passive, hence, `event.preventDefault()` can not be called inside the function.
 
 ### More complex apis
 

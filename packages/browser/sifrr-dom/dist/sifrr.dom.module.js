@@ -104,7 +104,7 @@ function customElementCreator(el, filter) {
     const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.name[0] === '$') {
+      if (attribute.name[0] === '_') {
         attrStateMap.events[attribute.name] = attribute.value;
       } else if (attribute.value.indexOf('${') >= 0) {
         attrStateMap[attribute.name] = attribute.value;
@@ -290,12 +290,9 @@ function customElementUpdate(element) {
         if (key === 'events') {
           for(let event in data.attributes.events) {
             const eventLis = evaluateString(data.attributes.events[event], element);
-            if (data.attributes.events[event].slice(0, 6) === '${this') {
-              dom[event] = eventLis.bind(element);
-            } else {
-              dom[event] = eventLis;
-            }
+            dom[event] = eventLis;
           }
+          if (!dom._root) dom._root = element;
           delete data.attributes['events'];
         } else {
           const val = evaluateString(data.attributes[key], element);
@@ -481,9 +478,11 @@ const nativeToSyntheticEvent = (e, name) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
     while(dom) {
-      const eventHandler = dom[`$${name}`];
-      if (eventHandler) {
-        eventHandler(e, target);
+      const eventHandler = dom[`_${name}`] || (dom.getAttribute ? dom.getAttribute(`_${name}`) : null);
+      if (typeof eventHandler === 'function') {
+        eventHandler.call(dom._root || window, e, target);
+      } else if (typeof eventHandler === 'string') {
+        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
       }
       cssMatchEvent(e, name, dom, target);
       dom = dom.parentNode || dom.host;
@@ -525,10 +524,10 @@ const Event = {
   },
   opts: opts
 };
-var event = Event;
+var event_1 = Event;
 
 const { update: update$1 } = update;
-const { opts: opts$1 } = event;
+const { opts: opts$1 } = event_1;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
     static extends(htmlElementClass) {
@@ -672,7 +671,7 @@ SifrrDom.Element = element;
 SifrrDom.Parser = parser;
 SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
-SifrrDom.Event = event;
+SifrrDom.Event = event_1;
 SifrrDom.makeEqual = makeequal;
 SifrrDom.template = template;
 SifrrDom.register = (Element, options) => {
@@ -707,6 +706,7 @@ SifrrDom.setup = function(config) {
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
 };
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
+  if (window.customElements.get(name)) { throw Error(`Error loading Element: ${name} - Custom Element with this name is already defined.`); }
   let loader$$1 = new SifrrDom.Loader(elemName, url);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader$$1.executeScripts(js);

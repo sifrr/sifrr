@@ -39,12 +39,9 @@ function customElementUpdate(element) {
         if (key === 'events') {
           for(let event in data.attributes.events) {
             const eventLis = evaluateString(data.attributes.events[event], element);
-            if (data.attributes.events[event].slice(0, 6) === '${this') {
-              dom[event] = eventLis.bind(element);
-            } else {
-              dom[event] = eventLis;
-            }
+            dom[event] = eventLis;
           }
+          if (!dom._root) dom._root = element;
           delete data.attributes['events'];
         } else {
           const val = evaluateString(data.attributes[key], element);

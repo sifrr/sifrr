@@ -1,0 +1,15 @@
+<template>
+  <div class="${this.state.attributetext}">
+    <p>${this.state.onlytext}</p>
+    <p>aa ${this.state.betweentext} aa</p>
+  </div>
+</template>
+<script type="text/javascript">
+  class BindingText extends Sifrr.Dom.Element {}
+  BindingText.defaultState = {
+    onlytext: 'only text',
+    betweentext: 'between text',
+    attributetext: 'attribute text'
+  };
+  Sifrr.Dom.register(BindingText);
+</script>
