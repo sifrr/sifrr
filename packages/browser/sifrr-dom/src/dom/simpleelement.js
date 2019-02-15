@@ -15,7 +15,7 @@ function SimpleElement(content, defaultState = null) {
   if (content.isSifrr) return content;
   if (content.nodeName.indexOf('-') !== -1 ||
     // for '<tag is=custom-element></tag>'
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
   ) {
     // render node to make it sifrr element
     window.document.body.appendChild(content);

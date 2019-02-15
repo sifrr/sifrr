@@ -67,7 +67,7 @@ class Loader {
           new Function(script.text).call(window);
         }
       });
-    }).catch(e => window.console.error(e));
+    }).catch(/* istanbul ignore next */ e => window.console.error(e));
   }
 
   static add(elemName, instance) {

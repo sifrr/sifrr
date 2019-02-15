@@ -1,5 +1,6 @@
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
 
+// Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function simpleElementCreator(node) {
   if (node.nodeType === ELEMENT_NODE) {
     const attrs = Array.prototype.slice.call(node.attributes), l = attrs.length;

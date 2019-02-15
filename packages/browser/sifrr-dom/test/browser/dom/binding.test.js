@@ -14,10 +14,20 @@ describe('Siffr.Dom', () => {
     assert.equal(betweentext, 'aa between text aa');
   });
 
+  it('works with functions', async () => {
+    const functiontext = await page.$eval('binding-text', el => el.$('#function').textContent);
+
+    assert.equal(functiontext, 'fx function');
+  });
+
   it('works in attribute', async () => {
     const attributetext = await page.$eval('binding-text', el => el.$('#attributetext').getAttribute('class'));
 
     assert.equal(attributetext, 'attribute text');
+  });
+
+  it("consoles error if error in binding and doesn't stop rendering", async () => {
+    // No need to test?
   });
 
   describe('html', () => {

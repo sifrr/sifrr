@@ -7,12 +7,6 @@ describe('Loader', () => {
     sinon.restore();
   });
 
-  before(() => {
-  });
-
-  after(() => {
-  });
-
   it('throws error if sifrr-fetch is not present', () => {
     mock('@sifrr/fetch', undefined);
     const Loader = require('../../../src/dom/loader');

@@ -1,0 +1,26 @@
+<template>
+  <div id="html" data-sifrr-html="true">
+    ${this.state.html}
+  </div>
+  <p id="text">some ${this.state.text} text</p>
+  <table data-sifrr-html="true">
+    <!-- ${this.state.row} -->
+  </table>
+</template>
+<script type="text/javascript">
+  const row = document.createElement('tr', { is: 'sifrr-row' });
+  row.id = 'row';
+  row.state = {
+    id: 1,
+    label: 'ok'
+  };
+  class SifrrUpdate extends Sifrr.Dom.Element {}
+  SifrrUpdate.defaultState = {
+    html: '<p>p</p><div id="attribute" some-attr="random" _click="console.log(\'click\')" _keyup="console.log(\'keyup\')">div</div><p id="replaced"></p><a></a>',
+    text: 'random',
+    row: row
+  };
+  Sifrr.Dom.load('sifrr-row', { js: false }).then(() => {
+    Sifrr.Dom.register(SifrrUpdate);
+  });
+</script>

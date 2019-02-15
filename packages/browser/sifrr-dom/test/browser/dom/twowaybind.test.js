@@ -133,4 +133,19 @@ describe('Two way bind', () => {
       await assertHtmlValue('content', 'some <a>what</a> end');
     });
   });
+
+  it("doesn't do anything for no binding input", async () => {
+    let e;
+    page.on('pageerror', err => e = err.message);
+    const content = await page.evaluateHandle('document.querySelector("#emptybind")');
+    await content.click({ clickCount: 3 });
+    await content.type('random');
+
+    const content2 = await page.evaluateHandle('document.querySelector("#nobind")');
+    await content2.click({ clickCount: 3 });
+    await content2.type('random');
+
+    assert.notExists(e);
+    // Not sure what to expect here?
+  });
 });

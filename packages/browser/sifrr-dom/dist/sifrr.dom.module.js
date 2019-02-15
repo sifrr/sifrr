@@ -132,20 +132,19 @@ const Parser = {
   collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
   createStateMap: (element) => create$1(element, creator$1, isHtml),
   twoWayBind: (e) => {
-    const target = e.path ? e.path[0] : e.target;
-    if (!target.dataset.sifrrBind) return;
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    if (!target.dataset.sifrrBind || target._root === null) return;
     const value = target.value || target.textContent;
     let state = {};
-    let root;
-    if (target._root) {
-      root = target._root;
-    } else {
+    if (!target._root) {
+      let root;
       root = target;
-      while(!root.isSifrr) root = root.parentNode || root.host;
-      target._root = root;
+      while(root && !root.isSifrr) root = root.parentNode || root.host;
+      if (root) target._root = root;
+      else target._root = null;
     }
     state[target.dataset.sifrrBind] = value;
-    root.state = state;
+    if (target._root) target._root.state = state;
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
@@ -155,15 +154,15 @@ const Parser = {
     function replacer(_, match) {
       let f;
       if (match.indexOf('return ') >= 0) {
-        f = new Function(match).bind(element);
+        f = match;
       } else {
-        f = new Function('return ' + match).bind(element);
+        f = 'return ' + match;
       }
       try {
-        return f();
+        return new Function(f).call(element) || '';
       } catch(e) {
         window.console.error(e);
-        window.console.log(`Error running '${'return ' + match}'`);
+        window.console.log(`Error evaluating: \`${f}\``);
       }
     }
   }
@@ -173,11 +172,7 @@ var parser = Parser;
 var updateattribute = (element, name, newValue) => {
   const fromValue = element.getAttribute(name);
   if (fromValue != newValue) {
-    if (newValue == 'null' || newValue == 'undefined' || newValue == 'false' || !newValue) {
-      if (fromValue) element.removeAttribute(name);
-    } else {
-      element.setAttribute(name, newValue);
-    }
+    element.setAttribute(name, newValue);
   }
   if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
 };
@@ -292,7 +287,7 @@ function customElementUpdate(element) {
             const eventLis = evaluateString(data.attributes.events[event], element);
             dom[event] = eventLis;
           }
-          if (!dom._root) dom._root = element;
+          dom._root = element;
           delete data.attributes['events'];
         } else {
           const val = evaluateString(data.attributes[key], element);
@@ -320,7 +315,7 @@ function customElementUpdate(element) {
       makeChildrenEqual$1(dom, children);
     } else {
       if (dom.data != newValue) {
-        dom.data = newValue || '';
+        dom.data = newValue;
       }
     }
   }
@@ -412,7 +407,7 @@ class Loader {
           new Function(script.text).call(window);
         }
       });
-    }).catch(e => window.console.error(e));
+    }).catch( e => window.console.error(e));
   }
   static add(elemName, instance) {
     Loader._all[elemName] = instance;
@@ -437,7 +432,7 @@ function SimpleElement(content, defaultState = null) {
   }
   if (content.isSifrr) return content;
   if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') >= 0)
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
   ) {
     window.document.body.appendChild(content);
     content.remove();

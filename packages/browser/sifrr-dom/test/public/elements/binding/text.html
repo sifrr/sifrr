@@ -1,6 +1,17 @@
 <template>
   <div class="${this.state.attributetext}" id="attributetext">
+    <p id="error">${
+      throw new Error('error in binding');
+      return 'ok';
+    }</p>
     <p id="onlytext">${this.state.onlytext}</p>
+    <p id="function">fx ${
+      if (true) {
+        return 'function';
+      } else {
+        return '';
+      }
+    }</p>
     <p id="betweentext">aa ${this.state.betweentext} aa</p>
   </div>
 </template>

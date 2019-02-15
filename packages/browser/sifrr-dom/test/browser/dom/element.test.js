@@ -91,8 +91,8 @@ describe('Sifrr.Dom.Element', () => {
       const srhtml = await page.$eval('element-nods-sr', el => el.shadowRoot.innerHTML);
       const nosrhtml = await page.$eval('element-nods-nosr', el => el.innerHTML);
 
-      assert.equal(srhtml, '<p>Sifrr undefined Simple</p>');
-      assert.equal(nosrhtml, '<p>Sifrr undefined Simple</p>');
+      assert.equal(srhtml, '<p>Sifrr  Simple</p>');
+      assert.equal(nosrhtml, '<p>Sifrr  Simple</p>');
     });
 
     it('works with defaultState', async () => {

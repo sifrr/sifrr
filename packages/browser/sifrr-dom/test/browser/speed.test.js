@@ -33,14 +33,14 @@ const ExpectedTotalDurations = {
   '1k-run': 120,
   '10k-run': 1100,
   '1k-update': 40,
-  '10k-update': 370,
+  '10k-update': 400,
   '1k-clear': 25,
   '10k-clear': 150,
   '1k-swap': 12,
   '1k-select': 1,
   '1k-delete': 35,
   '10k-update10th': 80,
-  '1k-append': 110
+  '1k-append': 130
 };
 
 describe('Siffr.Dom', () => {

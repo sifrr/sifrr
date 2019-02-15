@@ -2,7 +2,6 @@ const updateAttribute = require('./updateattribute');
 const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
-// Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function makeChildrenEqual(parent, newChildren) {
   // Lesser children now
   const oldL = parent.childNodes.length, newL = newChildren.length;
@@ -31,6 +30,7 @@ function makeChildrenEqual(parent, newChildren) {
 }
 
 function makeEqual(oldNode, newNode) {
+  /* istanbul ignore next */
   if (!newNode) return oldNode;
   if (newNode.type === 'stateChange') {
     if (!shallowEqual(oldNode.state, newNode.state)) {

@@ -41,7 +41,7 @@ function customElementUpdate(element) {
             const eventLis = evaluateString(data.attributes.events[event], element);
             dom[event] = eventLis;
           }
-          if (!dom._root) dom._root = element;
+          dom._root = element;
           delete data.attributes['events'];
         } else {
           const val = evaluateString(data.attributes[key], element);
@@ -75,7 +75,7 @@ function customElementUpdate(element) {
     } else {
       // text node
       if (dom.data != newValue) {
-        dom.data = newValue || '';
+        dom.data = newValue;
       }
     }
   }
