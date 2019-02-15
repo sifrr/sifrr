@@ -5,11 +5,13 @@
   <body>
     <h1>OK</h1>
     <binding-text></binding-text>
+    <binding-html></binding-html>
     <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup();
-      Sifrr.Dom.load('binding-text');
+      Sifrr.Dom.load('binding-text', { js: false });
+      Sifrr.Dom.load('binding-html', { js: false });
     </script>
   </body>
 </html>

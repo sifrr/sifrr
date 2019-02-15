@@ -307,13 +307,15 @@ function customElementUpdate(element) {
       let children;
       if (Array.isArray(newValue)) {
         children = newValue;
-      } else if (newValue.nodeType === 1) {
+      } else if (newValue.content && newValue.content.nodeType === 11) {
         children = Array.prototype.slice.call(newValue.content.childNodes);
       } else if (newValue.nodeType) {
         children = [newValue];
-      } else {
+      } else if (typeof newValue === 'string') {
         TEMPLATE.innerHTML = newValue.toString();
         children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
+      } else {
+        children = Array.prototype.slice.call(newValue);
       }
       makeChildrenEqual$1(dom, children);
     } else {

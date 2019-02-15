@@ -1,12 +1,42 @@
 <template>
-  <div class="${this.state.attributetext}">
-
+  <div id="array" data-sifrr-html="true">
+    ${this.state.array}
+  </div>
+  <div id="childnodes" data-sifrr-html="true">
+    ${this.state.childnodes}
+  </div>
+  <div id="children" data-sifrr-html="true">
+    ${this.state.children}
+  </div>
+  <div id="template" data-sifrr-html="true">
+    ${this.state.template}
+  </div>
+  <div id="onenode" data-sifrr-html="true">
+    <!-- -->              ${this.state.onenode}
+  </div>
+  <div id="string" data-sifrr-html="true">
+    ${this.state.string}
   </div>
 </template>
 <script type="text/javascript">
+  const template = document.createElement('template');
+  template.innerHTML = '<div>template</div>';
+
+  const childnodes = document.createElement('template');
+  childnodes.innerHTML = `<div>childnode</div>
+  <a>a</a>`;
+
+  const children = document.createElement('template');
+  children.innerHTML = '<div>children</div>';
+
   class BindingHTML extends Sifrr.Dom.Element {}
   BindingHTML.defaultState = {
-    
+    array: [document.createElement('p'), document.createElement('p')],
+    template: template,
+    childnodes: childnodes.content.childNodes,
+    children: children.content.children,
+    onenode: document.createElement('p'),
+    string: '<h1>string</h1>'
   };
   Sifrr.Dom.register(BindingHTML);
 </script>
