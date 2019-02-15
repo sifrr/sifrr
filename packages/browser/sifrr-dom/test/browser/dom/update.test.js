@@ -2,7 +2,7 @@ function setState(state) {
   return page.$eval('sifrr-update', (el, st) => el.state = st, state);
 }
 
-describe('Siffr.Dom', () => {
+describe('Update and updateAttribute', () => {
   before(async () => {
     await page.goto(`${PATH}/update.html`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });

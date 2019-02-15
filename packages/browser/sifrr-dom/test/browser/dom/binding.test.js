@@ -1,4 +1,4 @@
-describe('Siffr.Dom', () => {
+describe('Bindings', () => {
   before(async () => {
     await page.goto(`${PATH}/binding.html`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });
