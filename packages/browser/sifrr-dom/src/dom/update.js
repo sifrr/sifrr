@@ -71,6 +71,10 @@ function customElementUpdate(element) {
       } else {
         children = Array.prototype.slice.call(newValue);
       }
+      if (children.length === 0) {
+        dom.textContent = '';
+        continue;
+      }
       makeChildrenEqual(dom, children);
     } else {
       // text node
