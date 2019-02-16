@@ -32,4 +32,15 @@ describe('Sifrr.Dom.load and Loader', () => {
 
     assert.equal(error, false);
   });
+
+  it("doesn't try to run script element if it is already executed", async () => {
+    const mes = await page.evaluate(() => {
+      let mes;
+      window.console.log = (e) => mes = e;
+      (new Sifrr.Dom.Loader('loading-load')).executeScripts();
+      return mes;
+    });
+
+    assert.equal(mes, 'loading-load was already executed');
+  });
 });

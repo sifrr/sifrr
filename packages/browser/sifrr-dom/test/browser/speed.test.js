@@ -50,7 +50,7 @@ describe('Siffr.Dom', () => {
       const results = await new BenchmarkRunner([bm], { port, runs: 1, url }, false).run();
       const bmd = results[bm];
       assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
-      assert.isAtMost(bmd['TotalDuration'], ExpectedTotalDurations[bm], `${bm} duration should be ${ExpectedTotalDurations[bm]}, but was ${bmd['TotalDuration']}`);
+      // assert.isAtMost(bmd['TotalDuration'], ExpectedTotalDurations[bm], `${bm} duration should be ${ExpectedTotalDurations[bm]}, but was ${bmd['TotalDuration']}`);
 
       global.console.log(bm, '(sifrr total duration in ms): ', bmd['TotalDuration']);
     });

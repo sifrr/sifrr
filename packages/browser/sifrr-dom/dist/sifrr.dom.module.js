@@ -180,12 +180,12 @@ var updateattribute = (element, name, newValue) => {
 const Json = {
   shallowEqual: (a, b) => {
     for(let key in a) {
-      if(!(key in b) || a[key] != b[key]) {
+      if(!(key in b) || a[key] !== b[key]) {
         return false;
       }
     }
     for(let key in b) {
-      if(!(key in a) || a[key] != b[key]) {
+      if(!(key in a) || a[key] !== b[key]) {
         return false;
       }
     }
@@ -703,7 +703,7 @@ SifrrDom.setup = function(config) {
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
 };
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
-  if (window.customElements.get(name)) { throw Error(`Error loading Element: ${name} - Custom Element with this name is already defined.`); }
+  if (window.customElements.get(elemName)) { return window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`); }
   let loader$$1 = new SifrrDom.Loader(elemName, url);
   SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
   return loader$$1.executeScripts(js);
