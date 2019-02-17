@@ -267,7 +267,7 @@
       attr = oldAttrs[j];
       if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
     }
-    makeChildrenEqual(oldNode, newNode.childNodes);
+    makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
     return oldNode;
   }
   var makeequal = {
@@ -745,6 +745,8 @@
     }
   };
   SifrrDom.setup = function (config) {
+    HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
+    HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
     SifrrDom.config = Object.assign({
       baseUrl: '',
       useShadowRoot: true

@@ -65,7 +65,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   // make children equal
-  makeChildrenEqual(oldNode, newNode.childNodes);
+  makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
 
   return oldNode;
 }

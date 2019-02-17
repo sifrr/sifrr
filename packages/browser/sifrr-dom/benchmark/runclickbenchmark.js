@@ -11,8 +11,8 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
     if (typeof Sifrr !== 'undefined') {
       if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();
     } else {
-      document.querySelector('#main').$$ = document.querySelector('#main').querySelectorAll;
-      document.querySelector('#main').$ = document.querySelector('#main').querySelector;
+      HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
+      HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
     }
   });
 
