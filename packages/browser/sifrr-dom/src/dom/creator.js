@@ -33,7 +33,7 @@ function customElementCreator(el, filter) {
     const x = el.data;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x
+      text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
@@ -42,7 +42,7 @@ function customElementCreator(el, filter) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.html = true;
-        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1').trim();
       }
     }
     // attributes

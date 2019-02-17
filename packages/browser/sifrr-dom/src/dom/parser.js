@@ -28,7 +28,6 @@ const Parser = {
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
-    string = string.trim();
     if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
     return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
 

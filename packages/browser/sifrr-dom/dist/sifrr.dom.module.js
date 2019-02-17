@@ -89,7 +89,7 @@ function customElementCreator(el, filter) {
     const x = el.data;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x
+      text: x.trim()
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
@@ -97,7 +97,7 @@ function customElementCreator(el, filter) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.html = true;
-        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1');
+        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1').trim();
       }
     }
     const attrs = el.attributes, l = attrs.length;
@@ -148,7 +148,6 @@ const Parser = {
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
-    string = string.trim();
     if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
     return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
     function replacer(_, match) {
