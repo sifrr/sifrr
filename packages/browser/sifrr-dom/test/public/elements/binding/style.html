@@ -1,0 +1,17 @@
+<template>
+  <style media="screen">
+    p {
+      color: ${this.state.p.color};
+    }
+  </style>
+  <p>ABCD</p>
+</template>
+<script type="text/javascript">
+  class BindingStyle extends Sifrr.Dom.Element {}
+  BindingStyle.defaultState = {
+    p: {
+      color: 'blue'
+    }
+  };
+  Sifrr.Dom.register(BindingStyle);
+</script>

@@ -26,8 +26,14 @@ describe('Bindings', () => {
     assert.equal(attributetext, 'attribute text');
   });
 
+  it('works in style', async () => {
+    const color = await page.$eval('binding-style', el => window.getComputedStyle(el.$('p'))['color']);
+
+    assert.equal(color, 'rgb(0, 0, 255)');
+  });
+
   it("consoles error if error in binding and doesn't stop rendering", async () => {
-    // No need to test?
+    // No need to test, other tests will fail if this happens
   });
 
   describe('html', () => {
