@@ -2,6 +2,7 @@ const mock = require('mock-require');
 
 describe('Loader', () => {
   afterEach(() => {
+    mock.stopAll();
     const loader = require.resolve('../../../src/dom/loader');
     delete require.cache[loader];
     sinon.restore();
@@ -12,8 +13,6 @@ describe('Loader', () => {
     const Loader = require('../../../src/dom/loader');
 
     expect(() => new Loader()).to.throw();
-
-    mock.stop('@sifrr/fetch');
   });
 
   it('returns loader if already present', () => {
@@ -23,8 +22,6 @@ describe('Loader', () => {
     Loader.all['random'] = a;
 
     expect(new Loader('random')).to.eq(a);
-
-    mock.stop('@sifrr/fetch');
   });
 
   it('returns html and js if already present', () => {
@@ -36,8 +33,6 @@ describe('Loader', () => {
 
     expect(l.html).to.eq(html);
     expect(l.js).to.eq(js);
-
-    mock.stop('@sifrr/fetch');
   });
 
   it('throws error on html execute script fail', async () => {
@@ -45,10 +40,7 @@ describe('Loader', () => {
     const Loader = require('../../../src/dom/loader');
     const l = new Loader('random', 'ok');
     l._html = Promise.reject('err');
-    await l.executeHTMLScripts();
 
-    assert(window.console.error.calledWith('err'));
-
-    mock.stop('@sifrr/fetch');
+    l.executeHTMLScripts().should.be.rejectedWith('err');
   });
 });

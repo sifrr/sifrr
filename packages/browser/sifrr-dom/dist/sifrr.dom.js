@@ -595,7 +595,8 @@
         composed: true
       }, options)));
     },
-    opts: opts
+    opts,
+    nativeToSyntheticEvent
   };
   var event_1 = Event;
 

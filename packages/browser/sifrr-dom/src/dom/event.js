@@ -54,7 +54,8 @@ const Event = {
     if (typeof el === 'string') el = document.querySelector(el);
     el.dispatchEvent(new window.Event(name, Object.assign({ bubbles: true, composed: true }, options)));
   },
-  opts: opts
+  opts,
+  nativeToSyntheticEvent
 };
 
 module.exports = Event;

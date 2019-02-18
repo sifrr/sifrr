@@ -23,6 +23,8 @@ global.delay = (time) => {
   });
 };
 
+chai.use(require('chai-as-promised'));
+
 // Stub window in unit tests
 global.window = {
   document: {

@@ -47,6 +47,7 @@
     "@semantic-release/git": "^7.0.8",
     "browserslist": "^4.1.0",
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "codacy-coverage": "^3.4.0",
     "compression": "^1.7.3",
     "connect-static-transform": "^0.9.1",
