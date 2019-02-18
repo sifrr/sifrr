@@ -9,11 +9,16 @@
   <slot></slot>
   <a href="#">${
     if (window) {
-      return 'ok';
+      if (document) {
+        return 'document';
+      } else {
+        return 'no doc';
+      }
     } else {
       return 'not ok';
     }
-  }</a>
+  }
+  ok</a>
   <p>${JSON.stringify(state)}</p>
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>

@@ -1,4 +1,5 @@
 const { OUTER_REGEX } = require('./constants');
+const NOOP = () => {};
 
 function replacer(match) {
   let f;
@@ -7,7 +8,12 @@ function replacer(match) {
   } else {
     f = 'return ' + match;
   }
-  return new Function(f);
+  try {
+    return new Function(f);
+  } catch(e) {
+    window.console.log(`Error creating function: \`${f}\``);
+    return NOOP;
+  }
 }
 
 function evaluate(fxn, el) {
