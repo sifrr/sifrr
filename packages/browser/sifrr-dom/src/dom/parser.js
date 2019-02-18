@@ -1,5 +1,6 @@
 const { collect, create } = require('./ref');
 const { creator } = require('./creator');
+const { SINGLE_REGEX, GLOBAL_REGEX } = require('./constants');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
@@ -28,8 +29,8 @@ const Parser = {
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
-    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
-    return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
+    if (string.match(SINGLE_REGEX)) return replacer(null, string.slice(2, -1));
+    return string.replace(GLOBAL_REGEX, replacer);
 
     function replacer(_, match) {
       let f;

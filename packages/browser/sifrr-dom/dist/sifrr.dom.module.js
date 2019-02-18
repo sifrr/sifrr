@@ -50,12 +50,15 @@ var ref = {
 
 const temp = window.document.createElement('template');
 const script = window.document.createElement('script');
+const regex = '\\${(([^{}$]|{([^{}$])*})*)}';
 var constants = {
   TEMPLATE: () => temp.cloneNode(false),
   SCRIPT: () => script.cloneNode(false),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
-  ELEMENT_NODE: 1
+  ELEMENT_NODE: 1,
+  SINGLE_REGEX: new RegExp(`^${regex}$`),
+  GLOBAL_REGEX: new RegExp(regex, 'g')
 };
 
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
@@ -123,6 +126,7 @@ var creator = {
 
 const { collect: collect$1, create: create$1 } = ref;
 const { creator: creator$1 } = creator;
+const { SINGLE_REGEX, GLOBAL_REGEX } = constants;
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
     el.nodeName == 'STYLE' ||
@@ -148,8 +152,8 @@ const Parser = {
   },
   evaluateString: (string, element) => {
     if (string.indexOf('${') < 0) return string;
-    if (string.match(/^\${([^{}$]|{([^{}$])*})*}$/)) return replacer(null, string.slice(2, -1));
-    return string.replace(/\${(([^{}$]|{([^{}$])*})*)}/g, replacer);
+    if (string.match(SINGLE_REGEX)) return replacer(null, string.slice(2, -1));
+    return string.replace(GLOBAL_REGEX, replacer);
     function replacer(_, match) {
       let f;
       if (match.indexOf('return ') >= 0) {
@@ -171,7 +175,8 @@ var parser = Parser;
 var updateattribute = (element, name, newValue) => {
   const fromValue = element.getAttribute(name);
   if (fromValue != newValue) {
-    element.setAttribute(name, newValue);
+    if (name === 'class') element.className = newValue;
+    else element.setAttribute(name, newValue);
   }
   if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
 };
@@ -259,7 +264,8 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        if (attr.name === 'class') dom.className = simpleEl.state[attr.text];
+        else dom.setAttribute(attr.name, simpleEl.state[attr.text]);
       }
     } else {
       dom.data = simpleEl.state[data];

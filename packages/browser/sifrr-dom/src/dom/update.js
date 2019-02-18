@@ -11,7 +11,8 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        if (attr.name === 'class') dom.className = simpleEl.state[attr.text];
+        else dom.setAttribute(attr.name, simpleEl.state[attr.text]);
       }
     } else {
       dom.data = simpleEl.state[data];
