@@ -41,6 +41,16 @@ describe('Sifrr.Dom.load and Loader', () => {
       return mes;
     });
 
-    assert.equal(mes, 'loading-load was already executed');
+    assert.equal(mes, "'loading-load' element's javascript was already executed");
+  });
+
+  it('throws error from html scripts', async () => {
+    const error = await page.evaluate(async () => {
+      let e;
+      await Sifrr.Dom.load('loading-error').catch(err => e = err.message);
+      return e;
+    });
+
+    assert.equal(error, 'loading error');
   });
 });

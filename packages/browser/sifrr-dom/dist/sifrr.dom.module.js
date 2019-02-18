@@ -404,7 +404,7 @@ class Loader {
     return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
   }
   executeScripts(js) {
-    if (this._executed) return window.console.log(`${this.elementName} was already executed`);
+    if (this._executed) return window.console.log(`'${this.elementName}' element's javascript was already executed`);
     this._executed = true;
     if (!js) {
       return this.executeHTMLScripts();
@@ -413,7 +413,7 @@ class Loader {
         new Function(script).bind(window)();
       }).catch((e) => {
         window.console.error(e);
-        window.console.log(`JS file gave error. Trying to get html file for ${this.elementName}.`);
+        window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
         return this.executeHTMLScripts();
       });
     }
@@ -430,7 +430,7 @@ class Loader {
           new Function(script.text).call(window);
         }
       });
-    }).catch( e => window.console.error(e));
+    }).catch(e => { throw e; });
   }
   static add(elemName, instance) {
     Loader._all[elemName] = instance;
