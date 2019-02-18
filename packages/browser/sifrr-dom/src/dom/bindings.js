@@ -16,7 +16,8 @@ function evaluate(fxn, el) {
     else return fxn.call(el) || '';
   } catch(e) {
     window.console.error(e);
-    window.console.log(`Error evaluating: \`${fxn}\` for element`, el);
+    const str = fxn.toString();
+    window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
   }
 }
 

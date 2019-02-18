@@ -85,7 +85,8 @@
       if (typeof fxn === 'string') return fxn;else return fxn.call(el) || '';
     } catch (e) {
       window.console.error(e);
-      window.console.log(`Error evaluating: \`${fxn}\` for element`, el);
+      const str = fxn.toString();
+      window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
     }
   }
   var bindings = {
@@ -192,7 +193,7 @@
     creator: creator$1
   } = creator;
   function isHtml(el) {
-    return el.dataset && el.dataset.sifrrHtml == 'true' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
+    return el.dataset && el.dataset.sifrrHtml == 'true' || el.dataset && el.dataset.sifrrRepeat;
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),

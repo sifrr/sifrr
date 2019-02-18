@@ -3,7 +3,6 @@ const { creator } = require('./creator');
 
 function isHtml(el) {
   return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    el.nodeName == 'STYLE' ||
     (el.dataset && el.dataset.sifrrRepeat);
 }
 
