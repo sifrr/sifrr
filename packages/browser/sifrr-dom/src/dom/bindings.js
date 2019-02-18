@@ -11,7 +11,7 @@ function replacer(match) {
   try {
     return new Function(f);
   } catch(e) {
-    window.console.log(`Error creating function: \`${f}\``);
+    window.console.log(`Error processing binding: \`${f}\``);
     return NOOP;
   }
 }

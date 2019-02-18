@@ -82,7 +82,7 @@
     try {
       return new Function(f);
     } catch (e) {
-      window.console.log(`Error creating function: \`${f}\``);
+      window.console.log(`Error processing binding: \`${f}\``);
       return NOOP;
     }
   }
@@ -451,7 +451,7 @@
         return this.executeHTMLScripts();
       } else {
         return this.js.then(script => {
-          new Function(script).bind(window)();
+          new Function(script + `\n //# sourceURL=${this.jsUrl}`).bind(window)();
         }).catch(e => {
           window.console.error(e);
           window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
@@ -468,7 +468,7 @@
             newScript.type = script.type;
             window.document.body.appendChild(newScript);
           } else {
-            new Function(script.text).call(window);
+            new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call(window);
           }
         });
       }).catch(e => {

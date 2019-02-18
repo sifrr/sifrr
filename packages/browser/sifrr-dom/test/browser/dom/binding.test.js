@@ -72,5 +72,11 @@ describe('Bindings', () => {
 
       assert.equal(html, '<h1>string</h1>');
     });
+
+    it('works without bindings', async () => {
+      const l = await page.$eval('binding-html', el => el.constructor.stateMap.length);
+
+      assert.equal(l, 6);
+    });
   });
 });
