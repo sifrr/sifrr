@@ -1,4 +1,5 @@
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const { getBindingFxn, getBindingFxns } = require('./bindings');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function simpleElementCreator(node) {
