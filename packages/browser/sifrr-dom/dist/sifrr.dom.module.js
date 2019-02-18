@@ -238,7 +238,7 @@ function makeEqual(oldNode, newNode) {
   }
   for (let j = oldAttrs.length - 1; j >= 0; --j) {
     attr = oldAttrs[j];
-    if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
+    if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
   }
   makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
   return oldNode;

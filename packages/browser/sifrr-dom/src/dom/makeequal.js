@@ -59,7 +59,7 @@ function makeEqual(oldNode, newNode) {
   // Remove any extra attributes
   for (let j = oldAttrs.length - 1; j >= 0; --j) {
     attr = oldAttrs[j];
-    if (!newNode.hasAttribute(attr.name) && attr.specified !== false) oldNode.removeAttribute(attr.name);
+    if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
   }
 
   // make children equal
