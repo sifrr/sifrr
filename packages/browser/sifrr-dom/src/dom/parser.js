@@ -10,7 +10,6 @@ const Parser = {
   collectRefs: (el, stateMap) => collect(el, stateMap, isHtml),
   createStateMap: (element) => create(element, creator, isHtml),
   twoWayBind: (e) => {
-    /* istanbul ignore next */
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (!target.dataset.sifrrBind || target._root === null) return;
     const value = target.value || target.textContent;

@@ -4,7 +4,6 @@ const opts = { capture: true, passive: true };
 
 const nativeToSyntheticEvent = (e, name) => {
   return Promise.resolve((() => {
-    /* istanbul ignore next */
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
     while(dom) {
