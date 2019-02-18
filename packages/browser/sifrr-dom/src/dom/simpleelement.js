@@ -27,7 +27,6 @@ function SimpleElement(content, defaultState = null) {
   Object.defineProperty(content, 'state', {
     get: () => content._state,
     set: (v) => {
-      content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
       simpleUpdate(content);
     }
@@ -41,7 +40,6 @@ function SimpleElement(content, defaultState = null) {
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,
       set: (v) => {
-        clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
         simpleUpdate(clone);
       }

@@ -161,7 +161,7 @@ const Parser = {
         return new Function(f).call(element) || '';
       } catch(e) {
         window.console.error(e);
-        window.console.log(`Error evaluating: \`${f}\``);
+        window.console.log(`Error evaluating: \`${f}\` for element`, element);
       }
     }
   }
@@ -253,20 +253,16 @@ const { evaluateString } = parser;
 const TEMPLATE = constants.TEMPLATE();
 function simpleElementUpdate(simpleEl) {
   const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
-  const newState = simpleEl.state, oldState = simpleEl._oldState;
   for (let i = 0; i < l; i++) {
     const data = refs[i].ref, dom = doms[i];
     if (Array.isArray(data)) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        if (oldState[attr.text] !== newState[attr.text]) {
-          if (attr.name === 'class') dom.className = newState[attr.text];
-          else dom.setAttribute(attr.name, newState[attr.text]);
-        }
+        dom.setAttribute(attr.name, simpleEl.state[attr.text]);
       }
     } else {
-      if (oldState[data] != newState[data]) dom.data = newState[data];
+      dom.data = simpleEl.state[data];
     }
   }
 }
@@ -445,7 +441,6 @@ function SimpleElement(content, defaultState = null) {
   Object.defineProperty(content, 'state', {
     get: () => content._state,
     set: (v) => {
-      content._oldState = Object.assign({}, content._state);
       content._state = Object.assign(content._state || {}, v);
       simpleUpdate(content);
     }
@@ -458,7 +453,6 @@ function SimpleElement(content, defaultState = null) {
     Object.defineProperty(clone, 'state', {
       get: () => clone._state,
       set: (v) => {
-        clone._oldState = Object.assign({}, clone._state);
         clone._state = Object.assign(clone._state || {}, v);
         simpleUpdate(clone);
       }

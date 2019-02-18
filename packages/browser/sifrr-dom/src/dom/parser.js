@@ -42,7 +42,7 @@ const Parser = {
         return new Function(f).call(element) || '';
       } catch(e) {
         window.console.error(e);
-        window.console.log(`Error evaluating: \`${f}\``);
+        window.console.log(`Error evaluating: \`${f}\` for element`, element);
       }
     }
   }
