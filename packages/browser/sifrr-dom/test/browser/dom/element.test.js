@@ -1,16 +1,8 @@
 /* eslint-disable max-lines */
-let client, elId;
-
-async function getListeners(el, type = '') {
-  elId = (await client.send('Runtime.evaluate', { expression: el })).result.objectId;
-  return (await client.send('DOMDebugger.getEventListeners', { objectId: elId })).listeners.filter(l => l.type.indexOf(type) >= 0);
-}
-
 describe('Sifrr.Dom.Element', () => {
   before(async () => {
     await page.goto(`${PATH}/element.html`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });
-    client = await page.target().createCDPSession();
   });
 
   it('extends HTMLElement by default', async () => {
@@ -36,14 +28,6 @@ describe('Sifrr.Dom.Element', () => {
     expect(res).to.deep.equal({
       isSifrr: true,
       shadowRoot: false
-    });
-  });
-
-  describe('creation', () => {
-    it('adds change event listener on shadowRoot for two way binding', async () => {
-      const listeners = await getListeners('document.querySelector("element-nods-sr").shadowRoot', 'change');
-
-      assert.equal(listeners.length, 1);
     });
   });
 
@@ -144,17 +128,6 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   describe('disconnect', () => {
-    it('removes event listener on shadowRoot when disconnecting', async () => {
-      await page.evaluate(() => window.testSR = document.querySelector('element-nods-sr').shadowRoot);
-      const before = await getListeners('window.testSR');
-      await page.$eval('element-nods-sr', el => el.remove());
-      await page.$eval('element-nods-nosr', el => el.remove());
-      const after = await getListeners('window.testSR');
-
-      assert.equal(before.length, 1);
-      assert.equal(after.length, 0);
-    });
-
     it('calls onDisconnect', async () => {
       const res = await page.evaluate(() => {
         let i = 0;

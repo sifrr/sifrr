@@ -2,7 +2,6 @@ const Parser = require('./parser');
 const { update } = require('./update');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
-const { opts } = require('./event');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -47,7 +46,6 @@ function elementClassFactory(baseClass) {
     constructor() {
       super();
       if (this.constructor.ctemp) {
-        // this._oldState = {};
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         if (this.constructor.useShadowRoot) {
@@ -56,7 +54,6 @@ function elementClassFactory(baseClass) {
             mode: 'open'
           });
           this.shadowRoot.appendChild(content);
-          this.shadowRoot.addEventListener('change', Parser.twoWayBind, opts);
         } else {
           this.__content = content;
         }
@@ -76,7 +73,6 @@ function elementClassFactory(baseClass) {
     onConnect() {}
 
     disconnectedCallback() {
-      if (this.shadowRoot) this.shadowRoot.removeEventListener('change', Parser.twoWayBind, opts);
       this.onDisconnect();
     }
 
@@ -92,12 +88,10 @@ function elementClassFactory(baseClass) {
     onAttributeChange() {}
 
     get state() {
-      // return Json.deepClone(this._state);
       return this._state;
     }
 
     set state(v) {
-      // this._oldState = this.state;
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
       this.onStateChange();
@@ -121,7 +115,6 @@ function elementClassFactory(baseClass) {
     }
 
     clearState() {
-      // this._oldState = this.state;
       this._state = {};
       this.update();
     }

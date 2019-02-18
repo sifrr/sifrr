@@ -50,8 +50,8 @@ SifrrDom.setup = function(config) {
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.Event.add('input');
   SifrrDom.Event.add('change');
-  SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
+  SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
 };
 
 // Load Element HTML and execute script in it
