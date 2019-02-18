@@ -241,7 +241,6 @@
     }
   }
   function makeEqual(oldNode, newNode) {
-    if (!newNode) return oldNode;
     if (newNode.type === 'stateChange') {
       if (!shallowEqual(oldNode.state, newNode.state)) {
         oldNode.state = newNode.state;
