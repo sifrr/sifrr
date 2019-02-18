@@ -59,16 +59,55 @@
   const temp = window.document.createElement('template');
   const script = window.document.createElement('script');
   const reg = '(?:[^{}$]|{(?:[^{}$])*})*';
-  const regex = '\\${(' + reg + ')}';
   var constants = {
     TEMPLATE: () => temp.cloneNode(false),
     SCRIPT: () => script.cloneNode(false),
     TEXT_NODE: 3,
     COMMENT_NODE: 8,
     ELEMENT_NODE: 1,
-    OUTER_REGEX: new RegExp('(\\${(?:' + reg + ')})'),
-    SINGLE_REGEX: new RegExp(`^${regex}$`),
-    GLOBAL_REGEX: new RegExp(regex, 'g')
+    OUTER_REGEX: new RegExp('(\\${(?:' + reg + ')})', 'g')
+  };
+
+  const {
+    OUTER_REGEX
+  } = constants;
+  function replacer(match) {
+    let f;
+    if (match.indexOf('return ') >= 0) {
+      f = match;
+    } else {
+      f = 'return ' + match;
+    }
+    return new Function(f);
+  }
+  function evaluate(fxn, el) {
+    try {
+      if (typeof fxn === 'string') return fxn;else return fxn.call(el) || '';
+    } catch (e) {
+      window.console.error(e);
+      window.console.log(`Error evaluating: \`${fxn}\` for element`, el);
+    }
+  }
+  var bindings = {
+    getBindingFxns: string => {
+      const splitted = string.split(OUTER_REGEX),
+            l = splitted.length,
+            ret = [];
+      for (let i = 0; i < l; i++) {
+        if (splitted[i][0] === '$' && splitted[i][1] === '{') {
+          ret.push(replacer(splitted[i].slice(2, -1)));
+        } else if (splitted[i]) ret.push(splitted[i]);
+      }
+      return ret;
+    },
+    evaluateBindings: (fxns, element) => {
+      if (fxns.length === 1) {
+        return evaluate(fxns[0], element);
+      }
+      return fxns.map(fxn => evaluate(fxn, element)).join('');
+    },
+    evaluate: evaluate,
+    replacer: replacer
   };
 
   const {
@@ -76,6 +115,9 @@
     COMMENT_NODE,
     ELEMENT_NODE
   } = constants;
+  const {
+    getBindingFxns
+  } = bindings;
   function simpleElementCreator(node) {
     if (node.nodeType === ELEMENT_NODE) {
       const attrs = Array.prototype.slice.call(node.attributes),
@@ -107,7 +149,7 @@
       const x = el.data;
       if (x.indexOf('${') > -1) return {
         html: false,
-        text: x.trim()
+        text: getBindingFxns(x.trim())
       };
     } else if (el.nodeType === ELEMENT_NODE) {
       const sm = {};
@@ -115,7 +157,7 @@
         const innerHTML = el.innerHTML;
         if (innerHTML.indexOf('${') >= 0) {
           sm.html = true;
-          sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1').trim();
+          sm.text = getBindingFxns(innerHTML.replace(/<!--(.*)-->/g, '$1').trim());
         }
       }
       const attrs = el.attributes,
@@ -126,9 +168,9 @@
       for (let i = 0; i < l; i++) {
         const attribute = attrs[i];
         if (attribute.name[0] === '_') {
-          attrStateMap.events[attribute.name] = attribute.value;
+          attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
         } else if (attribute.value.indexOf('${') >= 0) {
-          attrStateMap[attribute.name] = attribute.value;
+          attrStateMap[attribute.name] = getBindingFxns(attribute.value);
         }
       }
       if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
@@ -149,10 +191,6 @@
   const {
     creator: creator$1
   } = creator;
-  const {
-    SINGLE_REGEX,
-    GLOBAL_REGEX
-  } = constants;
   function isHtml(el) {
     return el.dataset && el.dataset.sifrrHtml == 'true' || el.nodeName == 'STYLE' || el.dataset && el.dataset.sifrrRepeat;
   }
@@ -172,25 +210,6 @@
       }
       state[target.dataset.sifrrBind] = value;
       if (target._root) target._root.state = state;
-    },
-    evaluateString: (string, element) => {
-      if (string.indexOf('${') < 0) return string;
-      if (string.match(SINGLE_REGEX)) return replacer(null, string.slice(2, -1));
-      return string.replace(GLOBAL_REGEX, replacer);
-      function replacer(_, match) {
-        let f;
-        if (match.indexOf('return ') >= 0) {
-          f = match;
-        } else {
-          f = 'return ' + match;
-        }
-        try {
-          return new Function(f).call(element) || '';
-        } catch (e) {
-          window.console.error(e);
-          window.console.log(`Error evaluating: \`${f}\` for element`, element);
-        }
-      }
     }
   };
   var parser = Parser;
@@ -287,8 +306,8 @@
     makeChildrenEqual: makeChildrenEqual$1
   } = makeequal;
   const {
-    evaluateString
-  } = parser;
+    evaluateBindings
+  } = bindings;
   const TEMPLATE = constants.TEMPLATE();
   function simpleElementUpdate(simpleEl) {
     const doms = simpleEl._refs,
@@ -320,19 +339,19 @@
         for (let key in data.attributes) {
           if (key === 'events') {
             for (let event in data.attributes.events) {
-              const eventLis = evaluateString(data.attributes.events[event], element);
+              const eventLis = evaluateBindings(data.attributes.events[event], element);
               dom[event] = eventLis;
             }
             dom._root = element;
             delete data.attributes['events'];
           } else {
-            const val = evaluateString(data.attributes[key], element);
+            const val = evaluateBindings(data.attributes[key], element);
             updateattribute(dom, key, val);
           }
         }
       }
       if (data.html === undefined) continue;
-      const newValue = evaluateString(data.text, element);
+      const newValue = evaluateBindings(data.text, element);
       if (!newValue) {
         dom.textContent = '';
         continue;

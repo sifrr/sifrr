@@ -1,5 +1,7 @@
 const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
-const { getBindingFxn, getBindingFxns } = require('./bindings');
+// Use fxns for only string
+// Use fxn for html content or event listener
+const { getBindingFxns } = require('./bindings');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function simpleElementCreator(node) {
@@ -34,7 +36,7 @@ function customElementCreator(el, filter) {
     const x = el.data;
     if (x.indexOf('${') > -1) return {
       html: false,
-      text: x.trim()
+      text: getBindingFxns(x.trim())
     };
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
@@ -43,7 +45,7 @@ function customElementCreator(el, filter) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.html = true;
-        sm.text = innerHTML.replace(/<!--(.*)-->/g, '$1').trim();
+        sm.text = getBindingFxns(innerHTML.replace(/<!--(.*)-->/g, '$1').trim());
       }
     }
     // attributes
@@ -52,10 +54,10 @@ function customElementCreator(el, filter) {
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_') {
-        attrStateMap.events[attribute.name] = attribute.value;
+        attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
       } else if (attribute.value.indexOf('${') >= 0) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
-        attrStateMap[attribute.name] = attribute.value;
+        attrStateMap[attribute.name] = getBindingFxns(attribute.value);
       }
     }
     if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;

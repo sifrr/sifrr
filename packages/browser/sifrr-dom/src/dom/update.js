@@ -1,6 +1,6 @@
 const { makeChildrenEqual } = require('./makeequal');
 const updateAttribute = require('./updateattribute');
-const { evaluateString } = require('./parser');
+const { evaluateBindings } = require('./bindings');
 const TEMPLATE = require('./constants').TEMPLATE();
 
 function simpleElementUpdate(simpleEl) {
@@ -35,13 +35,13 @@ function customElementUpdate(element) {
       for(let key in data.attributes) {
         if (key === 'events') {
           for(let event in data.attributes.events) {
-            const eventLis = evaluateString(data.attributes.events[event], element);
+            const eventLis = evaluateBindings(data.attributes.events[event], element);
             dom[event] = eventLis;
           }
           dom._root = element;
           delete data.attributes['events'];
         } else {
-          const val = evaluateString(data.attributes[key], element);
+          const val = evaluateBindings(data.attributes[key], element);
           updateAttribute(dom, key, val);
         }
       }
@@ -50,7 +50,7 @@ function customElementUpdate(element) {
     if (data.html === undefined) continue;
 
     // update element
-    const newValue = evaluateString(data.text, element);
+    const newValue = evaluateBindings(data.text, element);
     if (!newValue) { dom.textContent = ''; continue; }
 
     if (data.html) {
