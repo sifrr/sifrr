@@ -3,8 +3,8 @@ const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
 function makeChildrenEqual(parent, newChildren) {
-  // Lesser children now
   const oldL = parent.childNodes.length, newL = newChildren.length;
+  // Lesser children now
   if (oldL > newL) {
     let i = oldL;
     while(i > newL) {

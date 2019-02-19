@@ -45,7 +45,7 @@ function customElementCreator(el, filter) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.html = true;
-        sm.text = getBindingFxns(innerHTML.replace(/<!--(.*)-->/g, '$1').trim());
+        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
     }
     // attributes
