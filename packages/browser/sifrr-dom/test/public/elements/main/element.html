@@ -117,7 +117,6 @@
       const l = this.state.data.length;
       for (let i = 0; i < l; i += 10) {
         state.data[i].label = state.data[i].label + ' !!!';
-        // this.data[i] = Object.assign({}, this.data[i], {label: this.data[i].label +' !!!'});
       }
       this.state = state;
     }
@@ -131,7 +130,7 @@
     swaprows() {
       const data = this.state.data;
       if (data.length > 998) {
-        let a = data[1];
+        const a = data[1];
         data[1] = data[998];
         data[998] = a;
         this.state = { data: data };

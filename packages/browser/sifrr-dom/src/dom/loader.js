@@ -45,7 +45,7 @@ class Loader {
       return this.executeHTMLScripts();
     } else {
       return this.js.then((script) => {
-        new Function(script + `\n //# sourceURL=${this.jsUrl}`).bind(window)();
+        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call(window);
       }).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);

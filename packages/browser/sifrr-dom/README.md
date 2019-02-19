@@ -1,6 +1,6 @@
 # sifrr-dom · [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
-A ~5KB DOM library for creating user interfaces for websites using Custom Elements, one way/two way data binding. Alternative to React/Vue/Angular etc.
+A ~5KB DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data binding etc.
 
 ## Size
 
@@ -14,17 +14,28 @@ A ~5KB DOM library for creating user interfaces for websites using Custom Elemen
 
 -   Simple DOM API based on web components v1, custom elements v1, shadow dom v1 (optional)
 -   Pure DOM bindings (one-way, two-way), without any virtual DOM, still [fast(er)](#performance-comparison)
--   no special syntax to learn like jsx etc. only use pure HTML, CSS, JS
+-   no special syntax to learn like jsx etc. only use pure HTML, CSS, JS, so no transpiling needed.
 -   synthetic event listener, custom events
--   simpler querySelector for custom elements/web components
+-   simpler querySelector for custom elements/web components/shadow root
+
+## Tradeoffs
+
+-   :+1: Use latest web API standards
+-   :-1: Slower on http/1.x due to one file per component architecture -> hence good for serving with http/2
+-   :+1: Use without transpiling any code, and can be hosted with only a static server
+-   :-1: No keyed implementation yet
 
 ## Performance Comparison
 
 Ran locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark). Latest benchmark implementation [here](./test/public/speedtest.html)
 
+**Note**: These might not be completely accurate and real life app speeds might differ. Just for reference.
+
 <img src="./performance.png" alt="Performance" height='400'>
 
 ## How to use
+
+Sifrr recommends to build webapps without any transpiling
 
 ### Directly in Browser using standalone distribution
 
@@ -374,7 +385,8 @@ Sifrr.Dom.Event.addListener('click', selector, fxn);
 Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 // options are same as options for new window.Event(target, 'custom:event', options);
 ```
-__Note__: Synthetic event listeners are always passive, hence, `event.preventDefault()` can not be called inside the function.
+
+**Note**: Synthetic event listeners are always passive, hence, `event.preventDefault()` can not be called inside the function.
 
 ### More complex apis
 

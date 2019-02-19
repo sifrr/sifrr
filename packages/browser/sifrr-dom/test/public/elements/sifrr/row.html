@@ -9,6 +9,11 @@
     static get useShadowRoot() {
       return false;
     }
+
+    onUpdate() {
+      if (this.state.class) this.className = this.state.class;
+      else this.className = '';
+    }
   }
   Sifrr.Dom.register(SifrrRow, {
     extends: 'tr'
