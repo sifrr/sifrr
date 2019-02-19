@@ -26,9 +26,11 @@ class Ref {
 }
 
 function collect(element, stateMap, filter = false) {
-  const refs = [];
+  const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
-  stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
+  for (let i = 0; i < l; i++) {
+    refs.push(TREE_WALKER.roll(stateMap[i].idx, filter));
+  }
   return refs;
 }
 

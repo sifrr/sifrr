@@ -1,5 +1,4 @@
 const { OUTER_REGEX } = require('./constants');
-const NOOP = () => {};
 
 function replacer(match) {
   let f;
@@ -12,7 +11,7 @@ function replacer(match) {
     return new Function(f);
   } catch(e) {
     window.console.log(`Error processing binding: \`${f}\``);
-    return NOOP;
+    return '';
   }
 }
 
@@ -21,9 +20,9 @@ function evaluate(fxn, el) {
     if (typeof fxn === 'string') return fxn;
     else return fxn.call(el) || '';
   } catch(e) {
-    window.console.error(e);
     const str = fxn.toString();
     window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
+    window.console.error(e);
   }
 }
 

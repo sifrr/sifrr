@@ -3,6 +3,19 @@ const template = require('./template');
 const { simpleUpdate } = require('./update');
 const { simpleCreator } = require('./creator');
 
+const setProps = (self, stateMap) => {
+  self.stateMap = stateMap;
+  self._refs = collect(self, stateMap);
+  Object.defineProperty(self, 'state', {
+    get: () => self._state,
+    set: (v) => {
+      self._state = Object.assign(self._state || {}, v);
+      simpleUpdate(self);
+    }
+  });
+  return ;
+};
+
 function SimpleElement(content, defaultState = null) {
   let templ;
   if (typeof content === 'string') {
@@ -22,28 +35,13 @@ function SimpleElement(content, defaultState = null) {
     content.remove();
     return content;
   }
-  content.stateMap = create(content, simpleCreator);
-  content._refs = collect(content, content.stateMap);
-  Object.defineProperty(content, 'state', {
-    get: () => content._state,
-    set: (v) => {
-      content._state = Object.assign(content._state || {}, v);
-      simpleUpdate(content);
-    }
-  });
+  const baseStateMap = create(content, simpleCreator);
+  setProps(content, baseStateMap);
   if (defaultState) content.state = defaultState;
 
   content.sifrrClone = function(deep = true) {
     const clone = content.cloneNode(deep);
-    clone.stateMap = content.stateMap;
-    clone._refs = collect(clone, content.stateMap);
-    Object.defineProperty(clone, 'state', {
-      get: () => clone._state,
-      set: (v) => {
-        clone._state = Object.assign(clone._state || {}, v);
-        simpleUpdate(clone);
-      }
-    });
+    setProps(clone, baseStateMap);
     if (content.state) clone.state = content.state;
     return clone;
   };

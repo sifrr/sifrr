@@ -2,6 +2,7 @@ const Parser = require('./parser');
 const { update } = require('./update');
 const Loader = require('./loader');
 const SimpleElement = require('./simpleelement');
+const { makeChildrenEqual } = require('./makeequal');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -48,8 +49,8 @@ function elementClassFactory(baseClass) {
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = Parser.collectRefs(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
-          this._refs = Parser.collectRefs(content, this.constructor.stateMap);
           this.attachShadow({
             mode: 'open'
           });
@@ -62,11 +63,9 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       if(!this.constructor.useShadowRoot) {
-        this.textContent = '';
-        this._refs = Parser.collectRefs(this.__content, this.constructor.stateMap);
-        this.appendChild(this.__content);
+        makeChildrenEqual(this, Array.prototype.slice.call(this.__content.childNodes));
       }
-      if (!this.hasAttribute('data-sifrr-state') || !this.constructor.useShadowRoot) this.update();
+      if (!this.hasAttribute('data-sifrr-state')) this.update();
       this.onConnect();
     }
 
@@ -132,29 +131,28 @@ function elementClassFactory(baseClass) {
     static addArrayToDom(key, template) {
       this._arrayToDom = this._arrayToDom || {};
       // state of simple element is single array item, compatible with sifrr element
-      this._arrayToDom[this.elementName] = this._arrayToDom[this.elementName] || {};
-      this._arrayToDom[this.elementName][key] = SimpleElement(template);
+      this._arrayToDom[key] = SimpleElement(template);
     }
 
     arrayToDom(key, newState = this.state[key]) {
       this._domL = this._domL || {};
       const oldL = this._domL[key] || 0;
-      const domArray = [];
       const newL = newState.length;
+      const domArray = new Array(newL);
       let temp;
       try {
-        temp = this.constructor._arrayToDom[this.constructor.elementName][key];
+        temp = this.constructor._arrayToDom[key];
         if (!temp) throw Error('');
       } catch(e) {
         return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
       }
       for (let i = 0; i < newL; i++) {
         if (i < oldL) {
-          domArray.push({ type: 'stateChange', state: newState[i] });
+          domArray[i] = { type: 'stateChange', state: newState[i] };
         } else {
           const el = temp.sifrrClone(true);
           el.state = newState[i];
-          domArray.push(el);
+          domArray[i] = el;
         }
       }
       this._domL[key] = newL;

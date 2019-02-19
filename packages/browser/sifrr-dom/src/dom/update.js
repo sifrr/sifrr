@@ -51,7 +51,6 @@ function customElementUpdate(element) {
 
     // update element
     const newValue = evaluateBindings(data.text, element);
-    if (!newValue) { dom.textContent = ''; continue; }
 
     if (data.html) {
       // html node
@@ -68,11 +67,9 @@ function customElementUpdate(element) {
       } else {
         children = Array.prototype.slice.call(newValue);
       }
-      if (children.length === 0) {
-        dom.textContent = '';
-        continue;
-      }
-      makeChildrenEqual(dom, children);
+      // fast clear
+      if (children.length === 0) dom.textContent = '';
+      else makeChildrenEqual(dom, children);
     } else {
       // text node
       if (dom.data != newValue) {

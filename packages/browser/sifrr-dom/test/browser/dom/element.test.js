@@ -122,7 +122,7 @@ describe('Sifrr.Dom.Element', () => {
 
       assert.equal(Object.keys(res).length, 8);
       for (let el in res) {
-        assert.equal(res[el], 1);
+        assert.equal(res[el], 1, el);
       }
     });
   });

@@ -22,7 +22,9 @@
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup();
-      Sifrr.Dom.Element.prototype.onUpdate = function() { this.updateCount = this.updateCount + 1 || 1; };
+      Sifrr.Dom.Element.prototype.onUpdate = function() {
+        this.updateCount = this.updateCount + 1 || 1;
+      };
 
       const pssr = document.createElement('element-ps-sr');
       pssr.state = { ok: 'ps' };

@@ -23,9 +23,11 @@ class Ref {
   }
 }
 function collect(element, stateMap, filter = false) {
-  const refs = [];
+  const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
-  stateMap.map(x => refs.push(TREE_WALKER.roll(x.idx, filter)));
+  for (let i = 0; i < l; i++) {
+    refs.push(TREE_WALKER.roll(stateMap[i].idx, filter));
+  }
   return refs;
 }
 function create(node, fxn, filter = false) {
@@ -61,7 +63,6 @@ var constants = {
 };
 
 const { OUTER_REGEX } = constants;
-const NOOP = () => {};
 function replacer(match) {
   let f;
   if (match.indexOf('return ') >= 0) {
@@ -73,7 +74,7 @@ function replacer(match) {
     return new Function(f);
   } catch(e) {
     window.console.log(`Error processing binding: \`${f}\``);
-    return NOOP;
+    return '';
   }
 }
 function evaluate(fxn, el) {
@@ -81,9 +82,9 @@ function evaluate(fxn, el) {
     if (typeof fxn === 'string') return fxn;
     else return fxn.call(el) || '';
   } catch(e) {
-    window.console.error(e);
     const str = fxn.toString();
     window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
+    window.console.error(e);
   }
 }
 var bindings = {
@@ -322,7 +323,6 @@ function customElementUpdate(element) {
     }
     if (data.html === undefined) continue;
     const newValue = evaluateBindings(data.text, element);
-    if (!newValue) { dom.textContent = ''; continue; }
     if (data.html) {
       let children;
       if (Array.isArray(newValue)) {
@@ -337,11 +337,8 @@ function customElementUpdate(element) {
       } else {
         children = Array.prototype.slice.call(newValue);
       }
-      if (children.length === 0) {
-        dom.textContent = '';
-        continue;
-      }
-      makeChildrenEqual$1(dom, children);
+      if (children.length === 0) dom.textContent = '';
+      else makeChildrenEqual$1(dom, children);
     } else {
       if (dom.data != newValue) {
         dom.data = newValue;
@@ -451,6 +448,18 @@ var loader = Loader;
 const { collect: collect$2, create: create$2 } = ref;
 const { simpleUpdate } = update;
 const { simpleCreator } = creator;
+const setProps = (self, stateMap) => {
+  self.stateMap = stateMap;
+  self._refs = collect$2(self, stateMap);
+  Object.defineProperty(self, 'state', {
+    get: () => self._state,
+    set: (v) => {
+      self._state = Object.assign(self._state || {}, v);
+      simpleUpdate(self);
+    }
+  });
+  return ;
+};
 function SimpleElement(content, defaultState = null) {
   let templ;
   if (typeof content === 'string') {
@@ -467,27 +476,12 @@ function SimpleElement(content, defaultState = null) {
     content.remove();
     return content;
   }
-  content.stateMap = create$2(content, simpleCreator);
-  content._refs = collect$2(content, content.stateMap);
-  Object.defineProperty(content, 'state', {
-    get: () => content._state,
-    set: (v) => {
-      content._state = Object.assign(content._state || {}, v);
-      simpleUpdate(content);
-    }
-  });
+  const baseStateMap = create$2(content, simpleCreator);
+  setProps(content, baseStateMap);
   if (defaultState) content.state = defaultState;
   content.sifrrClone = function(deep = true) {
     const clone = content.cloneNode(deep);
-    clone.stateMap = content.stateMap;
-    clone._refs = collect$2(clone, content.stateMap);
-    Object.defineProperty(clone, 'state', {
-      get: () => clone._state,
-      set: (v) => {
-        clone._state = Object.assign(clone._state || {}, v);
-        simpleUpdate(clone);
-      }
-    });
+    setProps(clone, baseStateMap);
     if (content.state) clone.state = content.state;
     return clone;
   };
@@ -496,6 +490,7 @@ function SimpleElement(content, defaultState = null) {
 var simpleelement = SimpleElement;
 
 const { update: update$1 } = update;
+const { makeChildrenEqual: makeChildrenEqual$2 } = makeequal;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
     static extends(htmlElementClass) {
@@ -533,8 +528,8 @@ function elementClassFactory(baseClass) {
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = parser.collectRefs(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
-          this._refs = parser.collectRefs(content, this.constructor.stateMap);
           this.attachShadow({
             mode: 'open'
           });
@@ -546,11 +541,9 @@ function elementClassFactory(baseClass) {
     }
     connectedCallback() {
       if(!this.constructor.useShadowRoot) {
-        this.textContent = '';
-        this._refs = parser.collectRefs(this.__content, this.constructor.stateMap);
-        this.appendChild(this.__content);
+        makeChildrenEqual$2(this, Array.prototype.slice.call(this.__content.childNodes));
       }
-      if (!this.hasAttribute('data-sifrr-state') || !this.constructor.useShadowRoot) this.update();
+      if (!this.hasAttribute('data-sifrr-state')) this.update();
       this.onConnect();
     }
     onConnect() {}
@@ -599,28 +592,27 @@ function elementClassFactory(baseClass) {
     }
     static addArrayToDom(key, template) {
       this._arrayToDom = this._arrayToDom || {};
-      this._arrayToDom[this.elementName] = this._arrayToDom[this.elementName] || {};
-      this._arrayToDom[this.elementName][key] = simpleelement(template);
+      this._arrayToDom[key] = simpleelement(template);
     }
     arrayToDom(key, newState = this.state[key]) {
       this._domL = this._domL || {};
       const oldL = this._domL[key] || 0;
-      const domArray = [];
       const newL = newState.length;
+      const domArray = new Array(newL);
       let temp;
       try {
-        temp = this.constructor._arrayToDom[this.constructor.elementName][key];
+        temp = this.constructor._arrayToDom[key];
         if (!temp) throw Error('');
       } catch(e) {
         return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
       }
       for (let i = 0; i < newL; i++) {
         if (i < oldL) {
-          domArray.push({ type: 'stateChange', state: newState[i] });
+          domArray[i] = { type: 'stateChange', state: newState[i] };
         } else {
           const el = temp.sifrrClone(true);
           el.state = newState[i];
-          domArray.push(el);
+          domArray[i] = el;
         }
       }
       this._domL[key] = newL;
