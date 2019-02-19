@@ -110,6 +110,31 @@ describe('sifrr-fetch', () => {
     expect(resp).to.deep.equal({ param: 'value' });
   });
 
+  it('progress works for files', async () => {
+    const resp = await page.evaluate(async () => {
+      return await new Promise(res => {
+        Sifrr.Fetch.get('/image.jpg', {
+          onProgress: per => res(per)
+        });
+      });
+    });
+
+    expect(parseInt(resp, 10)).to.be.below(100);
+  });
+
+  it('progress works for json', async () => {
+    const resp2 = await page.evaluate(async () => {
+      return await new Promise(res => {
+        Sifrr.Fetch.get('/image.jpg', {
+          onProgress: per => res(per)
+        });
+      });
+    });
+
+    expect(parseInt(resp2, 10)).to.be.below(100);
+  });
+
+  // Keep this test in the end
   it('middlewares work', async () => {
     await page.evaluate(() => {
       Sifrr.Fetch.use((url, options) => {

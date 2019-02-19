@@ -11,18 +11,58 @@
       this._url = url;
     }
     get response() {
+      const me = this;
       return window.fetch(this.url, this.options).then(resp => {
-        let contentType = resp.headers.get('content-type');
+        const contentType = resp.headers.get('content-type');
+        const isJson = contentType && contentType.includes('application/json');
         if (resp.ok) {
-          if (contentType && contentType.includes('application/json')) {
-            resp = resp.json();
+          if (typeof me._options.onProgress === 'function') {
+            const contentLength = resp.headers.get('content-length');
+            const total = parseInt(contentLength, 10);
+            if (!total || !resp.body) {
+              window.console.log('no body');
+              me._options.onProgress(100);
+            } else {
+              const reader = resp.body.getReader();
+              let loaded = 0;
+              resp = new Response(new ReadableStream({
+                start(controller) {
+                  function read() {
+                    return reader.read().then(({
+                      done,
+                      value
+                    }) => {
+                      if (done) {
+                        me._options.onProgress(100);
+                        controller.close();
+                      } else {
+                        loaded += value.byteLength;
+                        me._options.onProgress(loaded / total * 100);
+                        controller.enqueue(value);
+                        return read();
+                      }
+                    });
+                  }
+                  return read();
+                }
+              }));
+            }
           }
-          return resp;
+          return {
+            response: resp,
+            isJson
+          };
         } else {
           let error = Error(resp.statusText);
           error.response = resp;
           throw error;
         }
+      }).then(({
+        response,
+        isJson
+      }) => {
+        if (isJson) return response.json();
+        return response;
       });
     }
     get url() {

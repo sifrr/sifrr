@@ -489,14 +489,14 @@
   const {
     simpleCreator
   } = creator;
-  const setProps = (self, stateMap) => {
-    self.stateMap = stateMap;
-    self._refs = collect$2(self, stateMap);
-    Object.defineProperty(self, 'state', {
-      get: () => self._state,
+  const setProps = (me, stateMap) => {
+    me.stateMap = stateMap;
+    me._refs = collect$2(me, stateMap);
+    Object.defineProperty(me, 'state', {
+      get: () => me._state,
       set: v => {
-        self._state = Object.assign(self._state || {}, v);
-        simpleUpdate(self);
+        me._state = Object.assign(me._state || {}, v);
+        simpleUpdate(me);
       }
     });
     return;

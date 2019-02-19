@@ -3,14 +3,14 @@ const template = require('./template');
 const { simpleUpdate } = require('./update');
 const { simpleCreator } = require('./creator');
 
-const setProps = (self, stateMap) => {
-  self.stateMap = stateMap;
-  self._refs = collect(self, stateMap);
-  Object.defineProperty(self, 'state', {
-    get: () => self._state,
+const setProps = (me, stateMap) => {
+  me.stateMap = stateMap;
+  me._refs = collect(me, stateMap);
+  Object.defineProperty(me, 'state', {
+    get: () => me._state,
     set: (v) => {
-      self._state = Object.assign(self._state || {}, v);
-      simpleUpdate(self);
+      me._state = Object.assign(me._state || {}, v);
+      simpleUpdate(me);
     }
   });
   return ;
