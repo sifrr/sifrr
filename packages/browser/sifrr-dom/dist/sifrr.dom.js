@@ -221,43 +221,51 @@
         loop = true,
         prevEnd = oldL - 1,
         newEnd = newL - 1,
+        prevStartNode = prevStart,
+        prevEndNode = prevEnd,
         a,
         b;
     fixes: while (loop) {
       loop = false;
       a = oldData[prevStart], b = newData[newStart];
       while (a[key] === b[key]) {
-        makeEqual$1(oldChildren[prevStart], newData[newStart]);
+        makeEqual$1(oldChildren[prevStart], b);
         prevStart++;
         newStart++;
+        prevStartNode++;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
         a = oldData[prevStart], b = newData[newStart];
       }
-      a = oldData[prevStart], b = newData[newStart];
+      a = oldData[prevEnd], b = newData[newEnd];
       while (a[key] === b[key]) {
         makeEqual$1(oldChildren[prevEnd], newData[newEnd]);
         prevEnd--;
         newEnd--;
+        prevEndNode--;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevStart], b = newData[newStart];
+        a = oldData[prevEnd], b = newData[prevEnd];
       }
-      a = oldData[prevStart], b = newData[newStart];
+      a = oldData[prevEnd], b = newData[newStart];
       while (a[key] === b[key]) {
         loop = true;
-        parent.insertBefore(oldChildren[prevEnd], createFn(newData[newStart]));
-        newStart++;
+        makeEqual$1(oldChildren[prevEnd], b);
+        parent.insertBefore(oldChildren[prevEndNode], oldChildren[prevStartNode]);
         prevEnd--;
+        newStart++;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevStart], b = newData[newStart];
+        a = oldData[prevEnd], b = newData[newStart];
       }
-      a = oldData[prevStart], b = newData[newStart];
+      a = oldData[prevStart], b = newData[newEnd];
       while (a[key] === b[key]) {
         loop = true;
-        parent.insertBefore(prevStart, createFn(newData[newEnd]));
+        makeEqual$1(oldChildren[prevStart], b);
+        parent.insertBefore(oldChildren[prevStartNode], oldChildren[prevEndNode + 1]);
         prevStart++;
+        prevEndNode--;
+        prevStartNode++;
         newEnd--;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevStart], b = newData[newStart];
+        a = oldData[prevStart], b = newData[newEnd];
       }
     }
     if (newEnd < newStart) {
@@ -322,12 +330,14 @@
     for (let i = newEnd; i >= newStart; i--) {
       if (longestSeq[lisIdx] === i) {
         prevEnd = nodes[oldKeys[longestSeq[lisIdx]]];
+        makeEqual$1(prevEnd, newData[i]);
         lisIdx--;
       } else {
         if (oldKeys[i] === -1) {
           tmpD = createFn(newData[i]);
         } else {
           tmpD = nodes[oldKeys[i]];
+          makeEqual$1(tmpD, newData[i]);
         }
         parent.insertBefore(tmpD, prevEnd);
         prevEnd = tmpD;
