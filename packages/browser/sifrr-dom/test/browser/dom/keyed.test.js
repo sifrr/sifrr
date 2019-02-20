@@ -7,7 +7,8 @@ function rearrange() {
   moveEl(data, 1, 7);
   moveEl(data, 12, 4);
   moveEl(data, 13, 8);
-  data.map(d => d.id);
+  data.splice(67, 4, { id: 7893, label: 'hahahaha' }, { id: 9475, label: 'sdghhgdfj' });
+  data.splice(845, 4, { id: 7899, label: 'sadsfsdfsd' }, { id: 3456, label: 'asdaf dgfdg sh h' });
   document.body.$('main-element').update();
 }
 
@@ -78,6 +79,7 @@ describe('Sifrr.Dom.keyed', () => {
     await page.evaluate(rearrange);
     const arrangementNonKeyed = await page.evaluate(() => document.body.$('main-element').state.data.map(d => d.id));
 
+    expect(arrangementKeyed.length).to.equal(996);
     expect(arrangementKeyed[4]).to.equal(13);
     expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
   });

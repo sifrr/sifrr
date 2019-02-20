@@ -12,7 +12,9 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        updateAttribute(dom, attr.name, simpleEl.state[attr.text]);
+        if (dom.getAttribute(attr.name) !== simpleEl.state[attr.text]) {
+          dom.setAttribute(attr.name, simpleEl.state[attr.text] || '');
+        }
       }
     } else {
       if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';

@@ -62,7 +62,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
       newEnd--;
       prevEndNode--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevEnd], b = newData[prevEnd];
+      a = oldData[prevEnd], b = newData[newEnd];
     }
 
     // Fast path to swap backward

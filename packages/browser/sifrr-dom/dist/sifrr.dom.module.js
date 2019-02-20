@@ -223,7 +223,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
       newEnd--;
       prevEndNode--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevEnd], b = newData[prevEnd];
+      a = oldData[prevEnd], b = newData[newEnd];
     }
     a = oldData[prevEnd], b = newData[newStart];
     while(a[key] === b[key]) {
@@ -422,7 +422,9 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        updateattribute(dom, attr.name, simpleEl.state[attr.text]);
+        if (dom.getAttribute(attr.name) !== simpleEl.state[attr.text]) {
+          dom.setAttribute(attr.name, simpleEl.state[attr.text] || '');
+        }
       }
     } else {
       if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';
@@ -520,41 +522,36 @@ var simplecreator = {
 const { collect: collect$1, create: create$1 } = ref;
 const { simpleUpdate } = update;
 const { simpleCreator } = simplecreator;
-const setProps = (me, stateMap) => {
-  me.stateMap = stateMap;
-  me._refs = collect$1(me, stateMap);
-  Object.defineProperty(me, 'state', {
-    get: () => me._state,
-    set: (v) => {
-      me._state = Object.assign(me._state || {}, v);
-      simpleUpdate(me);
-    }
-  });
-  return ;
-};
 function SimpleElement(content, defaultState = null) {
   if (!content.nodeType && typeof content !== 'string') {
-    if (!content[0] || (content[0] && !content[0].nodeType)) {
+    if (!content[0] || !content[0].nodeType) {
       throw TypeError('First argument for SimpleElement should be of type string or DOM element');
     }
   }
-  let templ;
-  templ = template(content);
+  const templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
-  if (content.isSifrr) return content;
-  if (content.nodeName.indexOf('-') !== -1 ||
+  if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
     (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
   ) {
-    window.document.body.appendChild(content);
-    content.remove();
     return content;
   }
-  const baseStateMap = create$1(content, simpleCreator);
-  setProps(content, baseStateMap);
+  const stateMap = create$1(content, simpleCreator);
+  function setProps(me) {
+    me.stateMap = stateMap;
+    me._refs = collect$1(me, stateMap);
+    Object.defineProperty(me, 'state', {
+      get: () => me._state,
+      set: (v) => {
+        me._state = Object.assign(me._state || {}, v);
+        simpleUpdate(me);
+      }
+    });
+  }
+  setProps(content);
   if (defaultState) content.state = defaultState;
   content.sifrrClone = function(deep = true, newState) {
     const clone = content.cloneNode(deep);
-    setProps(clone, baseStateMap);
+    setProps(clone);
     if (newState) clone.state = newState;
     else if (content.state) clone.state = content.state;
     return clone;
