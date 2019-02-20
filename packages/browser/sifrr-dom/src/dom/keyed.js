@@ -11,10 +11,8 @@ const { makeEqual } = require('./makeequal');
 // How this implementation differs from others, is that it's working with data directly,
 // without maintaining nodes arrays, and uses manipukates dom only when required
 
-function makeChildrenEqualKeyed(parent, newData, createFn, key) {
-  const oldChildren = Array.prototype.slice.call(parent.childNodes),
-    oldData = oldChildren.map(n => n.state),
-    oldL = oldData.length,
+function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
+  const oldL = parent.childNodes.length,
     newL = newData.length;
 
   // Fast path for clear
@@ -30,6 +28,8 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     }
     return;
   }
+
+  const oldChildren = Array.prototype.slice.call(parent.childNodes), oldData = oldChildren.map(n => n.state);
 
   // reconciliation
   let prevStart = 0,

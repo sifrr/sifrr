@@ -10,9 +10,6 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
   await page.evaluate(async () => {
     if (typeof Sifrr !== 'undefined') {
       if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();
-    } else {
-      HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
-      HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
     }
   });
 

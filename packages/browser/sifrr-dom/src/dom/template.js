@@ -11,6 +11,9 @@ module.exports = (str, ...extra) => {
       tmp.content.appendChild(s);
     });
     return tmp;
+  } else if (str.nodeType && !str.content) {
+    tmp.content.appendChild(str);
+    return tmp;
   } else {
     return str;
   }

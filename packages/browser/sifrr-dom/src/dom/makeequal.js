@@ -4,6 +4,23 @@ const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
 function makeChildrenEqual(parent, newChildren, createFn) {
   const oldL = parent.childNodes.length, newL = newChildren.length;
+  // Fast path for clear
+  if (newL === 0) {
+    parent.textContent = '';
+    return;
+  }
+
+  // Fast path for create
+  if (oldL === 0) {
+    let addition;
+    for(let i = 0; i < newL; i++) {
+      addition = newChildren[i];
+      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
+      parent.appendChild(addition);
+    }
+    return;
+  }
+
   // Lesser children now
   if (oldL > newL) {
     let i = oldL;

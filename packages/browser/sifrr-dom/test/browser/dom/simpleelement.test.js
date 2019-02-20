@@ -60,7 +60,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
   });
 
-  it('works with negative states', async () => {
+  it('Negative states are rendered as empty string', async () => {
     /* eslint-disable no-undef */
     const state = await page.evaluate(() => {
       seAttr.state = { class: null };
@@ -68,7 +68,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
     /* eslint-enable no-undef */
 
-    expect(state).to.eq('null');
+    expect(state).to.eq('');
   });
 
   it('only updates binding when state is changed', async () => {
@@ -135,7 +135,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     expect(type4).to.eq('undefined');
   });
 
-  describe('sifrrClone', async () => {
+  describe('sifrrClone', () => {
     it('works', async () => {
       const type = await page.evaluate('seClone.nodeName');
 

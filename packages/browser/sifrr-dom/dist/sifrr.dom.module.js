@@ -72,6 +72,9 @@ var template = (str, ...extra) => {
       tmp.content.appendChild(s);
     });
     return tmp;
+  } else if (str.nodeType && !str.content) {
+    tmp.content.appendChild(str);
+    return tmp;
   } else {
     return str;
   }
@@ -114,6 +117,19 @@ const { shallowEqual } = json;
 const { TEXT_NODE, COMMENT_NODE } = constants;
 function makeChildrenEqual(parent, newChildren, createFn) {
   const oldL = parent.childNodes.length, newL = newChildren.length;
+  if (newL === 0) {
+    parent.textContent = '';
+    return;
+  }
+  if (oldL === 0) {
+    let addition;
+    for(let i = 0; i < newL; i++) {
+      addition = newChildren[i];
+      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
+      parent.appendChild(addition);
+    }
+    return;
+  }
   if (oldL > newL) {
     let i = oldL;
     while(i > newL) {
@@ -168,10 +184,8 @@ var makeequal = {
 };
 
 const { makeEqual: makeEqual$1 } = makeequal;
-function makeChildrenEqualKeyed(parent, newData, createFn, key) {
-  const oldChildren = Array.prototype.slice.call(parent.childNodes),
-    oldData = oldChildren.map(n => n.state),
-    oldL = oldData.length,
+function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
+  const oldL = parent.childNodes.length,
     newL = newData.length;
   if (newL === 0) {
     parent.textContent = '';
@@ -183,6 +197,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     }
     return;
   }
+  const oldChildren = Array.prototype.slice.call(parent.childNodes), oldData = oldChildren.map(n => n.state);
   let prevStart = 0,
     newStart = 0,
     loop = true,
@@ -508,12 +523,14 @@ const setProps = (me, stateMap) => {
   return ;
 };
 function SimpleElement(content, defaultState = null) {
+  if (!content.nodeType && typeof content !== 'string') {
+    if (!content[0] || (content[0] && !content[0].nodeType)) {
+      throw TypeError('First argument for SimpleElement should be of type string or DOM element');
+    }
+  }
   let templ;
   templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
-  if (!content.nodeType) {
-    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
-  }
   if (content.isSifrr) return content;
   if (content.nodeName.indexOf('-') !== -1 ||
     (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
