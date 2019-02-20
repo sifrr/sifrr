@@ -1,7 +1,7 @@
 const { collect, create } = require('./ref');
 const template = require('./template');
 const { simpleUpdate } = require('./update');
-const { simpleCreator } = require('./creator');
+const { simpleCreator } = require('./simplecreator');
 
 const setProps = (me, stateMap) => {
   me.stateMap = stateMap;
@@ -18,10 +18,9 @@ const setProps = (me, stateMap) => {
 
 function SimpleElement(content, defaultState = null) {
   let templ;
-  if (typeof content === 'string') {
-    templ = template(content);
-    content = templ.content.firstElementChild || templ.content.firstChild;
-  } else if (!content.nodeType) {
+  templ = template(content);
+  content = templ.content.firstElementChild || templ.content.firstChild;
+  if (!content.nodeType) {
     throw TypeError('First argument for SimpleElement should be of type string or DOM element');
   }
   // Already sifrr element
@@ -39,10 +38,11 @@ function SimpleElement(content, defaultState = null) {
   setProps(content, baseStateMap);
   if (defaultState) content.state = defaultState;
 
-  content.sifrrClone = function(deep = true) {
+  content.sifrrClone = function(deep = true, newState) {
     const clone = content.cloneNode(deep);
     setProps(clone, baseStateMap);
-    if (content.state) clone.state = content.state;
+    if (newState) clone.state = newState;
+    else if (content.state) clone.state = content.state;
     return clone;
   };
 

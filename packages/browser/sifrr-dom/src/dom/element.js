@@ -48,8 +48,8 @@ function elementClassFactory(baseClass) {
       super();
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
-        const content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = Parser.collectRefs(content, this.constructor.stateMap);
+        const stateMap = this.constructor.stateMap, content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = Parser.collectRefs(content, stateMap);
         if (this.constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
@@ -62,8 +62,9 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if(!this.constructor.useShadowRoot) {
+      if(!this.constructor.useShadowRoot && this.__content) {
         makeChildrenEqual(this, Array.prototype.slice.call(this.__content.childNodes));
+        delete this.__content;
       }
       if (!this.hasAttribute('data-sifrr-state')) this.update();
       this.onConnect();
@@ -109,8 +110,10 @@ function elementClassFactory(baseClass) {
       else return true;
     }
 
-    sifrrClone(deep) {
-      return this.cloneNode(deep);
+    sifrrClone(deep, state) {
+      const clone = this.cloneNode(deep);
+      clone._state = state;
+      return clone;
     }
 
     clearState() {

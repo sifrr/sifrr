@@ -30,9 +30,9 @@ function makeChildrenEqual(parent, newChildren) {
 }
 
 function makeEqual(oldNode, newNode) {
-  if (newNode.type === 'stateChange') {
-    if (!shallowEqual(oldNode.state, newNode.state)) {
-      oldNode.state = newNode.state;
+  if (!(newNode instanceof HTMLElement)) {
+    if (!shallowEqual(oldNode.state, newNode)) {
+      oldNode.state = newNode;
     }
     return oldNode;
   }

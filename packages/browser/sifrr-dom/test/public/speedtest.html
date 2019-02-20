@@ -26,10 +26,10 @@
   <script src="/sifrr.dom.js" charset="utf-8"></script>
   <script type="text/javascript">
     'use strict';
-    /* eslint-disable no-var */
+    /* eslint-disable no-var, no-unused-vars */
     var useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
-    var useHTMLComponents = window.location.href.indexOf('useHTML') >= 0;
-    /* eslint-enable no-var */
+    var keyedKey = window.location.href.indexOf('useKey') >= 0 ? 'id' : '';
+    /* eslint-enable no-var, no-unused-vars */
     Sifrr.Dom.setup();
     Sifrr.Dom.Event.add('click');
     Sifrr.Dom.load('main-element');

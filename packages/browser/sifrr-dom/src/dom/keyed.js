@@ -1,4 +1,7 @@
 /* eslint-disable max-lines */
+const { makeEqual } = require('./makeequal');
+
+// Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
 // based on ivi documentation:
 // https://github.com/localvoid/ivi/blob/2c81ead934b9128e092cc2a5ef2d3cabc73cb5dd/packages/ivi/src/vdom/implementation.ts#L1366
@@ -6,169 +9,168 @@
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L86
 //
 // How this implementation differs from others, is that it's working with data directly,
-// without maintaining nodes arrays, and uses dom props firstChild/lastChild/nextSibling
-// for markers moving.
-function makeChildrenEqualKeyed(parent, newChildren, key = 'id') {
-  let renderedValues = parent.childNodes;
-  let data = newChildren;
-  const oldL = parent.childNodes.length, newL = newChildren.length;
-  // Lesser children now
-  if (oldL > newL) {
-    let i = oldL;
-    while(i > newL) {
-      parent.removeChild(parent.lastChild);
-      i--;
-    }
-  // More Children now
-  } else if (oldL < newL) {
-    let i = oldL;
-    while(i < newL) {
-      parent.appendChild(newChildren[i]);
-      i++;
-    }
+// without maintaining nodes arrays, and uses manipukates dom only when required
+
+function makeChildrenEqualKeyed(parent, newData, createFn, key) {
+  const oldChildren = Array.prototype.slice.call(parent.childNodes),
+    oldData = oldChildren.map(n => n.state),
+    oldL = oldData.length,
+    newL = newData.length;
+
+  // Fast path for clear
+  if (newL === 0) {
+    parent.textContent = '';
+    return;
   }
 
+  // Fast path for create
+  if (oldL === 0) {
+    for(let i = 0; i < newL; i++) {
+      parent.appendChild(createFn(newData[i]));
+    }
+    return;
+  }
+
+  // reconciliation
   let prevStart = 0,
     newStart = 0,
     loop = true,
     prevEnd = oldL - 1, newEnd = newL - 1,
-    a, b,
-    prevStartNode = parent.firstChild,
-    newStartNode = prevStartNode,
-    prevEndNode = parent.lastChild,
-    beforeNode,
-    afterNode;
+    a, b;
 
   fixes: while(loop) {
     loop = false;
-    let _node;
 
     // Skip prefix
-    a = renderedValues[prevStart], b = data[newStart];
-    while(a === b) {
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      makeEqual(oldChildren[prevStart], newData[newStart]);
       prevStart++;
       newStart++;
-      newStartNode = prevStartNode = prevStartNode.nextSibling;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = renderedValues[prevStart];
-      b = data[newStart];
+      a = oldData[prevStart], b = newData[newStart];
     }
 
     // Skip suffix
-    a = renderedValues[prevEnd], b = data[newEnd];
-    while(a === b) {
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      makeEqual(oldChildren[prevEnd], newData[newEnd]);
       prevEnd--;
       newEnd--;
-      afterNode = prevEndNode;
-      prevEndNode = prevEndNode.previousSibling;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = renderedValues[prevEnd];
-      b = data[newEnd];
+      a = oldData[prevStart], b = newData[newStart];
     }
 
     // Fast path to swap backward
-    a = renderedValues[prevEnd], b = data[newStart];
-    while(a === b) {
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
       loop = true;
-      _node = prevEndNode.previousSibling;
-      parent.insertBefore(prevEndNode, newStartNode);
-      prevEndNode = _node;
+      parent.insertBefore(oldChildren[prevEnd], createFn(newData[newStart]));
       newStart++;
       prevEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = renderedValues[prevEnd];
-      b = data[newStart];
+      a = oldData[prevStart], b = newData[newStart];
     }
 
     // Fast path to swap forward
-    a = renderedValues[prevStart], b = data[newEnd];
-    while(a === b) {
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
       loop = true;
-      _node = prevStartNode.nextSibling;
-      parent.insertBefore(prevStartNode, afterNode);
+      parent.insertBefore(prevStart, createFn(newData[newEnd]));
       prevStart++;
-      afterNode = prevStartNode;
-      prevStartNode = _node;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = renderedValues[prevStart];
-      b = data[newEnd];
+      a = oldData[prevStart], b = newData[newStart];
     }
   }
 
+  // Fast path for shrink
+  if (newEnd < newStart) {
+    if (prevStart <= prevEnd) {
+      while(prevStart <= prevEnd) {
+        parent.removeChild(oldChildren[prevEnd]);
+        prevEnd--;
+      }
+    }
+    return;
+  }
+
+  // Fast path for add
+  if (prevEnd < prevStart) {
+    if (newStart <= newEnd) {
+      while(newStart <= newEnd) {
+        parent.appendChild(createFn(newData[newStart]));
+        newStart++;
+      }
+    }
+    return;
+  }
+
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map();
+
   // Positions for reusing nodes from current DOM state
-  const P = new Array(newEnd + 1 - newStart);
-  for(let i = newStart; i <= newEnd; i++) P[i] = -1;
+  for(let i = newStart; i <= newEnd; i++) oldKeys[i] = -1;
 
   // Index to resolve position from current to new
-  const I = new Map();
-  for(let i = newStart; i <= newEnd; i++) I.set(data[i], i);
+  for (let i = newStart; i <= newEnd; i++) {
+    newKeys.set(newData[i][key], i);
+  }
 
-  let reusingNodes = 0, toRemove = [];
+  let reusingNodes = 0, toDelete = [];
   for(let i = prevStart; i <= prevEnd; i++) {
-    if (I.has(renderedValues[i])) {
-      P[I.get(renderedValues[i])] = i;
+    if (newKeys.has(oldData[i][key])) {
+      oldKeys[newKeys.get(oldData[i][key])] = i;
       reusingNodes++;
     } else {
-      toRemove.push(i);
+      toDelete.push(i);
     }
   }
 
   // Fast path for full replace
   if (reusingNodes === 0) {
-    if (beforeNode !== undefined || afterNode !== undefined) {
-      let node = beforeNode !== undefined ? beforeNode.nextSibling : parent.firstChild,
-        tmp;
-
-      if (afterNode === undefined) afterNode = null;
-
-      while(node !== afterNode) {
-        tmp = node.nextSibling;
-        parent.removeChild(node);
-        node = tmp;
-        prevStart++;
-      }
-    } else {
-      parent.textContent = '';
-    }
-
-    let node, mode = afterNode ? 1 : 0;
     for(let i = newStart; i <= newEnd; i++) {
-      node = createFn(data[i]);
-      mode ? parent.insertBefore(node, afterNode) : parent.appendChild(node);
+      // Add extra nodes
+      if (i > prevEnd) parent.appendChild(createFn(newData[i]));
+      else makeEqual(oldChildren[i], newData[i]);
     }
-
+    // Remove extra nodes
+    if (newEnd < prevEnd) {
+      while (newEnd < prevEnd) {
+        parent.removeChild(oldChildren[prevEnd]);
+        prevEnd--;
+      }
+    }
     return;
   }
 
-  // What else?
-  const longestSeq = longestPositiveIncreasingSubsequence(P, newStart);
+  const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   // Collect nodes to work with them
   const nodes = [];
-  let tmpC = prevStartNode;
+  let tmpC = prevStart;
   for(let i = prevStart; i <= prevEnd; i++) {
-    nodes[i] = tmpC;
-    tmpC = tmpC.nextSibling;
+    nodes[i] = oldChildren[tmpC];
+    tmpC++;
   }
 
-  for(let i = 0; i < toRemove.length; i++) parent.removeChild(nodes[toRemove[i]]);
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(nodes[toDelete[i]]);
+  }
 
   let lisIdx = longestSeq.length - 1, tmpD;
+  prevEnd = oldChildren[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      afterNode = nodes[P[longestSeq[lisIdx]]];
-      noOp(afterNode, data[i]);
+      prevEnd = nodes[oldKeys[longestSeq[lisIdx]]];
       lisIdx--;
     } else {
-      if (P[i] === -1) {
-        tmpD = createFn(data[i]);
+      if (oldKeys[i] === -1) {
+        tmpD = createFn(newData[i]);
       } else {
-        tmpD = nodes[P[i]];
-        noOp(tmpD, data[i]);
+        tmpD = nodes[oldKeys[i]];
       }
-      parent.insertBefore(tmpD, afterNode);
-      afterNode = tmpD;
+      parent.insertBefore(tmpD, prevEnd);
+      prevEnd = tmpD;
     }
   }
 }
@@ -183,7 +185,7 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     l   = -1,
     pre = new Array(ns.length);
 
-  for (var i = newStart, len = ns.length; i < len; i++) {
+  for (let i = newStart, len = ns.length; i < len; i++) {
     let n = ns[i];
     if (n < 0) continue;
     let j = findGreatestIndexLEQ(seq, n);
@@ -198,7 +200,7 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     }
   }
 
-  for (i = is[l]; l >= 0; i = pre[i], l--) {
+  for (let i = is[l]; l >= 0; i = pre[i], l--) {
     seq[l] = i;
   }
 
@@ -226,5 +228,7 @@ function findGreatestIndexLEQ(seq, n) {
   return lo;
 }
 
-
-module.exports = makeChildrenEqualKeyed;
+module.exports = {
+  makeChildrenEqualKeyed,
+  longestPositiveIncreasingSubsequence
+};

@@ -45,7 +45,7 @@ class Loader {
       return this.executeHTMLScripts();
     } else {
       return this.js.then((script) => {
-        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call(window);
+        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call();
       }).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
@@ -64,7 +64,7 @@ class Loader {
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call(window);
+          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: file.querySelector('template') });
         }
       });
     }).catch(e => { throw e; });

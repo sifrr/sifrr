@@ -62,6 +62,282 @@ var constants = {
   OUTER_REGEX: new RegExp(reg, 'g'),
 };
 
+const { TEMPLATE } = constants;
+var template = (str, ...extra) => {
+  const tmp = TEMPLATE();
+  if (typeof str === 'string') ; else if (str[0] && typeof str[0] === 'string') {
+    str = String.raw(str, ...extra);
+  } else if (str[0]) {
+    Array.from(str).forEach((s) => {
+      tmp.content.appendChild(s);
+    });
+    return tmp;
+  } else {
+    return str;
+  }
+  str = str
+    .replace(/>\n+/g, '>')
+    .replace(/\s+</g, '<')
+    .replace(/>\s+/g, '>')
+    .replace(/(\\)?\$(\\)?\{/g, '${');
+  tmp.innerHTML = str;
+  return tmp;
+};
+
+var updateattribute = (element, name, newValue) => {
+  const fromValue = element.getAttribute(name);
+  if (fromValue !== newValue) {
+    if (name === 'class') element.className = newValue || '';
+    else element.setAttribute(name, newValue || '');
+  }
+  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
+};
+
+const Json = {
+  shallowEqual: (a, b) => {
+    for(let key in a) {
+      if(!(key in b) || a[key] !== b[key]) {
+        return false;
+      }
+    }
+    for(let key in b) {
+      if(!(key in a) || a[key] !== b[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+var json = Json;
+
+const { shallowEqual } = json;
+const { TEXT_NODE, COMMENT_NODE } = constants;
+function makeChildrenEqual(parent, newChildren) {
+  const oldL = parent.childNodes.length, newL = newChildren.length;
+  if (oldL > newL) {
+    let i = oldL;
+    while(i > newL) {
+      parent.removeChild(parent.lastChild);
+      i--;
+    }
+  } else if (oldL < newL) {
+    let i = oldL;
+    while(i < newL) {
+      parent.appendChild(newChildren[i]);
+      i++;
+    }
+  }
+  const l = Math.min(newL, oldL);
+  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
+    item = newChildren[i];
+    head = makeEqual(head, item).nextSibling;
+  }
+}
+function makeEqual(oldNode, newNode) {
+  if (!(newNode instanceof HTMLElement)) {
+    if (!shallowEqual(oldNode.state, newNode)) {
+      oldNode.state = newNode;
+    }
+    return oldNode;
+  }
+  if (oldNode.nodeName !== newNode.nodeName) {
+    oldNode.replaceWith(newNode);
+    return newNode;
+  }
+  if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
+    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
+    return oldNode;
+  }
+  if (newNode.state) oldNode.state = newNode.state;
+  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
+  for (let i = newAttrs.length - 1; i >= 0; --i) {
+    updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
+  }
+  for (let j = oldAttrs.length - 1; j >= 0; --j) {
+    attr = oldAttrs[j];
+    if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
+  }
+  makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
+  return oldNode;
+}
+var makeequal = {
+  makeEqual,
+  makeChildrenEqual
+};
+
+const { makeEqual: makeEqual$1 } = makeequal;
+function makeChildrenEqualKeyed(parent, newData, createFn, key) {
+  const oldChildren = Array.prototype.slice.call(parent.childNodes),
+    oldData = oldChildren.map(n => n.state),
+    oldL = oldData.length,
+    newL = newData.length;
+  if (newL === 0) {
+    parent.textContent = '';
+    return;
+  }
+  if (oldL === 0) {
+    for(let i = 0; i < newL; i++) {
+      parent.appendChild(createFn(newData[i]));
+    }
+    return;
+  }
+  let prevStart = 0,
+    newStart = 0,
+    loop = true,
+    prevEnd = oldL - 1, newEnd = newL - 1,
+    a, b;
+  fixes: while(loop) {
+    loop = false;
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      makeEqual$1(oldChildren[prevStart], newData[newStart]);
+      prevStart++;
+      newStart++;
+      if (prevEnd < prevStart || newEnd < newStart) break fixes;
+      a = oldData[prevStart], b = newData[newStart];
+    }
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      makeEqual$1(oldChildren[prevEnd], newData[newEnd]);
+      prevEnd--;
+      newEnd--;
+      if (prevEnd < prevStart || newEnd < newStart) break fixes;
+      a = oldData[prevStart], b = newData[newStart];
+    }
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      loop = true;
+      parent.insertBefore(oldChildren[prevEnd], createFn(newData[newStart]));
+      newStart++;
+      prevEnd--;
+      if (prevEnd < prevStart || newEnd < newStart) break fixes;
+      a = oldData[prevStart], b = newData[newStart];
+    }
+    a = oldData[prevStart], b = newData[newStart];
+    while(a[key] === b[key]) {
+      loop = true;
+      parent.insertBefore(prevStart, createFn(newData[newEnd]));
+      prevStart++;
+      newEnd--;
+      if (prevEnd < prevStart || newEnd < newStart) break fixes;
+      a = oldData[prevStart], b = newData[newStart];
+    }
+  }
+  if (newEnd < newStart) {
+    if (prevStart <= prevEnd) {
+      while(prevStart <= prevEnd) {
+        parent.removeChild(oldChildren[prevEnd]);
+        prevEnd--;
+      }
+    }
+    return;
+  }
+  if (prevEnd < prevStart) {
+    if (newStart <= newEnd) {
+      while(newStart <= newEnd) {
+        parent.appendChild(createFn(newData[newStart]));
+        newStart++;
+      }
+    }
+    return;
+  }
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map();
+  for(let i = newStart; i <= newEnd; i++) oldKeys[i] = -1;
+  for (let i = newStart; i <= newEnd; i++) {
+    newKeys.set(newData[i][key], i);
+  }
+  let reusingNodes = 0, toDelete = [];
+  for(let i = prevStart; i <= prevEnd; i++) {
+    if (newKeys.has(oldData[i][key])) {
+      oldKeys[newKeys.get(oldData[i][key])] = i;
+      reusingNodes++;
+    } else {
+      toDelete.push(i);
+    }
+  }
+  if (reusingNodes === 0) {
+    for(let i = newStart; i <= newEnd; i++) {
+      if (i > prevEnd) parent.appendChild(createFn(newData[i]));
+      else makeEqual$1(oldChildren[i], newData[i]);
+    }
+    if (newEnd < prevEnd) {
+      while (newEnd < prevEnd) {
+        parent.removeChild(oldChildren[prevEnd]);
+        prevEnd--;
+      }
+    }
+    return;
+  }
+  const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
+  const nodes = [];
+  let tmpC = prevStart;
+  for(let i = prevStart; i <= prevEnd; i++) {
+    nodes[i] = oldChildren[tmpC];
+    tmpC++;
+  }
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(nodes[toDelete[i]]);
+  }
+  let lisIdx = longestSeq.length - 1, tmpD;
+  prevEnd = oldChildren[prevEnd];
+  for(let i = newEnd; i >= newStart; i--) {
+    if(longestSeq[lisIdx] === i) {
+      prevEnd = nodes[oldKeys[longestSeq[lisIdx]]];
+      lisIdx--;
+    } else {
+      if (oldKeys[i] === -1) {
+        tmpD = createFn(newData[i]);
+      } else {
+        tmpD = nodes[oldKeys[i]];
+      }
+      parent.insertBefore(tmpD, prevEnd);
+      prevEnd = tmpD;
+    }
+  }
+}
+function longestPositiveIncreasingSubsequence(ns, newStart) {
+  let seq = [],
+    is  = [],
+    l   = -1,
+    pre = new Array(ns.length);
+  for (let i = newStart, len = ns.length; i < len; i++) {
+    let n = ns[i];
+    if (n < 0) continue;
+    let j = findGreatestIndexLEQ(seq, n);
+    if (j !== -1) pre[i] = is[j];
+    if (j === l) {
+      l++;
+      seq[l] = n;
+      is[l]  = i;
+    } else if (n < seq[j + 1]) {
+      seq[j + 1] = n;
+      is[j + 1] = i;
+    }
+  }
+  for (let i = is[l]; l >= 0; i = pre[i], l--) {
+    seq[l] = i;
+  }
+  return seq;
+}
+function findGreatestIndexLEQ(seq, n) {
+  let lo = -1,
+    hi = seq.length;
+  if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
+  while (hi - lo > 1) {
+    let mid = Math.floor((lo + hi) / 2);
+    if (seq[mid] > n) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
+  }
+  return lo;
+}
+var keyed = {
+  makeChildrenEqualKeyed,
+  longestPositiveIncreasingSubsequence
+};
+
 const { OUTER_REGEX } = constants;
 function replacer(match) {
   let f;
@@ -107,181 +383,10 @@ var bindings = {
   replacer: replacer
 };
 
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = constants;
-const { getBindingFxns } = bindings;
-function simpleElementCreator(node) {
-  if (node.nodeType === ELEMENT_NODE) {
-    const attrs = Array.prototype.slice.call(node.attributes), l = attrs.length;
-    const ret = [];
-    for (let i = 0; i < l; i++) {
-      const avalue = attrs[i].value;
-      if (avalue[0] === '$') {
-        ret.push({
-          name: attrs[i].name,
-          text: avalue.slice(2, -1)
-        });
-        node.setAttribute(attrs[i].name, '');
-      }
-    }
-    if (ret.length > 0) return ret;
-    return 0;
-  } else {
-    let nodeData = node.data;
-    if (nodeData[0] === '$') {
-      node.data = '';
-      return nodeData.slice(2, -1);
-    }
-    return 0;
-  }
-}
-function customElementCreator(el, filter) {
-  if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
-    const x = el.data;
-    if (x.indexOf('${') > -1) return {
-      html: false,
-      text: getBindingFxns(x.trim())
-    };
-  } else if (el.nodeType === ELEMENT_NODE) {
-    const sm = {};
-    if (filter(el)) {
-      const innerHTML = el.innerHTML;
-      if (innerHTML.indexOf('${') >= 0) {
-        sm.html = true;
-        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
-      }
-    }
-    const attrs = el.attributes, l = attrs.length;
-    const attrStateMap = { events: {} };
-    for (let i = 0; i < l; i++) {
-      const attribute = attrs[i];
-      if (attribute.name[0] === '_') {
-        attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
-      } else if (attribute.value.indexOf('${') >= 0) {
-        attrStateMap[attribute.name] = getBindingFxns(attribute.value);
-      }
-    }
-    if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
-    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
-    if (Object.keys(sm).length > 0) return sm;
-  }
-  return 0;
-}
-var creator = {
-  creator: customElementCreator,
-  simpleCreator: simpleElementCreator
-};
-
-const { collect: collect$1, create: create$1 } = ref;
-const { creator: creator$1 } = creator;
-function isHtml(el) {
-  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    (el.dataset && el.dataset.sifrrRepeat);
-}
-const Parser = {
-  collectRefs: (el, stateMap) => collect$1(el, stateMap, isHtml),
-  createStateMap: (element) => create$1(element, creator$1, isHtml),
-  twoWayBind: (e) => {
-    const target = e.composedPath ? e.composedPath()[0] : e.target;
-    if (!target.dataset.sifrrBind || target._root === null) return;
-    const value = target.value || target.textContent;
-    let state = {};
-    if (!target._root) {
-      let root;
-      root = target;
-      while(root && !root.isSifrr) root = root.parentNode || root.host;
-      if (root) target._root = root;
-      else target._root = null;
-    }
-    state[target.dataset.sifrrBind] = value;
-    if (target._root) target._root.state = state;
-  }
-};
-var parser = Parser;
-
-var updateattribute = (element, name, newValue) => {
-  const fromValue = element.getAttribute(name);
-  if (fromValue != newValue) {
-    if (name === 'class') element.className = newValue;
-    else element.setAttribute(name, newValue);
-  }
-  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
-};
-
-const Json = {
-  shallowEqual: (a, b) => {
-    for(let key in a) {
-      if(!(key in b) || a[key] !== b[key]) {
-        return false;
-      }
-    }
-    for(let key in b) {
-      if(!(key in a) || a[key] !== b[key]) {
-        return false;
-      }
-    }
-    return true;
-  }
-};
-var json = Json;
-
-const { shallowEqual } = json;
-const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1 } = constants;
-function makeChildrenEqual(parent, newChildren) {
-  const oldL = parent.childNodes.length, newL = newChildren.length;
-  if (oldL > newL) {
-    let i = oldL;
-    while(i > newL) {
-      parent.removeChild(parent.lastChild);
-      i--;
-    }
-  } else if (oldL < newL) {
-    let i = oldL;
-    while(i < newL) {
-      parent.appendChild(newChildren[i]);
-      i++;
-    }
-  }
-  const l = Math.min(newL, oldL);
-  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
-    item = newChildren[i];
-    head = makeEqual(head, item).nextSibling;
-  }
-}
-function makeEqual(oldNode, newNode) {
-  if (newNode.type === 'stateChange') {
-    if (!shallowEqual(oldNode.state, newNode.state)) {
-      oldNode.state = newNode.state;
-    }
-    return oldNode;
-  }
-  if (oldNode.nodeName !== newNode.nodeName) {
-    oldNode.replaceWith(newNode);
-    return newNode;
-  }
-  if (oldNode.nodeType === TEXT_NODE$1 || oldNode.nodeType === COMMENT_NODE$1) {
-    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
-    return oldNode;
-  }
-  if (newNode.state) oldNode.state = newNode.state;
-  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
-  for (let i = newAttrs.length - 1; i >= 0; --i) {
-    updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
-  }
-  for (let j = oldAttrs.length - 1; j >= 0; --j) {
-    attr = oldAttrs[j];
-    if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
-  }
-  makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
-  return oldNode;
-}
-var makeequal = {
-  makeEqual,
-  makeChildrenEqual
-};
-
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
+const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
-const TEMPLATE = constants.TEMPLATE();
+const TEMPLATE$1 = constants.TEMPLATE();
 function simpleElementUpdate(simpleEl) {
   const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
   for (let i = 0; i < l; i++) {
@@ -290,11 +395,10 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        if (attr.name === 'class') dom.className = simpleEl.state[attr.text];
-        else dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        updateattribute(dom, attr.name, simpleEl.state[attr.text]);
       }
     } else {
-      dom.data = simpleEl.state[data];
+      if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';
     }
   }
 }
@@ -321,9 +425,11 @@ function customElementUpdate(element) {
         }
       }
     }
-    if (data.html === undefined) continue;
+    if (data.text === undefined) continue;
     const newValue = evaluateBindings(data.text, element);
-    if (data.html) {
+    if (data.type === 2) {
+      makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), dom.dataset.sifrrKey);
+    } else if (data.type === 1) {
       let children;
       if (Array.isArray(newValue)) {
         children = newValue;
@@ -332,14 +438,14 @@ function customElementUpdate(element) {
       } else if (newValue.nodeType) {
         children = [newValue];
       } else if (typeof newValue === 'string') {
-        TEMPLATE.innerHTML = newValue.toString();
-        children = Array.prototype.slice.call(TEMPLATE.content.childNodes);
+        TEMPLATE$1.innerHTML = newValue.toString();
+        children = Array.prototype.slice.call(TEMPLATE$1.content.childNodes);
       } else {
         children = Array.prototype.slice.call(newValue);
       }
       if (children.length === 0) dom.textContent = '';
       else makeChildrenEqual$1(dom, children);
-    } else {
+    } else if (data.type === 0) {
       if (dom.data != newValue) {
         dom.data = newValue;
       }
@@ -352,27 +458,151 @@ var update = {
   simpleUpdate: simpleElementUpdate
 };
 
-const { TEMPLATE: TEMPLATE$1 } = constants;
-var template = (str, ...extra) => {
-  const tmp = TEMPLATE$1();
-  if (typeof str === 'string') ; else if (str[0] && typeof str[0] === 'string') {
-    str = String.raw(str, ...extra);
-  } else if (str[0]) {
-    Array.from(str).forEach((s) => {
-      tmp.content.appendChild(s);
-    });
-    return tmp;
+const { ELEMENT_NODE } = constants;
+function simpleElementCreator(node) {
+  if (node.nodeType === ELEMENT_NODE) {
+    const attrs = Array.prototype.slice.call(node.attributes), l = attrs.length;
+    const ret = [];
+    for (let i = 0; i < l; i++) {
+      const avalue = attrs[i].value;
+      if (avalue[0] === '$') {
+        ret.push({
+          name: attrs[i].name,
+          text: avalue.slice(2, -1)
+        });
+        node.setAttribute(attrs[i].name, '');
+      }
+    }
+    if (ret.length > 0) return ret;
+    return 0;
   } else {
-    return str;
+    let nodeData = node.data;
+    if (nodeData[0] === '$') {
+      node.data = '';
+      return nodeData.slice(2, -1);
+    }
+    return 0;
   }
-  str = str
-    .replace(/>\n+/g, '>')
-    .replace(/\s+</g, '<')
-    .replace(/>\s+/g, '>')
-    .replace(/(\\)?\$(\\)?\{/g, '${');
-  tmp.innerHTML = str;
-  return tmp;
+}
+var simplecreator = {
+  simpleCreator: simpleElementCreator
 };
+
+const { collect: collect$1, create: create$1 } = ref;
+const { simpleUpdate } = update;
+const { simpleCreator } = simplecreator;
+const setProps = (me, stateMap) => {
+  me.stateMap = stateMap;
+  me._refs = collect$1(me, stateMap);
+  Object.defineProperty(me, 'state', {
+    get: () => me._state,
+    set: (v) => {
+      me._state = Object.assign(me._state || {}, v);
+      simpleUpdate(me);
+    }
+  });
+  return ;
+};
+function SimpleElement(content, defaultState = null) {
+  let templ;
+  templ = template(content);
+  content = templ.content.firstElementChild || templ.content.firstChild;
+  if (!content.nodeType) {
+    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
+  }
+  if (content.isSifrr) return content;
+  if (content.nodeName.indexOf('-') !== -1 ||
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
+  ) {
+    window.document.body.appendChild(content);
+    content.remove();
+    return content;
+  }
+  const baseStateMap = create$1(content, simpleCreator);
+  setProps(content, baseStateMap);
+  if (defaultState) content.state = defaultState;
+  content.sifrrClone = function(deep = true, newState) {
+    const clone = content.cloneNode(deep);
+    setProps(clone, baseStateMap);
+    if (newState) clone.state = newState;
+    else if (content.state) clone.state = content.state;
+    return clone;
+  };
+  return content;
+}
+var simpleelement = SimpleElement;
+
+const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE: ELEMENT_NODE$1 } = constants;
+const { getBindingFxns } = bindings;
+function isArrayToDom(el) {
+  return (el.dataset && el.dataset.sifrrRepeat);
+}
+function customElementCreator(el, filter) {
+  if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
+    const x = el.data;
+    if (x.indexOf('${') > -1) return {
+      type: 0,
+      text: getBindingFxns(x.trim())
+    };
+  } else if (el.nodeType === ELEMENT_NODE$1) {
+    const sm = {};
+    if (filter(el)) {
+      const innerHTML = el.innerHTML;
+      if (innerHTML.indexOf('${') >= 0) {
+        sm.type = 1;
+        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+      }
+    } else if (isArrayToDom(el)) {
+      sm.type = 2;
+      sm.se = simpleelement(el.childNodes);
+      sm.text = getBindingFxns(el.dataset.sifrrRepeat);
+      el.removeAttribute('data-sifrr-repeat');
+    }
+    const attrs = el.attributes, l = attrs.length;
+    const attrStateMap = { events: {} };
+    for (let i = 0; i < l; i++) {
+      const attribute = attrs[i];
+      if (attribute.name[0] === '_') {
+        attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
+      } else if (attribute.value.indexOf('${') >= 0) {
+        attrStateMap[attribute.name] = getBindingFxns(attribute.value);
+      }
+    }
+    if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
+    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
+    if (Object.keys(sm).length > 0) return sm;
+  }
+  return 0;
+}
+var creator = {
+  creator: customElementCreator
+};
+
+const { collect: collect$2, create: create$2 } = ref;
+const { creator: creator$1 } = creator;
+function isHtml(el) {
+  return (el.dataset && el.dataset.sifrrHtml == 'true');
+}
+const Parser = {
+  collectRefs: (el, stateMap) => collect$2(el, stateMap, isHtml),
+  createStateMap: (element) => create$2(element, creator$1, isHtml),
+  twoWayBind: (e) => {
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    if (!target.dataset.sifrrBind || target._root === null) return;
+    const value = target.value || target.textContent;
+    let state = {};
+    if (!target._root) {
+      let root;
+      root = target;
+      while(root && !root.isSifrr) root = root.parentNode || root.host;
+      if (root) target._root = root;
+      else target._root = null;
+    }
+    state[target.dataset.sifrrBind] = value;
+    if (target._root) target._root.state = state;
+  }
+};
+var parser = Parser;
 
 class Loader {
   constructor(elemName, url) {
@@ -413,7 +643,7 @@ class Loader {
       return this.executeHTMLScripts();
     } else {
       return this.js.then((script) => {
-        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call(window);
+        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call();
       }).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
@@ -430,7 +660,7 @@ class Loader {
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call(window);
+          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: file.querySelector('template') });
         }
       });
     }).catch(e => { throw e; });
@@ -444,50 +674,6 @@ class Loader {
 }
 Loader._all = {};
 var loader = Loader;
-
-const { collect: collect$2, create: create$2 } = ref;
-const { simpleUpdate } = update;
-const { simpleCreator } = creator;
-const setProps = (me, stateMap) => {
-  me.stateMap = stateMap;
-  me._refs = collect$2(me, stateMap);
-  Object.defineProperty(me, 'state', {
-    get: () => me._state,
-    set: (v) => {
-      me._state = Object.assign(me._state || {}, v);
-      simpleUpdate(me);
-    }
-  });
-  return ;
-};
-function SimpleElement(content, defaultState = null) {
-  let templ;
-  if (typeof content === 'string') {
-    templ = template(content);
-    content = templ.content.firstElementChild || templ.content.firstChild;
-  } else if (!content.nodeType) {
-    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
-  }
-  if (content.isSifrr) return content;
-  if (content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
-  ) {
-    window.document.body.appendChild(content);
-    content.remove();
-    return content;
-  }
-  const baseStateMap = create$2(content, simpleCreator);
-  setProps(content, baseStateMap);
-  if (defaultState) content.state = defaultState;
-  content.sifrrClone = function(deep = true) {
-    const clone = content.cloneNode(deep);
-    setProps(clone, baseStateMap);
-    if (content.state) clone.state = content.state;
-    return clone;
-  };
-  return content;
-}
-var simpleelement = SimpleElement;
 
 const { update: update$1 } = update;
 const { makeChildrenEqual: makeChildrenEqual$2 } = makeequal;
@@ -527,8 +713,8 @@ function elementClassFactory(baseClass) {
       super();
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
-        const content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = parser.collectRefs(content, this.constructor.stateMap);
+        const stateMap = this.constructor.stateMap, content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = parser.collectRefs(content, stateMap);
         if (this.constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
@@ -540,8 +726,9 @@ function elementClassFactory(baseClass) {
       }
     }
     connectedCallback() {
-      if(!this.constructor.useShadowRoot) {
+      if(!this.constructor.useShadowRoot && this.__content) {
         makeChildrenEqual$2(this, Array.prototype.slice.call(this.__content.childNodes));
+        delete this.__content;
       }
       if (!this.hasAttribute('data-sifrr-state')) this.update();
       this.onConnect();
@@ -575,8 +762,10 @@ function elementClassFactory(baseClass) {
       if (name) return name === this.constructor.elementName;
       else return true;
     }
-    sifrrClone(deep) {
-      return this.cloneNode(deep);
+    sifrrClone(deep, state) {
+      const clone = this.cloneNode(deep);
+      clone._state = state;
+      return clone;
     }
     clearState() {
       this._state = {};

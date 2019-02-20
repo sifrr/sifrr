@@ -2,8 +2,7 @@ const { collect, create } = require('./ref');
 const { creator } = require('./creator');
 
 function isHtml(el) {
-  return (el.dataset && el.dataset.sifrrHtml == 'true') ||
-    (el.dataset && el.dataset.sifrrRepeat);
+  return (el.dataset && el.dataset.sifrrHtml == 'true');
 }
 
 const Parser = {
