@@ -1,7 +1,6 @@
 const Parser = require('./parser');
 const { update } = require('./update');
 const Loader = require('./loader');
-const SimpleElement = require('./simpleelement');
 const { makeChildrenEqual } = require('./makeequal');
 
 function elementClassFactory(baseClass) {
@@ -129,37 +128,6 @@ function elementClassFactory(baseClass) {
     $$(args, sr = true) {
       if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
       else return this.querySelectorAll(args);
-    }
-
-    static addArrayToDom(key, template) {
-      this._arrayToDom = this._arrayToDom || {};
-      // state of simple element is single array item, compatible with sifrr element
-      this._arrayToDom[key] = SimpleElement(template);
-    }
-
-    arrayToDom(key, newState = this.state[key]) {
-      this._domL = this._domL || {};
-      const oldL = this._domL[key] || 0;
-      const newL = newState.length;
-      const domArray = new Array(newL);
-      let temp;
-      try {
-        temp = this.constructor._arrayToDom[key];
-        if (!temp) throw Error('');
-      } catch(e) {
-        return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
-      }
-      for (let i = 0; i < newL; i++) {
-        if (i < oldL) {
-          domArray[i] = { type: 'stateChange', state: newState[i] };
-        } else {
-          const el = temp.sifrrClone(true);
-          el.state = newState[i];
-          domArray[i] = el;
-        }
-      }
-      this._domL[key] = newL;
-      return domArray;
     }
   };
 }

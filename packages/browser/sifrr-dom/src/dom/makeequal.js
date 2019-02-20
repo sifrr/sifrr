@@ -2,7 +2,7 @@ const updateAttribute = require('./updateattribute');
 const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
-function makeChildrenEqual(parent, newChildren) {
+function makeChildrenEqual(parent, newChildren, createFn) {
   const oldL = parent.childNodes.length, newL = newChildren.length;
   // Lesser children now
   if (oldL > newL) {
@@ -13,9 +13,11 @@ function makeChildrenEqual(parent, newChildren) {
     }
   // More Children now
   } else if (oldL < newL) {
-    let i = oldL;
+    let i = oldL, addition;
     while(i < newL) {
-      parent.appendChild(newChildren[i]);
+      addition = newChildren[i];
+      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
+      parent.appendChild(addition);
       i++;
     }
   }
@@ -30,7 +32,7 @@ function makeChildrenEqual(parent, newChildren) {
 }
 
 function makeEqual(oldNode, newNode) {
-  if (!(newNode instanceof HTMLElement)) {
+  if (!newNode.nodeType) {
     if (!shallowEqual(oldNode.state, newNode)) {
       oldNode.state = newNode;
     }

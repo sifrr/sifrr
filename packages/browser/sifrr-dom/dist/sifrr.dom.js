@@ -123,7 +123,7 @@
     TEXT_NODE,
     COMMENT_NODE
   } = constants;
-  function makeChildrenEqual(parent, newChildren) {
+  function makeChildrenEqual(parent, newChildren, createFn) {
     const oldL = parent.childNodes.length,
           newL = newChildren.length;
     if (oldL > newL) {
@@ -133,9 +133,12 @@
         i--;
       }
     } else if (oldL < newL) {
-      let i = oldL;
+      let i = oldL,
+          addition;
       while (i < newL) {
-        parent.appendChild(newChildren[i]);
+        addition = newChildren[i];
+        if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
+        parent.appendChild(addition);
         i++;
       }
     }
@@ -146,7 +149,7 @@
     }
   }
   function makeEqual(oldNode, newNode) {
-    if (!(newNode instanceof HTMLElement)) {
+    if (!newNode.nodeType) {
       if (!shallowEqual(oldNode.state, newNode)) {
         oldNode.state = newNode;
       }
@@ -460,7 +463,8 @@
       if (data.text === undefined) continue;
       const newValue = evaluateBindings(data.text, element);
       if (data.type === 2) {
-        makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), dom.dataset.sifrrKey);
+        const key = dom.dataset.sifrrKey;
+        if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), dom.dataset.sifrrKey);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));
       } else if (data.type === 1) {
         let children;
         if (Array.isArray(newValue)) {
@@ -835,37 +839,6 @@
       }
       $$(args, sr = true) {
         if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
-      }
-      static addArrayToDom(key, template) {
-        this._arrayToDom = this._arrayToDom || {};
-        this._arrayToDom[key] = simpleelement(template);
-      }
-      arrayToDom(key, newState = this.state[key]) {
-        this._domL = this._domL || {};
-        const oldL = this._domL[key] || 0;
-        const newL = newState.length;
-        const domArray = new Array(newL);
-        let temp;
-        try {
-          temp = this.constructor._arrayToDom[key];
-          if (!temp) throw Error('');
-        } catch (e) {
-          return window.console.error(`[error]: No arrayToDom data of '${key}' added in ${this.constructor.elementName}.`);
-        }
-        for (let i = 0; i < newL; i++) {
-          if (i < oldL) {
-            domArray[i] = {
-              type: 'stateChange',
-              state: newState[i]
-            };
-          } else {
-            const el = temp.sifrrClone(true);
-            el.state = newState[i];
-            domArray[i] = el;
-          }
-        }
-        this._domL[key] = newL;
-        return domArray;
       }
     };
   }
