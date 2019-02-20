@@ -1,7 +1,7 @@
-const { collect, create } = require('./ref');
-const template = require('./template');
-const { simpleUpdate } = require('./update');
-const { simpleCreator } = require('./simplecreator');
+const { collect, create } = require('../ref');
+const template = require('../template');
+const update = require('./update');
+const creator = require('./creator');
 
 function SimpleElement(content, defaultState = null) {
   if (!content.nodeType && typeof content !== 'string') {
@@ -17,7 +17,7 @@ function SimpleElement(content, defaultState = null) {
   ) {
     return content;
   }
-  const stateMap = create(content, simpleCreator);
+  const stateMap = create(content, creator);
   function setProps(me) {
     me.stateMap = stateMap;
     me._refs = collect(me, stateMap);
@@ -25,7 +25,7 @@ function SimpleElement(content, defaultState = null) {
       get: () => me._state,
       set: (v) => {
         me._state = Object.assign(me._state || {}, v);
-        simpleUpdate(me);
+        update(me);
       }
     });
   }

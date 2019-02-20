@@ -1,10 +1,10 @@
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('./constants');
-const simpleElement = require('./simpleelement');
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('../constants');
+const simpleElement = require('../simple/element');
 // ref types:
 // 0: text
 // 1: html
 // 2: arrayToDom
-const { getBindingFxns } = require('./bindings');
+const { getBindingFxns } = require('../bindings');
 
 function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {

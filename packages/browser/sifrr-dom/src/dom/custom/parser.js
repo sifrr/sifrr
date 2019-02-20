@@ -1,6 +1,6 @@
-const { collect, create } = require('./ref');
+const { collect, create } = require('../ref');
 const { creator } = require('./creator');
-const { ELEMENT_NODE, HTML_ATTR } = require('./constants');
+const { ELEMENT_NODE, HTML_ATTR } = require('../constants');
 
 function isHtml(el) {
   return el.nodeType === ELEMENT_NODE && el.hasAttribute(HTML_ATTR);
