@@ -1,4 +1,4 @@
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE } = require('./constants');
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('./constants');
 const simpleElement = require('./simpleelement');
 // ref types:
 // 0: text
@@ -23,11 +23,11 @@ function customElementCreator(el, filter) {
         sm.type = 1;
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
-    } else if (el.hasAttribute('data-sifrr-repeat')) {
+    } else if (el.hasAttribute(REPEAT_ATTR)) {
       sm.type = 2;
       sm.se = simpleElement(el.childNodes);
-      sm.text = getBindingFxns(el.getAttribute('data-sifrr-repeat'));
-      el.removeAttribute('data-sifrr-repeat');
+      sm.text = getBindingFxns(el.getAttribute(REPEAT_ATTR));
+      el.removeAttribute(REPEAT_ATTR);
       el.textContent = '';
     }
     // attributes

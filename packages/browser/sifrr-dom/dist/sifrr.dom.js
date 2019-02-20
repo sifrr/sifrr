@@ -68,7 +68,10 @@
     TEXT_NODE: 3,
     COMMENT_NODE: 8,
     ELEMENT_NODE: 1,
-    OUTER_REGEX: new RegExp(reg, 'g')
+    OUTER_REGEX: new RegExp(reg, 'g'),
+    HTML_ATTR: 'data-sifrr-html',
+    REPEAT_ATTR: 'data-sifrr-repeat',
+    KEY_ATTR: 'data-sifrr-key'
   };
 
   const {
@@ -444,7 +447,10 @@
   const {
     evaluateBindings
   } = bindings;
-  const TEMPLATE$1 = constants.TEMPLATE();
+  const {
+    TEMPLATE: TEMPLATE$1,
+    KEY_ATTR
+  } = constants;
   function simpleElementUpdate(simpleEl) {
     const doms = simpleEl._refs,
           refs = simpleEl.stateMap,
@@ -491,7 +497,7 @@
       if (data.text === undefined) continue;
       const newValue = evaluateBindings(data.text, element);
       if (data.type === 2) {
-        const key = dom.getAttribute('data-sifrr-key');
+        const key = dom.getAttribute(KEY_ATTR);
         if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), key);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));
       } else if (data.type === 1) {
         let children;
@@ -502,8 +508,9 @@
         } else if (newValue.nodeType) {
           children = [newValue];
         } else if (typeof newValue === 'string') {
-          TEMPLATE$1.innerHTML = newValue.toString();
-          children = Array.prototype.slice.call(TEMPLATE$1.content.childNodes);
+          const temp = TEMPLATE$1();
+          temp.innerHTML = newValue.toString();
+          children = Array.prototype.slice.call(temp.content.childNodes);
         } else {
           children = Array.prototype.slice.call(newValue);
         }
@@ -602,7 +609,8 @@
   const {
     TEXT_NODE: TEXT_NODE$1,
     COMMENT_NODE: COMMENT_NODE$1,
-    ELEMENT_NODE: ELEMENT_NODE$1
+    ELEMENT_NODE: ELEMENT_NODE$1,
+    REPEAT_ATTR
   } = constants;
   const {
     getBindingFxns
@@ -622,11 +630,11 @@
           sm.type = 1;
           sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
         }
-      } else if (el.hasAttribute('data-sifrr-repeat')) {
+      } else if (el.hasAttribute(REPEAT_ATTR)) {
         sm.type = 2;
         sm.se = simpleelement(el.childNodes);
-        sm.text = getBindingFxns(el.getAttribute('data-sifrr-repeat'));
-        el.removeAttribute('data-sifrr-repeat');
+        sm.text = getBindingFxns(el.getAttribute(REPEAT_ATTR));
+        el.removeAttribute(REPEAT_ATTR);
         el.textContent = '';
       }
       const attrs = el.attributes,
@@ -660,10 +668,11 @@
     creator: creator$1
   } = creator;
   const {
-    ELEMENT_NODE: ELEMENT_NODE$2
+    ELEMENT_NODE: ELEMENT_NODE$2,
+    HTML_ATTR
   } = constants;
   function isHtml(el) {
-    return el.nodeType === ELEMENT_NODE$2 && el.hasAttribute('data-sifrr-html');
+    return el.nodeType === ELEMENT_NODE$2 && el.hasAttribute(HTML_ATTR);
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$2(el, stateMap, isHtml),

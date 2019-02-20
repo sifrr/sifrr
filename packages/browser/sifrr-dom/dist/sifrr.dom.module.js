@@ -60,6 +60,9 @@ var constants = {
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,
   OUTER_REGEX: new RegExp(reg, 'g'),
+  HTML_ATTR: 'data-sifrr-html',
+  REPEAT_ATTR: 'data-sifrr-repeat',
+  KEY_ATTR: 'data-sifrr-key'
 };
 
 const { TEMPLATE } = constants;
@@ -415,7 +418,7 @@ var bindings = {
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
-const TEMPLATE$1 = constants.TEMPLATE();
+const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
 function simpleElementUpdate(simpleEl) {
   const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
   for (let i = 0; i < l; i++) {
@@ -459,7 +462,7 @@ function customElementUpdate(element) {
     if (data.text === undefined) continue;
     const newValue = evaluateBindings(data.text, element);
     if (data.type === 2) {
-      const key = dom.getAttribute('data-sifrr-key');
+      const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
     } else if (data.type === 1) {
@@ -471,8 +474,9 @@ function customElementUpdate(element) {
       } else if (newValue.nodeType) {
         children = [newValue];
       } else if (typeof newValue === 'string') {
-        TEMPLATE$1.innerHTML = newValue.toString();
-        children = Array.prototype.slice.call(TEMPLATE$1.content.childNodes);
+        const temp = TEMPLATE$1();
+        temp.innerHTML = newValue.toString();
+        children = Array.prototype.slice.call(temp.content.childNodes);
       } else {
         children = Array.prototype.slice.call(newValue);
       }
@@ -562,7 +566,7 @@ function SimpleElement(content, defaultState = null) {
 }
 var simpleelement = SimpleElement;
 
-const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE: ELEMENT_NODE$1 } = constants;
+const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE: ELEMENT_NODE$1, REPEAT_ATTR } = constants;
 const { getBindingFxns } = bindings;
 function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
@@ -579,11 +583,11 @@ function customElementCreator(el, filter) {
         sm.type = 1;
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
-    } else if (el.hasAttribute('data-sifrr-repeat')) {
+    } else if (el.hasAttribute(REPEAT_ATTR)) {
       sm.type = 2;
       sm.se = simpleelement(el.childNodes);
-      sm.text = getBindingFxns(el.getAttribute('data-sifrr-repeat'));
-      el.removeAttribute('data-sifrr-repeat');
+      sm.text = getBindingFxns(el.getAttribute(REPEAT_ATTR));
+      el.removeAttribute(REPEAT_ATTR);
       el.textContent = '';
     }
     const attrs = el.attributes, l = attrs.length;
@@ -608,9 +612,9 @@ var creator = {
 
 const { collect: collect$2, create: create$2 } = ref;
 const { creator: creator$1 } = creator;
-const { ELEMENT_NODE: ELEMENT_NODE$2 } = constants;
+const { ELEMENT_NODE: ELEMENT_NODE$2, HTML_ATTR } = constants;
 function isHtml(el) {
-  return el.nodeType === ELEMENT_NODE$2 && el.hasAttribute('data-sifrr-html');
+  return el.nodeType === ELEMENT_NODE$2 && el.hasAttribute(HTML_ATTR);
 }
 const Parser = {
   collectRefs: (el, stateMap) => collect$2(el, stateMap, isHtml),

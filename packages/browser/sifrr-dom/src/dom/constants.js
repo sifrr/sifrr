@@ -9,4 +9,7 @@ module.exports = {
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,
   OUTER_REGEX: new RegExp(reg, 'g'),
+  HTML_ATTR: 'data-sifrr-html',
+  REPEAT_ATTR: 'data-sifrr-repeat',
+  KEY_ATTR: 'data-sifrr-key'
 };
