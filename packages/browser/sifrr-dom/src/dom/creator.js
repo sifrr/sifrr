@@ -6,10 +6,6 @@ const simpleElement = require('./simpleelement');
 // 2: arrayToDom
 const { getBindingFxns } = require('./bindings');
 
-function isArrayToDom(el) {
-  return (el.dataset && el.dataset.sifrrRepeat);
-}
-
 function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
@@ -27,11 +23,12 @@ function customElementCreator(el, filter) {
         sm.type = 1;
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
-    } else if (isArrayToDom(el)) {
+    } else if (el.hasAttribute('data-sifrr-repeat')) {
       sm.type = 2;
       sm.se = simpleElement(el.childNodes);
-      sm.text = getBindingFxns(el.dataset.sifrrRepeat);
+      sm.text = getBindingFxns(el.getAttribute('data-sifrr-repeat'));
       el.removeAttribute('data-sifrr-repeat');
+      el.textContent = '';
     }
     // attributes
     const attrs = el.attributes, l = attrs.length;

@@ -96,7 +96,7 @@
 
   var updateattribute = (element, name, newValue) => {
     const fromValue = element.getAttribute(name);
-    if (fromValue !== newValue) {
+    if (newValue === false || newValue === null || newValue === undefined) newValue.removeAttribute(name);else if (fromValue !== newValue) {
       if (name === 'class') element.className = newValue || '';else element.setAttribute(name, newValue || '');
     }
     if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
@@ -491,8 +491,8 @@
       if (data.text === undefined) continue;
       const newValue = evaluateBindings(data.text, element);
       if (data.type === 2) {
-        const key = dom.dataset.sifrrKey;
-        if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), dom.dataset.sifrrKey);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));
+        const key = dom.getAttribute('data-sifrr-key');
+        if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), key);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));
       } else if (data.type === 1) {
         let children;
         if (Array.isArray(newValue)) {
@@ -607,9 +607,6 @@
   const {
     getBindingFxns
   } = bindings;
-  function isArrayToDom(el) {
-    return el.dataset && el.dataset.sifrrRepeat;
-  }
   function customElementCreator(el, filter) {
     if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
       const x = el.data;
@@ -625,11 +622,12 @@
           sm.type = 1;
           sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
         }
-      } else if (isArrayToDom(el)) {
+      } else if (el.hasAttribute('data-sifrr-repeat')) {
         sm.type = 2;
         sm.se = simpleelement(el.childNodes);
-        sm.text = getBindingFxns(el.dataset.sifrrRepeat);
+        sm.text = getBindingFxns(el.getAttribute('data-sifrr-repeat'));
         el.removeAttribute('data-sifrr-repeat');
+        el.textContent = '';
       }
       const attrs = el.attributes,
             l = attrs.length;
@@ -661,15 +659,18 @@
   const {
     creator: creator$1
   } = creator;
+  const {
+    ELEMENT_NODE: ELEMENT_NODE$2
+  } = constants;
   function isHtml(el) {
-    return el.dataset && el.dataset.sifrrHtml == 'true';
+    return el.nodeType === ELEMENT_NODE$2 && el.hasAttribute('data-sifrr-html');
   }
   const Parser = {
     collectRefs: (el, stateMap) => collect$2(el, stateMap, isHtml),
     createStateMap: element => create$2(element, creator$1, isHtml),
     twoWayBind: e => {
       const target = e.composedPath ? e.composedPath()[0] : e.target;
-      if (!target.dataset.sifrrBind || target._root === null) return;
+      if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
       const value = target.value || target.textContent;
       let state = {};
       if (!target._root) {
@@ -678,7 +679,7 @@
         while (root && !root.isSifrr) root = root.parentNode || root.host;
         if (root) target._root = root;else target._root = null;
       }
-      state[target.dataset.sifrrBind] = value;
+      state[target.getAttribute('data-sifrr-bind')] = value;
       if (target._root) target._root.state = state;
     }
   };

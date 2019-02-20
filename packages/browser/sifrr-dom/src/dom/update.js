@@ -55,8 +55,8 @@ function customElementUpdate(element) {
     const newValue = evaluateBindings(data.text, element);
 
     if (data.type === 2) {
-      const key = dom.dataset.sifrrKey;
-      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), dom.dataset.sifrrKey);
+      const key = dom.getAttribute('data-sifrr-key');
+      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
     } else if (data.type === 1) {
       // html node

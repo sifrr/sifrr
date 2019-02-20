@@ -1,8 +1,9 @@
 const { collect, create } = require('./ref');
 const { creator } = require('./creator');
+const { ELEMENT_NODE } = require('./constants');
 
 function isHtml(el) {
-  return (el.dataset && el.dataset.sifrrHtml == 'true');
+  return el.nodeType === ELEMENT_NODE && el.hasAttribute('data-sifrr-html');
 }
 
 const Parser = {
@@ -10,7 +11,7 @@ const Parser = {
   createStateMap: (element) => create(element, creator, isHtml),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
-    if (!target.dataset.sifrrBind || target._root === null) return;
+    if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
     const value = target.value || target.textContent;
     let state = {};
     if (!target._root) {
@@ -20,7 +21,7 @@ const Parser = {
       if (root) target._root = root;
       else target._root = null;
     }
-    state[target.dataset.sifrrBind] = value;
+    state[target.getAttribute('data-sifrr-bind')] = value;
     if (target._root) target._root.state = state;
   }
 };
