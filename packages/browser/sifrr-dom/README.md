@@ -1,6 +1,6 @@
 # sifrr-dom · [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)
 
-A ~5KB DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data binding etc.
+A ~6KB DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data bindings etc.
 
 ## Size
 
@@ -10,20 +10,15 @@ A ~5KB DOM framework for creating web user interfaces using Custom Elements with
 | Minified (`dist/sifrr.dom.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js)              |
 | Minified + Gzipped (`dist/sifrr.dom.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
 
-## Top Features
-
--   Simple DOM API based on web components v1, custom elements v1, shadow dom v1 (optional)
--   Pure DOM bindings (one-way, two-way), without any virtual DOM, still [fast(er)](#performance-comparison)
--   no special syntax to learn like jsx etc. only use pure HTML, CSS, JS, so no transpiling needed.
--   synthetic event listener, custom events
--   simpler querySelector for custom elements/web components/shadow root
-
 ## Tradeoffs
 
--   :+1: Use latest web API standards
--   :-1: Slower on http/1.x due to one file per component architecture -> hence good for serving with http/2
--   :+1: Use without transpiling any code, and can be hosted with only a static server
--   :-1: No keyed implementation yet
+-   :+1: Use latest web API standards ( :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for))
+-   :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM, still [fast(er)](#performance-comparison)
+-   :-1: No virtual Dom (if that matters to you)
+-   :-1: Slower on http/1.x due to one file per component architecture -> :+1: hence good for serving with http/2
+-   :+1: Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
+-   :+1: has Keyed implementation
+-   :+1: In-built Synthetic event listeners and custom events
 
 ## Performance Comparison
 
@@ -343,6 +338,10 @@ class CustomTag extends Sifrr.Dom.Element {
   onStateChange(newState) {
     // called when element's state is changed
   }
+
+  onUpdate() {
+    // called when element is updated
+  }
 }
 ```
 
@@ -361,6 +360,8 @@ customtag.$(selector, /* shadowRoot = default: true if element uses shadow root 
 customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root else false */);
 // If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
 ```
+
+Sifrr adds $ and $$ to all HTMLElements, and works same as querySelector and querySelectorAll.
 
 ### Synthetic events
 
@@ -477,9 +478,11 @@ this will render
 </div>
 ```
 
-#### arrayToDom
+#### Repeating a dom for Array
 
 parses array to dom nodes in bindings
+
+##### Repeating other sifrr element
 
 ```html
 <!-- ${baseUrl}/elements/custom/array.html -->
@@ -497,9 +500,10 @@ parses array to dom nodes in bindings
 <!-- ${baseUrl}/elements/custom/tag.html -->
 
 <template>
-<!-- arrayToDom takes two arguments, first is unique key and other is array data to parse -->
-  <div data-sifrr-html="true">
-    <!-- ${this.arrayToDom('uniqueKey', this.state.data)} -->
+<!-- data-sifrr-repeat should be binded to an array data which you want to repeat for inside element
+   data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
+  <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="id">
+    <custom-array></custom-array> // data-sifrr-repeat should contain only one element node
   <div>
 </template>
 <script type="text/javascript">
@@ -509,13 +513,50 @@ parses array to dom nodes in bindings
   CustomTag.defaultState = {
     data: [{ id: '1' }, { id: '2' }] // Each state will be passed to elements created by arrayToDom
   }
-  // addArrayToDom takes two arguments, first - uniqueKey which is used by arrayToDom and
-  // second - element that will be added by arrayToDom for each array element
-  // You can give either a domElement or html string with only one parent element '<div><p>${id}</p></div>',
-  // '<p>${id}</p><p>${id}</p>' won't work because of two parent elements (only first p will be rendered)
-  // this element can be sifrr element also
-  // Note that in custom html, binding is ${id} and in sifrr-element it is ${this.state.id}
-  CustomTag.addArrayToDom('uniqueKey', document.createElement('custom-array'));
+  Sifrr.Dom.load('custom-array').then(() => { // Wait for `custom-array` to be loaded so that there is no race condition
+    Sifrr.Dom.register(CustomTag);
+  });
+</script>
+```
+
+then, `<custom-tag></custom-tag>` will render:
+
+```html
+<custom-tag>
+  #shadow-root
+  <div data-sifrr-key="id">
+    <custom-array>
+      #shadow-root
+        <p>1</p>
+    </custom-array>
+    <custom-array>
+      #shadow-root
+        <p>2</p>
+    </custom-array>
+  <div>
+<custom-tag>
+```
+
+##### Repeating normal element
+
+```html
+<!-- ${baseUrl}/elements/custom/tag.html -->
+
+<template>
+<!-- data-sifrr-repeat should be binded to an array data which you want to repeat for inside element
+   data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
+  <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="${this.state.key}">
+    <div> // data-sifrr-repeat should contain only one element node
+      <p>${id}</p>
+    </div>
+  <div>
+</template>
+<script type="text/javascript">
+  class CustomTag extends Sifrr.Dom.Element {}
+  CustomTag.defaultState = {
+    data: [{ id: '1' }, { id: '2' }], // Each state will be passed to elements created by arrayToDom
+    key: 'id'
+  }
   Sifrr.Dom.register(CustomTag);
 </script>
 ```
@@ -525,15 +566,13 @@ then, `<custom-tag></custom-tag>` will render:
 ```html
 <custom-tag>
   #shadow-root
-  <div data-sifrr-html="true">
-    <custom-array>
-      #shadow-root
-        <p>1</p>
-    </custom-array>
-    <custom-array>
-      #shadow-root
-        <p>2</p>
-    </custom-array>
+  <div data-sifrr-key="id">
+    <div>
+      <p>1</p>
+    </div>
+    <div>
+      <p>2</p>
+    </div>
   <div>
 <custom-tag>
 ```
@@ -566,5 +605,5 @@ then you can use custom-tag as button in html like:
 
 ## Special thanks to
 
--   <https://github.com/Freak613/stage0> for optimization ideas
+-   <https://github.com/Freak613/stage0> for optimization ideas and reconciliation algorithm
 -   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)

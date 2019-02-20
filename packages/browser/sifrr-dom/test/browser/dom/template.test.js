@@ -28,6 +28,7 @@ describe('Sifrr.Dom.template', () => {
       return Sifrr.Dom.template`o${ok}`;
     });
     await testTemplate(() => Sifrr.Dom.template([document.createTextNode('ok')]));
+    await testTemplate(() => Sifrr.Dom.template(document.createTextNode('ok')));
     await testTemplate(() => {
       const temp = document.createElement('template');
       temp.innerHTML = 'ok';

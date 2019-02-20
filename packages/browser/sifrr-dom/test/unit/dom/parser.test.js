@@ -8,7 +8,8 @@ describe('Parser', () => {
 
     const target = {
       _root: { state: {} },
-      dataset: { sifrrBind: 'stt' },
+      hasAttribute: () => true,
+      getAttribute: () => 'stt',
       value: 'value'
     };
     const event = {

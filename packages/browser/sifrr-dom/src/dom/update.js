@@ -1,4 +1,5 @@
 const { makeChildrenEqual } = require('./makeequal');
+const { makeChildrenEqualKeyed } = require('./keyed');
 const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const TEMPLATE = require('./constants').TEMPLATE();
@@ -11,11 +12,12 @@ function simpleElementUpdate(simpleEl) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
         const attr = data[i];
-        if (attr.name === 'class') dom.className = simpleEl.state[attr.text];
-        else dom.setAttribute(attr.name, simpleEl.state[attr.text]);
+        if (dom.getAttribute(attr.name) !== simpleEl.state[attr.text]) {
+          dom.setAttribute(attr.name, simpleEl.state[attr.text] || '');
+        }
       }
     } else {
-      dom.data = simpleEl.state[data];
+      if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';
     }
   }
 }
@@ -47,12 +49,16 @@ function customElementUpdate(element) {
       }
     }
 
-    if (data.html === undefined) continue;
+    if (data.text === undefined) continue;
 
     // update element
     const newValue = evaluateBindings(data.text, element);
 
-    if (data.html) {
+    if (data.type === 2) {
+      const key = dom.getAttribute('data-sifrr-key');
+      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
+      else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
+    } else if (data.type === 1) {
       // html node
       let children;
       if (Array.isArray(newValue)) {
@@ -70,7 +76,7 @@ function customElementUpdate(element) {
       // fast clear
       if (children.length === 0) dom.textContent = '';
       else makeChildrenEqual(dom, children);
-    } else {
+    } else if (data.type === 0) {
       // text node
       if (dom.data != newValue) {
         dom.data = newValue;

@@ -223,31 +223,4 @@ describe('Sifrr.Dom.Element', () => {
       });
     });
   });
-
-  describe('arrayToDom', () => {
-    it('consoles error if no key is defined', async () => {
-      const message = await page.evaluate(() => {
-        let message;
-        window.console.error = (m) => message = m;
-        const el = document.createElement('element-empty');
-        el.arrayToDom('randomkey', []);
-        return message;
-      });
-
-      assert.equal(message, `[error]: No arrayToDom data of 'randomkey' added in element-empty.`);
-    });
-
-    it('consoles error if given key not defined', async () => {
-      const message = await page.evaluate(() => {
-        let message;
-        window.console.error = (m) => message = m;
-        Sifrr.Dom.elements['element-empty'].addArrayToDom('r1', '<p></p>');
-        const el = document.createElement('element-empty');
-        el.arrayToDom('randomkey', []);
-        return message;
-      });
-
-      assert.equal(message, `[error]: No arrayToDom data of 'randomkey' added in element-empty.`);
-    });
-  });
 });
