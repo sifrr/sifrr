@@ -38,8 +38,9 @@ function customElementUpdate(element) {
 
     if (data.type === 2) {
       const key = dom.getAttribute(KEY_ATTR);
-      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
+      if (key) makeChildrenEqualKeyed(dom, dom.sifrrOldState || [], newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
+      dom.sifrrOldState = newValue;
     } else if (data.type === 1) {
       // html node
       let children;

@@ -50,7 +50,7 @@
     return Math.round(Math.random() * 1000) % max;
   }
 
-  function buildData(count = 1000) {
+  window.buildData = function(count = 1000) {
     const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
       'cheap', 'expensive', 'fancy'
     ];
@@ -64,7 +64,7 @@
       });
     from = from + count;
     return data;
-  }
+  };
 
   function getParent(elem) {
     while (elem.nodeName !== 'TR') elem = elem.parentNode;

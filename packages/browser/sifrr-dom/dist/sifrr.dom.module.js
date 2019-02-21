@@ -390,7 +390,7 @@ var makeequal = {
 };
 
 const { makeEqual: makeEqual$1 } = makeequal;
-function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
+function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, key) {
   const newL = newData.length;
   if (newL === 0) {
     parent.textContent = '';
@@ -403,39 +403,40 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     }
     return;
   }
-  const oldChildren = Array.prototype.slice.call(parent.childNodes), oldData = oldChildren.map(n => n.state);
   let prevStart = 0,
     newStart = 0,
     loop = true,
     prevEnd = oldL - 1, newEnd = newL - 1,
-    prevStartNode = prevStart,
-    prevEndNode = prevEnd,
-    a, b;
+    prevStartNode = parent.firstChild,
+    prevEndNode = parent.lastChild,
+    a, b, _node;
   fixes: while(loop) {
     loop = false;
     a = oldData[prevStart], b = newData[newStart];
     while(a[key] === b[key]) {
-      makeEqual$1(oldChildren[prevStartNode], b);
+      makeEqual$1(prevStartNode, b);
       prevStart++;
+      prevStartNode = prevStartNode.nextSibling;
       newStart++;
-      prevStartNode++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevStart], b = newData[newStart];
     }
     a = oldData[prevEnd], b = newData[newEnd];
     while(a[key] === b[key]) {
-      makeEqual$1(oldChildren[prevEndNode], b);
+      makeEqual$1(prevEndNode, b);
       prevEnd--;
+      prevEndNode = prevEndNode.previousSibling;
       newEnd--;
-      prevEndNode--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevEnd], b = newData[newEnd];
     }
     a = oldData[prevEnd], b = newData[newStart];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual$1(oldChildren[prevEndNode], b);
-      parent.insertBefore(oldChildren[prevEndNode], oldChildren[prevStartNode]);
+      makeEqual$1(prevEndNode, b);
+      _node = prevEndNode.previousSibling;
+      parent.insertBefore(prevEndNode, prevStartNode);
+      prevEndNode = _node;
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
@@ -444,11 +445,12 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevStart], b = newData[newEnd];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual$1(oldChildren[prevStartNode], b);
-      parent.insertBefore(oldChildren[prevStartNode], oldChildren[prevEndNode + 1]);
+      makeEqual$1(prevStartNode, b);
+      _node = prevStartNode.nextSibling;
+      parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
+      prevEndNode = prevStartNode.previousSibling;
+      prevStartNode = _node;
       prevStart++;
-      prevEndNode--;
-      prevStartNode++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevStart], b = newData[newEnd];
@@ -456,8 +458,15 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   }
   if (newEnd < newStart) {
     if (prevStart <= prevEnd) {
+      let next;
       while(prevStart <= prevEnd) {
-        parent.removeChild(oldChildren[prevEnd]);
+        if (prevEnd === 0) {
+          parent.removeChild(prevEndNode);
+        } else {
+          next = prevEndNode.previousSibling;
+          parent.removeChild(prevEndNode);
+          prevEndNode = next;
+        }
         prevEnd--;
       }
     }
@@ -466,7 +475,9 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
       while(newStart <= newEnd) {
-        parent.appendChild(createFn(newData[newStart]));
+        _node = createFn(newData[newStart]);
+        parent.insertBefore(_node, prevEndNode.nextSibling);
+        prevEndNode = _node;
         newStart++;
       }
     }
@@ -488,33 +499,46 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   }
   if (reusingNodes === 0) {
     for(let i = newStart; i <= newEnd; i++) {
-      if (i > prevEnd) parent.appendChild(createFn(newData[i]));
-      else makeEqual$1(oldChildren[i], newData[i]);
+      if (i > prevEnd) {
+        parent.insertBefore(createFn(newData[i]), prevStartNode);
+      } else {
+        _node = prevStartNode.nextSibling;
+        prevStartNode.replaceWith(createFn(newData[i]));
+        prevStartNode = _node;
+      }
     }
     if (newEnd < prevEnd) {
       while (newEnd < prevEnd) {
-        parent.removeChild(oldChildren[prevEnd]);
+        _node = prevEndNode.previousSibling;
+        parent.removeChild(prevEndNode);
+        prevEndNode = _node;
         prevEnd--;
       }
     }
     return;
   }
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
+  const nodes = [];
+  while(prevStart <= prevEnd) {
+    nodes[prevStart] = prevStartNode;
+    prevStartNode = prevStartNode.nextSibling;
+    prevStart++;
+  }
   for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(oldChildren[toDelete[i]]);
+    parent.removeChild(nodes[toDelete[i]]);
   }
   let lisIdx = longestSeq.length - 1, tmpD;
-  prevEnd = oldChildren[prevEnd];
+  prevEnd = nodes[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      prevEnd = oldChildren[oldKeys[i]];
+      prevEnd = nodes[oldKeys[i]];
       makeEqual$1(prevEnd, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
         tmpD = createFn(newData[i]);
       } else {
-        tmpD = oldChildren[oldKeys[i]];
+        tmpD = nodes[oldKeys[i]];
         makeEqual$1(tmpD, newData[i]);
       }
       parent.insertBefore(tmpD, prevEnd);
@@ -596,8 +620,9 @@ function customElementUpdate(element) {
     const newValue = evaluateBindings(data.text, element);
     if (data.type === 2) {
       const key = dom.getAttribute(KEY_ATTR);
-      if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
+      if (key) makeChildrenEqualKeyed$1(dom, dom.sifrrOldState || [], newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
+      dom.sifrrOldState = newValue;
     } else if (data.type === 1) {
       let children;
       if (Array.isArray(newValue)) {

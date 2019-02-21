@@ -1,15 +1,10 @@
-function rearrange() {
-  function moveEl(arr, oldPosition, newPosition) {
-    return arr.splice(newPosition, 0, arr.splice(oldPosition, 1)[0]);
+function getIds() {
+  const nodes = document.body.$('main-element').$$('tr'), l = nodes.length;
+  const ret = [];
+  for (let i = 0; i < l; i++) {
+    ret.push(nodes[i].$('td').textContent);
   }
-  const data = document.body.$('main-element').state.data;
-  moveEl(data, 23, 879);
-  moveEl(data, 1, 7);
-  moveEl(data, 12, 4);
-  moveEl(data, 13, 8);
-  data.splice(67, 4, { id: 7893, label: 'hahahaha' }, { id: 9475, label: 'sdghhgdfj' });
-  data.splice(845, 4, { id: 7899, label: 'sadsfsdfsd' }, { id: 3456, label: 'asdaf dgfdg sh h' });
-  document.body.$('main-element').update();
+  return ret;
 }
 
 describe('Sifrr.Dom.keyed', () => {
@@ -65,22 +60,29 @@ describe('Sifrr.Dom.keyed', () => {
     await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
   });
 
-  it('has same arrangement as non keyed version', async () => {
-    await page.evaluate(() => document.body.$('main-element').$('#run').click());
-    await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
-    await page.evaluate(rearrange);
-    const arrangementKeyed = await page.evaluate(() => document.body.$('main-element').state.data.map(d => d.id));
 
-    await page.goto(`${PATH}/speedtest.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+  const arrangements = require('./keyed.arrangements'), l = arrangements.length;
+  for (let i = 0; i < l; i++) {
+    it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
+      await page.goto(`${PATH}/speedtest.html?useKey`);
+      await page.evaluate(async () => { await Sifrr.Dom.loading(); });
 
-    await page.evaluate(() => document.body.$('main-element').$('#run').click());
-    await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
-    await page.evaluate(rearrange);
-    const arrangementNonKeyed = await page.evaluate(() => document.body.$('main-element').state.data.map(d => d.id));
+      await page.evaluate(() => document.body.$('main-element').$('#run').click());
+      await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
+      const arrangedKeyed = await page.evaluate(arrangements[i]);
+      const arrangementKeyed = await page.evaluate(getIds);
 
-    expect(arrangementKeyed.length).to.equal(996);
-    expect(arrangementKeyed[4]).to.equal(13);
-    expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
-  });
+      await page.goto(`${PATH}/speedtest.html`);
+      await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+
+      await page.evaluate(() => document.body.$('main-element').$('#run').click());
+      await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
+      const arrangedNonKeyed = await page.evaluate(arrangements[i]);
+      const arrangementNonKeyed = await page.evaluate(getIds);
+
+      expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
+      assert.equal(arrangedKeyed, true);
+      assert.equal(arrangedNonKeyed, true);
+    });
+  }
 });
