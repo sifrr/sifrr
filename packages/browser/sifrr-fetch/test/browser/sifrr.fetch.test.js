@@ -89,6 +89,10 @@ describe('sifrr-fetch', () => {
   it('graphqls request', async () => {
     const resp = await getResponse('graphql', '/graphql', { query: 'query { hello }', variables: { var: 'var' } });
     expect(resp.body).to.deep.equal({ query: 'query { hello }', variables: { var: 'var' } });
+
+    // Default empty variables
+    const resp2 = await getResponse('graphql', '/graphql', { query: 'query { hello }' });
+    expect(resp2.body).to.deep.equal({ query: 'query { hello }', variables: {} });
   });
 
   it('gets text if content type is not application/json', async () => {
@@ -125,13 +129,25 @@ describe('sifrr-fetch', () => {
   it('progress works for json', async () => {
     const resp2 = await page.evaluate(async () => {
       return await new Promise(res => {
-        Sifrr.Fetch.get('/image.jpg', {
+        Sifrr.Fetch.get('/progress.json', {
           onProgress: per => res(per)
         });
       });
     });
 
-    expect(parseInt(resp2, 10)).to.be.below(100);
+    expect(parseInt(resp2, 10)).to.be.at.most(100);
+  });
+
+  it('progresses to 100 without content-length', async () => {
+    const resp2 = await page.evaluate(async () => {
+      return await new Promise(res => {
+        Sifrr.Fetch.get('/nocl.json', {
+          onProgress: per => res(per)
+        });
+      });
+    });
+
+    expect(parseInt(resp2, 10)).to.equal(100);
   });
 
   // Keep this test in the end

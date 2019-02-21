@@ -36,7 +36,7 @@ const ExpectedLayoutCounts = {
   '1k-clear': 1,
   '10k-clear': 1,
   '1k-swap': 1,
-  '1k-select': 0,
+  '1k-select': 1,
   '1k-delete': 1,
   '10k-update10th': 1,
   '1k-append': 1
