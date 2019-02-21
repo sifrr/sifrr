@@ -12,16 +12,15 @@ const { makeEqual } = require('./makeequal');
 // without maintaining nodes arrays, and uses manipukates dom only when required
 
 function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
-  const oldL = parent.childNodes.length,
-    newL = newData.length;
-
   // Fast path for clear
+  const newL = newData.length;
   if (newL === 0) {
     parent.textContent = '';
     return;
   }
 
   // Fast path for create
+  const oldL = parent.childNodes.length;
   if (oldL === 0) {
     for(let i = 0; i < newL; i++) {
       parent.appendChild(createFn(newData[i]));
@@ -46,7 +45,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     // Skip prefix
     a = oldData[prevStart], b = newData[newStart];
     while(a[key] === b[key]) {
-      makeEqual(oldChildren[prevStart], b);
+      makeEqual(oldChildren[prevStartNode], b);
       prevStart++;
       newStart++;
       prevStartNode++;
@@ -57,7 +56,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     // Skip suffix
     a = oldData[prevEnd], b = newData[newEnd];
     while(a[key] === b[key]) {
-      makeEqual(oldChildren[prevEnd], newData[newEnd]);
+      makeEqual(oldChildren[prevEndNode], b);
       prevEnd--;
       newEnd--;
       prevEndNode--;
@@ -69,7 +68,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevEnd], b = newData[newStart];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual(oldChildren[prevEnd], b);
+      makeEqual(oldChildren[prevEndNode], b);
       parent.insertBefore(oldChildren[prevEndNode], oldChildren[prevStartNode]);
       prevEnd--;
       newStart++;
@@ -81,7 +80,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevStart], b = newData[newEnd];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual(oldChildren[prevStart], b);
+      makeEqual(oldChildren[prevStartNode], b);
       parent.insertBefore(oldChildren[prevStartNode], oldChildren[prevEndNode + 1]);
       prevStart++;
       prevEndNode--;
@@ -114,17 +113,16 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     return;
   }
 
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map();
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), toDelete = [];
 
-  // Positions for reusing nodes from current DOM state
-  for(let i = newStart; i <= newEnd; i++) oldKeys[i] = -1;
-
-  // Index to resolve position from current to new
-  for (let i = newStart; i <= newEnd; i++) {
+  for(let i = newStart; i <= newEnd; i++) {
+    // Positions for reusing nodes from current DOM state
+    oldKeys[i] = -1;
+    // Index to resolve position from current to new
     newKeys.set(newData[i][key], i);
   }
 
-  let reusingNodes = 0, toDelete = [];
+  let reusingNodes = 0;
   for(let i = prevStart; i <= prevEnd; i++) {
     if (newKeys.has(oldData[i][key])) {
       oldKeys[newKeys.get(oldData[i][key])] = i;
@@ -153,30 +151,22 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
 
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
-  // Collect nodes to work with them
-  const nodes = [];
-  let tmpC = prevStart;
-  for(let i = prevStart; i <= prevEnd; i++) {
-    nodes[i] = oldChildren[tmpC];
-    tmpC++;
-  }
-
   for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(nodes[toDelete[i]]);
+    parent.removeChild(oldChildren[toDelete[i]]);
   }
 
   let lisIdx = longestSeq.length - 1, tmpD;
   prevEnd = oldChildren[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      prevEnd = nodes[oldKeys[longestSeq[lisIdx]]];
+      prevEnd = oldChildren[oldKeys[i]];
       makeEqual(prevEnd, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
         tmpD = createFn(newData[i]);
       } else {
-        tmpD = nodes[oldKeys[i]];
+        tmpD = oldChildren[oldKeys[i]];
         makeEqual(tmpD, newData[i]);
       }
       parent.insertBefore(tmpD, prevEnd);

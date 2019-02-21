@@ -93,6 +93,25 @@ describe('Keyed', () => {
       expectSameState(par.childNodes, newData);
     });
 
+    it('swaps forward and backward multiple', () => {
+      const oldData = buildData(10);
+      const oldNodes = dataToChildNodes(oldData);
+      const newData = buildData(10);
+      moveEl(newData, 2, 8);
+      moveEl(newData, 9, 2);
+      moveEl(newData, 4, 6);
+      moveEl(newData, 7, 4);
+      const par = parent(oldNodes);
+      makeChildrenEqualKeyed(par, newData, undefined, 'id');
+
+      assert.equal(par.insertBefore.callCount, 4);
+      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 10)], oldNodes[findIndex(oldNodes, 3)]));
+      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 3)], undefined));
+      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 8)], oldNodes[findIndex(oldNodes, 5)]));
+      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 5)], oldNodes[findIndex(oldNodes, 9)]));
+      expectSameState(par.childNodes, newData);
+    });
+
     it('swaps forward last element', () => {
       const oldData = buildData(10);
       const oldNodes = dataToChildNodes(oldData);

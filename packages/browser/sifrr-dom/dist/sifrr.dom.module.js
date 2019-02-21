@@ -391,12 +391,12 @@ var makeequal = {
 
 const { makeEqual: makeEqual$1 } = makeequal;
 function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
-  const oldL = parent.childNodes.length,
-    newL = newData.length;
+  const newL = newData.length;
   if (newL === 0) {
     parent.textContent = '';
     return;
   }
+  const oldL = parent.childNodes.length;
   if (oldL === 0) {
     for(let i = 0; i < newL; i++) {
       parent.appendChild(createFn(newData[i]));
@@ -415,7 +415,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     loop = false;
     a = oldData[prevStart], b = newData[newStart];
     while(a[key] === b[key]) {
-      makeEqual$1(oldChildren[prevStart], b);
+      makeEqual$1(oldChildren[prevStartNode], b);
       prevStart++;
       newStart++;
       prevStartNode++;
@@ -424,7 +424,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     }
     a = oldData[prevEnd], b = newData[newEnd];
     while(a[key] === b[key]) {
-      makeEqual$1(oldChildren[prevEnd], newData[newEnd]);
+      makeEqual$1(oldChildren[prevEndNode], b);
       prevEnd--;
       newEnd--;
       prevEndNode--;
@@ -434,7 +434,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevEnd], b = newData[newStart];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual$1(oldChildren[prevEnd], b);
+      makeEqual$1(oldChildren[prevEndNode], b);
       parent.insertBefore(oldChildren[prevEndNode], oldChildren[prevStartNode]);
       prevEnd--;
       newStart++;
@@ -444,7 +444,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevStart], b = newData[newEnd];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual$1(oldChildren[prevStart], b);
+      makeEqual$1(oldChildren[prevStartNode], b);
       parent.insertBefore(oldChildren[prevStartNode], oldChildren[prevEndNode + 1]);
       prevStart++;
       prevEndNode--;
@@ -472,12 +472,12 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     }
     return;
   }
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map();
-  for(let i = newStart; i <= newEnd; i++) oldKeys[i] = -1;
-  for (let i = newStart; i <= newEnd; i++) {
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), toDelete = [];
+  for(let i = newStart; i <= newEnd; i++) {
+    oldKeys[i] = -1;
     newKeys.set(newData[i][key], i);
   }
-  let reusingNodes = 0, toDelete = [];
+  let reusingNodes = 0;
   for(let i = prevStart; i <= prevEnd; i++) {
     if (newKeys.has(oldData[i][key])) {
       oldKeys[newKeys.get(oldData[i][key])] = i;
@@ -500,27 +500,21 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     return;
   }
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
-  const nodes = [];
-  let tmpC = prevStart;
-  for(let i = prevStart; i <= prevEnd; i++) {
-    nodes[i] = oldChildren[tmpC];
-    tmpC++;
-  }
   for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(nodes[toDelete[i]]);
+    parent.removeChild(oldChildren[toDelete[i]]);
   }
   let lisIdx = longestSeq.length - 1, tmpD;
   prevEnd = oldChildren[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      prevEnd = nodes[oldKeys[longestSeq[lisIdx]]];
+      prevEnd = oldChildren[oldKeys[i]];
       makeEqual$1(prevEnd, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
         tmpD = createFn(newData[i]);
       } else {
-        tmpD = nodes[oldKeys[i]];
+        tmpD = oldChildren[oldKeys[i]];
         makeEqual$1(tmpD, newData[i]);
       }
       parent.insertBefore(tmpD, prevEnd);
