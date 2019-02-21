@@ -47,10 +47,11 @@ describe('Sifrr.Dom.load and Loader', () => {
   it('consoles error from html scripts', async () => {
     const error = await page.evaluate(async () => {
       let e, trace;
-      await Sifrr.Dom.load('loading-error').catch(err => {
+      window.console.error = err => {
         e = err.message;
         trace = err.stack;
-      });
+      };
+      await Sifrr.Dom.load('loading-error');
       return { e, trace };
     });
 
@@ -58,7 +59,7 @@ describe('Sifrr.Dom.load and Loader', () => {
     expect(error.trace).to.have.string('/elements/loading/error.html');
   });
 
-  it('throws error from js scripts', async () => {
+  it('consoles error from js scripts', async () => {
     const error = await page.evaluate(async () => {
       let e, trace;
       window.console.error = err => {
