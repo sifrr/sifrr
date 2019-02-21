@@ -1,6 +1,6 @@
 describe('Siffr.Dom', () => {
   before(async () => {
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/nosifrrsetup.html`);
   });
 
   it('has Sifrr.Dom', async () => {

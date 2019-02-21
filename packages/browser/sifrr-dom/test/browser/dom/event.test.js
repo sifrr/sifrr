@@ -5,7 +5,7 @@ async function getListeners(type = '') {
 
 describe('Sifrr.Dom.Event', () => {
   before(async () => {
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/setup.html`);
     client = await page.target().createCDPSession();
     windowId = (await client.send('Runtime.evaluate', { expression: 'window' })).result.objectId;
   });
