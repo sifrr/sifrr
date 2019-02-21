@@ -194,7 +194,7 @@ function replacer(match) {
 function evaluate(fxn, el) {
   try {
     if (typeof fxn === 'string') return fxn;
-    else return fxn.call(el) || '';
+    else return fxn.call(el);
   } catch(e) {
     const str = fxn.toString();
     window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
@@ -294,11 +294,10 @@ var parser = Parser;
 
 var updateattribute = (element, name, newValue) => {
   const fromValue = element.getAttribute(name);
-  if (newValue === false || newValue === null || newValue === undefined)
-    newValue.removeAttribute(name);
+  if (newValue === false || newValue === null || newValue === undefined) element.removeAttribute(name);
   else if (fromValue !== newValue) {
-    if (name === 'class') element.className = newValue || '';
-    else element.setAttribute(name, newValue || '');
+    if (name === 'class') element.className = newValue;
+    else element.setAttribute(name, newValue);
   }
   if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
 };
