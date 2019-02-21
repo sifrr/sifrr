@@ -19,17 +19,31 @@ function buildData(count = 10, from = 1) {
 }
 
 function dataToChildNodes(data) {
-  return data.map(d => {
-    return { state: d };
+  const ret = data.map(d => {
+    const node = {
+      _state: d
+    };
+    node._getStub = sinon.stub().callsFake(() => node._state);
+    node._setStub = sinon.stub().callsFake((v) => node._state = v);
+    Object.defineProperty(node, 'state', {
+      get: node._getStub,
+      set: node._setStub
+    });
+    return node;
   });
+  return ret;
 }
 
 function findIndex(childNodes, a) {
-  return childNodes.findIndex(n => n.state.id === a.state.id);
+  if (typeof a === 'number') {
+    return childNodes.findIndex(n => n.state.id === a);
+  } else {
+    return childNodes.findIndex(n => n.state.id === a.state.id);
+  }
 }
 
 function parent(childNodes) {
-  return {
+  const parent = {
     insertBefore: function(a, b) {
       const childNodes = this.childNodes;
       const indexOld = findIndex(childNodes, a);
@@ -46,8 +60,12 @@ function parent(childNodes) {
     appendChild: function(a) {
       this.childNodes.push(a);
     },
-    childNodes: childNodes
   };
+  for (let name in parent) {
+    sinon.spy(parent, name);
+  }
+  parent.childNodes = childNodes;
+  return parent;
 }
 
 function moveEl(arr, oldPosition, newPosition) {
@@ -64,5 +82,6 @@ module.exports = {
   buildData,
   dataToChildNodes,
   parent,
-  moveEl
+  moveEl,
+  findIndex
 };
