@@ -1,5 +1,26 @@
 <template>
   <link href="/css/currentStyle.css" rel="stylesheet">
+  <style media="screen">
+    ${
+      if (useAnimation) {
+        return `tr {
+          animation: slide-up 0.4s ease;
+        }
+        @keyframes slide-up {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }`
+      } else {
+        return '';
+      }
+    }
+  </style>
   <div class="container">
     <div class="jumbotron">
       <div class="row">
@@ -50,7 +71,7 @@
     return Math.round(Math.random() * 1000) % max;
   }
 
-  function buildData(count = 1000) {
+  window.buildData = function(count = 1000) {
     const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
       'cheap', 'expensive', 'fancy'
     ];
@@ -64,7 +85,7 @@
       });
     from = from + count;
     return data;
-  }
+  };
 
   function getParent(elem) {
     while (elem.nodeName !== 'TR') elem = elem.parentNode;

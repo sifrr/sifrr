@@ -31,7 +31,23 @@ function dataToChildNodes(data) {
     });
     return node;
   });
+  ret.forEach(n => {
+    Object.defineProperty(n, 'nextSibling', {
+      get: () => ret[findIndex(ret, n) + 1]
+    });
+    Object.defineProperty(n, 'previousSibling', {
+      get: () => ret[findIndex(ret, n) - 1]
+    });
+    n.replaceWith = function(x) {
+      const idx = findIndex(ret, n);
+      ret[idx] = x;
+    };
+  });
   return ret;
+}
+
+function dataToChildNode(d) {
+  return dataToChildNodes([d])[0];
 }
 
 function findIndex(childNodes, a) {
@@ -47,10 +63,10 @@ function parent(childNodes) {
     insertBefore: function(a, b) {
       const childNodes = this.childNodes;
       const indexOld = findIndex(childNodes, a);
-      childNodes.splice(indexOld, 1);
+      if (indexOld > -1) childNodes.splice(indexOld, 1);
       if (b) {
         const indexNew = findIndex(childNodes, b);
-        childNodes.splice(indexNew, 0, a)[0];
+        childNodes.splice(indexNew, 0, a);
       } else this.appendChild(a);
     },
     removeChild: function(a) {
@@ -65,6 +81,12 @@ function parent(childNodes) {
     sinon.spy(parent, name);
   }
   parent.childNodes = childNodes;
+  Object.defineProperty(parent, 'firstChild', {
+    get: () => parent.childNodes[0]
+  });
+  Object.defineProperty(parent, 'lastChild', {
+    get: () => parent.childNodes[parent.childNodes.length - 1]
+  });
   return parent;
 }
 
@@ -80,6 +102,7 @@ function moveEl(arr, oldPosition, newPosition) {
 
 module.exports = {
   buildData,
+  dataToChildNode,
   dataToChildNodes,
   parent,
   moveEl,

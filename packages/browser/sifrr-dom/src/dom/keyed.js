@@ -28,15 +28,20 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     return;
   }
 
-  const oldChildren = Array.prototype.slice.call(parent.childNodes), oldData = oldChildren.map(n => n.state);
+  const oldData = []; let _node = parent.firstChild;
+  while(_node) {
+    oldData.push(_node.state);
+    _node = _node.nextSibling;
+  }
 
   // reconciliation
   let prevStart = 0,
     newStart = 0,
     loop = true,
     prevEnd = oldL - 1, newEnd = newL - 1,
-    prevStartNode = prevStart,
-    prevEndNode = prevEnd,
+    prevStartNode = parent.firstChild,
+    prevEndNode = parent.lastChild,
+    finalNode,
     a, b;
 
   fixes: while(loop) {
@@ -45,10 +50,10 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     // Skip prefix
     a = oldData[prevStart], b = newData[newStart];
     while(a[key] === b[key]) {
-      makeEqual(oldChildren[prevStartNode], b);
+      makeEqual(prevStartNode, b);
       prevStart++;
+      prevStartNode = prevStartNode.nextSibling;
       newStart++;
-      prevStartNode++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevStart], b = newData[newStart];
     }
@@ -56,10 +61,11 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     // Skip suffix
     a = oldData[prevEnd], b = newData[newEnd];
     while(a[key] === b[key]) {
-      makeEqual(oldChildren[prevEndNode], b);
+      makeEqual(prevEndNode, b);
       prevEnd--;
+      finalNode = prevEndNode;
+      prevEndNode = prevEndNode.previousSibling;
       newEnd--;
-      prevEndNode--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevEnd], b = newData[newEnd];
     }
@@ -68,8 +74,10 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevEnd], b = newData[newStart];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual(oldChildren[prevEndNode], b);
-      parent.insertBefore(oldChildren[prevEndNode], oldChildren[prevStartNode]);
+      makeEqual(prevEndNode, b);
+      _node = prevEndNode.previousSibling;
+      parent.insertBefore(prevEndNode, prevStartNode);
+      prevEndNode = _node;
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
@@ -80,11 +88,13 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     a = oldData[prevStart], b = newData[newEnd];
     while(a[key] === b[key]) {
       loop = true;
-      makeEqual(oldChildren[prevStartNode], b);
-      parent.insertBefore(oldChildren[prevStartNode], oldChildren[prevEndNode + 1]);
+      makeEqual(prevStartNode, b);
+      _node = prevStartNode.nextSibling;
+      parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
+      finalNode = prevStartNode;
+      prevEndNode = prevStartNode.previousSibling;
+      prevStartNode = _node;
       prevStart++;
-      prevEndNode--;
-      prevStartNode++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = oldData[prevStart], b = newData[newEnd];
@@ -94,8 +104,15 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   // Fast path for shrink
   if (newEnd < newStart) {
     if (prevStart <= prevEnd) {
+      let next;
       while(prevStart <= prevEnd) {
-        parent.removeChild(oldChildren[prevEnd]);
+        if (prevEnd === 0) {
+          parent.removeChild(prevEndNode);
+        } else {
+          next = prevEndNode.previousSibling;
+          parent.removeChild(prevEndNode);
+          prevEndNode = next;
+        }
         prevEnd--;
       }
     }
@@ -106,7 +123,9 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
       while(newStart <= newEnd) {
-        parent.appendChild(createFn(newData[newStart]));
+        _node = createFn(newData[newStart]);
+        parent.insertBefore(_node, prevEndNode.nextSibling);
+        prevEndNode = _node;
         newStart++;
       }
     }
@@ -136,13 +155,20 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   if (reusingNodes === 0) {
     for(let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      if (i > prevEnd) parent.appendChild(createFn(newData[i]));
-      else makeEqual(oldChildren[i], newData[i]);
+      if (i > prevEnd) {
+        parent.insertBefore(createFn(newData[i]), prevStartNode);
+      } else {
+        _node = prevStartNode.nextSibling;
+        prevStartNode.replaceWith(createFn(newData[i]));
+        prevStartNode = _node;
+      }
     }
     // Remove extra nodes
     if (newEnd < prevEnd) {
       while (newEnd < prevEnd) {
-        parent.removeChild(oldChildren[prevEnd]);
+        _node = prevEndNode.previousSibling;
+        parent.removeChild(prevEndNode);
+        prevEndNode = _node;
         prevEnd--;
       }
     }
@@ -151,27 +177,33 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
 
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
-  for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(oldChildren[toDelete[i]]);
+  const nodes = [];
+  while(prevStart <= prevEnd) {
+    nodes[prevStart] = prevStartNode;
+    prevStartNode = prevStartNode.nextSibling;
+    prevStart++;
   }
 
   let lisIdx = longestSeq.length - 1, tmpD;
-  prevEnd = oldChildren[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      prevEnd = oldChildren[oldKeys[i]];
-      makeEqual(prevEnd, newData[i]);
+      finalNode = nodes[oldKeys[i]];
+      makeEqual(finalNode, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
         tmpD = createFn(newData[i]);
       } else {
-        tmpD = oldChildren[oldKeys[i]];
+        tmpD = nodes[oldKeys[i]];
         makeEqual(tmpD, newData[i]);
       }
-      parent.insertBefore(tmpD, prevEnd);
-      prevEnd = tmpD;
+      parent.insertBefore(tmpD, finalNode);
+      finalNode = tmpD;
     }
+  }
+
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(nodes[toDelete[i]]);
   }
 }
 
