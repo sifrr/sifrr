@@ -117,3 +117,4 @@ function replaceAndRemove() {
 }
 
 module.exports = [swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];
+module.exports = [rearrange, rearrange2];

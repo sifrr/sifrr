@@ -390,7 +390,7 @@ var makeequal = {
 };
 
 const { makeEqual: makeEqual$1 } = makeequal;
-function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, key) {
+function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   const newL = newData.length;
   if (newL === 0) {
     parent.textContent = '';
@@ -403,13 +403,19 @@ function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, k
     }
     return;
   }
+  const oldData = []; let _node = parent.firstChild;
+  while(_node) {
+    oldData.push(_node.state);
+    _node = _node.nextSibling;
+  }
   let prevStart = 0,
     newStart = 0,
     loop = true,
     prevEnd = oldL - 1, newEnd = newL - 1,
     prevStartNode = parent.firstChild,
     prevEndNode = parent.lastChild,
-    a, b, _node;
+    finalNode,
+    a, b;
   fixes: while(loop) {
     loop = false;
     a = oldData[prevStart], b = newData[newStart];
@@ -425,6 +431,7 @@ function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, k
     while(a[key] === b[key]) {
       makeEqual$1(prevEndNode, b);
       prevEnd--;
+      finalNode = prevEndNode;
       prevEndNode = prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
@@ -448,6 +455,7 @@ function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, k
       makeEqual$1(prevStartNode, b);
       _node = prevStartNode.nextSibling;
       parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
+      finalNode = prevStartNode;
       prevEndNode = prevStartNode.previousSibling;
       prevStartNode = _node;
       prevStart++;
@@ -524,15 +532,11 @@ function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, k
     prevStartNode = prevStartNode.nextSibling;
     prevStart++;
   }
-  for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(nodes[toDelete[i]]);
-  }
   let lisIdx = longestSeq.length - 1, tmpD;
-  prevEnd = nodes[prevEnd];
   for(let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
-      prevEnd = nodes[oldKeys[i]];
-      makeEqual$1(prevEnd, newData[i]);
+      finalNode = nodes[oldKeys[i]];
+      makeEqual$1(finalNode, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
@@ -541,9 +545,12 @@ function makeChildrenEqualKeyed(parent, oldData, newData, createFn = (x) => x, k
         tmpD = nodes[oldKeys[i]];
         makeEqual$1(tmpD, newData[i]);
       }
-      parent.insertBefore(tmpD, prevEnd);
-      prevEnd = tmpD;
+      parent.insertBefore(tmpD, finalNode);
+      finalNode = tmpD;
     }
+  }
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(nodes[toDelete[i]]);
   }
 }
 function longestPositiveIncreasingSubsequence(ns, newStart) {
@@ -620,7 +627,7 @@ function customElementUpdate(element) {
     const newValue = evaluateBindings(data.text, element);
     if (data.type === 2) {
       const key = dom.getAttribute(KEY_ATTR);
-      if (key) makeChildrenEqualKeyed$1(dom, dom.sifrrOldState || [], newValue, (state) => data.se.sifrrClone(true, state), key);
+      if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
       dom.sifrrOldState = newValue;
     } else if (data.type === 1) {
