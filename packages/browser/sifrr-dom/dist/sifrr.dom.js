@@ -674,8 +674,8 @@
         } else {
           children = Array.prototype.slice.call(newValue);
         }
-        if (children.length === 0) dom.textContent = '';else makeChildrenEqual$1(dom, children);
-      } else if (data.type === 0) {
+        makeChildrenEqual$1(dom, children);
+      } else {
         if (dom.data != newValue) {
           dom.data = newValue;
         }
