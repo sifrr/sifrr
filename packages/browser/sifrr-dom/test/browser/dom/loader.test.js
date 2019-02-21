@@ -72,4 +72,26 @@ describe('Sifrr.Dom.load and Loader', () => {
     expect(error.e).to.equal('loading error js');
     expect(error.trace).to.have.string('/elements/loading/err.js');
   });
+
+  it('resolves loading() if both loading html and js fails', async () => {
+    const loaded = await page.evaluate(async () => {
+      await Sifrr.Dom.load('loading-nonexisting');
+      return await Sifrr.Dom.loading();
+    });
+
+    assert(loaded);
+  });
+
+  it("warns if script doesn't register element", async () => {
+    const message = await page.evaluate(async () => {
+      let message;
+      window.console.warn = w => {
+        message = w;
+      };
+      await Sifrr.Dom.load('loading-noregister');
+      return message;
+    });
+
+    expect(message).to.equal("Executing 'loading-noregister' file didn't register the element. Ignore if you are registering element in a promise or async function.");
+  });
 });

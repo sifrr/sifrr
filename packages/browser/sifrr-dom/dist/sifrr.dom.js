@@ -979,8 +979,16 @@
       return window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`);
     }
     let loader$$1 = new SifrrDom.Loader(elemName, url);
-    SifrrDom.loadingElements.push(customElements.whenDefined(elemName));
-    return loader$$1.executeScripts(js);
+    const wd = customElements.whenDefined(elemName);
+    SifrrDom.loadingElements.push(wd);
+    return loader$$1.executeScripts(js).then(() => {
+      if (!window.customElements.get(elemName)) {
+        window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
+      }
+    }).catch(e => {
+      SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
+      window.console.error(e);
+    });
   };
   SifrrDom.loading = () => {
     return Promise.all(SifrrDom.loadingElements);

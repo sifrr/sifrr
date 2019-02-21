@@ -57,7 +57,9 @@ const sss = function(port, dirS = dir) {
   process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
   server.get('/**404', (req, res) => res.sendStatus(404) && res.end());
-  server.get('/**', (req, res) => res.sendFile(path.join(dirS, './index.html')));
+  if (fs.existsSync(path.join(dirS, './index.html'))) {
+    server.get('/**', (req, res) => res.sendFile(path.join(dirS, './index.html')));
+  }
 
   return server.listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirS));
 };

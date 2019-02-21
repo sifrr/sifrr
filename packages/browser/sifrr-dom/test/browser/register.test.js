@@ -1,6 +1,6 @@
 describe('Sifrr.Dom.Element', () => {
   before(async () => {
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/setup.html`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });
   });
 
