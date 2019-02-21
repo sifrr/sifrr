@@ -1,4 +1,4 @@
-const { ELEMENT_NODE } = require('./constants');
+const { ELEMENT_NODE } = require('../constants');
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reuseNodes.js
 function simpleElementCreator(node) {
@@ -27,6 +27,4 @@ function simpleElementCreator(node) {
   }
 }
 
-module.exports = {
-  simpleCreator: simpleElementCreator
-};
+module.exports = simpleElementCreator;
