@@ -18,7 +18,7 @@ function replacer(match) {
 function evaluate(fxn, el) {
   try {
     if (typeof fxn === 'string') return fxn;
-    else return fxn.call(el) || '';
+    else return fxn.call(el);
   } catch(e) {
     const str = fxn.toString();
     window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);

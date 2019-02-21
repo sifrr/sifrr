@@ -2,6 +2,12 @@ function setState(state) {
   return page.$eval('sifrr-update', (el, st) => el.state = st, state);
 }
 
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 describe('Update and updateAttribute', () => {
   before(async () => {
     await page.goto(`${PATH}/update.html`);
@@ -53,11 +59,25 @@ describe('Update and updateAttribute', () => {
     assert.equal(html, '<p>p</p><div id="attribute" _click="console.log(\'click\')" _keyup="console.log(\'keyup\')" random-attr="">div</div><div id="replaced"></div><a></a>');
   });
 
-  it('renders empty string if binding value is falsy', async () => {
+  it('renders falsy string if binding value is falsy', async () => {
     await setState({ text: false });
     const text = await page.evaluate('su.$("#text").textContent');
 
-    assert.equal(text, 'some  text');
+    assert.equal(text, 'some false text');
+  });
+
+  it('removes attribute if binding value is falsy', async () => {
+    await asyncForEach([false, null, /* undefined doesn't work with page.evaluate */], async v => {
+      await setState({ attr: 'some' });
+      let hasAttr = await page.evaluate('su.$("#attr").hasAttribute("some-attr")');
+
+      assert.equal(hasAttr, true);
+
+      await setState({ attr: v });
+      hasAttr = await page.evaluate('su.$("#attr").hasAttribute("some-attr")');
+
+      assert.equal(hasAttr, false, `should be removed for ${v}`);
+    });
   });
 
   it('passes state of a sifrr element', async () => {

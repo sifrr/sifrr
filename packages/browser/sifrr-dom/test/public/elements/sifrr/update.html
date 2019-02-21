@@ -6,6 +6,9 @@
   <table data-sifrr-html="true">
     <!-- ${this.state.row} -->
   </table>
+  <div id="attr" some-attr="${this.state.attr}">
+
+  </div>
 </template>
 <script type="text/javascript">
   const row = document.createElement('tr', { is: 'sifrr-row' });
@@ -18,7 +21,8 @@
   SifrrUpdate.defaultState = {
     html: '<p>p</p><div id="attribute" some-attr="random" _click="console.log(\'click\')" _keyup="console.log(\'keyup\')">div</div><p id="replaced"></p><a></a>',
     text: 'random',
-    row: row
+    row: row,
+    attr: 'attr'
   };
   Sifrr.Dom.load('sifrr-row', { js: false }).then(() => {
     Sifrr.Dom.register(SifrrUpdate);
