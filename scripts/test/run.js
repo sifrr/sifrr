@@ -123,6 +123,13 @@ const runUnitTests = process.argv.indexOf('-u') > 0 || process.argv.indexOf('--u
 // check if run only browser tests
 const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
 
+// check if need to filter
+let filterArray;
+const filter = process.argv.indexOf('-f') || process.argv.indexOf('--filter');
+if (filter > 0) {
+  filterArray = process.argv[filter + 1].split(',');
+}
+
 // Relative to base requiring
 // global.requireBase = (pt) => require(path.join(dir, pt));
 
@@ -131,7 +138,7 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
     let ser = false;
 
     const dir = process.argv[2];
-    const pubPath = await testLoader(dir, mocha, { runUnitTests, runBrowserTests });
+    const pubPath = await testLoader(dir, mocha, { runUnitTests, runBrowserTests }, filterArray);
 
     if (runBrowserTests || !runUnitTests) {
       let serverFile;
