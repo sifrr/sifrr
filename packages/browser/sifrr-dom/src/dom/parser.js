@@ -1,8 +1,9 @@
-const { collect, create } = require('./ref');
+const { collect, create, collectSimple } = require('./ref');
 const { creator } = require('./creator');
 
 const Parser = {
   collectRefs: collect,
+  collectRefsSimple: collectSimple,
   createStateMap: (element, isSifrrElement) => create(element, creator, isSifrrElement),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;

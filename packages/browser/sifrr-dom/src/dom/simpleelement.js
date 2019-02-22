@@ -18,7 +18,7 @@ function SimpleElement(content, defaultState = null) {
   }
   const stateMap = Parser.createStateMap(content, false);
   function setProps(me) {
-    me._refs = Parser.collectRefs(me, stateMap, false);
+    me._refs = Parser.collectRefsSimple(me, stateMap);
     Object.defineProperty(me, 'state', {
       get: () => me._state,
       set: (v) => {

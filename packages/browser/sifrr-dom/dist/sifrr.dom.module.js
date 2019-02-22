@@ -21,28 +21,39 @@ const { HTML_ATTR } = constants;
 function isHtml(el) {
   return el.hasAttribute && el.hasAttribute(HTML_ATTR);
 }
-TREE_WALKER.nextNonfilterNode = function(node, isSifrrElement) {
-  if (!isSifrrElement) {
-    return this.nextNode();
-  } else {
-    if (isHtml(node)){
-      node = this.nextSibling() || (this.parentNode(), this.nextSibling());
-    } else node = this.nextNode();
-    return node;
-  }
+TREE_WALKER.nextNonfilterNode = function(node) {
+  if (isHtml(node)){
+    node = this.nextSibling() || (this.parentNode(), this.nextSibling());
+  } else node = this.nextNode();
+  return node;
 };
-TREE_WALKER.roll = function(n, isSifrrElement) {
+TREE_WALKER.roll = function(n) {
   let node = this.currentNode;
   while(--n) {
-    node = this.nextNonfilterNode(node, isSifrrElement);
+    node = this.nextNonfilterNode(node);
   }
   return node;
 };
-function collect(element, stateMap, isSifrrElement = true) {
+function collect(element, stateMap) {
   const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
   for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER.roll(stateMap[i].idx, isSifrrElement));
+    refs.push(TREE_WALKER.roll(stateMap[i].idx));
+  }
+  return refs;
+}
+TREE_WALKER.rollSimple = function(n) {
+  let node;
+  while(--n) {
+    node = this.nextNode();
+  }
+  return node || this.currentNode;
+};
+function collectSimple(element, stateMap) {
+  const refs = [], l = stateMap.length;
+  TREE_WALKER.currentNode = element;
+  for (let i = 0; i < l; i++) {
+    refs.push(TREE_WALKER.rollSimple(stateMap[i].idx));
   }
   return refs;
 }
@@ -62,6 +73,7 @@ function create(node, fxn, isSifrrElement = true) {
 }
 var ref = {
   collect,
+  collectSimple,
   create
 };
 
@@ -513,7 +525,7 @@ function SimpleElement(content, defaultState = null) {
   }
   const stateMap = parser.createStateMap(content, false);
   function setProps(me) {
-    me._refs = parser.collectRefs(me, stateMap, false);
+    me._refs = parser.collectRefsSimple(me, stateMap);
     Object.defineProperty(me, 'state', {
       get: () => me._state,
       set: (v) => {
@@ -586,10 +598,11 @@ var creator = {
   creator: customElementCreator
 };
 
-const { collect: collect$1, create: create$1 } = ref;
+const { collect: collect$1, create: create$1, collectSimple: collectSimple$1 } = ref;
 const { creator: creator$1 } = creator;
 const Parser = {
   collectRefs: collect$1,
+  collectRefsSimple: collectSimple$1,
   createStateMap: (element, isSifrrElement) => create$1(element, creator$1, isSifrrElement),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
