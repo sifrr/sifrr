@@ -17,15 +17,14 @@ var constants = {
 };
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-const { ELEMENT_NODE, HTML_ATTR } = constants;
+const { HTML_ATTR } = constants;
 function isHtml(el) {
-  return el.nodeType === ELEMENT_NODE && el.hasAttribute(HTML_ATTR);
+  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
 }
-TREE_WALKER.nextNonfilterNode = function(isSifrrElement) {
+TREE_WALKER.nextNonfilterNode = function(node, isSifrrElement) {
   if (!isSifrrElement) {
     return this.nextNode();
   } else {
-    let node = this.currentNode;
     if (isHtml(node)){
       node = this.nextSibling() || (this.parentNode(), this.nextSibling());
     } else node = this.nextNode();
@@ -35,16 +34,10 @@ TREE_WALKER.nextNonfilterNode = function(isSifrrElement) {
 TREE_WALKER.roll = function(n, isSifrrElement) {
   let node = this.currentNode;
   while(--n) {
-    node = this.nextNonfilterNode(isSifrrElement);
+    node = this.nextNonfilterNode(node, isSifrrElement);
   }
   return node;
 };
-class Ref {
-  constructor(idx, ref) {
-    this.idx = idx;
-    this.ref = ref;
-  }
-}
 function collect(element, stateMap, isSifrrElement = true) {
   const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
@@ -58,19 +51,18 @@ function create(node, fxn, isSifrrElement = true) {
   TREE_WALKER.currentNode = node;
   while(node) {
     if (ref = fxn(node, isHtml, isSifrrElement)) {
-      indices.push(new Ref(idx+1, ref));
+      indices.push({ idx: idx+1, ref });
       idx = 1;
     } else {
       idx++;
     }
-    node = TREE_WALKER.nextNonfilterNode(isSifrrElement);
+    node = TREE_WALKER.nextNonfilterNode(node, isSifrrElement);
   }
   return indices;
 }
 var ref = {
   collect,
-  create,
-  Ref
+  create
 };
 
 const { TEMPLATE } = constants;
@@ -552,7 +544,7 @@ var repeatref = (sm, el, attr) => {
   el.removeAttribute(attr);
 };
 
-const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE: ELEMENT_NODE$1, REPEAT_ATTR } = constants;
+const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, REPEAT_ATTR } = constants;
 const { getBindingFxns: getBindingFxns$1 } = bindings;
 function customElementCreator(el, filter, isSifrrElement) {
   if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
@@ -561,7 +553,7 @@ function customElementCreator(el, filter, isSifrrElement) {
       type: 0,
       text: getBindingFxns$1(x.trim())
     };
-  } else if (el.nodeType === ELEMENT_NODE$1) {
+  } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     if (isSifrrElement) {
       if (filter(el)) {
