@@ -6,10 +6,10 @@ SifrrDom.elements = {};
 SifrrDom.loadingElements = [];
 
 // Classes
-SifrrDom.Element = require('./dom/custom/element');
-SifrrDom.Parser = require('./dom/custom/parser');
+SifrrDom.Element = require('./dom/element');
+SifrrDom.Parser = require('./dom/parser');
 SifrrDom.Loader = require('./dom/loader');
-SifrrDom.SimpleElement = require('./dom/simple/element');
+SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
 SifrrDom.makeEqual = require('./dom/makeequal');

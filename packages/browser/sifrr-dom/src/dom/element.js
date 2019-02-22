@@ -1,7 +1,7 @@
 const Parser = require('./parser');
 const update = require('./update');
-const Loader = require('../loader');
-const { makeChildrenEqual } = require('../makeequal');
+const Loader = require('./loader');
+const { makeChildrenEqual } = require('./makeequal');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {

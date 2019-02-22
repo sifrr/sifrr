@@ -1,32 +1,32 @@
-const { makeChildrenEqual } = require('../makeequal');
-const { makeChildrenEqualKeyed } = require('../keyed');
+const { makeChildrenEqual } = require('./makeequal');
+const { makeChildrenEqualKeyed } = require('./keyed');
 const updateAttribute = require('./updateattribute');
-const { evaluateBindings } = require('../bindings');
-const { TEMPLATE, KEY_ATTR } = require('../constants');
+const { evaluateBindings } = require('./bindings');
+const { TEMPLATE, KEY_ATTR } = require('./constants');
 
-function customElementUpdate(element) {
+function customElementUpdate(element, stateMap = element.constructor.stateMap) {
   if (!element._refs) {
     return false;
   }
   // Update nodes
   const l = element._refs.length;
   for (let i = 0; i < l; i++) {
-    const data = element.constructor.stateMap[i].ref;
+    const data = stateMap[i].ref;
     const dom = element._refs[i];
 
     // update attributes
     if (data.attributes) {
       for(let key in data.attributes) {
-        if (key === 'events') {
+        if (key !== 'events') {
+          const val = evaluateBindings(data.attributes[key], element);
+          updateAttribute(dom, key, val);
+        } else {
           for(let event in data.attributes.events) {
             const eventLis = evaluateBindings(data.attributes.events[event], element);
             dom[event] = eventLis;
           }
           dom._root = element;
           delete data.attributes['events'];
-        } else {
-          const val = evaluateBindings(data.attributes[key], element);
-          updateAttribute(dom, key, val);
         }
       }
     }
@@ -36,12 +36,17 @@ function customElementUpdate(element) {
     // update element
     const newValue = evaluateBindings(data.text, element);
 
-    if (data.type === 2) {
+    if (data.type === 0) {
+      // text node
+      if (dom.data != newValue) {
+        dom.data = newValue;
+      }
+    } else if (data.type === 2) {
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
       dom.sifrrOldState = newValue;
-    } else if (data.type === 1) {
+    } else {
       // html node
       let children;
       if (Array.isArray(newValue)) {
@@ -58,14 +63,9 @@ function customElementUpdate(element) {
         children = Array.prototype.slice.call(newValue);
       }
       makeChildrenEqual(dom, children);
-    } else {
-      // text node
-      if (dom.data != newValue) {
-        dom.data = newValue;
-      }
     }
   }
-  element.onUpdate();
+  // element.onUpdate();
 }
 
 module.exports = customElementUpdate;

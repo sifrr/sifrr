@@ -1,12 +1,12 @@
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('../constants');
-const simpleElement = require('../simple/element');
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('./constants');
+const repeatref = require('./repeatref');
 // ref types:
 // 0: text
 // 1: html
 // 2: arrayToDom
-const { getBindingFxns } = require('../bindings');
+const { getBindingFxns } = require('./bindings');
 
-function customElementCreator(el, filter) {
+function customElementCreator(el, filter, isSifrrElement) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
     const x = el.data;
@@ -17,18 +17,16 @@ function customElementCreator(el, filter) {
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     // Html ?
-    if (filter(el)) {
-      const innerHTML = el.innerHTML;
-      if (innerHTML.indexOf('${') >= 0) {
-        sm.type = 1;
-        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+    if (isSifrrElement) {
+      if (filter(el)) {
+        const innerHTML = el.innerHTML;
+        if (innerHTML.indexOf('${') >= 0) {
+          sm.type = 1;
+          sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+        }
+      } else if (el.hasAttribute(REPEAT_ATTR)) {
+        repeatref(sm, el, REPEAT_ATTR);
       }
-    } else if (el.hasAttribute(REPEAT_ATTR)) {
-      sm.type = 2;
-      sm.se = simpleElement(el.childNodes);
-      sm.text = getBindingFxns(el.getAttribute(REPEAT_ATTR));
-      el.removeAttribute(REPEAT_ATTR);
-      el.textContent = '';
     }
     // attributes
     const attrs = el.attributes, l = attrs.length;

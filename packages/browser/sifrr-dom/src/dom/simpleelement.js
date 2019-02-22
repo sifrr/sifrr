@@ -1,7 +1,6 @@
-const { collect, create } = require('../ref');
-const template = require('../template');
+const template = require('./template');
 const update = require('./update');
-const creator = require('./creator');
+const Parser = require('./parser');
 
 function SimpleElement(content, defaultState = null) {
   if (!content.nodeType && typeof content !== 'string') {
@@ -17,15 +16,14 @@ function SimpleElement(content, defaultState = null) {
   ) {
     return content;
   }
-  const stateMap = create(content, creator);
+  const stateMap = Parser.createStateMap(content, false);
   function setProps(me) {
-    me.stateMap = stateMap;
-    me._refs = collect(me, stateMap);
+    me._refs = Parser.collectRefs(me, stateMap, false);
     Object.defineProperty(me, 'state', {
       get: () => me._state,
       set: (v) => {
         me._state = Object.assign(me._state || {}, v);
-        update(me);
+        update(me, stateMap);
       }
     });
   }
