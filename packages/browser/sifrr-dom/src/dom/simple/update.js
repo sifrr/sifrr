@@ -1,3 +1,5 @@
+const updateAttribute = require('../custom/updateattribute');
+
 function simpleElementUpdate(simpleEl) {
   const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
   for (let i = 0; i < l; i++) {
@@ -5,10 +7,7 @@ function simpleElementUpdate(simpleEl) {
     if (Array.isArray(data)) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
-        const attr = data[i];
-        if (dom.getAttribute(attr.name) !== simpleEl.state[attr.text]) {
-          dom.setAttribute(attr.name, simpleEl.state[attr.text] || '');
-        }
+        updateAttribute(dom, data[i].name, simpleEl.state[data[i].text]);
       }
     } else {
       if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';

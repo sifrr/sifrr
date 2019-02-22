@@ -11,8 +11,9 @@
     }
 
     onUpdate() {
-      if (this.state.class) this.className = this.state.class;
-      else this.className = '';
+      if (this.className !== this.state.class) {
+        this.className = this.state.class;
+      }
     }
   }
   Sifrr.Dom.register(SifrrRow, {

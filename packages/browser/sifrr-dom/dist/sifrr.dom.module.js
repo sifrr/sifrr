@@ -90,6 +90,16 @@ var template = (str, ...extra) => {
   return tmp;
 };
 
+var updateattribute = (element, name, newValue) => {
+  const fromValue = element.getAttribute(name);
+  if (newValue === false || newValue === null || newValue === undefined) element.removeAttribute(name);
+  else if (fromValue !== newValue) {
+    if (name === 'class') element.className = newValue;
+    else element.setAttribute(name, newValue);
+  }
+  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
+};
+
 function simpleElementUpdate(simpleEl) {
   const doms = simpleEl._refs, refs = simpleEl.stateMap, l = refs.length;
   for (let i = 0; i < l; i++) {
@@ -97,10 +107,7 @@ function simpleElementUpdate(simpleEl) {
     if (Array.isArray(data)) {
       const l = data.length;
       for (let i = 0; i < l; i++) {
-        const attr = data[i];
-        if (dom.getAttribute(attr.name) !== simpleEl.state[attr.text]) {
-          dom.setAttribute(attr.name, simpleEl.state[attr.text] || '');
-        }
+        updateattribute(dom, data[i].name, simpleEl.state[data[i].text]);
       }
     } else {
       if (dom.data != simpleEl.state[data]) dom.data = simpleEl.state[data] || '';
@@ -291,16 +298,6 @@ const Parser = {
   }
 };
 var parser = Parser;
-
-var updateattribute = (element, name, newValue) => {
-  const fromValue = element.getAttribute(name);
-  if (newValue === false || newValue === null || newValue === undefined) element.removeAttribute(name);
-  else if (fromValue !== newValue) {
-    if (name === 'class') element.className = newValue;
-    else element.setAttribute(name, newValue);
-  }
-  if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
-};
 
 const Json = {
   shallowEqual: (a, b) => {
