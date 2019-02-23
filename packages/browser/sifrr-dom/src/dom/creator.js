@@ -6,7 +6,7 @@ const repeatref = require('./repeatref');
 // 2: arrayToDom
 const { getBindingFxns } = require('./bindings');
 
-function customElementCreator(el, filter, isSifrrElement) {
+function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     // text node
     const x = el.data;
@@ -17,16 +17,14 @@ function customElementCreator(el, filter, isSifrrElement) {
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     // Html ?
-    if (isSifrrElement) {
-      if (filter(el)) {
-        const innerHTML = el.innerHTML;
-        if (innerHTML.indexOf('${') >= 0) {
-          sm.type = 1;
-          sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
-        }
-      } else if (el.hasAttribute(REPEAT_ATTR)) {
-        repeatref(sm, el, REPEAT_ATTR);
+    if (filter(el)) {
+      const innerHTML = el.innerHTML;
+      if (innerHTML.indexOf('${') >= 0) {
+        sm.type = 1;
+        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
+    } else if (el.hasAttribute(REPEAT_ATTR)) {
+      repeatref(sm, el, REPEAT_ATTR);
     }
     // attributes
     const attrs = el.attributes, l = attrs.length;

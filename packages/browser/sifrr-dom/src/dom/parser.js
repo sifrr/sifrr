@@ -1,10 +1,10 @@
-const { collect, create, collectSimple } = require('./ref');
+const { collect, create } = require('./ref');
 const { creator } = require('./creator');
 
 const Parser = {
   collectRefs: collect,
-  collectRefsSimple: collectSimple,
-  createStateMap: (element, isSifrrElement) => create(element, creator, isSifrrElement),
+  collectRefsSimple: (element, stateMap) => collect(element, stateMap, 'rollSimple'),
+  createStateMap: (element) => create(element, creator),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;

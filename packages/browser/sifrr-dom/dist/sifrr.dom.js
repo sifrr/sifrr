@@ -42,15 +42,6 @@
     }
     return node;
   };
-  function collect(element, stateMap) {
-    const refs = [],
-          l = stateMap.length;
-    TREE_WALKER.currentNode = element;
-    for (let i = 0; i < l; i++) {
-      refs.push(TREE_WALKER.roll(stateMap[i].idx));
-    }
-    return refs;
-  }
   TREE_WALKER.rollSimple = function (n) {
     let node;
     while (--n) {
@@ -58,22 +49,22 @@
     }
     return node || this.currentNode;
   };
-  function collectSimple(element, stateMap) {
+  function collect(element, stateMap, roll = 'roll') {
     const refs = [],
           l = stateMap.length;
     TREE_WALKER.currentNode = element;
     for (let i = 0; i < l; i++) {
-      refs.push(TREE_WALKER.rollSimple(stateMap[i].idx));
+      refs.push(TREE_WALKER[roll](stateMap[i].idx));
     }
     return refs;
   }
-  function create(node, fxn, isSifrrElement = true) {
+  function create(node, fxn) {
     let indices = [],
         ref,
         idx = 0;
     TREE_WALKER.currentNode = node;
     while (node) {
-      if (ref = fxn(node, isHtml, isSifrrElement)) {
+      if (ref = fxn(node, isHtml)) {
         indices.push({
           idx: idx + 1,
           ref
@@ -82,13 +73,12 @@
       } else {
         idx++;
       }
-      node = TREE_WALKER.nextNonfilterNode(node, isSifrrElement);
+      node = TREE_WALKER.nextNonfilterNode(node);
     }
     return indices;
   }
   var ref = {
     collect,
-    collectSimple,
     create
   };
 
@@ -601,7 +591,7 @@
   const {
     getBindingFxns: getBindingFxns$1
   } = bindings;
-  function customElementCreator(el, filter, isSifrrElement) {
+  function customElementCreator(el, filter) {
     if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
       const x = el.data;
       if (x.indexOf('${') > -1) return {
@@ -610,16 +600,14 @@
       };
     } else if (el.nodeType === ELEMENT_NODE) {
       const sm = {};
-      if (isSifrrElement) {
-        if (filter(el)) {
-          const innerHTML = el.innerHTML;
-          if (innerHTML.indexOf('${') >= 0) {
-            sm.type = 1;
-            sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
-          }
-        } else if (el.hasAttribute(REPEAT_ATTR)) {
-          repeatref(sm, el, REPEAT_ATTR);
+      if (filter(el)) {
+        const innerHTML = el.innerHTML;
+        if (innerHTML.indexOf('${') >= 0) {
+          sm.type = 1;
+          sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
         }
+      } else if (el.hasAttribute(REPEAT_ATTR)) {
+        repeatref(sm, el, REPEAT_ATTR);
       }
       const attrs = el.attributes,
             l = attrs.length;
@@ -646,16 +634,15 @@
 
   const {
     collect: collect$1,
-    create: create$1,
-    collectSimple: collectSimple$1
+    create: create$1
   } = ref;
   const {
     creator: creator$1
   } = creator;
   const Parser = {
     collectRefs: collect$1,
-    collectRefsSimple: collectSimple$1,
-    createStateMap: (element, isSifrrElement) => create$1(element, creator$1, isSifrrElement),
+    collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'rollSimple'),
+    createStateMap: element => create$1(element, creator$1),
     twoWayBind: e => {
       const target = e.composedPath ? e.composedPath()[0] : e.target;
       if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;

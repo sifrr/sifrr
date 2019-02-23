@@ -22,15 +22,6 @@ TREE_WALKER.roll = function(n) {
   return node;
 };
 
-function collect(element, stateMap) {
-  const refs = [], l = stateMap.length;
-  TREE_WALKER.currentNode = element;
-  for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER.roll(stateMap[i].idx));
-  }
-  return refs;
-}
-
 TREE_WALKER.rollSimple = function(n) {
   let node;
   while(--n) {
@@ -39,27 +30,27 @@ TREE_WALKER.rollSimple = function(n) {
   return node || this.currentNode;
 };
 
-function collectSimple(element, stateMap) {
+function collect(element, stateMap, roll = 'roll') {
   const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
   for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER.rollSimple(stateMap[i].idx));
+    refs.push(TREE_WALKER[roll](stateMap[i].idx));
   }
   return refs;
 }
 
-function create(node, fxn, isSifrrElement = true) {
+function create(node, fxn) {
   let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
   while(node) {
     // eslint-disable-next-line no-cond-assign
-    if (ref = fxn(node, isHtml, isSifrrElement)) {
+    if (ref = fxn(node, isHtml)) {
       indices.push({ idx: idx+1, ref });
       idx = 1;
     } else {
       idx++;
     }
-    node = TREE_WALKER.nextNonfilterNode(node, isSifrrElement);
+    node = TREE_WALKER.nextNonfilterNode(node);
   }
 
   return indices;
@@ -67,6 +58,5 @@ function create(node, fxn, isSifrrElement = true) {
 
 module.exports = {
   collect,
-  collectSimple,
   create
 };
