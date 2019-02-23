@@ -515,16 +515,13 @@
               dom[event] = eventLis;
             }
             dom._root = element;
-            delete data.attributes['events'];
           }
         }
       }
       if (data.text === undefined) continue;
       const newValue = evaluateBindings(data.text, element);
       if (data.type === 0) {
-        if (dom.data != newValue) {
-          dom.data = newValue;
-        }
+        if (dom.data != newValue) dom.data = newValue;
       } else if (data.type === 2) {
         const key = dom.getAttribute(KEY_ATTR);
         if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), key);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));

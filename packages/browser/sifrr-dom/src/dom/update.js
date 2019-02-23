@@ -27,7 +27,6 @@ function customElementUpdate(element, stateMap) {
             dom[event] = eventLis;
           }
           dom._root = element;
-          delete data.attributes['events'];
         }
       }
     }
@@ -39,10 +38,9 @@ function customElementUpdate(element, stateMap) {
 
     if (data.type === 0) {
       // text node
-      if (dom.data != newValue) {
-        dom.data = newValue;
-      }
+      if (dom.data != newValue) dom.data = newValue;
     } else if (data.type === 2) {
+      // repeat
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
