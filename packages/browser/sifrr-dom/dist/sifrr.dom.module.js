@@ -610,17 +610,18 @@ const Parser = {
 var parser = Parser;
 
 class Loader {
-  constructor(elemName, url) {
+  constructor(elemName, url, onProgress) {
     if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     this.url = url;
+    this.onProgress = onProgress;
   }
   get html() {
     if (this._html) return this._html;
     Loader.add(this.elementName, this);
     const me = this;
-    this._html = fetch.file(this.htmlUrl)
+    this._html = fetch.file(this.htmlUrl, { onProgress: this.onProgress })
       .then((resp) => resp.text())
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -631,7 +632,7 @@ class Loader {
   get js() {
     if (this._js) return this._js;
     Loader.add(this.elementName, this);
-    this._js = fetch.file(this.jsUrl)
+    this._js = fetch.file(this.jsUrl, { onProgress: this.onProgress })
       .then((resp) => resp.text());
     return this._js;
   }
@@ -886,9 +887,9 @@ SifrrDom.setup = function(config) {
   SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
   SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
 };
-SifrrDom.load = function(elemName, { url, js = true } = {}) {
+SifrrDom.load = function(elemName, { url, js = true, onProgress } = {}) {
   if (window.customElements.get(elemName)) { return window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`); }
-  let loader$$1 = new SifrrDom.Loader(elemName, url);
+  let loader$$1 = new SifrrDom.Loader(elemName, url, onProgress);
   const wd = customElements.whenDefined(elemName);
   SifrrDom.loadingElements.push(wd);
   return loader$$1.executeScripts(js).then(() => {
