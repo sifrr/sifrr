@@ -71,7 +71,7 @@
     return Math.round(Math.random() * 1000) % max;
   }
 
-  window.buildData = function(count = 1000) {
+  let buildData = window.buildData = function(count = 1000) {
     const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
       'cheap', 'expensive', 'fancy'
     ];

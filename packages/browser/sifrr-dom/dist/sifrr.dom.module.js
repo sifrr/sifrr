@@ -455,10 +455,11 @@ const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
-function customElementUpdate(element, stateMap = element.constructor.stateMap) {
+function customElementUpdate(element, stateMap) {
   if (!element._refs) {
     return false;
   }
+  stateMap = stateMap || element.constructor.stateMap;
   const l = element._refs.length;
   for (let i = 0; i < l; i++) {
     const data = stateMap[i].ref;
@@ -488,7 +489,6 @@ function customElementUpdate(element, stateMap = element.constructor.stateMap) {
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
-      dom.sifrrOldState = newValue;
     } else {
       let children;
       if (Array.isArray(newValue)) {
@@ -507,6 +507,7 @@ function customElementUpdate(element, stateMap = element.constructor.stateMap) {
       makeChildrenEqual$1(dom, children);
     }
   }
+  if (element.onUpdate) element.onUpdate();
 }
 var update = customElementUpdate;
 

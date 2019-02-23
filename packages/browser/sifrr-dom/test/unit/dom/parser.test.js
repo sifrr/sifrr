@@ -3,8 +3,8 @@ const mock = require('mock-require');
 describe('Parser', () => {
   it('twowaybind takes composedPath if exists', () => {
     mock('../../../src/dom/ref', {});
-    mock('../../../src/dom/custom/creator', {});
-    const { twoWayBind } = require('../../../src/dom/custom/parser');
+    mock('../../../src/dom/creator', {});
+    const { twoWayBind } = require('../../../src/dom/parser');
 
     const target = {
       _root: { state: {} },

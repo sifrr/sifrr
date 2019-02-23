@@ -4,10 +4,11 @@ const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 
-function customElementUpdate(element, stateMap = element.constructor.stateMap) {
+function customElementUpdate(element, stateMap) {
   if (!element._refs) {
     return false;
   }
+  stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
   const l = element._refs.length;
   for (let i = 0; i < l; i++) {
@@ -45,7 +46,6 @@ function customElementUpdate(element, stateMap = element.constructor.stateMap) {
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
-      dom.sifrrOldState = newValue;
     } else {
       // html node
       let children;
@@ -65,7 +65,7 @@ function customElementUpdate(element, stateMap = element.constructor.stateMap) {
       makeChildrenEqual(dom, children);
     }
   }
-  // element.onUpdate();
+  if (element.onUpdate) element.onUpdate();
 }
 
 module.exports = customElementUpdate;
