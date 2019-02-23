@@ -3,7 +3,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     await page.goto(`${PATH}/simpleelement.html`);
   });
 
-  it('is first element from string', async () => {
+  it('is first element from string, also text nodes', async () => {
     const type = await page.evaluate('seBasic.nodeName');
     const type2 = await page.evaluate('seMultipleChild.nodeName');
     const type3 = await page.evaluate('seText.nodeName');
@@ -19,14 +19,6 @@ describe('Sifrr.Dom.SimpleElement', () => {
 
     expect(inner).to.eq('default');
     expect(data).to.eq('yay');
-  });
-
-  it('renders empty if no state given', async () => {
-    const attr = await page.evaluate('seComplex.querySelector("p").getAttribute("data-attr")');
-    const data = await page.evaluate('seComplex.childNodes[1].data');
-
-    expect(attr).to.eq('');
-    expect(data).to.eq('');
   });
 
   it('renders again when state is changed', async () => {
@@ -60,15 +52,15 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
   });
 
-  it('Negative states are rendered as empty string', async () => {
+  it('Negative state attributes are removed', async () => {
     /* eslint-disable no-undef */
-    const state = await page.evaluate(() => {
+    const hasClass = await page.evaluate(() => {
       seAttr.state = { class: null };
-      return seAttr.querySelector('p').className;
+      return seAttr.querySelector('p').hasAttribute('class');
     });
     /* eslint-enable no-undef */
 
-    expect(state).to.eq('');
+    expect(hasClass).to.eq(false);
   });
 
   it('only updates binding when state is changed', async () => {

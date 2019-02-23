@@ -24,14 +24,18 @@ class Benchmark {
   static async metrics() {
     const ret = {};
     const ms = (await page._client.send('Performance.getMetrics')).metrics;
-    ms.forEach(m => ret[m.name] = m.value * (m.name.indexOf('Duration') >= 0 ? 1000 : 1));
+    ms.forEach(m => {
+      if (m.name.indexOf('Duration') > 0) {
+        ret[m.name] = m.value * 1000;
+      } else ret[m.name] = m.value;
+    });
     return ret;
   }
 
   static metricsDiff(oldM, newM) {
     const diff = {};
     for (let m in oldM) {
-      diff[m] = newM[m] - oldM[m];
+      diff[m] = Math.round((newM[m] - oldM[m]) * 100) / 100;
     }
     return diff;
   }

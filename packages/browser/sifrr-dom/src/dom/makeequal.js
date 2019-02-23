@@ -1,4 +1,4 @@
-const updateAttribute = require('./custom/updateattribute');
+const updateAttribute = require('./updateattribute');
 const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
