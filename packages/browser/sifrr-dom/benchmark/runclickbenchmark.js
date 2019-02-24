@@ -1,6 +1,6 @@
 const verbose =  Math.max(process.argv.indexOf(`--verbose`), process.argv.indexOf(`-v`)) > 0;
 
-module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, metrics = ['ScriptDuration', 'LayoutCount']) {
+module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, metrics = ['ScriptDuration', 'LayoutCount', 'TaskDuration']) {
   const BM = require(`./benchmarks/${benchmark}`);
   let totals = {};
   if (verbose) process.stdout.write(`Running ${benchmark} benchmark for ${warmups} warmups and ${runs} runs: \n`);
