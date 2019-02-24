@@ -66,7 +66,7 @@ SifrrDom.load = function(elemName, { url, js = true, onProgress } = {}) {
     }
   }).catch(e => {
     SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
-    window.console.error(e);
+    throw e;
   });
 };
 

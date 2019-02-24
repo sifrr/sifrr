@@ -36,22 +36,24 @@ describe('Sifrr.Dom.load and Loader', () => {
   it("doesn't try to run script element if it is already executed", async () => {
     const mes = await page.evaluate(() => {
       let mes;
-      window.console.log = (e) => mes = e;
-      (new Sifrr.Dom.Loader('loading-load')).executeScripts();
+      try {
+        (new Sifrr.Dom.Loader('loading-load')).executeScripts();
+      } catch (e) {
+        mes = e.message;
+      }
       return mes;
     });
 
     assert.equal(mes, "'loading-load' element's javascript was already executed");
   });
 
-  it('consoles error from html scripts', async () => {
+  it('throws error from html scripts', async () => {
     const error = await page.evaluate(async () => {
       let e, trace;
-      window.console.error = err => {
+      await Sifrr.Dom.load('loading-error').catch(err => {
         e = err.message;
         trace = err.stack;
-      };
-      await Sifrr.Dom.load('loading-error');
+      });
       return { e, trace };
     });
 
@@ -76,7 +78,7 @@ describe('Sifrr.Dom.load and Loader', () => {
 
   it('resolves loading() if both loading html and js fails', async () => {
     const loaded = await page.evaluate(async () => {
-      await Sifrr.Dom.load('loading-nonexisting');
+      await Sifrr.Dom.load('loading-nonexisting').catch(e => e);
       return await Sifrr.Dom.loading();
     });
 
@@ -94,5 +96,19 @@ describe('Sifrr.Dom.load and Loader', () => {
     });
 
     expect(message).to.equal("Executing 'loading-noregister' file didn't register the element. Ignore if you are registering element in a promise or async function.");
+  });
+
+  it('does on progress in load', async () => {
+    const per = await page.evaluate(async () => {
+      let per;
+      try {
+        await Sifrr.Dom.load('main-element', { onProgress: (per) => { throw Error(per); } });
+      } catch (e) {
+        per = e.message;
+      }
+      return per;
+    });
+
+    expect(parseInt(per, 10)).to.be.at.most(100);
   });
 });

@@ -695,7 +695,7 @@
       return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
     }
     executeScripts(js) {
-      if (this._executed) return window.console.log(`'${this.elementName}' element's javascript was already executed`);
+      if (this._executed) throw Error(`'${this.elementName}' element's javascript was already executed`);
       this._executed = true;
       if (!js) {
         return this.executeHTMLScripts();
@@ -968,7 +968,7 @@
       }
     }).catch(e => {
       SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
-      window.console.error(e);
+      throw e;
     });
   };
   SifrrDom.loading = () => {

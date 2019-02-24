@@ -14,7 +14,6 @@ class Request {
           const contentLength = resp.headers.get('content-length');
           const total = parseInt(contentLength,10);
           if (!total || !resp.body) {
-            window.console.log('no body');
             me._options.onProgress(100);
           } else {
             const reader = resp.body.getReader();
@@ -44,6 +43,7 @@ class Request {
           isJson
         };
       } else {
+        if (typeof me._options.onProgress === 'function') me._options.onProgress(100);
         let error = Error(resp.statusText);
         error.response = resp;
         throw error;
