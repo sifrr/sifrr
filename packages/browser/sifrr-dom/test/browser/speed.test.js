@@ -69,7 +69,7 @@ describe('Siffr.Dom', function() {
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
         // assert.isAtMost(bmd['TotalDuration'], ExpectedTotalDurations[bm], `${bm} duration should be ${ExpectedTotalDurations[bm]}, but was ${bmd['TotalDuration']}`);
 
-        global.console.log(bm, '(se-nokey total duration in ms): ', bmd['TotalDuration']);
+        global.console.log(bm, '(se-nokey total duration in ms): ', bmd['TaskDuration']);
       });
 
       it(`passes ${bm} Speedtest with sifrrElement`, async () => {
@@ -77,7 +77,7 @@ describe('Siffr.Dom', function() {
         const bmd = results[bm];
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-        global.console.log(bm, '(sf-nokey total duration in ms): ', bmd['TotalDuration']);
+        global.console.log(bm, '(sf-nokey total duration in ms): ', bmd['TaskDuration']);
       });
 
       it(`passes ${bm} Speedtest with simpleElement (keyed)`, async () => {
@@ -85,7 +85,7 @@ describe('Siffr.Dom', function() {
         const bmd = results[bm];
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-        global.console.log(bm, '(se-keyed total duration in ms): ', bmd['TotalDuration']);
+        global.console.log(bm, '(se-keyed total duration in ms): ', bmd['TaskDuration']);
       });
 
       it(`passes ${bm} Speedtest with sifrrElement (keyed)`, async () => {
@@ -93,7 +93,7 @@ describe('Siffr.Dom', function() {
         const bmd = results[bm];
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-        global.console.log(bm, '(sf-keyed total duration in ms): ', bmd['TotalDuration']);
+        global.console.log(bm, '(sf-keyed total duration in ms): ', bmd['TaskDuration']);
       });
     });
   }

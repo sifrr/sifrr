@@ -15,6 +15,19 @@ function customElementUpdate(element, stateMap) {
     const data = stateMap[i].ref;
     const dom = element._refs[i];
 
+    // Fast path for text nodes
+    if (data.type === 0) {
+      // state node
+      const newValue = element.state[data.text];
+      if (dom.data != newValue) dom.data = newValue;
+      continue;
+    } else if (data.type === 1) {
+      // text node
+      const newValue = evaluateBindings(data.text, element);
+      if (dom.data != newValue) dom.data = newValue;
+      continue;
+    }
+
     // update attributes
     if (data.attributes) {
       for(let key in data.attributes) {
@@ -39,10 +52,7 @@ function customElementUpdate(element, stateMap) {
     // update element
     const newValue = evaluateBindings(data.text, element);
 
-    if (data.type === 0) {
-      // text node
-      if (dom.data != newValue) dom.data = newValue;
-    } else if (data.type === 2) {
+    if (data.type === 3) {
       // repeat
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
