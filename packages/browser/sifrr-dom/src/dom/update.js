@@ -22,11 +22,14 @@ function customElementUpdate(element, stateMap) {
           const val = evaluateBindings(data.attributes[key], element);
           updateAttribute(dom, key, val);
         } else {
-          for(let event in data.attributes.events) {
-            const eventLis = evaluateBindings(data.attributes.events[event], element);
-            dom[event] = eventLis;
+          if (!dom._sifrrEventSet) {
+            for(let event in data.attributes.events) {
+              const eventLis = evaluateBindings(data.attributes.events[event], element);
+              dom[event] = eventLis;
+            }
+            dom._root = element;
+            dom._sifrrEventSet = true;
           }
-          dom._root = element;
         }
       }
     }

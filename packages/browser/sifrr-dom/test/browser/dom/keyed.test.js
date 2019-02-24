@@ -1,8 +1,10 @@
-function getIds() {
+function getStates() {
   const nodes = document.body.$('main-element').$$('tr'), l = nodes.length;
   const ret = [];
   for (let i = 0; i < l; i++) {
-    ret.push(nodes[i].$('td').textContent);
+    ret.push({
+      id: nodes[i].$('td').firstChild.data
+    });
   }
   return ret;
 }
@@ -70,7 +72,7 @@ describe('Sifrr.Dom.keyed', () => {
       await page.evaluate(() => document.body.$('main-element').$('#run').click());
       await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
       const arrangedKeyed = await page.evaluate(arrangements[i]);
-      const arrangementKeyed = await page.evaluate(getIds);
+      const arrangementKeyed = await page.evaluate(getStates);
 
       await page.goto(`${PATH}/speedtest.html`);
       await page.evaluate(async () => { await Sifrr.Dom.loading(); });
@@ -78,7 +80,7 @@ describe('Sifrr.Dom.keyed', () => {
       await page.evaluate(() => document.body.$('main-element').$('#run').click());
       await page.waitForFunction("document.body.$('main-element').$$('tr').length === 1000");
       const arrangedNonKeyed = await page.evaluate(arrangements[i]);
-      const arrangementNonKeyed = await page.evaluate(getIds);
+      const arrangementNonKeyed = await page.evaluate(getStates);
 
       expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
       assert.equal(arrangedKeyed, true);

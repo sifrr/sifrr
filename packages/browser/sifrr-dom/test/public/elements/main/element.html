@@ -71,7 +71,7 @@
     return Math.round(Math.random() * 1000) % max;
   }
 
-  let buildData = window.buildData = function(count = 1000) {
+  let buildData = window.buildData = function(count = 1000, frm = from) {
     const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
       'cheap', 'expensive', 'fancy'
     ];
@@ -80,7 +80,7 @@
     let data = [];
     for (let i = 0; i < count; i++)
       data.push({
-        id: i + from,
+        id: i + frm,
         label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)],
         class: ''
       });

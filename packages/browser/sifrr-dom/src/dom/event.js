@@ -3,20 +3,20 @@ const SYNTHETIC_EVENTS = {};
 const opts = { capture: true, passive: true };
 
 const nativeToSyntheticEvent = (e, name) => {
-  return Promise.resolve((() => {
-    const target = e.composedPath ? e.composedPath()[0] : e.target;
-    let dom = target;
-    while(dom) {
-      const eventHandler = dom[`_${name}`] || (dom.getAttribute ? dom.getAttribute(`_${name}`) : null);
+  const target = e.composedPath ? e.composedPath()[0] : e.target;
+  let dom = target;
+  while(dom) {
+    Promise.resolve((() => {
+      const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
       if (typeof eventHandler === 'function') {
         eventHandler.call(dom._root || window, e, target);
       } else if (typeof eventHandler === 'string') {
         new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
       }
       cssMatchEvent(e, name, dom, target);
-      dom = dom.parentNode || dom.host;
-    }
-  })());
+    })());
+    dom = dom.parentNode || dom.host;
+  }
 };
 
 const cssMatchEvent = (e, name, dom, target) => {

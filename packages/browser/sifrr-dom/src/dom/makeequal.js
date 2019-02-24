@@ -10,26 +10,8 @@ function makeChildrenEqual(parent, newChildren, createFn) {
     return;
   }
 
-  // Fast path for create
-  if (oldL === 0) {
-    let addition;
-    for(let i = 0; i < newL; i++) {
-      addition = newChildren[i];
-      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
-      parent.appendChild(addition);
-    }
-    return;
-  }
-
-  // Lesser children now
-  if (oldL > newL) {
-    let i = oldL;
-    while(i > newL) {
-      parent.removeChild(parent.lastChild);
-      i--;
-    }
   // More Children now
-  } else if (oldL < newL) {
+  if (oldL < newL) {
     let i = oldL, addition;
     while(i < newL) {
       addition = newChildren[i];
@@ -37,7 +19,17 @@ function makeChildrenEqual(parent, newChildren, createFn) {
       parent.appendChild(addition);
       i++;
     }
+  // Lesser children now
+  } else if (oldL > newL) {
+    let i = oldL;
+    while(i > newL) {
+      parent.removeChild(parent.lastChild);
+      i--;
+    }
   }
+
+  // Fast path for create
+  if (oldL === 0) return;
 
   const l = Math.min(newL, oldL);
   // Make old children equal to new children
@@ -61,6 +53,7 @@ function makeEqual(oldNode, newNode) {
     return newNode;
   }
 
+  // Text or comment node
   if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
     if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
     return oldNode;
@@ -70,15 +63,14 @@ function makeEqual(oldNode, newNode) {
   if (newNode.state) oldNode.state = newNode.state;
 
   // copy Attributes
-  let oldAttrs = oldNode.attributes, newAttrs = newNode.attributes, attr;
+  const oldAttrs = oldNode.attributes, newAttrs = newNode.attributes;
   for (let i = newAttrs.length - 1; i >= 0; --i) {
     updateAttribute(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
 
   // Remove any extra attributes
   for (let j = oldAttrs.length - 1; j >= 0; --j) {
-    attr = oldAttrs[j];
-    if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
+    if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
   }
 
   // make children equal

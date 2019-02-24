@@ -100,6 +100,14 @@ function replace() {
   return document.body.$('main-element').$$('tr').length === 1000;
 }
 
+function updateAll() {
+  const data = document.body.$('main-element').state.data;
+  data.splice(0, 1000, ...window.buildData(1000, 1));
+  document.body.$('main-element').update();
+
+  return document.body.$('main-element').$$('tr').length === 1000;
+}
+
 function replaceAndAdd() {
   const data = document.body.$('main-element').state.data;
   data.splice(789, 50, ...window.buildData(100));
@@ -116,5 +124,4 @@ function replaceAndRemove() {
   return document.body.$('main-element').$$('tr').length === 950;
 }
 
-module.exports = [swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];
-module.exports = [rearrange, rearrange2];
+module.exports = [swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, updateAll, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];

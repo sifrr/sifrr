@@ -144,22 +144,7 @@
       parent.textContent = '';
       return;
     }
-    if (oldL === 0) {
-      let addition;
-      for (let i = 0; i < newL; i++) {
-        addition = newChildren[i];
-        if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
-        parent.appendChild(addition);
-      }
-      return;
-    }
-    if (oldL > newL) {
-      let i = oldL;
-      while (i > newL) {
-        parent.removeChild(parent.lastChild);
-        i--;
-      }
-    } else if (oldL < newL) {
+    if (oldL < newL) {
       let i = oldL,
           addition;
       while (i < newL) {
@@ -168,7 +153,14 @@
         parent.appendChild(addition);
         i++;
       }
+    } else if (oldL > newL) {
+      let i = oldL;
+      while (i > newL) {
+        parent.removeChild(parent.lastChild);
+        i--;
+      }
     }
+    if (oldL === 0) return;
     const l = Math.min(newL, oldL);
     for (let i = 0, item, head = parent.firstChild; i < l; i++) {
       item = newChildren[i];
@@ -191,15 +183,13 @@
       return oldNode;
     }
     if (newNode.state) oldNode.state = newNode.state;
-    let oldAttrs = oldNode.attributes,
-        newAttrs = newNode.attributes,
-        attr;
+    const oldAttrs = oldNode.attributes,
+          newAttrs = newNode.attributes;
     for (let i = newAttrs.length - 1; i >= 0; --i) {
       updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
     }
     for (let j = oldAttrs.length - 1; j >= 0; --j) {
-      attr = oldAttrs[j];
-      if (!newNode.hasAttribute(attr.name)) oldNode.removeAttribute(attr.name);
+      if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
     }
     makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
     return oldNode;
@@ -212,7 +202,7 @@
   const {
     makeEqual: makeEqual$1
   } = makeequal;
-  function makeChildrenEqualKeyed(parent, newData, createFn = x => x, key) {
+  function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     const newL = newData.length;
     if (newL === 0) {
       parent.textContent = '';
@@ -225,12 +215,6 @@
       }
       return;
     }
-    const oldData = [];
-    let _node = parent.firstChild;
-    while (_node) {
-      oldData.push(_node.state);
-      _node = _node.nextSibling;
-    }
     let prevStart = 0,
         newStart = 0,
         loop = true,
@@ -240,19 +224,20 @@
         prevEndNode = parent.lastChild,
         finalNode,
         a,
-        b;
+        b,
+        _node;
     fixes: while (loop) {
       loop = false;
-      a = oldData[prevStart], b = newData[newStart];
+      a = prevStartNode.state, b = newData[newStart];
       while (a[key] === b[key]) {
         makeEqual$1(prevStartNode, b);
         prevStart++;
         prevStartNode = prevStartNode.nextSibling;
         newStart++;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevStart], b = newData[newStart];
+        a = prevStartNode.state, b = newData[newStart];
       }
-      a = oldData[prevEnd], b = newData[newEnd];
+      a = prevEndNode.state, b = newData[newEnd];
       while (a[key] === b[key]) {
         makeEqual$1(prevEndNode, b);
         prevEnd--;
@@ -260,9 +245,9 @@
         prevEndNode = prevEndNode.previousSibling;
         newEnd--;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevEnd], b = newData[newEnd];
+        a = prevEndNode.state, b = newData[newEnd];
       }
-      a = oldData[prevEnd], b = newData[newStart];
+      a = prevEndNode.state, b = newData[newStart];
       while (a[key] === b[key]) {
         loop = true;
         makeEqual$1(prevEndNode, b);
@@ -272,9 +257,9 @@
         prevEnd--;
         newStart++;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevEnd], b = newData[newStart];
+        a = prevEndNode.state, b = newData[newStart];
       }
-      a = oldData[prevStart], b = newData[newEnd];
+      a = prevStartNode.state, b = newData[newEnd];
       while (a[key] === b[key]) {
         loop = true;
         makeEqual$1(prevStartNode, b);
@@ -286,7 +271,7 @@
         prevStart++;
         newEnd--;
         if (prevEnd < prevStart || newEnd < newStart) break fixes;
-        a = oldData[prevStart], b = newData[newEnd];
+        a = prevStartNode.state, b = newData[newEnd];
       }
     }
     if (newEnd < newStart) {
@@ -318,47 +303,34 @@
     }
     const oldKeys = new Array(newEnd + 1 - newStart),
           newKeys = new Map(),
+          nodes = [],
           toDelete = [];
     for (let i = newStart; i <= newEnd; i++) {
       oldKeys[i] = -1;
       newKeys.set(newData[i][key], i);
     }
     let reusingNodes = 0;
-    for (let i = prevStart; i <= prevEnd; i++) {
-      if (newKeys.has(oldData[i][key])) {
-        oldKeys[newKeys.get(oldData[i][key])] = i;
+    while (prevStart <= prevEnd) {
+      if (newKeys.has(prevStartNode.state[key])) {
+        oldKeys[newKeys.get(prevStartNode.state[key])] = prevStart;
         reusingNodes++;
       } else {
-        toDelete.push(i);
+        toDelete.push(prevStartNode);
       }
-    }
-    if (reusingNodes === 0) {
-      for (let i = newStart; i <= newEnd; i++) {
-        if (i > prevEnd) {
-          parent.insertBefore(createFn(newData[i]), prevStartNode);
-        } else {
-          _node = prevStartNode.nextSibling;
-          prevStartNode.replaceWith(createFn(newData[i]));
-          prevStartNode = _node;
-        }
-      }
-      if (newEnd < prevEnd) {
-        while (newEnd < prevEnd) {
-          _node = prevEndNode.previousSibling;
-          parent.removeChild(prevEndNode);
-          prevEndNode = _node;
-          prevEnd--;
-        }
-      }
-      return;
-    }
-    const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
-    const nodes = [];
-    while (prevStart <= prevEnd) {
       nodes[prevStart] = prevStartNode;
       prevStartNode = prevStartNode.nextSibling;
       prevStart++;
     }
+    if (reusingNodes === 0) {
+      for (let i = newStart; i <= newEnd; i++) {
+        parent.insertBefore(createFn(newData[i]), prevStartNode);
+      }
+      for (let i = 0; i < toDelete.length; i++) {
+        parent.removeChild(toDelete[i]);
+      }
+      return;
+    }
+    const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
     let lisIdx = longestSeq.length - 1,
         tmpD;
     for (let i = newEnd; i >= newStart; i--) {
@@ -378,7 +350,7 @@
       }
     }
     for (let i = 0; i < toDelete.length; i++) {
-      parent.removeChild(nodes[toDelete[i]]);
+      parent.removeChild(toDelete[i]);
     }
   }
   function longestPositiveIncreasingSubsequence(ns, newStart) {
@@ -500,11 +472,14 @@
             const val = evaluateBindings(data.attributes[key], element);
             updateattribute(dom, key, val);
           } else {
-            for (let event in data.attributes.events) {
-              const eventLis = evaluateBindings(data.attributes.events[event], element);
-              dom[event] = eventLis;
+            if (!dom._sifrrEventSet) {
+              for (let event in data.attributes.events) {
+                const eventLis = evaluateBindings(data.attributes.events[event], element);
+                dom[event] = eventLis;
+              }
+              dom._root = element;
+              dom._sifrrEventSet = true;
             }
-            dom._root = element;
           }
         }
       }
@@ -628,21 +603,16 @@
     }
     return 0;
   }
-  var creator = {
-    creator: customElementCreator
-  };
+  var creator = customElementCreator;
 
   const {
     collect: collect$1,
     create: create$1
   } = ref;
-  const {
-    creator: creator$1
-  } = creator;
   const Parser = {
     collectRefs: collect$1,
     collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'rollSimple'),
-    createStateMap: element => create$1(element, creator$1),
+    createStateMap: element => create$1(element, creator),
     twoWayBind: e => {
       const target = e.composedPath ? e.composedPath()[0] : e.target;
       if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
@@ -852,20 +822,20 @@
     passive: true
   };
   const nativeToSyntheticEvent = (e, name) => {
-    return Promise.resolve((() => {
-      const target = e.composedPath ? e.composedPath()[0] : e.target;
-      let dom = target;
-      while (dom) {
-        const eventHandler = dom[`_${name}`] || (dom.getAttribute ? dom.getAttribute(`_${name}`) : null);
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    let dom = target;
+    while (dom) {
+      Promise.resolve((() => {
+        const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
         if (typeof eventHandler === 'function') {
           eventHandler.call(dom._root || window, e, target);
         } else if (typeof eventHandler === 'string') {
           new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
         }
         cssMatchEvent(e, name, dom, target);
-        dom = dom.parentNode || dom.host;
-      }
-    })());
+      })());
+      dom = dom.parentNode || dom.host;
+    }
   };
   const cssMatchEvent = (e, name, dom, target) => {
     function callEach(fxns) {

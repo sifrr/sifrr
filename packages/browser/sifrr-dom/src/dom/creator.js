@@ -46,6 +46,4 @@ function customElementCreator(el, filter) {
   return 0;
 }
 
-module.exports = {
-  creator: customElementCreator
-};
+module.exports = customElementCreator;

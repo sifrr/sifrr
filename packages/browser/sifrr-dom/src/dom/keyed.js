@@ -11,7 +11,7 @@ const { makeEqual } = require('./makeequal');
 // How this implementation differs from others, is that it's working with data directly,
 // without maintaining nodes arrays, and uses manipukates dom only when required
 
-function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
+function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   // Fast path for clear
   const newL = newData.length;
   if (newL === 0) {
@@ -28,12 +28,6 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     return;
   }
 
-  const oldData = []; let _node = parent.firstChild;
-  while(_node) {
-    oldData.push(_node.state);
-    _node = _node.nextSibling;
-  }
-
   // reconciliation
   let prevStart = 0,
     newStart = 0,
@@ -42,24 +36,24 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     prevStartNode = parent.firstChild,
     prevEndNode = parent.lastChild,
     finalNode,
-    a, b;
+    a, b, _node;
 
   fixes: while(loop) {
     loop = false;
 
     // Skip prefix
-    a = oldData[prevStart], b = newData[newStart];
+    a = prevStartNode.state, b = newData[newStart];
     while(a[key] === b[key]) {
       makeEqual(prevStartNode, b);
       prevStart++;
       prevStartNode = prevStartNode.nextSibling;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevStart], b = newData[newStart];
+      a = prevStartNode.state, b = newData[newStart];
     }
 
     // Skip suffix
-    a = oldData[prevEnd], b = newData[newEnd];
+    a = prevEndNode.state, b = newData[newEnd];
     while(a[key] === b[key]) {
       makeEqual(prevEndNode, b);
       prevEnd--;
@@ -67,11 +61,11 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
       prevEndNode = prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevEnd], b = newData[newEnd];
+      a = prevEndNode.state, b = newData[newEnd];
     }
 
     // Fast path to swap backward
-    a = oldData[prevEnd], b = newData[newStart];
+    a = prevEndNode.state, b = newData[newStart];
     while(a[key] === b[key]) {
       loop = true;
       makeEqual(prevEndNode, b);
@@ -81,11 +75,11 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevEnd], b = newData[newStart];
+      a = prevEndNode.state, b = newData[newStart];
     }
 
     // Fast path to swap forward
-    a = oldData[prevStart], b = newData[newEnd];
+    a = prevStartNode.state, b = newData[newEnd];
     while(a[key] === b[key]) {
       loop = true;
       makeEqual(prevStartNode, b);
@@ -97,7 +91,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = oldData[prevStart], b = newData[newEnd];
+      a = prevStartNode.state, b = newData[newEnd];
     }
   }
 
@@ -132,7 +126,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
     return;
   }
 
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), toDelete = [];
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = [], toDelete = [];
 
   for(let i = newStart; i <= newEnd; i++) {
     // Positions for reusing nodes from current DOM state
@@ -142,47 +136,32 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   }
 
   let reusingNodes = 0;
-  for(let i = prevStart; i <= prevEnd; i++) {
-    if (newKeys.has(oldData[i][key])) {
-      oldKeys[newKeys.get(oldData[i][key])] = i;
+  while (prevStart <= prevEnd) {
+    if (newKeys.has(prevStartNode.state[key])) {
+      oldKeys[newKeys.get(prevStartNode.state[key])] = prevStart;
       reusingNodes++;
     } else {
-      toDelete.push(i);
+      toDelete.push(prevStartNode);
     }
+    nodes[prevStart] = prevStartNode;
+    prevStartNode = prevStartNode.nextSibling;
+    prevStart++;
   }
 
   // Fast path for full replace
   if (reusingNodes === 0) {
     for(let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      if (i > prevEnd) {
-        parent.insertBefore(createFn(newData[i]), prevStartNode);
-      } else {
-        _node = prevStartNode.nextSibling;
-        prevStartNode.replaceWith(createFn(newData[i]));
-        prevStartNode = _node;
-      }
+      parent.insertBefore(createFn(newData[i]), prevStartNode);
     }
     // Remove extra nodes
-    if (newEnd < prevEnd) {
-      while (newEnd < prevEnd) {
-        _node = prevEndNode.previousSibling;
-        parent.removeChild(prevEndNode);
-        prevEndNode = _node;
-        prevEnd--;
-      }
+    for(let i = 0; i < toDelete.length; i++) {
+      parent.removeChild(toDelete[i]);
     }
     return;
   }
 
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
-
-  const nodes = [];
-  while(prevStart <= prevEnd) {
-    nodes[prevStart] = prevStartNode;
-    prevStartNode = prevStartNode.nextSibling;
-    prevStart++;
-  }
 
   let lisIdx = longestSeq.length - 1, tmpD;
   for(let i = newEnd; i >= newStart; i--) {
@@ -203,7 +182,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn = (x) => x, key) {
   }
 
   for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(nodes[toDelete[i]]);
+    parent.removeChild(toDelete[i]);
   }
 }
 

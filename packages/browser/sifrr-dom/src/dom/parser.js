@@ -1,5 +1,5 @@
 const { collect, create } = require('./ref');
-const { creator } = require('./creator');
+const creator = require('./creator');
 
 const Parser = {
   collectRefs: collect,
