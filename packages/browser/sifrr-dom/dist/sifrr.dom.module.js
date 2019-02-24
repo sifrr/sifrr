@@ -11,6 +11,7 @@ var constants = {
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,
   OUTER_REGEX: new RegExp(reg, 'g'),
+  STATE_REGEX: /^\$\{this\.state\.([a-zA-Z0-9_$]+)\}$/,
   HTML_ATTR: 'data-sifrr-html',
   REPEAT_ATTR: 'data-sifrr-repeat',
   KEY_ATTR: 'data-sifrr-key'
@@ -369,7 +370,7 @@ var keyed = {
   longestPositiveIncreasingSubsequence
 };
 
-const { OUTER_REGEX } = constants;
+const { OUTER_REGEX, STATE_REGEX } = constants;
 function replacer(match) {
   let f;
   if (match.indexOf('return ') >= 0) {
@@ -394,7 +395,7 @@ function evaluate(fxn, el) {
     window.console.error(e);
   }
 }
-var bindings = {
+const Bindings = {
   getBindingFxns: (string) => {
     const splitted = string.split(OUTER_REGEX), l = splitted.length, ret = [];
     for (let i = 0; i < l; i++) {
@@ -404,15 +405,20 @@ var bindings = {
     }
     return ret;
   },
+  getStringBindingFxn: (string) => {
+    const match = string.match(STATE_REGEX);
+    if (match) return match[1];
+    return Bindings.getBindingFxns(string);
+  },
   evaluateBindings: (fxns, element) => {
-    if (fxns.length === 1) {
-      return evaluate(fxns[0], element);
-    }
+    if (typeof fxns === 'function') return evaluate(fxns, element);
+    if (fxns.length === 1) return evaluate(fxns[0], element);
     return fxns.map(fxn => evaluate(fxn, element)).join('');
   },
   evaluate: evaluate,
   replacer: replacer
 };
+var bindings = Bindings;
 
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
@@ -427,6 +433,15 @@ function customElementUpdate(element, stateMap) {
   for (let i = 0; i < l; i++) {
     const data = stateMap[i].ref;
     const dom = element._refs[i];
+    if (data.type === 0) {
+      const newValue = element.state[data.text];
+      if (dom.data != newValue) dom.data = newValue;
+      continue;
+    } else if (data.type === 1) {
+      const newValue = evaluateBindings(data.text, element);
+      if (dom.data != newValue) dom.data = newValue;
+      continue;
+    }
     if (data.attributes) {
       for(let key in data.attributes) {
         if (key !== 'events') {
@@ -446,9 +461,7 @@ function customElementUpdate(element, stateMap) {
     }
     if (data.text === undefined) continue;
     const newValue = evaluateBindings(data.text, element);
-    if (data.type === 0) {
-      if (dom.data != newValue) dom.data = newValue;
-    } else if (data.type === 2) {
+    if (data.type === 3) {
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
@@ -513,7 +526,7 @@ var simpleelement = SimpleElement;
 
 const { getBindingFxns } = bindings;
 var repeatref = (sm, el, attr) => {
-  sm.type = 2;
+  sm.type = 3;
   sm.se = simpleelement(el.childNodes);
   sm.text = getBindingFxns(el.getAttribute(attr));
   el.textContent = '';
@@ -521,20 +534,30 @@ var repeatref = (sm, el, attr) => {
 };
 
 const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, REPEAT_ATTR } = constants;
-const { getBindingFxns: getBindingFxns$1 } = bindings;
+const { getBindingFxns: getBindingFxns$1, getStringBindingFxn } = bindings;
 function customElementCreator(el, filter) {
   if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
     const x = el.data;
-    if (x.indexOf('${') > -1) return {
-      type: 0,
-      text: getBindingFxns$1(x.trim())
-    };
+    if (x.indexOf('${') > -1) {
+      const binding = getStringBindingFxn(x.trim());
+      if (typeof binding !== 'string') {
+        return {
+          type: 1,
+          text: binding
+        };
+      } else {
+        return {
+          type: 0,
+          text: binding
+        };
+      }
+    }
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     if (filter(el)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
-        sm.type = 1;
+        sm.type = 2;
         sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
     } else if (el.hasAttribute(REPEAT_ATTR)) {

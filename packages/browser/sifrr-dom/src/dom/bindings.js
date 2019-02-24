@@ -1,4 +1,4 @@
-const { OUTER_REGEX } = require('./constants');
+const { OUTER_REGEX, STATE_REGEX } = require('./constants');
 
 function replacer(match) {
   let f;
@@ -26,7 +26,7 @@ function evaluate(fxn, el) {
   }
 }
 
-module.exports = {
+const Bindings = {
   getBindingFxns: (string) => {
     const splitted = string.split(OUTER_REGEX), l = splitted.length, ret = [];
     for (let i = 0; i < l; i++) {
@@ -36,12 +36,18 @@ module.exports = {
     }
     return ret;
   },
+  getStringBindingFxn: (string) => {
+    const match = string.match(STATE_REGEX);
+    if (match) return match[1];
+    return Bindings.getBindingFxns(string);
+  },
   evaluateBindings: (fxns, element) => {
-    if (fxns.length === 1) {
-      return evaluate(fxns[0], element);
-    }
+    if (typeof fxns === 'function') return evaluate(fxns, element);
+    if (fxns.length === 1) return evaluate(fxns[0], element);
     return fxns.map(fxn => evaluate(fxn, element)).join('');
   },
   evaluate: evaluate,
   replacer: replacer
 };
+
+module.exports = Bindings;
