@@ -889,10 +889,10 @@ SifrrDom.setup = function(config) {
 };
 SifrrDom.load = function(elemName, { url, js = true, onProgress } = {}) {
   if (window.customElements.get(elemName)) { return window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`); }
-  let loader$$1 = new SifrrDom.Loader(elemName, url, onProgress);
+  let loader = new SifrrDom.Loader(elemName, url, onProgress);
   const wd = customElements.whenDefined(elemName);
   SifrrDom.loadingElements.push(wd);
-  return loader$$1.executeScripts(js).then(() => {
+  return loader.executeScripts(js).then(() => {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
     }

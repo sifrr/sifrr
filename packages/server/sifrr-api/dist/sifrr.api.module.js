@@ -1,7 +1,7 @@
 /*! Sifrr.Api v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import graphqlSequelize from 'graphql-sequelize';
 import sequelize from 'sequelize';
-import graphql from 'graphql';
+import graphql$1 from 'graphql';
 import fs from 'fs';
 import path from 'path';
 import graphqlTools from 'graphql-tools';
@@ -175,7 +175,7 @@ Model.gqQuery = {};
 Model.gqExtraArgs = {};
 var model = Model;
 
-const { graphql: graphql$1 } = graphql;
+const { graphql } = graphql$1;
 class ExpressToGraphql {
   constructor(schema) {
     this._schema = schema;
@@ -185,7 +185,7 @@ class ExpressToGraphql {
     this._middlewares.forEach((m) => {
       m(req, context);
     });
-    return graphql$1({
+    return graphql({
       schema: this._schema,
       source: query,
       contextValue: context

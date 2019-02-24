@@ -7,7 +7,7 @@ set -ex
 
 # Add files left to generate
 git add -A
-(git commit -m "chore: Add dist files" && git push) || echo 'Dist files up to date'
+(git commit -m "chore: Add dist files" && git push && exit 0) || echo 'Dist files up to date'
 
 ./scripts/release/tag || exit 0
 ./node_modules/.bin/semantic-release
