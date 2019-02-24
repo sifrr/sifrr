@@ -9,21 +9,22 @@ function customElementUpdate(element, stateMap) {
     return false;
   }
   stateMap = stateMap || element.constructor.stateMap;
+  let data, dom, newValue;
   // Update nodes
   const l = element._refs.length;
   for (let i = 0; i < l; i++) {
-    const data = stateMap[i].ref;
-    const dom = element._refs[i];
+    data = stateMap[i].ref;
+    dom = element._refs[i];
 
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      const newValue = element.state[data.text];
+      newValue = element.state[data.text];
       if (dom.data != newValue) dom.data = newValue;
       continue;
     } else if (data.type === 1) {
       // text node
-      const newValue = evaluateBindings(data.text, element);
+      newValue = evaluateBindings(data.text, element);
       if (dom.data != newValue) dom.data = newValue;
       continue;
     }
@@ -37,8 +38,7 @@ function customElementUpdate(element, stateMap) {
         } else {
           if (!dom._sifrrEventSet) {
             for(let event in data.attributes.events) {
-              const eventLis = evaluateBindings(data.attributes.events[event], element);
-              dom[event] = eventLis;
+              dom[event] = evaluateBindings(data.attributes.events[event], element);
             }
             dom._root = element;
             dom._sifrrEventSet = true;
@@ -50,7 +50,7 @@ function customElementUpdate(element, stateMap) {
     if (data.text === undefined) continue;
 
     // update element
-    const newValue = evaluateBindings(data.text, element);
+    newValue = evaluateBindings(data.text, element);
 
     if (data.type === 3) {
       // repeat

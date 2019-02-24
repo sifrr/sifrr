@@ -34,6 +34,7 @@ const Bindings = {
         ret.push(replacer(splitted[i].slice(2, -1)));
       } else if (splitted[i]) ret.push(splitted[i]);
     }
+    if (ret.length === 1) return ret[0];
     return ret;
   },
   getStringBindingFxn: (string) => {
@@ -43,7 +44,6 @@ const Bindings = {
   },
   evaluateBindings: (fxns, element) => {
     if (typeof fxns === 'function') return evaluate(fxns, element);
-    if (fxns.length === 1) return evaluate(fxns[0], element);
     return fxns.map(fxn => evaluate(fxn, element)).join('');
   },
   evaluate: evaluate,

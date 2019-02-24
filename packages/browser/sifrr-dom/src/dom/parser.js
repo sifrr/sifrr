@@ -3,7 +3,7 @@ const creator = require('./creator');
 
 const Parser = {
   collectRefs: collect,
-  collectRefsSimple: (element, stateMap) => collect(element, stateMap, 'rollSimple'),
+  collectRefsSimple: (element, stateMap) => collect(element, stateMap, 'nextNode'),
   createStateMap: (element) => create(element, creator),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;

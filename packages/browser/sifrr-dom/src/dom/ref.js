@@ -7,34 +7,27 @@ function isHtml(el) {
   return el.hasAttribute && el.hasAttribute(HTML_ATTR);
 }
 
-TREE_WALKER.nextNonfilterNode = function(node) {
+TREE_WALKER.nextFilteredNode = function() {
+  let node = this.currentNode;
   if (isHtml(node)){
     node = this.nextSibling() || (this.parentNode(), this.nextSibling());
   } else node = this.nextNode();
   return node;
 };
 
-TREE_WALKER.roll = function(n) {
+TREE_WALKER.roll = function(n, next = 'nextFilteredNode') {
   let node = this.currentNode;
   while(--n) {
-    node = this.nextNonfilterNode(node);
+    node = this[next]();
   }
   return node;
 };
 
-TREE_WALKER.rollSimple = function(n) {
-  let node;
-  while(--n) {
-    node = this.nextNode();
-  }
-  return node || this.currentNode;
-};
-
-function collect(element, stateMap, roll = 'roll') {
+function collect(element, stateMap, next) {
   const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
   for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER[roll](stateMap[i].idx));
+    refs.push(TREE_WALKER.roll(stateMap[i].idx, next));
   }
   return refs;
 }
@@ -50,7 +43,7 @@ function create(node, fxn) {
     } else {
       idx++;
     }
-    node = TREE_WALKER.nextNonfilterNode(node);
+    node = TREE_WALKER.nextFilteredNode(node);
   }
 
   return indices;

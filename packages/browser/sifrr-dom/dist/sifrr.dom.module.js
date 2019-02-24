@@ -22,31 +22,25 @@ const { HTML_ATTR } = constants;
 function isHtml(el) {
   return el.hasAttribute && el.hasAttribute(HTML_ATTR);
 }
-TREE_WALKER.nextNonfilterNode = function(node) {
+TREE_WALKER.nextFilteredNode = function() {
+  let node = this.currentNode;
   if (isHtml(node)){
     node = this.nextSibling() || (this.parentNode(), this.nextSibling());
   } else node = this.nextNode();
   return node;
 };
-TREE_WALKER.roll = function(n) {
+TREE_WALKER.roll = function(n, next = 'nextFilteredNode') {
   let node = this.currentNode;
   while(--n) {
-    node = this.nextNonfilterNode(node);
+    node = this[next]();
   }
   return node;
 };
-TREE_WALKER.rollSimple = function(n) {
-  let node;
-  while(--n) {
-    node = this.nextNode();
-  }
-  return node || this.currentNode;
-};
-function collect(element, stateMap, roll = 'roll') {
+function collect(element, stateMap, next) {
   const refs = [], l = stateMap.length;
   TREE_WALKER.currentNode = element;
   for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER[roll](stateMap[i].idx));
+    refs.push(TREE_WALKER.roll(stateMap[i].idx, next));
   }
   return refs;
 }
@@ -60,7 +54,7 @@ function create(node, fxn) {
     } else {
       idx++;
     }
-    node = TREE_WALKER.nextNonfilterNode(node);
+    node = TREE_WALKER.nextFilteredNode(node);
   }
   return indices;
 }
@@ -403,6 +397,7 @@ const Bindings = {
         ret.push(replacer(splitted[i].slice(2, -1)));
       } else if (splitted[i]) ret.push(splitted[i]);
     }
+    if (ret.length === 1) return ret[0];
     return ret;
   },
   getStringBindingFxn: (string) => {
@@ -412,7 +407,6 @@ const Bindings = {
   },
   evaluateBindings: (fxns, element) => {
     if (typeof fxns === 'function') return evaluate(fxns, element);
-    if (fxns.length === 1) return evaluate(fxns[0], element);
     return fxns.map(fxn => evaluate(fxn, element)).join('');
   },
   evaluate: evaluate,
@@ -429,16 +423,17 @@ function customElementUpdate(element, stateMap) {
     return false;
   }
   stateMap = stateMap || element.constructor.stateMap;
+  let data, dom, newValue;
   const l = element._refs.length;
   for (let i = 0; i < l; i++) {
-    const data = stateMap[i].ref;
-    const dom = element._refs[i];
+    data = stateMap[i].ref;
+    dom = element._refs[i];
     if (data.type === 0) {
-      const newValue = element.state[data.text];
+      newValue = element.state[data.text];
       if (dom.data != newValue) dom.data = newValue;
       continue;
     } else if (data.type === 1) {
-      const newValue = evaluateBindings(data.text, element);
+      newValue = evaluateBindings(data.text, element);
       if (dom.data != newValue) dom.data = newValue;
       continue;
     }
@@ -450,8 +445,7 @@ function customElementUpdate(element, stateMap) {
         } else {
           if (!dom._sifrrEventSet) {
             for(let event in data.attributes.events) {
-              const eventLis = evaluateBindings(data.attributes.events[event], element);
-              dom[event] = eventLis;
+              dom[event] = evaluateBindings(data.attributes.events[event], element);
             }
             dom._root = element;
             dom._sifrrEventSet = true;
@@ -460,7 +454,7 @@ function customElementUpdate(element, stateMap) {
       }
     }
     if (data.text === undefined) continue;
-    const newValue = evaluateBindings(data.text, element);
+    newValue = evaluateBindings(data.text, element);
     if (data.type === 3) {
       const key = dom.getAttribute(KEY_ATTR);
       if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
@@ -584,7 +578,7 @@ var creator = customElementCreator;
 const { collect: collect$1, create: create$1 } = ref;
 const Parser = {
   collectRefs: collect$1,
-  collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'rollSimple'),
+  collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'nextNode'),
   createStateMap: (element) => create$1(element, creator),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
@@ -802,13 +796,15 @@ const nativeToSyntheticEvent = (e, name) => {
   }
 };
 const cssMatchEvent = (e, name, dom, target) => {
-  function callEach(fxns) {
-    fxns.forEach((fxn) => fxn(e, target, dom));
-  }
-  for (let css in SYNTHETIC_EVENTS[name]) {
-    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
+  Promise.resolve((() => {
+    function callEach(fxns) {
+      fxns.forEach((fxn) => fxn(e, target, dom));
+    }
+    for (let css in SYNTHETIC_EVENTS[name]) {
+      if ((typeof dom.matches === 'function' && dom.matches(css)) ||
       (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);
-  }
+    }
+  })());
 };
 const Event = {
   all: SYNTHETIC_EVENTS,

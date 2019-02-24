@@ -7,6 +7,7 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
 
   // Reload page
   await page.goto(url || `http://localhost:${port}/speedtest.html`);
+
   await page.evaluate(async () => {
     if (typeof Sifrr !== 'undefined') {
       if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();

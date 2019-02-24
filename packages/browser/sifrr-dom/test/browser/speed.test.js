@@ -21,7 +21,7 @@ let benchmarks = [
     '1k-append'
   ],
   url = `${PATH}/speedtest.html`,
-  runs = parseInt(getArg('runs') || 1, 10);
+  runs = parseInt(getArg('runs') || 2, 10);
 
 const benchmarkFilters = (getArg('benchmarks') || '').split(',');
 benchmarks = benchmarks.filter((b) => {
@@ -56,45 +56,27 @@ const ExpectedTotalDurations = {
   '1k-append': 140
 };
 
-describe('Siffr.Dom', function() {
+describe('Speed tests', function() {
   this.timeout(0);
+  ['?', '?useKey', '?useSifrr', '?useSifrr&useKey'].forEach(suffix => {
 
-  const bl = benchmarks.length;
-  for (let i = 0; i < bl; i++) {
-    const bm = benchmarks[i];
-    describe(bm, () => {
-      it(`passes ${bm} Speedtest with simpleElement`, async () => {
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, url }, false).run();
+    it(`Speedtest${suffix}`, async () => {
+      let compare = {};
+      compare[suffix] = {};
+
+      for (let i = 0; i < benchmarks.length; i++) {
+        const bm = benchmarks[i];
+
+        const results = await new BenchmarkRunner(benchmarks, { port, runs: runs, url: url + suffix }, false).run();
         const bmd = results[bm];
-        assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
-        // assert.isAtMost(bmd['TotalDuration'], ExpectedTotalDurations[bm], `${bm} duration should be ${ExpectedTotalDurations[bm]}, but was ${bmd['TotalDuration']}`);
 
-        global.console.log(bm, '(se-nokey total duration in ms): ', bmd['TaskDuration']);
-      });
-
-      it(`passes ${bm} Speedtest with sifrrElement`, async () => {
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, url: url + '?useSifrr' }, false).run();
-        const bmd = results[bm];
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-        global.console.log(bm, '(sf-nokey total duration in ms): ', bmd['TaskDuration']);
-      });
+        compare[suffix][bm] = bmd['TaskDuration'];
+      }
 
-      it(`passes ${bm} Speedtest with simpleElement (keyed)`, async () => {
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, url: url + '?useKey' }, false).run();
-        const bmd = results[bm];
-        assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
-
-        global.console.log(bm, '(se-keyed total duration in ms): ', bmd['TaskDuration']);
-      });
-
-      it(`passes ${bm} Speedtest with sifrrElement (keyed)`, async () => {
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, url: url + '?useSifrr&useKey' }, false).run();
-        const bmd = results[bm];
-        assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
-
-        global.console.log(bm, '(sf-keyed total duration in ms): ', bmd['TaskDuration']);
-      });
+      global.console.table(compare);
     });
-  }
+  });
+
 });

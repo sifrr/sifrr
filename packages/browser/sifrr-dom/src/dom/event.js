@@ -20,13 +20,15 @@ const nativeToSyntheticEvent = (e, name) => {
 };
 
 const cssMatchEvent = (e, name, dom, target) => {
-  function callEach(fxns) {
-    fxns.forEach((fxn) => fxn(e, target, dom));
-  }
-  for (let css in SYNTHETIC_EVENTS[name]) {
-    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
+  Promise.resolve((() => {
+    function callEach(fxns) {
+      fxns.forEach((fxn) => fxn(e, target, dom));
+    }
+    for (let css in SYNTHETIC_EVENTS[name]) {
+      if ((typeof dom.matches === 'function' && dom.matches(css)) ||
       (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);
-  }
+    }
+  })());
 };
 
 const Event = {
