@@ -123,26 +123,25 @@ function makeChildrenEqual(parent, newChildren, createFn) {
     parent.textContent = '';
     return;
   }
-  if (oldL < newL) {
-    let i = oldL, addition;
-    while(i < newL) {
-      addition = newChildren[i];
-      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
-      parent.appendChild(addition);
-      i++;
-    }
-  } else if (oldL > newL) {
+  if (oldL > newL) {
     let i = oldL;
     while(i > newL) {
       parent.removeChild(parent.lastChild);
       i--;
     }
   }
-  if (oldL === 0) return;
-  const l = Math.min(newL, oldL);
-  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
-    item = newChildren[i];
-    head = makeEqual(head, item).nextSibling;
+  for(let i = 0, item, head = parent.firstChild; i < newL; i++) {
+    if (i < oldL) {
+      item = newChildren[i];
+      head = makeEqual(head, item).nextSibling;
+    } else {
+      while(i < newL) {
+        item = newChildren[i];
+        if (!item.nodeType) item = createFn(item);
+        parent.appendChild(item);
+        i++;
+      }
+    }
   }
 }
 function makeEqual(oldNode, newNode) {
@@ -418,7 +417,7 @@ const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
-function customElementUpdate(element, stateMap) {
+function update(element, stateMap) {
   if (!element._refs) {
     return false;
   }
@@ -479,7 +478,7 @@ function customElementUpdate(element, stateMap) {
   }
   if (element.onUpdate) element.onUpdate();
 }
-var update = customElementUpdate;
+var update_1 = update;
 
 function SimpleElement(content, defaultState = null) {
   if (!content.nodeType && typeof content !== 'string') {
@@ -501,7 +500,7 @@ function SimpleElement(content, defaultState = null) {
       get: () => me._state,
       set: (v) => {
         me._state = Object.assign(me._state || {}, v);
-        update(me, stateMap);
+        update_1(me, stateMap);
       }
     });
   }
@@ -749,7 +748,7 @@ function elementClassFactory(baseClass) {
     }
     onStateChange() {}
     update() {
-      update(this);
+      update_1(this);
     }
     onUpdate() {}
     isSifrr(name = null) {

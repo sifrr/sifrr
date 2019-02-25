@@ -10,17 +10,8 @@ function makeChildrenEqual(parent, newChildren, createFn) {
     return;
   }
 
-  // More Children now
-  if (oldL < newL) {
-    let i = oldL, addition;
-    while(i < newL) {
-      addition = newChildren[i];
-      if (!newChildren[i].nodeType) addition = createFn(newChildren[i]);
-      parent.appendChild(addition);
-      i++;
-    }
   // Lesser children now
-  } else if (oldL > newL) {
+  if (oldL > newL) {
     let i = oldL;
     while(i > newL) {
       parent.removeChild(parent.lastChild);
@@ -28,15 +19,21 @@ function makeChildrenEqual(parent, newChildren, createFn) {
     }
   }
 
-  // Fast path for create
-  if (oldL === 0) return;
-
-  const l = Math.min(newL, oldL);
   // Make old children equal to new children
-  for(let i = 0, item, head = parent.firstChild; i < l; i++) {
-    item = newChildren[i];
-    // make two nodes equal
-    head = makeEqual(head, item).nextSibling;
+  for(let i = 0, item, head = parent.firstChild; i < newL; i++) {
+    if (i < oldL) {
+      // make two nodes equal
+      item = newChildren[i];
+      head = makeEqual(head, item).nextSibling;
+    } else {
+      // No old node
+      while(i < newL) {
+        item = newChildren[i];
+        if (!item.nodeType) item = createFn(item);
+        parent.appendChild(item);
+        i++;
+      }
+    }
   }
 }
 

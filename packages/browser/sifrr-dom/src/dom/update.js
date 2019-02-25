@@ -4,7 +4,7 @@ const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 
-function customElementUpdate(element, stateMap) {
+function update(element, stateMap) {
   if (!element._refs) {
     return false;
   }
@@ -79,4 +79,4 @@ function customElementUpdate(element, stateMap) {
   if (element.onUpdate) element.onUpdate();
 }
 
-module.exports = customElementUpdate;
+module.exports = update;
