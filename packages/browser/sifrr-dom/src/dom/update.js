@@ -63,21 +63,23 @@ function update(element, stateMap) {
       else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
     } else {
       // html node
-      let children;
+      let children, isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
       } else if (newValue.content && newValue.content.nodeType === 11) {
-        children = Array.prototype.slice.call(newValue.content.childNodes);
+        children = newValue.content.childNodes;
+        isNode = true;
       } else if (newValue.nodeType) {
         children = [newValue];
       } else if (typeof newValue === 'string') {
         const temp = TEMPLATE();
         temp.innerHTML = newValue.toString();
-        children = Array.prototype.slice.call(temp.content.childNodes);
+        children = temp.content.childNodes;
+        isNode = true;
       } else {
         children = Array.prototype.slice.call(newValue);
       }
-      makeChildrenEqual(dom, children);
+      makeChildrenEqual(dom, children, undefined, isNode);
     }
   }
   if (element.onUpdate) element.onUpdate();

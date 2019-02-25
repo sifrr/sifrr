@@ -119,8 +119,9 @@ var json = Json;
 
 const { shallowEqual } = json;
 const { TEXT_NODE, COMMENT_NODE } = constants;
-function makeChildrenEqual(parent, newChildren, createFn) {
+function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
   const oldL = parent.childNodes.length, newL = newChildren.length;
+  let curNewChild = newChildren[0];
   if (newL === 0) {
     parent.textContent = '';
     return;
@@ -134,14 +135,28 @@ function makeChildrenEqual(parent, newChildren, createFn) {
   }
   for(let i = 0, item, head = parent.firstChild; i < newL; i++) {
     if (i < oldL) {
-      item = newChildren[i];
-      head = makeEqual(head, item).nextSibling;
+      if (isNode) {
+        item = curNewChild.nextSibling;
+        head = makeEqual(head, curNewChild).nextSibling;
+        curNewChild = item;
+      } else {
+        head = makeEqual(head, newChildren[i]).nextSibling;
+      }
     } else {
-      while(i < newL) {
-        item = newChildren[i];
-        if (!item.nodeType) item = createFn(item);
-        parent.appendChild(item);
-        i++;
+      if (isNode) {
+        while(curNewChild) {
+          item = curNewChild.nextSibling;
+          parent.appendChild(curNewChild);
+          curNewChild = item;
+          i++;
+        }
+      } else {
+        while(i < newL) {
+          item = newChildren[i];
+          if (!item.nodeType) item = createFn(item);
+          parent.appendChild(item);
+          i++;
+        }
       }
     }
   }
@@ -465,21 +480,23 @@ function update(element, stateMap) {
       if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
       else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(true, state));
     } else {
-      let children;
+      let children, isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
       } else if (newValue.content && newValue.content.nodeType === 11) {
-        children = Array.prototype.slice.call(newValue.content.childNodes);
+        children = newValue.content.childNodes;
+        isNode = true;
       } else if (newValue.nodeType) {
         children = [newValue];
       } else if (typeof newValue === 'string') {
         const temp = TEMPLATE$1();
         temp.innerHTML = newValue.toString();
-        children = Array.prototype.slice.call(temp.content.childNodes);
+        children = temp.content.childNodes;
+        isNode = true;
       } else {
         children = Array.prototype.slice.call(newValue);
       }
-      makeChildrenEqual$1(dom, children);
+      makeChildrenEqual$1(dom, children, undefined, isNode);
     }
   }
   if (element.onUpdate) element.onUpdate();
@@ -706,10 +723,10 @@ function elementClassFactory(baseClass) {
       return (loader.all[this.elementName] || { template: false }).template;
     }
     static get ctemp() {
-      this._ctemp = this._ctemp || this.template;
-      if (window.ShadyCSS && this.useShadowRoot && !this._ctemp.shady) {
+      if (this._ctemp) return this._ctemp;
+      this._ctemp = this.template;
+      if (window.ShadyCSS && this.useShadowRoot) {
         window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
-        this._ctemp.shady = true;
       }
       return this._ctemp;
     }
@@ -727,8 +744,8 @@ function elementClassFactory(baseClass) {
       super();
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
-        const stateMap = this.constructor.stateMap, content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = parser.collectRefs(content, stateMap);
+        const content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = parser.collectRefs(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
@@ -740,8 +757,8 @@ function elementClassFactory(baseClass) {
       }
     }
     connectedCallback() {
-      if(!this.constructor.useShadowRoot && this.__content) {
-        makeChildrenEqual$2(this, Array.prototype.slice.call(this.__content.childNodes));
+      if(this.__content) {
+        makeChildrenEqual$2(this, this.__content.childNodes, undefined, true);
         delete this.__content;
       }
       if (!this.hasAttribute('data-sifrr-state')) this.update();
