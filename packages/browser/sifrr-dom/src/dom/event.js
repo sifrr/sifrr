@@ -6,24 +6,22 @@ const nativeToSyntheticEvent = (e, name) => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   let dom = target;
   while(dom) {
-    Promise.resolve((() => {
-      const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
-      if (typeof eventHandler === 'function') {
-        eventHandler.call(dom._root || window, e, target);
-      } else if (typeof eventHandler === 'string') {
-        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
-      }
-      cssMatchEvent(e, name, dom, target);
-    })());
+    const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
+    if (typeof eventHandler === 'function') {
+      eventHandler.call(dom._root || window, e, target);
+    } else if (typeof eventHandler === 'string') {
+      new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
+    }
+    cssMatchEvent(e, name, dom, target);
     dom = dom.parentNode || dom.host;
   }
 };
 
 const cssMatchEvent = (e, name, dom, target) => {
+  function callEach(fxns) {
+    fxns.forEach((fxn) => fxn(e, target, dom));
+  }
   Promise.resolve((() => {
-    function callEach(fxns) {
-      fxns.forEach((fxn) => fxn(e, target, dom));
-    }
     for (let css in SYNTHETIC_EVENTS[name]) {
       if ((typeof dom.matches === 'function' && dom.matches(css)) ||
       (dom.nodeType === 9 && css === 'document')) callEach(SYNTHETIC_EVENTS[name][css]);

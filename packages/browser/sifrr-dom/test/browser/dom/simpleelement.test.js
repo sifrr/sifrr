@@ -140,12 +140,6 @@ describe('Sifrr.Dom.SimpleElement', () => {
       expect(eq).to.eq(false);
     });
 
-    it('has same stateMap', async () => {
-      const eq = await page.evaluate('seClone.stateMap === seComplex.stateMap');
-
-      expect(eq).to.eq(true);
-    });
-
     it('has different refs', async () => {
       const eq = await page.evaluate('seClone._refs[0] === seComplex._refs[0]');
 

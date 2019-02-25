@@ -17,22 +17,25 @@ function SimpleElement(content, defaultState = null) {
     return content;
   }
   const stateMap = Parser.createStateMap(content, defaultState);
-  function setProps(me) {
-    me._refs = Parser.collectRefsSimple(me, stateMap);
-    Object.defineProperty(me, 'state', {
-      get: () => me._state,
-      set: (v) => {
-        me._state = Object.assign(me._state || {}, v);
-        update(me, stateMap);
-      }
-    });
-  }
-  setProps(content);
 
+  const stateProps = {
+    get: function() { return this._state; },
+    set: function(v) {
+      this._state = Object.assign(this._state, v);
+      update(this, stateMap);
+    }
+  };
+  function setProps(me, state) {
+    me._refs = Parser.collectRefsSimple(me, stateMap);
+    me._state = Object.assign({}, defaultState, state);
+    Object.defineProperty(me, 'state', stateProps);
+    update(me, stateMap);
+  }
+
+  setProps(content);
   content.sifrrClone = function(deep = true, newState) {
     const clone = content.cloneNode(deep);
-    setProps(clone);
-    clone.state = Object.assign({}, defaultState, newState);
+    setProps(clone, newState);
     return clone;
   };
 
