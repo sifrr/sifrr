@@ -4,7 +4,7 @@ const creator = require('./creator');
 const Parser = {
   collectRefs: collect,
   collectRefsSimple: (element, stateMap) => collect(element, stateMap, 'nextNode'),
-  createStateMap: (element) => create(element, creator),
+  createStateMap: (element, defaultState) => create(element, creator, defaultState),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
