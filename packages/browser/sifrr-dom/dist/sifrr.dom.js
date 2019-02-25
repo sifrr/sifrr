@@ -541,7 +541,7 @@
         return this._state;
       },
       set: function (v) {
-        this._state = Object.assign(this._state, v);
+        Object.assign(this._state, v);
         update_1(this, stateMap);
       }
     };
