@@ -2,8 +2,9 @@ const updateAttribute = require('./updateattribute');
 const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
-function makeChildrenEqual(parent, newChildren, createFn) {
+function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
   const oldL = parent.childNodes.length, newL = newChildren.length;
+  let curNewChild = newChildren[0];
   // Fast path for clear
   if (newL === 0) {
     parent.textContent = '';
@@ -23,15 +24,29 @@ function makeChildrenEqual(parent, newChildren, createFn) {
   for(let i = 0, item, head = parent.firstChild; i < newL; i++) {
     if (i < oldL) {
       // make two nodes equal
-      item = newChildren[i];
-      head = makeEqual(head, item).nextSibling;
+      if (isNode) {
+        item = curNewChild.nextSibling;
+        head = makeEqual(head, curNewChild).nextSibling;
+        curNewChild = item;
+      } else {
+        head = makeEqual(head, newChildren[i]).nextSibling;
+      }
     } else {
       // No old node
-      while(i < newL) {
-        item = newChildren[i];
-        if (!item.nodeType) item = createFn(item);
-        parent.appendChild(item);
-        i++;
+      if (isNode) {
+        while(curNewChild) {
+          item = curNewChild.nextSibling;
+          parent.appendChild(curNewChild);
+          curNewChild = item;
+          i++;
+        }
+      } else {
+        while(i < newL) {
+          item = newChildren[i];
+          if (!item.nodeType) item = createFn(item);
+          parent.appendChild(item);
+          i++;
+        }
       }
     }
   }

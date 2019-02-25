@@ -52,13 +52,13 @@ describe('Bindings', () => {
     it('works with children', async () => {
       const html = await page.$eval('binding-html', el => el.$('#children').innerHTML);
 
-      assert.equal(html, '<div>children</div>');
+      assert.equal(html, '<div>children</div><a>a</a>');
     });
 
     it('works with template', async () => {
       const html = await page.$eval('binding-html', el => el.$('#template').innerHTML);
 
-      assert.equal(html, '<div>template</div>');
+      assert.equal(html, '<div>template</div><a>a</a>');
     });
 
     it('works with onenode', async () => {

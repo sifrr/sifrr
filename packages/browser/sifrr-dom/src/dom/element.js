@@ -22,10 +22,10 @@ function elementClassFactory(baseClass) {
     }
 
     static get ctemp() {
-      this._ctemp = this._ctemp || this.template;
-      if (window.ShadyCSS && this.useShadowRoot && !this._ctemp.shady) {
+      if (this._ctemp) return this._ctemp;
+      this._ctemp = this.template;
+      if (window.ShadyCSS && this.useShadowRoot) {
         window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
-        this._ctemp.shady = true;
       }
       return this._ctemp;
     }
@@ -47,8 +47,8 @@ function elementClassFactory(baseClass) {
       super();
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
-        const stateMap = this.constructor.stateMap, content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = Parser.collectRefs(content, stateMap);
+        const content = this.constructor.ctemp.content.cloneNode(true);
+        this._refs = Parser.collectRefs(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
@@ -61,8 +61,8 @@ function elementClassFactory(baseClass) {
     }
 
     connectedCallback() {
-      if(!this.constructor.useShadowRoot && this.__content) {
-        makeChildrenEqual(this, Array.prototype.slice.call(this.__content.childNodes));
+      if(this.__content) {
+        makeChildrenEqual(this, this.__content.childNodes, undefined, true);
         delete this.__content;
       }
       if (!this.hasAttribute('data-sifrr-state')) this.update();

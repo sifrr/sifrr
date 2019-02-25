@@ -23,14 +23,14 @@
 </template>
 <script type="text/javascript">
   const template = document.createElement('template');
-  template.innerHTML = '<div>template</div>';
+  template.innerHTML = '<div>template</div><a>a</a>';
 
   const childnodes = document.createElement('template');
   childnodes.innerHTML = `<div>childnode</div>
   <a>a</a>`;
 
   const children = document.createElement('template');
-  children.innerHTML = '<div>children</div>';
+  children.innerHTML = '<div>children</div><a>a</a>';
 
   class BindingHTML extends Sifrr.Dom.Element {}
   BindingHTML.defaultState = {
