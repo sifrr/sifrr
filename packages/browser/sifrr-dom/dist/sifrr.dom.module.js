@@ -44,11 +44,11 @@ function collect(element, stateMap, next) {
   }
   return refs;
 }
-function create(node, fxn) {
+function create(node, fxn, passedArg) {
   let indices = [], ref, idx = 0;
   TREE_WALKER.currentNode = node;
   while(node) {
-    if (ref = fxn(node, isHtml)) {
+    if (ref = fxn(node, isHtml, passedArg)) {
       indices.push({ idx: idx+1, ref });
       idx = 1;
     } else {
@@ -89,11 +89,13 @@ var template = (str, ...extra) => {
 };
 
 var updateattribute = (element, name, newValue) => {
-  const fromValue = element.getAttribute(name);
-  if (newValue === false || newValue === null || newValue === undefined) element.removeAttribute(name);
-  else if (fromValue !== newValue) {
-    if (name === 'class') element.className = newValue;
-    else element.setAttribute(name, newValue);
+  if (newValue === false || newValue === null || newValue === undefined) element.hasAttribute(name) && element.removeAttribute(name);
+  else {
+    const fromValue = element.getAttribute(name);
+    if (fromValue !== newValue) {
+      if (name === 'class') element.className = newValue;
+      else element.setAttribute(name, newValue);
+    }
   }
   if (name == 'value' && (element.nodeName == 'SELECT' || element.nodeName == 'INPUT')) element.value = newValue;
 };
@@ -439,8 +441,12 @@ function update(element, stateMap) {
     if (data.attributes) {
       for(let key in data.attributes) {
         if (key !== 'events') {
-          const val = evaluateBindings(data.attributes[key], element);
-          updateattribute(dom, key, val);
+          if (data.attributes[key].type === 0) {
+            newValue = element.state[data.attributes[key].text];
+          } else {
+            newValue = evaluateBindings(data.attributes[key].text, element);
+          }
+          updateattribute(dom, key, newValue);
         } else {
           if (!dom._sifrrEventSet) {
             for(let event in data.attributes.events) {
@@ -493,7 +499,7 @@ function SimpleElement(content, defaultState = null) {
   ) {
     return content;
   }
-  const stateMap = parser.createStateMap(content, false);
+  const stateMap = parser.createStateMap(content, defaultState);
   function setProps(me) {
     me._refs = parser.collectRefsSimple(me, stateMap);
     Object.defineProperty(me, 'state', {
@@ -505,12 +511,10 @@ function SimpleElement(content, defaultState = null) {
     });
   }
   setProps(content);
-  if (defaultState) content.state = defaultState;
   content.sifrrClone = function(deep = true, newState) {
     const clone = content.cloneNode(deep);
     setProps(clone);
-    if (newState) clone.state = newState;
-    else if (content.state) clone.state = content.state;
+    clone.state = Object.assign({}, defaultState, newState);
     return clone;
   };
   return content;
@@ -520,7 +524,9 @@ var simpleelement = SimpleElement;
 const { getBindingFxns } = bindings;
 var repeatref = (sm, el, attr) => {
   sm.type = 3;
-  sm.se = simpleelement(el.childNodes);
+  let defaultState;
+  if (el.hasAttribute('data-sifrr-default-state')) defaultState = JSON.parse(el.getAttribute('data-sifrr-default-state'));
+  sm.se = simpleelement(el.childNodes, defaultState);
   sm.text = getBindingFxns(el.getAttribute(attr));
   el.textContent = '';
   el.removeAttribute(attr);
@@ -528,7 +534,7 @@ var repeatref = (sm, el, attr) => {
 
 const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, REPEAT_ATTR } = constants;
 const { getBindingFxns: getBindingFxns$1, getStringBindingFxn } = bindings;
-function customElementCreator(el, filter) {
+function customElementCreator(el, filter, defaultState) {
   if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
     const x = el.data;
     if (x.indexOf('${') > -1) {
@@ -539,6 +545,7 @@ function customElementCreator(el, filter) {
           text: binding
         };
       } else {
+        if (defaultState) el.data = defaultState[binding];
         return {
           type: 0,
           text: binding
@@ -563,7 +570,19 @@ function customElementCreator(el, filter) {
       if (attribute.name[0] === '_') {
         attrStateMap.events[attribute.name] = getBindingFxns$1(attribute.value);
       } else if (attribute.value.indexOf('${') >= 0) {
-        attrStateMap[attribute.name] = getBindingFxns$1(attribute.value);
+        const binding = getStringBindingFxn(attribute.value);
+        if (typeof binding !== 'string') {
+          attrStateMap[attribute.name] = {
+            type: 1,
+            text: binding
+          };
+        } else {
+          attrStateMap[attribute.name] = {
+            type: 0,
+            text: binding
+          };
+          if (defaultState) updateattribute(el, attribute.name, defaultState[binding]);
+        }
       }
     }
     if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
@@ -578,7 +597,7 @@ const { collect: collect$1, create: create$1 } = ref;
 const Parser = {
   collectRefs: collect$1,
   collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'nextNode'),
-  createStateMap: (element) => create$1(element, creator),
+  createStateMap: (element, defaultState) => create$1(element, creator, defaultState),
   twoWayBind: (e) => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;

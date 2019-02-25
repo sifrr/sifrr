@@ -33,8 +33,12 @@ function update(element, stateMap) {
     if (data.attributes) {
       for(let key in data.attributes) {
         if (key !== 'events') {
-          const val = evaluateBindings(data.attributes[key], element);
-          updateAttribute(dom, key, val);
+          if (data.attributes[key].type === 0) {
+            newValue = element.state[data.attributes[key].text];
+          } else {
+            newValue = evaluateBindings(data.attributes[key].text, element);
+          }
+          updateAttribute(dom, key, newValue);
         } else {
           if (!dom._sifrrEventSet) {
             for(let event in data.attributes.events) {

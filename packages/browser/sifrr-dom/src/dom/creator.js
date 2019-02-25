@@ -6,19 +6,22 @@ const repeatref = require('./repeatref');
 // 2: html
 // 3: arrayToDom
 const { getBindingFxns, getStringBindingFxn } = require('./bindings');
+const updateAttribute = require('./updateattribute');
 
-function customElementCreator(el, filter) {
+function customElementCreator(el, filter, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
-    // text node
     const x = el.data;
     if (x.indexOf('${') > -1) {
       const binding = getStringBindingFxn(x.trim());
       if (typeof binding !== 'string') {
+        // text node
         return {
           type: 1,
           text: binding
         };
       } else {
+        if (defaultState) el.data = defaultState[binding];
+        // state node
         return {
           type: 0,
           text: binding
@@ -46,7 +49,21 @@ function customElementCreator(el, filter) {
         attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
       } else if (attribute.value.indexOf('${') >= 0) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
-        attrStateMap[attribute.name] = getBindingFxns(attribute.value);
+        const binding = getStringBindingFxn(attribute.value);
+        if (typeof binding !== 'string') {
+          // text attr
+          attrStateMap[attribute.name] = {
+            type: 1,
+            text: binding
+          };
+        } else {
+          // state attr
+          attrStateMap[attribute.name] = {
+            type: 0,
+            text: binding
+          };
+          if (defaultState) updateAttribute(el, attribute.name, defaultState[binding]);
+        }
       }
     }
     if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
