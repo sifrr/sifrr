@@ -1,6 +1,6 @@
 const Benchmark = require('./benchmark');
 
-class OnekRun extends Benchmark {
+class OnekAppend extends Benchmark {
   before() {
     return this.mainClick('#clear').then(() => this.mainClick('#run'));
   }
@@ -18,4 +18,4 @@ class OnekRun extends Benchmark {
   }
 }
 
-module.exports = OnekRun;
+module.exports = OnekAppend;

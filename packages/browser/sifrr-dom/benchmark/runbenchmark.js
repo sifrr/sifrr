@@ -12,8 +12,8 @@ function getArg(name) {
 let benchmarks = [
   '1k-run',
   '10k-run',
-  '1k-update',
-  '10k-update',
+  '1k-replace',
+  '10k-replace',
   '1k-clear',
   '10k-clear',
   '1k-swap',

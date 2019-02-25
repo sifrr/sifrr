@@ -1,6 +1,6 @@
 const Benchmark = require('./benchmark');
 
-class OnekRun extends Benchmark {
+class OnekReplace extends Benchmark {
   static beforeAll() {
     return this.prototype.mainClick('#run');
   }
@@ -14,8 +14,8 @@ class OnekRun extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${1000 * (this.i + 1) + 1}'`;
+    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor.start + 1000 * (this.i + 1) + 1}'`;
   }
 }
 
-module.exports = OnekRun;
+module.exports = OnekReplace;

@@ -1,6 +1,6 @@
 const Benchmark = require('./benchmark');
 
-class OnekRun extends Benchmark {
+class OnekSelect extends Benchmark {
   static beforeAll() {
     return this.prototype.mainClick('#run');
   }
@@ -18,4 +18,4 @@ class OnekRun extends Benchmark {
   }
 }
 
-module.exports = OnekRun;
+module.exports = OnekSelect;

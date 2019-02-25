@@ -3,6 +3,11 @@ class Benchmark {
     this.i = i;
   }
 
+  static async setup() {
+    await page.waitForFunction(`!!${this.prototype.main}`);
+    this.start = await page.evaluate(`window.from - 1`);
+  }
+
   static beforeAll() { return Promise.resolve(true); }
 
   before() { return Promise.resolve(true); }

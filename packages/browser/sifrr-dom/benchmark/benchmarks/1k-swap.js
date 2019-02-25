@@ -1,6 +1,6 @@
 const Benchmark = require('./benchmark');
 
-class OnekRun extends Benchmark {
+class OnekSwap extends Benchmark {
   static beforeAll() {
     return this.prototype.mainClick('#run');
   }
@@ -14,7 +14,7 @@ class OnekRun extends Benchmark {
   }
 
   beforeWait() {
-    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '999'`;
+    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 999}'`;
   }
 
   run() {
@@ -22,8 +22,8 @@ class OnekRun extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '2'`;
+    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 2}'`;
   }
 }
 
-module.exports = OnekRun;
+module.exports = OnekSwap;

@@ -6,13 +6,17 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
   if (verbose) process.stdout.write(`Running ${benchmark} benchmark for ${warmups} warmups and ${runs} runs: \n`);
 
   // Reload page
-  await page.goto(url || `http://localhost:${port}/speedtest.html`);
+  url = url || `http://localhost:${port}/speedtest.html`;
+  if (url !== page.url()) await page.goto(url);
 
   await page.evaluate(async () => {
     if (typeof Sifrr !== 'undefined') {
       if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();
     }
   });
+
+  // setup
+  await BM.setup();
 
   // Run before all
   BM.beforeAll();

@@ -107,6 +107,13 @@ describe('sifrr-serviceworker', () => {
     expect(respText).to.have.string('OFFLINE');
   });
 
+  it('responds with nothing when no assigned fallbacks and offline/not found', async () => {
+    const respText = await (await page.goto(`${PATH}/asdasdasd404`)).text();
+
+    expect(respText).to.have.string('Not Found');
+    expect(respText).to.not.have.string('OFFLINE');
+  });
+
   it('responds not ok for non cached files with no assigned fallbacks when offline/not found', async () => {
     const respText = await (await page.goto(`${PATH}/abcd404`)).text();
 

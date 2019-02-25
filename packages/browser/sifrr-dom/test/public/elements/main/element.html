@@ -65,13 +65,13 @@
   </div>
 </template>
 <script>
-  let from = 1;
+  window.from = 1;
 
   function _random(max) {
     return Math.round(Math.random() * 1000) % max;
   }
 
-  let buildData = window.buildData = function(count = 1000, frm = from) {
+  let buildData = window.buildData = function(count = 1000, frm = window.from) {
     const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
       'cheap', 'expensive', 'fancy'
     ];
@@ -84,7 +84,7 @@
         label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)],
         class: ''
       });
-    from = from + count;
+    window.from = window.from + count;
     return data;
   };
 
