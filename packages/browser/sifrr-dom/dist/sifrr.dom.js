@@ -536,21 +536,25 @@
       return content;
     }
     const stateMap = parser.createStateMap(content, defaultState);
-    function setProps(me) {
+    const stateProps = {
+      get: function () {
+        return this._state;
+      },
+      set: function (v) {
+        this._state = Object.assign(this._state, v);
+        update_1(this, stateMap);
+      }
+    };
+    function setProps(me, state) {
       me._refs = parser.collectRefsSimple(me, stateMap);
-      Object.defineProperty(me, 'state', {
-        get: () => me._state,
-        set: v => {
-          me._state = Object.assign(me._state || {}, v);
-          update_1(me, stateMap);
-        }
-      });
+      me._state = Object.assign({}, defaultState, state);
+      Object.defineProperty(me, 'state', stateProps);
+      update_1(me, stateMap);
     }
     setProps(content);
     content.sifrrClone = function (deep = true, newState) {
       const clone = content.cloneNode(deep);
-      setProps(clone);
-      clone.state = Object.assign({}, defaultState, newState);
+      setProps(clone, newState);
       return clone;
     };
     return content;
@@ -862,23 +866,21 @@
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
     while (dom) {
-      Promise.resolve((() => {
-        const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
-        if (typeof eventHandler === 'function') {
-          eventHandler.call(dom._root || window, e, target);
-        } else if (typeof eventHandler === 'string') {
-          new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
-        }
-        cssMatchEvent(e, name, dom, target);
-      })());
+      const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
+      if (typeof eventHandler === 'function') {
+        eventHandler.call(dom._root || window, e, target);
+      } else if (typeof eventHandler === 'string') {
+        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
+      }
+      cssMatchEvent(e, name, dom, target);
       dom = dom.parentNode || dom.host;
     }
   };
   const cssMatchEvent = (e, name, dom, target) => {
+    function callEach(fxns) {
+      fxns.forEach(fxn => fxn(e, target, dom));
+    }
     Promise.resolve((() => {
-      function callEach(fxns) {
-        fxns.forEach(fxn => fxn(e, target, dom));
-      }
       for (let css in SYNTHETIC_EVENTS[name]) {
         if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document') callEach(SYNTHETIC_EVENTS[name][css]);
       }
