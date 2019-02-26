@@ -64,7 +64,7 @@
     "istanbul-lib-instrument": "^3.0.0",
     "istanbul-lib-source-maps": "^3.0.2",
     "istanbul-reports": "^2.0.1",
-    "mocha": "^6.0.0",
+    "mocha": "^6.0.2",
     "mocha-junit-reporter": "^1.18.0",
     "mock-require": "^3.0.3",
     "puppeteer": "=1.11.0",
