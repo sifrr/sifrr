@@ -20,8 +20,8 @@ function reqToGraphqlArgs(req, { allowed = [] } = {}) {
     }
   }
 
-  const ret = JSON.stringify(args).slice(1, -1).replace(/"([^(")"]+)":/g,'$1:');
-  return ret ? `(${ret})` : '';
+  const ret = '(' + JSON.stringify(args).slice(1, -1).replace(/"([^(")"]+)":/g,'$1:') + ')';
+  return ret || '';
 }
 
 module.exports = reqToGraphqlArgs;

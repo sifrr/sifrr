@@ -14,7 +14,7 @@ do
   node ./scripts/test/run.js "${dir}" "$@"
 
   NEW_STATUS=$?
-  [ $NEW_STATUS -eq 0 ] || STATUS=1
+  [ $NEW_STATUS -eq 0 ] || STATUS=$NEW_STATUS
 done
 
 if [[ $COVERAGE == 'true' ]]; then
