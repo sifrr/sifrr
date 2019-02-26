@@ -1,7 +1,6 @@
 const Parser = require('./parser');
 const update = require('./update');
 const Loader = require('./loader');
-const { makeChildrenEqual } = require('./makeequal');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -62,7 +61,8 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       if(this.__content) {
-        makeChildrenEqual(this, this.__content.childNodes, undefined, true);
+        this.textContent = '';
+        this.appendChild(this.__content);
         delete this.__content;
       }
       if (!this.hasAttribute('data-sifrr-state')) this.update();
@@ -109,7 +109,7 @@ function elementClassFactory(baseClass) {
       else return true;
     }
 
-    sifrrClone(deep, state) {
+    sifrrClone(deep = false, state) {
       const clone = this.cloneNode(deep);
       clone._state = state;
       return clone;

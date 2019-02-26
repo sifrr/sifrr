@@ -516,7 +516,7 @@
       newValue = evaluateBindings(data.text, element);
       if (data.type === 3) {
         const key = dom.getAttribute(KEY_ATTR);
-        if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(true, state), key);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(true, state));
+        if (key) makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(undefined, state), key);else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(undefined, state));
       } else {
         let children,
             isNode = false;
@@ -551,6 +551,10 @@
     const templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
     if (content.isSifrr || content.nodeName.indexOf('-') !== -1 || content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1) {
+      if (!content.isSifrr) {
+        window.document.body.appendChild(content);
+        window.document.body.removeChild(content);
+      }
       return content;
     }
     const stateMap = parser.createStateMap(content, defaultState);
@@ -766,9 +770,6 @@
   Loader._all = {};
   var loader = Loader;
 
-  const {
-    makeChildrenEqual: makeChildrenEqual$2
-  } = makeequal;
   function elementClassFactory(baseClass) {
     return class extends baseClass {
       static extends(htmlElementClass) {
@@ -821,7 +822,8 @@
       }
       connectedCallback() {
         if (this.__content) {
-          makeChildrenEqual$2(this, this.__content.childNodes, undefined, true);
+          this.textContent = '';
+          this.appendChild(this.__content);
           delete this.__content;
         }
         if (!this.hasAttribute('data-sifrr-state')) this.update();
@@ -855,7 +857,7 @@
       isSifrr(name = null) {
         if (name) return name === this.constructor.elementName;else return true;
       }
-      sifrrClone(deep, state) {
+      sifrrClone(deep = false, state) {
         const clone = this.cloneNode(deep);
         clone._state = state;
         return clone;

@@ -14,6 +14,11 @@ function SimpleElement(content, defaultState = null) {
   if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
     (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
   ) {
+    if (!content.isSifrr) {
+      // Render custom element if not rendered
+      window.document.body.appendChild(content);
+      window.document.body.removeChild(content);
+    }
     return content;
   }
   const stateMap = Parser.createStateMap(content, defaultState);

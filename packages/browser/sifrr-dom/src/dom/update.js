@@ -59,8 +59,8 @@ function update(element, stateMap) {
     if (data.type === 3) {
       // repeat
       const key = dom.getAttribute(KEY_ATTR);
-      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(true, state), key);
-      else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(true, state));
+      if (key) makeChildrenEqualKeyed(dom, newValue, (state) => data.se.sifrrClone(undefined, state), key);
+      else makeChildrenEqual(dom, newValue, (state) => data.se.sifrrClone(undefined, state));
     } else {
       // html node
       let children, isNode = false;

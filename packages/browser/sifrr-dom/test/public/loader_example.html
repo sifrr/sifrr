@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <title>Loader example</title>
+    <style media="screen">
+      *:not(:defined)::before {
+        content: " ";
+        display: block !important;
+        width: 32px;
+        height: 32px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 4px solid;
+        border-color: rgba(25,118,210,0.2) rgba(25,118,210,0.2) rgb(25,118,210) rgb(25,118,210,0.2);
+        animation: rotate 0.75s linear infinite;
+      }
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      *:not(:defined) * {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Loader example</h1>
+    <api-todos></api-todos>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup();
+      Sifrr.Dom.load('api-todos', { js: false });
+    </script>
+  </body>
+</html>

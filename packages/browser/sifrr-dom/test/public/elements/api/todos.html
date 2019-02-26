@@ -1,0 +1,26 @@
+<template>
+  <div data-sifrr-repeat=${this.state.todos}>
+    <api-todo></api-todo>
+  </div>
+</template>
+<script type="text/javascript">
+  class ApiTodos extends Sifrr.Dom.Element {
+    onConnect() {
+      const me = this;
+      Sifrr.Fetch.get('https://jsonplaceholder.typicode.com/todos').then(resp => {
+        setTimeout(() => me.state = { todos: resp }, 2000);
+      });
+    }
+  }
+  ApiTodos.defaultState = {
+    todos: [
+      {},
+      {}
+    ]
+  };
+  Sifrr.Dom.load('api-todo', { js: false }).then(() => {
+    setTimeout(() => {
+      Sifrr.Dom.register(ApiTodos);
+    }, 2000);
+  });
+</script>
