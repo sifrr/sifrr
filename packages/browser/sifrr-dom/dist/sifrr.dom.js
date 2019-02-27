@@ -149,31 +149,30 @@
         i--;
       }
     }
-    for (let i = 0, item, head = parent.firstChild; i < newL; i++) {
-      if (i < oldL) {
-        if (isNode) {
-          item = curNewChild.nextSibling;
-          head = makeEqual(head, curNewChild).nextSibling;
-          curNewChild = item;
-        } else {
-          head = makeEqual(head, newChildren[i]).nextSibling;
-        }
-      } else {
-        if (isNode) {
-          while (curNewChild) {
-            item = curNewChild.nextSibling;
-            parent.appendChild(curNewChild);
-            curNewChild = item;
-            i++;
-          }
-        } else {
-          while (i < newL) {
-            item = newChildren[i];
-            if (!item.nodeType) item = createFn(item);
-            parent.appendChild(item);
-            i++;
-          }
-        }
+    let item,
+        head = parent.firstChild;
+    if (isNode) {
+      while (head) {
+        item = curNewChild.nextSibling;
+        head = makeEqual(head, curNewChild).nextSibling;
+        curNewChild = item;
+      }
+      while (curNewChild) {
+        item = curNewChild.nextSibling;
+        parent.appendChild(curNewChild);
+        curNewChild = item;
+      }
+    } else {
+      let i = 0;
+      while (head) {
+        head = makeEqual(head, newChildren[i]).nextSibling;
+        i++;
+      }
+      while (i < newL) {
+        item = newChildren[i];
+        if (!item.nodeType) item = createFn(item);
+        parent.appendChild(item);
+        i++;
       }
     }
   }

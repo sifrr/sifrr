@@ -20,34 +20,33 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
     }
   }
 
-  // Make old children equal to new children
-  for(let i = 0, item, head = parent.firstChild; i < newL; i++) {
-    if (i < oldL) {
-      // make two nodes equal
-      if (isNode) {
-        item = curNewChild.nextSibling;
-        head = makeEqual(head, curNewChild).nextSibling;
-        curNewChild = item;
-      } else {
-        head = makeEqual(head, newChildren[i]).nextSibling;
-      }
-    } else {
-      // No old node
-      if (isNode) {
-        while(curNewChild) {
-          item = curNewChild.nextSibling;
-          parent.appendChild(curNewChild);
-          curNewChild = item;
-          i++;
-        }
-      } else {
-        while(i < newL) {
-          item = newChildren[i];
-          if (!item.nodeType) item = createFn(item);
-          parent.appendChild(item);
-          i++;
-        }
-      }
+  let item, head = parent.firstChild;
+  if (isNode) {
+    // Make old children equal to new children
+    while(head) {
+      item = curNewChild.nextSibling;
+      head = makeEqual(head, curNewChild).nextSibling;
+      curNewChild = item;
+    }
+    // Add extra new children
+    while(curNewChild) {
+      item = curNewChild.nextSibling;
+      parent.appendChild(curNewChild);
+      curNewChild = item;
+    }
+  } else {
+    let i = 0;
+    // Make old children equal to new children
+    while(head) {
+      head = makeEqual(head, newChildren[i]).nextSibling;
+      i++;
+    }
+    // Add extra new children
+    while(i < newL) {
+      item = newChildren[i];
+      if (!item.nodeType) item = createFn(item);
+      parent.appendChild(item);
+      i++;
     }
   }
 }
