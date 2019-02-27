@@ -1,6 +1,6 @@
 const Renderer = require('./renderer');
-const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('(headless|Headless)');
+const getCache = require('./getcache');
 
 class SifrrSeo {
   constructor(userAgents = [
@@ -14,54 +14,20 @@ class SifrrSeo {
     'Exabot', // Exalead
   ], options = {}) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
-    this.options = options;
+    this.shouldRenderCache = {};
+    this.options = Object.assign({
+      cacheKey: (req) => req.fullUrl,
+      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`
+    }, options);
   }
 
   get middleware() {
-    function mw(req, res, next) {
-      // Don't render other requests than GET
-      if (req.method !== 'GET') return next();
-
-      const renderReq = {
-        fullUrl: this.renderer.options.fullUrl(req),
-        headers: req.headers
-      };
-
-      if (this.renderer.getShouldRenderCache(renderReq) === null) {
-        res._end = res.end;
-        res.end = (resp, encoding) => {
-          if (res.hasHeader('content-type')) {
-            const contentType = res.getHeader('content-type');
-            if (contentType.indexOf('html') >= 0) {
-              this.renderer.addShouldRenderCache(renderReq, true);
-            } else {
-              this.renderer.addShouldRenderCache(renderReq, false);
-            }
-          }
-          res._end(resp, encoding);
-        };
-      }
-
-      return this.render(renderReq).then((html) => {
-        if (html) res.send(html + footer);
-        else next();
-      }).catch((e) => {
-        if (e.message === 'No Render') global.console.log(`Not rendering for ${renderReq.fullUrl}`);
-        else global.console.error(e);
-        next();
-      });
-    }
-    return mw.bind(this);
+    return require('./middleware').bind(this);
   }
 
   isHeadless(req) {
     const ua = req.headers['user-agent'];
     return !!isHeadless.test(ua);
-  }
-
-  hasReferer(req) {
-    const ref = req.headers['referer'];
-    return !!ref;
   }
 
   shouldRender(req) {
@@ -82,8 +48,7 @@ class SifrrSeo {
   }
 
   clearCache() {
-    this.shouldRenderCache = {};
-    this.renderer.cache.reset();
+    this.cache.reset();
   }
 
   close() {
@@ -95,9 +60,44 @@ class SifrrSeo {
     this._poptions[name] = value;
   }
 
+  get cache() {
+    this._cache = this._cache || getCache(this.options);
+    return this._cache;
+  }
+
+  addShouldRenderCache(req, val) {
+    const key = this.options.cacheKey(req);
+    this.shouldRenderCache[key] = val;
+  }
+
+  getShouldRenderCache(req) {
+    const key = this.options.cacheKey(req);
+    if (this.shouldRenderCache[key] === undefined) return null;
+    return this.shouldRenderCache[key];
+  }
+
   async render(req) {
-    if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-      return this.renderer.render(req);
+    if (this.getShouldRenderCache(req) === false) {
+      throw Error(`No Render`);
+    } else if (this.shouldRender(req) && !this.isHeadless(req)) {
+      const key = this.options.cacheKey(req);
+      return new Promise((res, rej) => {
+        this.cache.get(key, (err, val) => {
+          /* istanbul ignore if */
+          if (err) {
+            rej(err);
+          } else if (!val) {
+            this.renderer.render(req).then((resp) => {
+              this.cache.set(key, resp);
+              res(resp);
+            }).catch(/* istanbul ignore next */ err => {
+              rej(err);
+            });
+          } else {
+            res(val);
+          }
+        });
+      });
     } else {
       throw Error(`No Render`);
     }

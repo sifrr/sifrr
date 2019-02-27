@@ -1,6 +1,122 @@
 /*! Sifrr.Seo v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import puppeteer from 'puppeteer';
 
+const whiteTypes = ['document', 'script', 'xhr', 'fetch'];
+function isTypeOf(request, types) {
+  const resType = request.resourceType();
+  return types.indexOf(resType) !== -1;
+}
+class PageRequest {
+  constructor(npage) {
+    this.npage = npage;
+    this.pendingRequests = 0;
+    this.pendingPromise = new Promise(res => this.pendingResolver = res);
+    this.addOnRequestListener();
+    this.addEndRequestListener();
+  }
+  addOnRequestListener() {
+    const me = this;
+    this.npage.setRequestInterception(true).then(() => {
+      me.npage.on('request', (request) => {
+        if (isTypeOf(request, whiteTypes)) {
+          me.pendingRequests++;
+          request.continue();
+        } else {
+          request.abort();
+        }
+      });
+    });
+  }
+  addEndRequestListener() {
+    const me = this;
+    this.npage.on('requestfailed', request => {
+      me.onEnd(request);
+    });
+    this.npage.on('requestfinished', request => {
+      me.onEnd(request);
+    });
+  }
+  onEnd(req) {
+    if (isTypeOf(req, whiteTypes)) {
+      this.pendingRequests--;
+      if (this.pendingRequests === 0) {
+        this.pendingResolver();
+      }
+    }
+  }
+  all() {
+    if (this.pendingRequests === 0) return Promise.resolve(true);
+    return this.pendingPromise;
+  }
+}
+var pagerequest = PageRequest;
+
+var constants = {
+  noop: () => {},
+  footer: '<!-- Server side rendering powered by @sifrr/seo -->'
+};
+
+const { noop } = constants;
+class Renderer {
+  constructor(puppeteerOptions = {}, options = {}) {
+    this.launched = false;
+    this.puppeteerOptions = Object.assign({
+      headless: true,
+      args: [],
+    }, puppeteerOptions);
+    this.puppeteerOptions.args.push(
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    );
+    this.options = Object.assign({
+      beforeRender: noop,
+      afterRender: noop
+    }, options);
+  }
+  async launchBrowser() {
+    this.browser = await puppeteer.launch(this.puppeteerOptions);
+    this.launched = true;
+    const me = this;
+    this.browser.on('disconnected', () => {
+      me.launched = false;
+    });
+  }
+  close() {
+    if (this.launched) return this.browser.close();
+    else return Promise.resolve(true);
+  }
+  render(req) {
+    const fullUrl = req.fullUrl;
+    let pro = Promise.resolve(true);
+    const me = this;
+    if (!this.launched) pro = this.launchBrowser();
+    return pro.then(() => this.browser.newPage()).then(async (newp) => {
+      const fetches = new pagerequest(newp);
+      const headers = req.headers || {};
+      delete headers['user-agent'];
+      await newp.setExtraHTTPHeaders(headers);
+      await newp.evaluateOnNewDocument(me.options.beforeRender);
+      const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
+      const sRC = me.isHTML(resp);
+      let ret;
+      if (sRC) {
+        await fetches.all();
+        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
+        await newp.evaluate(me.options.afterRender);
+        ret = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
+      } else {
+        ret = false;
+      }
+      await newp.close();
+      return ret;
+    });
+  }
+  isHTML(puppeteerResp) {
+    return (puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+  }
+}
+var renderer = Renderer;
+
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function commonjsRequire () {
@@ -10,10 +126,6 @@ function commonjsRequire () {
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
-
-var constants = {
-  noop: () => {}
-};
 
 function CallbackFiller() {
     this.queues = {};
@@ -1666,170 +1778,54 @@ var lib = cacheManager;
 
 var cacheManager$1 = lib;
 
-const whiteTypes = ['document', 'script', 'xhr', 'fetch'];
-function isTypeOf(request, types) {
-  const resType = request.resourceType();
-  return types.indexOf(resType) !== -1;
-}
-class PageRequest {
-  constructor(npage) {
-    this.npage = npage;
-    this.pendingRequests = 0;
-    this.pendingPromise = new Promise(res => this.pendingResolver = res);
-    this.addOnRequestListener();
-    this.addEndRequestListener();
-  }
-  addOnRequestListener() {
-    const me = this;
-    this.npage.setRequestInterception(true).then(() => {
-      me.npage.on('request', (request) => {
-        if (isTypeOf(request, whiteTypes)) {
-          me.pendingRequests++;
-          request.continue();
+var getcache = (ops) => {
+  ops = Object.assign({
+    cacheStore: 'memory',
+    maxCacheSize: 100,
+    ttl: 0
+  }, ops);
+  return cacheManager$1.caching({
+    store: ops.cacheStore,
+    ttl: ops.ttl,
+    length: (val, key) => {
+      return Buffer.from(key + key + val).length + 2;
+    },
+    max: ops.maxCacheSize * 1000000
+  });
+};
+
+const { footer } = constants;
+var middleware = function(req, res, next) {
+  if (req.method !== 'GET') return next();
+  const renderReq = {
+    fullUrl: this.renderer.options.fullUrl(req),
+    headers: req.headers
+  };
+  if (this.getShouldRenderCache(renderReq) === null) {
+    res._end = res.end;
+    res.end = (resp, encoding) => {
+      if (res.hasHeader('content-type')) {
+        const contentType = res.getHeader('content-type');
+        if (contentType.indexOf('html') >= 0) {
+          this.addShouldRenderCache(renderReq, true);
         } else {
-          request.abort();
+          this.addShouldRenderCache(renderReq, false);
         }
-      });
-    });
-  }
-  addEndRequestListener() {
-    const me = this;
-    this.npage.on('requestfailed', request => {
-      me.onEnd(request);
-    });
-    this.npage.on('requestfinished', request => {
-      me.onEnd(request);
-    });
-  }
-  onEnd(req) {
-    if (isTypeOf(req, whiteTypes)) {
-      this.pendingRequests--;
-      if (this.pendingRequests === 0) {
-        this.pendingResolver();
       }
-    }
+      res._end(resp, encoding);
+    };
   }
-  all() {
-    if (this.pendingRequests === 0) return Promise.resolve(true);
-    return this.pendingPromise;
-  }
-}
-var pagerequest = PageRequest;
+  return this.render(renderReq).then((html) => {
+    if (html) res.send(html + footer);
+    else next();
+  }).catch((e) => {
+    if (e.message === 'No Render') {
+      commonjsGlobal.console.log(`Not rendering for ${renderReq.fullUrl}`);
+      next();
+    } else next(e);
+  });
+};
 
-const { noop } = constants;
-const getCache = (ops) => cacheManager$1.caching({
-  store: ops.cacheStore,
-  ttl: ops.ttl,
-  length: (val, key) => {
-    return Buffer.from(key + key + val).length + 2;
-  },
-  max: ops.maxCacheSize * 1000000
-});
-class Renderer {
-  constructor(puppeteerOptions = {}, options = {}) {
-    this.launched = false;
-    this.puppeteerOptions = Object.assign({
-      headless: true,
-      args: [],
-    }, puppeteerOptions);
-    this.puppeteerOptions.args.push(
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
-    );
-    this.options = Object.assign({
-      cache: 'memory',
-      maxCacheSize: 100,
-      ttl: 0,
-      cacheKey: (req) => req.fullUrl,
-      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`,
-      beforeRender: noop,
-      afterRender: noop
-    }, options);
-    this.cache = getCache(this.options);
-    this.shouldRenderCache = {};
-  }
-  async launchBrowser() {
-    this.browser = await puppeteer.launch(this.puppeteerOptions);
-    this.launched = true;
-    const me = this;
-    this.browser.on('disconnected', () => {
-      me.launched = false;
-    });
-  }
-  close() {
-    if (this.launched) return this.browser.close();
-    else return Promise.resolve(true);
-  }
-  render(req) {
-    const key = this.options.cacheKey(req);
-    return new Promise((res, rej) => {
-      if (this.shouldRenderCache[key] === false) {
-        res(false);
-      } else {
-        this.cache.get(key, (err, val) => {
-          if (err) {
-            rej(err);
-          } else if (!val) {
-            this.renderOnPuppeteer(req).then((resp) => {
-              res(resp);
-            }).catch(err => {
-              rej(err);
-            });
-          } else {
-            res(val);
-          }
-        });
-      }
-    });
-  }
-  renderOnPuppeteer(req) {
-    const key = this.options.cacheKey(req);
-    const fullUrl = req.fullUrl;
-    let pro = Promise.resolve(true);
-    const me = this;
-    if (!this.launched) pro = this.launchBrowser();
-    return pro.then(() => this.browser.newPage()).then(async (newp) => {
-      const fetches = new pagerequest(newp);
-      const headers = req.headers || {};
-      delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
-      const sRC = me.isHTML(resp);
-      let ret;
-      if (sRC) {
-        await fetches.all();
-        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
-        await newp.evaluate(me.options.afterRender);
-        const resp = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
-        me.cache.set(key, resp, (err) => {
-          if (err) throw err;
-        });
-        ret = resp;
-      } else {
-        ret = false;
-      }
-      me.shouldRenderCache[key] = sRC;
-      await newp.close();
-      return ret;
-    });
-  }
-  addShouldRenderCache(req, val) {
-    const key = this.options.cacheKey(req);
-    this.shouldRenderCache[key] = val;
-  }
-  getShouldRenderCache(req) {
-    const key = this.options.cacheKey(req);
-    if (this.shouldRenderCache[key] === undefined) return null;
-    return this.shouldRenderCache[key];
-  }
-  isHTML(puppeteerResp) {
-    return (puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
-  }
-}
-var renderer = Renderer;
-
-const footer = '<!-- Server side rendering powered by @sifrr/seo -->';
 const isHeadless = new RegExp('(headless|Headless)');
 class SifrrSeo {
   constructor(userAgents = [
@@ -1843,47 +1839,18 @@ class SifrrSeo {
     'Exabot',
   ], options = {}) {
     this._uas = userAgents.map((ua) => new RegExp(ua));
-    this.options = options;
+    this.shouldRenderCache = {};
+    this.options = Object.assign({
+      cacheKey: (req) => req.fullUrl,
+      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`
+    }, options);
   }
   get middleware() {
-    function mw(req, res, next) {
-      if (req.method !== 'GET') return next();
-      const renderReq = {
-        fullUrl: this.renderer.options.fullUrl(req),
-        headers: req.headers
-      };
-      if (this.renderer.getShouldRenderCache(renderReq) === null) {
-        res._end = res.end;
-        res.end = (resp, encoding) => {
-          if (res.hasHeader('content-type')) {
-            const contentType = res.getHeader('content-type');
-            if (contentType.indexOf('html') >= 0) {
-              this.renderer.addShouldRenderCache(renderReq, true);
-            } else {
-              this.renderer.addShouldRenderCache(renderReq, false);
-            }
-          }
-          res._end(resp, encoding);
-        };
-      }
-      return this.render(renderReq).then((html) => {
-        if (html) res.send(html + footer);
-        else next();
-      }).catch((e) => {
-        if (e.message === 'No Render') commonjsGlobal.console.log(`Not rendering for ${renderReq.fullUrl}`);
-        else commonjsGlobal.console.error(e);
-        next();
-      });
-    }
-    return mw.bind(this);
+    return middleware.bind(this);
   }
   isHeadless(req) {
     const ua = req.headers['user-agent'];
     return !!isHeadless.test(ua);
-  }
-  hasReferer(req) {
-    const ref = req.headers['referer'];
-    return !!ref;
   }
   shouldRender(req) {
     return this.isUserAgent(req);
@@ -1900,8 +1867,7 @@ class SifrrSeo {
     this._uas.push(new RegExp(userAgent));
   }
   clearCache() {
-    this.shouldRenderCache = {};
-    this.renderer.cache.reset();
+    this.cache.reset();
   }
   close() {
     return this.renderer.close();
@@ -1910,9 +1876,40 @@ class SifrrSeo {
     this._poptions = this._poptions || {};
     this._poptions[name] = value;
   }
+  get cache() {
+    this._cache = this._cache || getcache(this.options);
+    return this._cache;
+  }
+  addShouldRenderCache(req, val) {
+    const key = this.options.cacheKey(req);
+    this.shouldRenderCache[key] = val;
+  }
+  getShouldRenderCache(req) {
+    const key = this.options.cacheKey(req);
+    if (this.shouldRenderCache[key] === undefined) return null;
+    return this.shouldRenderCache[key];
+  }
   async render(req) {
-    if (this.shouldRender(req) && !this.isHeadless(req) && !this.hasReferer(req)) {
-      return this.renderer.render(req);
+    if (this.getShouldRenderCache(req) === false) {
+      throw Error(`No Render`);
+    } else if (this.shouldRender(req) && !this.isHeadless(req)) {
+      const key = this.options.cacheKey(req);
+      return new Promise((res, rej) => {
+        this.cache.get(key, (err, val) => {
+          if (err) {
+            rej(err);
+          } else if (!val) {
+            this.renderer.render(req).then((resp) => {
+              this.cache.set(key, resp);
+              res(resp);
+            }).catch( err => {
+              rej(err);
+            });
+          } else {
+            res(val);
+          }
+        });
+      });
     } else {
       throw Error(`No Render`);
     }

@@ -1,3 +1,4 @@
 module.exports = {
-  noop: () => {}
+  noop: () => {},
+  footer: '<!-- Server side rendering powered by @sifrr/seo -->'
 };

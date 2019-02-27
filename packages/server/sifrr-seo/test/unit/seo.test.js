@@ -1,50 +1,28 @@
 const SifrrSeo = require('../../src/sifrr.seo');
-const seo = new SifrrSeo();
+const seo = new SifrrSeo(undefined, {
+  ttl: 0.001,
+  maxCacheSize: 0.000010 // In MB, 10 Bytes
+});
+const req = {
+  fullUrl: '/index.html',
+  headers: {
+    'user-agent': 'Googlebot',
+  }
+};
+const req2 = {
+  fullUrl: '/index2.html',
+  headers: {
+    'user-agent': 'Googlebot',
+  }
+};
 
 describe('SifrrSeo', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('middleware', () => {
-    it('calls next() if render is false', async () => {
-      const m = seo.middleware;
-      sinon.stub(seo, 'render').resolves(false);
-      sinon.stub(seo.renderer, 'getShouldRenderCache').returns(true);
-      sinon.stub(seo.renderer.options, 'fullUrl').returns('http://');
-      const next = sinon.spy();
-
-      await m({
-        method: 'GET',
-        headers: {}
-      }, {}, next);
-
-      assert(next.calledOnce);
-    });
-
-    it('doesn\'t set shouldRenderCache when res has no content-type', async () => {
-      const m = seo.middleware;
-      sinon.stub(seo, 'render').resolves(false);
-      sinon.stub(seo.renderer.options, 'fullUrl').returns('http://');
-      const next = sinon.spy();
-      const req = {
-        method: 'GET',
-        headers: {}
-      };
-      const res = {
-        hasHeader: () => false,
-        getHeader: () => 'aa/html/bb',
-        end: () => {}
-      };
-
-      await m(req, res, next);
-      res.end();
-
-      assert.equal(seo.renderer.getShouldRenderCache({
-        fullUrl: 'http://',
-        headers: {}
-      }), null);
-    });
+  it('has default options', () => {
+    assert.equal(seo.options.fullUrl({ originalUrl: '/index.html' }), 'http://127.0.0.1:80/index.html');
   });
 
   describe('calling renderer', () => {
@@ -55,20 +33,91 @@ describe('SifrrSeo', () => {
       s.renderer;
       s.close();
 
-      assert(stubRen.calledWith({ h: false }, { c: 'd' }));
+      assert(stubRen.calledOnce);
+      expect(stubRen.firstCall.args[0]).to.deep.equal({ h: false });
+      assert.equal(stubRen.firstCall.args[1].c, 'd');
+      assert.notExists(stubRen.firstCall.args[2]);
+    });
+
+    it('calls next() if shouldRenderCache is false', async () => {
+      const m = seo.middleware;
+      sinon.stub(seo, 'render').resolves(false);
+      sinon.stub(seo, 'getShouldRenderCache').returns(true);
+      sinon.stub(seo.options, 'fullUrl').returns('http://');
+      const next = sinon.spy();
+      seo.shouldRenderCache[seo.options.cacheKey(req)] = false;
+
+      await m({
+        method: 'GET',
+        headers: {}
+      }, {}, next);
+
+      assert(next.calledOnce);
     });
   });
 
-  it('clears cache', async () => {
-    seo.renderer.cache.set('a', 'b');
-    seo.renderer.cache.get('a', (err, res) => {
-      assert.equal(res, 'b');
+  describe('cache', () => {
+    it('can manually take cache store', () => {
+      const Cache = require('cache-manager');
+      const store = Cache.caching().store;
+
+      const r = new SifrrSeo([], {
+        cacheStore: store
+      });
+
+      assert.equal(r.cache.store, store);
     });
 
-    seo.clearCache();
+    it('returns from cache if there is a response', async () => {
+      const seo2 = new SifrrSeo();
+      seo2.cache.set(seo2.options.cacheKey(req2), 'v');
 
-    seo.renderer.cache.get('a', (err, res) => {
-      assert.notExists(res);
+      assert.equal(await seo2.render(req2), 'v');
+    });
+
+    it('clears cache', async () => {
+      seo.cache.set('a', 'b');
+      seo.cache.get('a', (err, res) => {
+        assert.equal(res, 'b');
+      });
+
+      seo.clearCache();
+
+      seo.cache.get('a', (err, res) => {
+        assert.notExists(res);
+      });
+    });
+
+    it('has cache', () => {
+      assert(seo.cache);
+    });
+
+    it('cache expires after ttl', async () => {
+      seo.cache.set('a', 'b');
+      seo.cache.get('a', (err, res) => {
+        assert.equal(res, 'b');
+      });
+
+      await delay(0.002);
+
+      seo.cache.get('a', (err, res) => {
+        assert.notExists(res);
+      });
+    });
+
+    it('expires after size exceeded', async () => {
+      seo.cache.set('a', 'abcd');
+      seo.cache.get('a', (err, res) => {
+        assert.equal(res, 'abcd');
+      });
+
+      seo.cache.set('b', 'abcd');
+      seo.cache.get('a', (err, res) => {
+        assert.notExists(res);
+      });
+      seo.cache.get('b', (err, res) => {
+        assert.equal(res, 'abcd');
+      });
     });
   });
 });

@@ -2,7 +2,7 @@
 
 A ~6KB DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data bindings etc.
 
-Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use of a full fledged JS framework.
+Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework.
 
 ## Size
 
@@ -605,5 +605,5 @@ then you can use custom-tag as button in html like:
 
 ## Special thanks to
 
--   <https://github.com/Freak613/stage0> for optimization ideas and reconciliation algorithm
+-   <https://github.com/Freak613/stage0> for optimization bindings and reconciliation algorithm
 -   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)

@@ -1,0 +1,37 @@
+const { footer } = require('./constants');
+
+// this = sifrr seo instance
+module.exports = function(req, res, next) {
+  // Don't render other requests than GET
+  if (req.method !== 'GET') return next();
+
+  const renderReq = {
+    fullUrl: this.renderer.options.fullUrl(req),
+    headers: req.headers
+  };
+
+  if (this.getShouldRenderCache(renderReq) === null) {
+    res._end = res.end;
+    res.end = (resp, encoding) => {
+      if (res.hasHeader('content-type')) {
+        const contentType = res.getHeader('content-type');
+        if (contentType.indexOf('html') >= 0) {
+          this.addShouldRenderCache(renderReq, true);
+        } else {
+          this.addShouldRenderCache(renderReq, false);
+        }
+      }
+      res._end(resp, encoding);
+    };
+  }
+
+  return this.render(renderReq).then((html) => {
+    if (html) res.send(html + footer);
+    else next();
+  }).catch((e) => {
+    if (e.message === 'No Render') {
+      global.console.log(`Not rendering for ${renderReq.fullUrl}`);
+      next();
+    } else next(e);
+  });
+};
