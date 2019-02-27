@@ -24,11 +24,9 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 
 ## Performance Comparison
 
-Ran locally on Macbook pro(MacOS 10.14/16GB/i7 3.1GHz) with [js-framework-benchmark](https://github.com/krausest/js-framework-benchmark). Latest benchmark implementation [here](./test/public/speedtest.html)
+[Check Performance Here](https://rawgit.com/krausest/js-framework-benchmark/master/webdriver-ts-results/table.html)
 
-**Note**: These might not be completely accurate and real life app speeds might differ. Just for reference.
-
-<img src="./performance.png" alt="Performance" height='400'>
+**Note**: These might not be exact and should only be taken as a reference.
 
 ## How to use
 

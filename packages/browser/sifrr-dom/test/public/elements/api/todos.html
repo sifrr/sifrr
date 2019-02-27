@@ -14,8 +14,14 @@
   }
   ApiTodos.defaultState = {
     todos: [
-      {},
-      {}
+      {
+        id: '',
+        title: ''
+      },
+      {
+        id: '',
+        title: ''
+      }
     ]
   };
   Sifrr.Dom.load('api-todo', { js: false }).then(() => {
