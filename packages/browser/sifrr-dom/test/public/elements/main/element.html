@@ -52,7 +52,7 @@
       </div>
     </div>
     <table class="table table-hover table-striped test-data">
-      <tbody data-sifrr-repeat=${this.state.data} data-sifrr-key=${this.state.key} data-sifrr-default-state='{"class":""}'>
+      <tbody data-sifrr-repeat=${this.state.data} data-sifrr-key='id' data-sifrr-default-state='{"class":""}'>
         <tr class=${this.state.class}>
           <td class='col-md-1 id'>${this.state.id}</td>
           <td class='col-md-4'><a class='lbl'>${this.state.label}</a></td>
@@ -174,11 +174,13 @@
     }
   }
   MainElement.defaultState = {
-    data: [],
-    key: window.keyedKey
+    data: []
   };
 
   Sifrr.Dom.load('sifrr-row').then(() => {
+    if (!window.keyedKey) {
+      this.currentTempate.content.querySelector('tbody').removeAttribute('data-sifrr-key');
+    }
     if (window.useSifrrInArray) {
       const row = document.createElement('tr', { is: 'sifrr-row' });
       this.currentTempate.content.querySelector('tr').replaceWith(row);

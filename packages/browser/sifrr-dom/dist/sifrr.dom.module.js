@@ -474,9 +474,10 @@ function update(element, stateMap) {
     if (data.text === undefined) continue;
     newValue = evaluateBindings(data.text, element);
     if (data.type === 3) {
-      const key = dom.getAttribute(KEY_ATTR);
-      if (key) makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(undefined, state), key);
-      else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(undefined, state));
+      let key;
+      if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
+        makeChildrenEqualKeyed$1(dom, newValue, (state) => data.se.sifrrClone(undefined, state), key);
+      } else makeChildrenEqual$1(dom, newValue, (state) => data.se.sifrrClone(undefined, state));
     } else {
       let children, isNode = false;
       if (Array.isArray(newValue)) {
@@ -543,12 +544,14 @@ function SimpleElement(content, defaultState = null) {
 var simpleelement = SimpleElement;
 
 const { getBindingFxns } = bindings;
+const { KEY_ATTR: KEY_ATTR$1 } = constants;
 var repeatref = (sm, el, attr) => {
   sm.type = 3;
   let defaultState;
   if (el.hasAttribute('data-sifrr-default-state')) defaultState = JSON.parse(el.getAttribute('data-sifrr-default-state'));
   sm.se = simpleelement(el.childNodes, defaultState);
   sm.text = getBindingFxns(el.getAttribute(attr));
+  sm.keyed = el.hasAttribute(KEY_ATTR$1);
   el.textContent = '';
   el.removeAttribute(attr);
 };

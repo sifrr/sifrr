@@ -2,6 +2,8 @@
 
 A ~6KB DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data bindings etc.
 
+Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use of a full fledged JS framework.
+
 ## Size
 
 | Type                                         |                                                                                                                      Size                                                                                                                      |
