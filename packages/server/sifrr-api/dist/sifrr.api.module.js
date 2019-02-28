@@ -1,19 +1,61 @@
 /*! Sifrr.Api v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import graphqlSequelize from 'graphql-sequelize';
-import sequelize from 'sequelize';
+import sequelize$1 from 'sequelize';
 import graphql$1 from 'graphql';
 import fs from 'fs';
 import path from 'path';
 import graphqlTools from 'graphql-tools';
 
+var flatten = (attrs, separator = ', ') => {
+  const str = [];
+  for (let attr in attrs) {
+    str.push(`${attr}: ${attrs[attr]}`);
+  }
+  return str.join(separator);
+};
+
+function filter(json, fxn) {
+  const res = {};
+  for (let k in json) {
+    if (fxn(k)) res[k] = json[k];
+  }
+  return res;
+}
+var attrstotypes = (attrs, required = [], allowed = []) => {
+  if (allowed.length > 0) attrs = filter(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
+  let ret = {};
+  for (let attr in attrs) {
+    let bang = required.indexOf(attr) >= 0 ? true : false;
+    let type;
+    if (attrs[attr].returnType) {
+      type = attrs[attr].returnType;
+    } else if (attrs[attr].type.constructor.name === 'GraphQLList') {
+      type = `[${attrs[attr].type.ofType.name}]`;
+    } else if (attrs[attr].type.constructor.name === 'GraphQLNonNull') {
+      type = attrs[attr].type.ofType.name;
+      bang = true;
+    } else {
+      try {
+        type = attrs[attr].type.name || attrs[attr].type.ofType.name;
+      } catch(e) {
+        if (Array.isArray(attrs[attr].type)) type = `[${attrs[attr].type[0]}]`;
+        else type = attrs[attr].type || attrs[attr];
+      }
+    }
+    const args = attrs[attr].args ? `(${flatten(attrs[attr].args)})` : '';
+    ret[attr + args] = type + (bang ? '!' : '');
+  }
+  return ret;
+};
+
 const { attributeFields, defaultListArgs, defaultArgs } = graphqlSequelize;
 const { resolver } = graphqlSequelize;
-class Model extends sequelize.Model {
+class SequelizeModel extends sequelize$1.Model {
   static init(options) {
     this.gqAssociations[this.gqName] = {};
     this.gqQuery[this.gqName] = {};
     this.gqMutations[this.gqName] = {};
-    this.gqExtraArgs[this.gqName] = {};
+    this.gqExtraAttrs[this.gqName] = {};
     const ret = super.init(this.schema, options);
     ret.onInit();
     return ret;
@@ -42,26 +84,32 @@ class Model extends sequelize.Model {
     this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), returnType: model.gqName, model: model };
     return this[name];
   }
-  static addArg(name, options ) {
-    this.gqExtraArgs[this.gqName][name] = options;
+  static get gqName() {
+    return this.name;
   }
-  static addMutation(name, options ) {
-    this.gqMutations[this.gqName][name] = options;
+  static addAttr(name, options ) {
+    this.gqExtraAttrs[this.gqName][name] = options;
   }
   static addQuery(name, options ) {
     this.gqQuery[this.gqName][name] = options;
   }
-  static get gqName() {
-    return this.name;
+  static addMutation(name, options ) {
+    this.gqMutations[this.gqName][name] = options;
   }
-  static get gqSchema() {
-    return this.sequelizeToGqSchema();
+  static gqSchema() {
+    return this.gqSchemaAttrs();
   }
-  static get gqAttrs() {
-    return attributeFields(this);
+  static gqAttrs({ required, allowed } = {}) {
+    return attrstotypes(attributeFields(this), required, allowed);
   }
-  static get gqArgs() {
-    return Object.assign(defaultArgs(this), defaultListArgs());
+  static gqArgs({ required, allowed } = {}) {
+    return attrstotypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  }
+  static gqSchemaAttrs({ required, allowed } = {}) {
+    const args = attributeFields(this);
+    const assocs = this.gqAssociations[this.gqName];
+    const extras = this.gqExtraAttrs[this.gqName];
+    return attrstotypes(Object.assign(args, assocs, extras), required, allowed);
   }
   static get resolvers() {
     const q = { Query: this.gqQuery[this.gqName], Mutation: this.gqMutations[this.gqName] };
@@ -70,13 +118,12 @@ class Model extends sequelize.Model {
       const assoc = this.gqAssociations[this.gqName][a];
       q[this.gqName][a] = assoc.resolver;
     }
-    for (let a in this.gqExtraArgs[this.gqName]) {
-      const assoc = this.gqExtraArgs[this.gqName][a];
-      q[this.gqName][a] = assoc.resolver;
+    for (let a in this.gqExtraAttrs[this.gqName]) {
+      const attr = this.gqExtraAttrs[this.gqName][a];
+      q[this.gqName][a] = attr.resolver;
     }
     return q;
   }
-  static onInit() {}
   static getQueryResolver(_, args, ctx, info) {
     let include;
     for (let arg in args.where) {
@@ -108,47 +155,6 @@ class Model extends sequelize.Model {
   static deleteMutationResolver(_, args) {
     return this.destroy({ where: args });
   }
-  static argsToString(args, { required = [], allowed = [], separator = ', ' } = {}) {
-    if (allowed.length > 0) args = filter(args, (arg) => allowed.indexOf(arg) >= 0 || required.indexOf(arg) >= 0);
-    let str = [];
-    for (let arg in args) {
-      const bang = required.indexOf(arg) >= 0 ? '!' : '';
-      if (args[arg].returnType) {
-        str.push(`${arg}: ${args[arg].returnType}${bang}`);
-      } else if (args[arg].type.constructor.name === 'GraphQLList') {
-        str.push(`${arg}: [${args[arg].type.ofType.name}]${bang}`);
-      } else if (args[arg].type.constructor.name === 'GraphQLNonNull') {
-        str.push(`${arg}: ${args[arg].type.ofType.name}!`);
-      } else {
-        try {
-          str.push(`${arg}: ${args[arg].type.name || args[arg].type.ofType.name}${bang}`);
-        } catch(e) {
-          if (Array.isArray(args[arg].type)) str.push(`${arg}:[${args[arg].type[0]}]${bang}`);
-          else str.push(`${arg}: ${args[arg].type}${bang}`);
-        }
-      }
-    }
-    return str.join(separator);
-  }
-  static sequelizeToGqSchema({ required = [], allowed = [] } = {}) {
-    const args = attributeFields(this);
-    const assocs = this.gqAssociations[this.gqName];
-    const extras = this.gqExtraArgs[this.gqName];
-    const me = this;
-    if (allowed.length > 0) {
-      Object.keys(filter(assocs, (assoc) => allowed.indexOf(assoc) < 0)).forEach((a) => {
-        delete me.gqAssociations[me.gqName][a];
-      });
-      Object.keys(filter(extras, (extra) => allowed.indexOf(extra) < 0)).forEach((a) => {
-        delete me.gqExtraArgs[me.gqName][a];
-      });
-    }
-    const total = Object.assign(args, assocs, extras);
-    let sq = `type ${this.gqName} {
-  ${this.argsToString(total, { required, allowed, separator: '\n  ' })}
-}`;
-    return sq;
-  }
   static _assocsToInclude(assocs, column = true, model = this) {
     if (column) assocs.pop();
     const assocName = assocs.shift();
@@ -162,40 +168,27 @@ class Model extends sequelize.Model {
     return include;
   }
 }
-function filter(json, fxn) {
-  const res = {};
-  for (let k in json) {
-    if (fxn(k)) res[k] = json[k];
-  }
-  return res;
-}
-Model.gqAssociations = {};
-Model.gqMutations = {};
-Model.gqQuery = {};
-Model.gqExtraArgs = {};
-var model = Model;
+SequelizeModel.gqAssociations = {};
+SequelizeModel.gqMutations = {};
+SequelizeModel.gqQuery = {};
+SequelizeModel.gqExtraAttrs = {};
+var sequelize = SequelizeModel;
 
 const { graphql } = graphql$1;
-class ExpressToGraphql {
-  constructor(schema) {
-    this._schema = schema;
+class GraphqlExecutor {
+  constructor(executableSchema) {
+    this._schema = executableSchema;
     this._middlewares = [];
   }
-  resolve(req, query, context = {}) {
-    this._middlewares.forEach((m) => {
-      m(req, context);
-    });
+  resolve(query, context = {}) {
     return graphql({
       schema: this._schema,
       source: query,
       contextValue: context
     });
   }
-  use(fxn) {
-    this._middlewares.push(fxn);
-  }
 }
-var expresstographql = ExpressToGraphql;
+var expresstographql = GraphqlExecutor;
 
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
@@ -305,19 +298,18 @@ mkdirP.sync = function sync (p, opts, made) {
 
 const { makeExecutableSchema } = graphqlTools;
 function getTypeDef(qs, resolvers) {
-  let ret = [];
   for (let q in qs) {
     const qdet = qs[q];
-    const args = qdet.args ? `(${qdet.args})` : '';
-    ret.push(`${q}${args}: ${qdet.returnType}`);
     resolvers[q] = qdet.resolver;
   }
-  return ret.join('\n  ');
+  return flatten(attrstotypes(qs), '\n  ');
 }
 function createSchemaFromModels(models, { extra = '', query = {}, mutation = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
   const typeDefs = [], resolvers = {};
   for(let modelName in models) {
-    typeDefs.push(models[modelName].gqSchema);
+    typeDefs.push(`type ${models[modelName].gqName} {
+  ${flatten(models[modelName].gqSchema(), '\n  ')}
+}`);
     Object.assign(resolvers, models[modelName].resolvers);
     Object.assign(query, models[modelName].resolvers.Query);
     Object.assign(mutation, models[modelName].resolvers.Mutation);
@@ -335,16 +327,15 @@ type Mutation {
 
 scalar SequelizeJSON
 scalar Date
-${extra}
-`;
-  typeDefs.push(typeDef);
+${extra}`;
+  typeDefs.unshift(typeDef);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
   if (saveSchema) {
     schemaPath = path.resolve(schemaPath);
     mkdirp(path.dirname(schemaPath));
     const comment = '# THIS FILE WAS AUTOGENERATED BY SIFRR-API. DO NOT EDIT THIS FILE DIRECTLY. \n\n';
-    fs.writeFileSync(schemaPath, comment + typeDefs.join('\n\n'));
+    fs.writeFileSync(schemaPath, comment + typeDefs.join('\n\n') + '\n');
   }
   return makeExecutableSchema({
     typeDefs,
@@ -376,7 +367,7 @@ function reqToGraphqlArgs(req, { allowed = [] } = {}) {
 var reqtographqlargs = reqToGraphqlArgs;
 
 const SifrrApi = {};
-SifrrApi.Model = model;
+SifrrApi.SequelizeModel = sequelize;
 SifrrApi.ExpressToGraphql = expresstographql;
 SifrrApi.loadRoutes = loadroutes;
 SifrrApi.createSchemaFromModels = createschemafrommodels;

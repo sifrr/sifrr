@@ -38,6 +38,11 @@ sifrr is a set of customizable, independent libraries for creating modern and fa
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
+## Usage
+
+All the packages can be used with requireJS (node's `require` syntax) and module syntax (`import`)
+Browser packages have standalone distribution as well, which can be used directly in browser.
+
 #### Packages that have tests have a working example of that package in `test/public` folder
 
 ## Node support

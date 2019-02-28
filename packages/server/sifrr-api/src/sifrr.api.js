@@ -1,5 +1,5 @@
 const SifrrApi = {};
-SifrrApi.Model = require('./api/model');
+SifrrApi.SequelizeModel = require('./api/models/sequelize');
 SifrrApi.ExpressToGraphql = require('./api/expresstographql');
 SifrrApi.loadRoutes = require('./api/loadroutes');
 SifrrApi.createSchemaFromModels = require('./api/createschemafrommodels');

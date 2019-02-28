@@ -27,13 +27,14 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {
     "graphql": "^14.0.2",
-    "graphql-relay": "^0.6.0",
-    "graphql-sequelize": "^9.3.1",
     "graphql-tools": "^4.0.3",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^0.5.1"
+  },
+  "peerDependencies": {
+    "graphql-sequelize": "^9.3.1",
+    "graphql-relay": "^0.6.0",
     "sequelize": "^4.42.0"
   },
-  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-external-helpers": "^7.2.0",
