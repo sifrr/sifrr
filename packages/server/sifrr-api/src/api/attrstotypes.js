@@ -1,12 +1,5 @@
 const flatten = require('./flatten');
-
-function filter(json, fxn) {
-  const res = {};
-  for (let k in json) {
-    if (fxn(k)) res[k] = json[k];
-  }
-  return res;
-}
+const filter = require('../utils/filterobject');
 
 module.exports = (attrs, required = [], allowed = []) => {
   if (allowed.length > 0) attrs = filter(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
@@ -16,9 +9,9 @@ module.exports = (attrs, required = [], allowed = []) => {
     let type;
     if (attrs[attr].returnType) {
       type = attrs[attr].returnType;
-    } else if (attrs[attr].type.constructor.name === 'GraphQLList') {
+    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLList') {
       type = `[${attrs[attr].type.ofType.name}]`;
-    } else if (attrs[attr].type.constructor.name === 'GraphQLNonNull') {
+    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLNonNull') {
       type = attrs[attr].type.ofType.name;
       bang = true;
     } else {

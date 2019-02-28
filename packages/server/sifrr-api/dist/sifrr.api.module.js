@@ -14,24 +14,25 @@ var flatten = (attrs, separator = ', ') => {
   return str.join(separator);
 };
 
-function filter(json, fxn) {
+var filterobject = function(json, fxn) {
   const res = {};
   for (let k in json) {
     if (fxn(k)) res[k] = json[k];
   }
   return res;
-}
+};
+
 var attrstotypes = (attrs, required = [], allowed = []) => {
-  if (allowed.length > 0) attrs = filter(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
+  if (allowed.length > 0) attrs = filterobject(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
   let ret = {};
   for (let attr in attrs) {
     let bang = required.indexOf(attr) >= 0 ? true : false;
     let type;
     if (attrs[attr].returnType) {
       type = attrs[attr].returnType;
-    } else if (attrs[attr].type.constructor.name === 'GraphQLList') {
+    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLList') {
       type = `[${attrs[attr].type.ofType.name}]`;
-    } else if (attrs[attr].type.constructor.name === 'GraphQLNonNull') {
+    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLNonNull') {
       type = attrs[attr].type.ofType.name;
       bang = true;
     } else {
@@ -180,15 +181,16 @@ class GraphqlExecutor {
     this._schema = executableSchema;
     this._middlewares = [];
   }
-  resolve(query, context = {}) {
+  resolve(query, variables, context = {}) {
     return graphql({
       schema: this._schema,
       source: query,
+      variables,
       contextValue: context
     });
   }
 }
-var expresstographql = GraphqlExecutor;
+var graphqlexecutor = GraphqlExecutor;
 
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
@@ -344,34 +346,26 @@ ${extra}`;
 }
 var createschemafrommodels = createSchemaFromModels;
 
-function filter$1(json, fxn) {
-  const res = {};
-  for (let k in json) {
-    if (fxn(k)) res[k] = json[k];
-  }
-  return res;
-}
-function reqToGraphqlArgs(req, { allowed = [] } = {}) {
+function reqToVariables(req, { allowed = [] } = {}) {
   let args = {};
   Object.assign(args, req.query, req.body, req.params);
-  if (allowed.length > 0) args = filter$1(args, (arg) => allowed.indexOf(arg) >= 0);
+  if (allowed.length > 0) args = filterobject(args, (arg) => allowed.indexOf(arg) >= 0);
   for (let arg in args) {
     try {
       args[arg] = JSON.parse(args[arg]);
     } catch(e) {
     }
   }
-  const ret = '(' + JSON.stringify(args).slice(1, -1).replace(/"([^(")"]+)":/g,'$1:') + ')';
-  return ret || '';
+  return args;
 }
-var reqtographqlargs = reqToGraphqlArgs;
+var reqtovariables = reqToVariables;
 
 const SifrrApi = {};
 SifrrApi.SequelizeModel = sequelize;
-SifrrApi.ExpressToGraphql = expresstographql;
+SifrrApi.GraphqlExecutor = graphqlexecutor;
 SifrrApi.loadRoutes = loadroutes;
 SifrrApi.createSchemaFromModels = createschemafrommodels;
-SifrrApi.reqToGraphqlArgs = reqtographqlargs;
+SifrrApi.reqToVariables = reqtovariables;
 var sifrr_api = SifrrApi;
 
 export default sifrr_api;

@@ -6,10 +6,11 @@ class GraphqlExecutor {
     this._middlewares = [];
   }
 
-  resolve(query, context = {}) {
+  resolve(query, variables, context = {}) {
     return graphql({
       schema: this._schema,
       source: query,
+      variables,
       contextValue: context
     });
   }
