@@ -10,14 +10,15 @@ function getTypeDef(qs, resolvers) {
     const qdet = qs[q];
     resolvers[q] = qdet.resolver;
   }
-  return flatten(attrsToTypes(qs), '\n  ');
+  return flatten(attrsToTypes(qs), '\n  ', true);
 }
 
 function createSchemaFromModels(models, { extra = '', query = {}, mutation = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
   const typeDefs = [], resolvers = {};
   for(let modelName in models) {
-    typeDefs.push(`type ${models[modelName].gqName} {
-  ${flatten(models[modelName].gqSchema(), '\n  ')}
+    typeDefs.push(`"${models[modelName].gqDescription}"
+type ${models[modelName].gqName} {
+  ${flatten(models[modelName].gqSchema(), '\n  ', true)}
 }`);
     Object.assign(resolvers, models[modelName].resolvers);
     Object.assign(query, models[modelName].resolvers.Query);

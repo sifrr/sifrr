@@ -46,18 +46,20 @@ class SequelizeModel extends Sequelize.Model {
     return this.name;
   }
 
-  static addAttr(name, options /* = { args, resolver, returnType } */) {
+  static get gqDescription() {
+    return `${this.name} model`;
+  }
+
+  static addAttr(name, options /* = { args, resolver, returnType, description } */) {
     // args = { "id": "Int", "name": "String" }
     this.gqExtraAttrs[this.gqName][name] = options;
   }
 
-  static addQuery(name, options /* = { args, resolver, returnType } */) {
-    // args = { "id": "Int", "name": "String" }
+  static addQuery(name, options) {
     this.gqQuery[this.gqName][name] = options;
   }
 
-  static addMutation(name, options /* = { args, resolver, returnType } */) {
-    // args = { "id": "Int", "name": "String" }
+  static addMutation(name, options) {
     this.gqMutations[this.gqName][name] = options;
   }
 

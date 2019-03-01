@@ -23,7 +23,8 @@ module.exports = (attrs, required = [], allowed = []) => {
       }
     }
     const args = attrs[attr].args ? `(${flatten(attrs[attr].args)})` : '';
-    ret[attr + args] = type + (bang ? '!' : '');
+    ret[attr + args] = { type: type + (bang ? '!' : '') };
+    if (attrs[attr].description) ret[attr + args].description = attrs[attr].description;
   }
   return ret;
 };

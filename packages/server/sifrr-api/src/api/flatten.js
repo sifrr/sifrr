@@ -1,7 +1,8 @@
-module.exports = (attrs, separator = ', ') => {
+module.exports = (attrs, separator = ', ', addDescription = false) => {
   const str = [];
   for (let attr in attrs) {
-    str.push(`${attr}: ${attrs[attr]}`);
+    if (addDescription && attrs[attr].description) str.push(`"""${attrs[attr].description}"""`);
+    str.push(`${attr}: ${attrs[attr].type}`);
   }
   return str.join(separator);
 };

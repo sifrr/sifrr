@@ -6,10 +6,11 @@ import fs from 'fs';
 import path from 'path';
 import graphqlTools from 'graphql-tools';
 
-var flatten = (attrs, separator = ', ') => {
+var flatten = (attrs, separator = ', ', addDescription = false) => {
   const str = [];
   for (let attr in attrs) {
-    str.push(`${attr}: ${attrs[attr]}`);
+    if (addDescription && attrs[attr].description) str.push(`"""${attrs[attr].description}"""`);
+    str.push(`${attr}: ${attrs[attr].type}`);
   }
   return str.join(separator);
 };
@@ -44,7 +45,8 @@ var attrstotypes = (attrs, required = [], allowed = []) => {
       }
     }
     const args = attrs[attr].args ? `(${flatten(attrs[attr].args)})` : '';
-    ret[attr + args] = type + (bang ? '!' : '');
+    ret[attr + args] = { type: type + (bang ? '!' : '') };
+    if (attrs[attr].description) ret[attr + args].description = attrs[attr].description;
   }
   return ret;
 };
@@ -88,13 +90,16 @@ class SequelizeModel extends sequelize$1.Model {
   static get gqName() {
     return this.name;
   }
+  static get gqDescription() {
+    return `${this.name} model`;
+  }
   static addAttr(name, options ) {
     this.gqExtraAttrs[this.gqName][name] = options;
   }
-  static addQuery(name, options ) {
+  static addQuery(name, options) {
     this.gqQuery[this.gqName][name] = options;
   }
-  static addMutation(name, options ) {
+  static addMutation(name, options) {
     this.gqMutations[this.gqName][name] = options;
   }
   static gqSchema() {
@@ -304,13 +309,14 @@ function getTypeDef(qs, resolvers) {
     const qdet = qs[q];
     resolvers[q] = qdet.resolver;
   }
-  return flatten(attrstotypes(qs), '\n  ');
+  return flatten(attrstotypes(qs), '\n  ', true);
 }
 function createSchemaFromModels(models, { extra = '', query = {}, mutation = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
   const typeDefs = [], resolvers = {};
   for(let modelName in models) {
-    typeDefs.push(`type ${models[modelName].gqName} {
-  ${flatten(models[modelName].gqSchema(), '\n  ')}
+    typeDefs.push(`"${models[modelName].gqDescription}"
+type ${models[modelName].gqName} {
+  ${flatten(models[modelName].gqSchema(), '\n  ', true)}
 }`);
     Object.assign(resolvers, models[modelName].resolvers);
     Object.assign(query, models[modelName].resolvers.Query);
