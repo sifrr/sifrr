@@ -6,11 +6,11 @@ module.exports = async (relativeDir, mocha, { runUnitTests, runBrowserTests }, f
   const unitTestDir = path.join(dir, './test/unit');
   const browserTestDir = path.join(dir, './test/browser');
   const pkg = require(path.join(dir, './package.json'));
-  const ignoreGlobal = ['SifrrDom', 'SifrrRoute', 'SifrrCli'];
+  const setGlobal = ['SifrrStorage'];
 
   // load package file to global
   const name = pkg.name.replace(/^@sifrr\/([a-z])(.*)$/, (m, l, r) => `Sifrr${l.toUpperCase()}${r}`);
-  if (ignoreGlobal.indexOf(name) < 0) global[name] = require(path.join(dir, pkg.main));
+  if (setGlobal.indexOf(name) > -1) global[name] = require(path.join(dir, pkg.main));
 
   // load test files
   if ((runUnitTests || !runBrowserTests) && fs.existsSync(unitTestDir)) {
