@@ -1,5 +1,5 @@
 <template>
-  <div class="${this.state.attributetext}" id="attributetext">
+  <div class="${this.state.attributetext}" random-attr="abcd ${this.state.attr} efgh" id="attributetext">
     <p id="error">${
       throw new Error('error in binding');
       return 'ok';
@@ -24,7 +24,8 @@
   BindingText.defaultState = {
     onlytext: 'only text',
     betweentext: 'between text',
-    attributetext: 'attribute text'
+    attributetext: 'attribute text',
+    attr: 'middle'
   };
   Sifrr.Dom.register(BindingText);
 </script>

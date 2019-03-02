@@ -22,8 +22,10 @@ describe('Bindings', () => {
 
   it('works in attribute', async () => {
     const attributetext = await page.$eval('binding-text', el => el.$('#attributetext').getAttribute('class'));
+    const middleAttr = await page.$eval('binding-text', el => el.$('#attributetext').getAttribute('random-attr'));
 
     assert.equal(attributetext, 'attribute text');
+    assert.equal(middleAttr, 'abcd middle efgh');
   });
 
   it('works in style', async () => {
