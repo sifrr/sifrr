@@ -1,11 +1,12 @@
+const BaseType = require('./basetype');
 const attrTypes = require('../attrtypes');
 const flatten = require('../flatten');
 
-class Connection {
+class Connection extends BaseType {
   constructor(type, args, resolver, nodeType) {
+    super({});
     this.type = type;
     this.args = args;
-    this._attributes = [];
     this.resolver = resolver;
     this.nodeType = nodeType;
     this.description;
@@ -24,22 +25,6 @@ class Connection {
 
   addArg(name, type) {
     this.args[name] = type;
-  }
-
-  get attributes() {
-    return attrTypes(this._attributes, this._reqAttrs, this._allowedAttrs);
-  }
-
-  addAttribute(name, attribute) {
-    this._attributes[name] = attribute;
-  }
-
-  getResolvers() {
-    const resolvers = {};
-    for (let attr in this._attributes) {
-      if (this._attributes[attr].resolver) resolvers[attr] = this._attributes[attr].resolver;
-    }
-    return resolvers;
   }
 
   getSchema() {

@@ -177,7 +177,7 @@
     data: []
   };
 
-  Sifrr.Dom.load('sifrr-row').then(() => {
+  Sifrr.Dom.load('sifrr-row', { js: false }).then(() => {
     if (!window.keyedKey) {
       this.currentTempate.content.querySelector('tbody').removeAttribute('data-sifrr-key');
     }

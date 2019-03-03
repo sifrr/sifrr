@@ -15,6 +15,7 @@ class SequelizeModel extends Sequelize.Model {
     return ret;
   }
 
+  // Connections/Associations
   static belongsToMany(model, options) {
     const name = options.as || model.graphqlModel.type + 's';
     this[name] = super.belongsToMany(model, options);
@@ -43,8 +44,8 @@ class SequelizeModel extends Sequelize.Model {
     return this[name];
   }
 
-  static addAttr(name, options /* = { args, resolver, returnType, description } */) {
-    // args = { "id": "Int", "name": "String" }
+  // Aliases
+  static addAttr(name, options) {
     this.graphqlModel.addAttribute(name, options);
   }
 
@@ -62,26 +63,6 @@ class SequelizeModel extends Sequelize.Model {
 
   static gqArgs({ required, allowed } = {}) {
     return attrsToTypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
-  }
-
-  static get resolvers() {
-    const q = { Query: this.gqQuery[this.gqName], Mutation: this.gqMutations[this.gqName] };
-
-    q[this.gqName] = {};
-
-    // Associations
-    for (let a in this.gqAssociations[this.gqName]) {
-      const assoc = this.gqAssociations[this.gqName][a];
-      q[this.gqName][a] = assoc.resolver;
-    }
-
-    // Extra
-    for (let a in this.gqExtraAttrs[this.gqName]) {
-      const attr = this.gqExtraAttrs[this.gqName][a];
-      q[this.gqName][a] = attr.resolver;
-    }
-
-    return q;
   }
 
   // Default Resolvers - getQuery, createMutation, updateMutation, upsertMutation, deleteMutation

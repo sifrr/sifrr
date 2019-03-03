@@ -52,16 +52,12 @@ var attrtypes = (attrs, required = [], allowed = []) => {
   return ret;
 };
 
-class Model {
-  constructor(type, attributes = {}, { queries = {}, mutations = {} }) {
-    this.type = type;
+class BaseType {
+  constructor(attributes) {
     this._attributes = attributes;
-    this.queries = queries;
-    this.mutations = mutations;
-    this.connections = [];
-    this._allowedAttrs = [];
-    this._reqAttrs = [];
-    this.description;
+  }
+  addAttribute(name, attribute) {
+    this._attributes[name] = attribute;
   }
   filterAttributes({ allowed = [], required = [] }) {
     this._allowedAttrs = allowed;
@@ -80,12 +76,23 @@ class Model {
   get attributes() {
     return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
   }
+}
+var basetype = BaseType;
+
+class Model extends basetype {
+  constructor(type, attributes = {}, { queries = {}, mutations = {} }) {
+    super(attributes);
+    this.type = type;
+    this.queries = queries;
+    this.mutations = mutations;
+    this.connections = [];
+    this._allowedAttrs = [];
+    this._reqAttrs = [];
+    this.description;
+  }
   addConnection(name, connection) {
     this.connections.push(connection);
     this._attributes[name] = connection;
-  }
-  addAttribute(name, attribute) {
-    this._attributes[name] = attribute;
   }
   addQuery(name, query) {
     this.queries[name] = query;
@@ -102,11 +109,11 @@ class Model {
 }
 var model = Model;
 
-class Connection {
+class Connection extends basetype {
   constructor(type, args, resolver, nodeType) {
+    super({});
     this.type = type;
     this.args = args;
-    this._attributes = [];
     this.resolver = resolver;
     this.nodeType = nodeType;
     this.description;
@@ -122,19 +129,6 @@ class Connection {
   }
   addArg(name, type) {
     this.args[name] = type;
-  }
-  get attributes() {
-    return attrtypes(this._attributes, this._reqAttrs, this._allowedAttrs);
-  }
-  addAttribute(name, attribute) {
-    this._attributes[name] = attribute;
-  }
-  getResolvers() {
-    const resolvers = {};
-    for (let attr in this._attributes) {
-      if (this._attributes[attr].resolver) resolvers[attr] = this._attributes[attr].resolver;
-    }
-    return resolvers;
   }
   getSchema() {
     const schema = `${this.description ? `""" ${this.description} """ \n` : '' }`;
@@ -707,7 +701,7 @@ class SequelizeModel extends sequelize$1.Model {
     this.graphqlModel.addAttribute(name, { resolver: resolver(model), returnType: model.graphqlModel.type, description: `${this.name}'s ${name}` });
     return this[name];
   }
-  static addAttr(name, options ) {
+  static addAttr(name, options) {
     this.graphqlModel.addAttribute(name, options);
   }
   static gqAttrs(options) {
@@ -721,19 +715,6 @@ class SequelizeModel extends sequelize$1.Model {
   }
   static gqArgs({ required, allowed } = {}) {
     return attrtypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
-  }
-  static get resolvers() {
-    const q = { Query: this.gqQuery[this.gqName], Mutation: this.gqMutations[this.gqName] };
-    q[this.gqName] = {};
-    for (let a in this.gqAssociations[this.gqName]) {
-      const assoc = this.gqAssociations[this.gqName][a];
-      q[this.gqName][a] = assoc.resolver;
-    }
-    for (let a in this.gqExtraAttrs[this.gqName]) {
-      const attr = this.gqExtraAttrs[this.gqName][a];
-      q[this.gqName][a] = attr.resolver;
-    }
-    return q;
   }
   static getQueryResolver(_, args, ctx, info) {
     let include;

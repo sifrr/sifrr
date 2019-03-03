@@ -1,10 +1,10 @@
-const attrTypes = require('../attrtypes');
+const BaseType = require('./basetype');
 const flatten = require('../flatten');
 
-class Model {
+class Model extends BaseType {
   constructor(type, attributes = {}, { queries = {}, mutations = {} }) {
+    super(attributes);
     this.type = type;
-    this._attributes = attributes;
     this.queries = queries;
     this.mutations = mutations;
     this.connections = [];
@@ -13,34 +13,9 @@ class Model {
     this.description;
   }
 
-  filterAttributes({ allowed = [], required = [] }) {
-    this._allowedAttrs = allowed;
-    this._reqAttrs = required;
-  }
-
-  getFilteredAttributes({ required = [], allowed = [] }) {
-    return attrTypes(this._attributes, required, allowed);
-  }
-
-  getResolvers() {
-    const resolvers = {};
-    for (let attr in this._attributes) {
-      if (this._attributes[attr].resolver) resolvers[attr] = this._attributes[attr].resolver;
-    }
-    return resolvers;
-  }
-
-  get attributes() {
-    return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
-  }
-
   addConnection(name, connection) {
     this.connections.push(connection);
     this._attributes[name] = connection;
-  }
-
-  addAttribute(name, attribute) {
-    this._attributes[name] = attribute;
   }
 
   addQuery(name, query) {
