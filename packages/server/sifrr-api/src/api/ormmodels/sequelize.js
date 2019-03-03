@@ -1,86 +1,67 @@
 const { attributeFields, defaultListArgs, defaultArgs } = require('graphql-sequelize');
-const { resolver } = require('graphql-sequelize');
+const { resolver, createConnectionResolver } = require('graphql-sequelize');
 const Sequelize = require('sequelize');
-const attrsToTypes = require('../attrstotypes');
+const attrsToTypes = require('../attrtypes');
+const GqModel = require('../graphql/model');
+const GqConnection = require('../graphql/connection');
+const { connectionArgs } = require('graphql-relay');
 
 class SequelizeModel extends Sequelize.Model {
   static init(options) {
-    this.gqAssociations[this.gqName] = {};
-    this.gqQuery[this.gqName] = {};
-    this.gqMutations[this.gqName] = {};
-    this.gqExtraAttrs[this.gqName] = {};
     const ret = super.init(this.schema, options);
+    ret.graphqlModel = new GqModel(ret.name, attributeFields(ret), { description: `${ret.name} Model` });
+    ret.graphqlConnection = new GqConnection(ret.name + 'Connection', connectionArgs, createConnectionResolver({ target: ret }).resolveConnection, ret.graphqlModel.type);
     ret.onInit();
     return ret;
   }
 
   static belongsToMany(model, options) {
-    const name = options.as || model.gqName + 's';
+    const name = options.as || model.graphqlModel.type + 's';
     this[name] = super.belongsToMany(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), returnType: `[${model.gqName}]`, model: model };
+    this.graphqlModel.addConnection(name, model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection));
     return this[name];
   }
 
   static belongsTo(model, options) {
-    const name = options.as || model.gqName;
+    const name = options.as || model.graphqlModel.type;
     this[name] = super.belongsTo(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), returnType: model.gqName, model: model };
+    this.graphqlModel.addAttribute(name, { resolver: resolver(model), returnType: model.graphqlModel.type, description: `${name} of ${this.name}` });
     return this[name];
   }
 
   static hasMany(model, options) {
-    const name = options.as || model.gqName + 's';
+    const name = options.as || model.graphqlModel.type + 's';
     this[name] = super.hasMany(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), returnType: `[${model.gqName}]`, model: model };
+    this.graphqlModel.addConnection(name, model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection));
     return this[name];
   }
 
   static hasOne(model, options) {
-    const name = options.as || model.gqName;
+    const name = options.as || model.graphqlModel.type;
     this[name] = super.hasOne(model, options);
-    this.gqAssociations[this.gqName][name] = { resolver: resolver(this[name]), returnType: model.gqName, model: model };
+    this.graphqlModel.addAttribute(name, { resolver: resolver(model), returnType: model.graphqlModel.type, description: `${this.name}'s ${name}` });
     return this[name];
-  }
-
-  static get gqName() {
-    return this.name;
-  }
-
-  static get gqDescription() {
-    return `${this.name} model`;
   }
 
   static addAttr(name, options /* = { args, resolver, returnType, description } */) {
     // args = { "id": "Int", "name": "String" }
-    this.gqExtraAttrs[this.gqName][name] = options;
+    this.graphqlModel.addAttribute(name, options);
+  }
+
+  static gqAttrs(options) {
+    return this.graphqlModel.getFilteredAttributes(options);
   }
 
   static addQuery(name, options) {
-    this.gqQuery[this.gqName][name] = options;
+    this.graphqlModel.addQuery(name, options);
   }
 
   static addMutation(name, options) {
-    this.gqMutations[this.gqName][name] = options;
-  }
-
-  static gqSchema() {
-    return this.gqSchemaAttrs();
-  }
-
-  static gqAttrs({ required, allowed } = {}) {
-    return attrsToTypes(attributeFields(this), required, allowed);
+    this.graphqlModel.addMutation(name, options);
   }
 
   static gqArgs({ required, allowed } = {}) {
     return attrsToTypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
-  }
-
-  static gqSchemaAttrs({ required, allowed } = {}) {
-    // Fields - arguments and associations
-    const args = attributeFields(this);
-    const assocs = this.gqAssociations[this.gqName];
-    const extras = this.gqExtraAttrs[this.gqName];
-    return attrsToTypes(Object.assign(args, assocs, extras), required, allowed);
   }
 
   static get resolvers() {
@@ -144,19 +125,14 @@ class SequelizeModel extends Sequelize.Model {
     if (column) assocs.pop();
     const assocName = assocs.shift();
     const include = [{
-      model: model.gqAssociations[model.gqName][assocName].model,
+      model: model[assocName],
       as: assocName
     }];
     if (assocs.length > 0) {
-      include[0].include = this._assocsToInclude(assocs, false, model.gqAssociations[model.gqName][assocName].model);
+      include[0].include = this._assocsToInclude(assocs, false, model[assocName]);
     }
     return include;
   }
 }
-
-SequelizeModel.gqAssociations = {};
-SequelizeModel.gqMutations = {};
-SequelizeModel.gqQuery = {};
-SequelizeModel.gqExtraAttrs = {};
 
 module.exports = SequelizeModel;

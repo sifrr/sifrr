@@ -9,18 +9,19 @@ module.exports = (attrs, required = [], allowed = []) => {
     let type;
     if (attrs[attr].returnType) {
       type = attrs[attr].returnType;
-    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLList') {
+    } else if (!attrs[attr].type) {
+      type = attrs[attr];
+    } else if (attrs[attr].type.constructor.name === 'GraphQLList') {
       type = `[${attrs[attr].type.ofType.name}]`;
-    } else if (attrs[attr].type.constructor && attrs[attr].type.constructor.name === 'GraphQLNonNull') {
+    } else if (attrs[attr].type.constructor.name === 'GraphQLNonNull') {
       type = attrs[attr].type.ofType.name;
       bang = true;
+    } else if (attrs[attr].type.name) {
+      type = attrs[attr].type.name;
+    } else if (attrs[attr].type.ofType) {
+      type = attrs[attr].type.ofType.name;
     } else {
-      try {
-        type = attrs[attr].type.name || attrs[attr].type.ofType.name;
-      } catch(e) {
-        if (Array.isArray(attrs[attr].type)) type = `[${attrs[attr].type[0]}]`;
-        else type = attrs[attr].type || attrs[attr];
-      }
+      type = attrs[attr].type;
     }
     const args = attrs[attr].args ? `(${flatten(attrs[attr].args)})` : '';
     ret[attr + args] = { type: type + (bang ? '!' : '') };

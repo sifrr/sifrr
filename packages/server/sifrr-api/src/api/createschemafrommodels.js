@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
-const attrsToTypes = require('./attrstotypes');
+const attrsToTypes = require('./attrtypes');
 const flatten = require('./flatten');
 const { makeExecutableSchema } = require('graphql-tools');
 
@@ -13,35 +13,42 @@ function getTypeDef(qs, resolvers) {
   return flatten(attrsToTypes(qs), '\n  ', true);
 }
 
-function createSchemaFromModels(models, { extra = '', query = {}, mutation = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
-  const typeDefs = [], resolvers = {};
+function createSchemaFromModels(models, { extra = '', queries = {}, mutations = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
+  const connections = {}, typeDefs = [], resolvers = {};
   for(let modelName in models) {
-    typeDefs.push(`"${models[modelName].gqDescription}"
-type ${models[modelName].gqName} {
-  ${flatten(models[modelName].gqSchema(), '\n  ', true)}
-}`);
-    Object.assign(resolvers, models[modelName].resolvers);
-    Object.assign(query, models[modelName].resolvers.Query);
-    Object.assign(mutation, models[modelName].resolvers.Mutation);
+    const model = models[modelName].graphqlModel;
+    typeDefs.push(model.getSchema());
+    Object.assign(queries, model.queries);
+    Object.assign(mutations, model.mutations);
+    resolvers[model.type] = resolvers[model.type] || {};
+    Object.assign(resolvers[model.type], model.getResolvers());
+    model.connections.forEach(conn => {
+      connections[conn.type] = conn;
+    });
   }
-  Object.assign(resolvers.Query, query);
-  Object.assign(resolvers.Mutation, mutation);
+
+  for (let name in connections) {
+    const conn = connections[name];
+    typeDefs.push(conn.getSchema());
+    resolvers[conn.type] = resolvers[conn.type] || {};
+    Object.assign(resolvers[conn.type], conn.getResolvers());
+  }
 
   const qnew = {}, mnew = {};
 
-  const typeDef = `type Query {
-  ${getTypeDef(resolvers.Query, qnew)}
+  const queryMut = `type Query {
+  ${getTypeDef(queries, qnew)}
 }
 
 type Mutation {
-  ${getTypeDef(resolvers.Mutation, mnew)}
+  ${getTypeDef(mutations, mnew)}
 }
 
 scalar SequelizeJSON
 scalar Date
 ${extra}`;
 
-  typeDefs.unshift(typeDef);
+  typeDefs.unshift(queryMut);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
 
