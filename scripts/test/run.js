@@ -72,7 +72,8 @@ const loadBrowser = async function() {
     // to make it work in circleci
     args: [
       '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--disable-setuid-sandbox',
+      '--disable-gpu-sandbox'
     ],
     headless: process.env.HEADLESS !== 'false',
     devtools: false
