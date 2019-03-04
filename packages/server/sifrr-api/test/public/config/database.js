@@ -13,7 +13,7 @@ module.exports = {
   test: {
     username: 'root',
     password: null,
-    database: 'sifrr_api_test',
+    database: 'sifrr_test',
     host: '127.0.0.1',
     dialect: 'mysql',
     operatorsAliases: Op

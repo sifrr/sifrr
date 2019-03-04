@@ -1,4 +1,4 @@
-<h1 align="center"> <img src="./logo/sifrr-logo-512px.png" width="256"> </h1>
+<h1 align="center"> <img src="./logo/sifrr-logo-512px.png" width="256" alt="sifrr" name="sifrr"> </h1>
 <p align="center">
   <a href="https://github.com/sifrr/sifrr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" /></a>
   <a href="https://circleci.com/gh/sifrr/sifrr"><img src="https://circleci.com/gh/sifrr/sifrr.svg?style=shield" alt="CircleCI" /></a>

@@ -4,6 +4,11 @@ jobs:
     working_directory: ~/sifrr
     docker:
       - image: circleci/node:latest-browsers
+      - image: mysql:5.6
+        command: --character-set-server=utf8mb4 --innodb_file_per_table --innodb_large_prefix --innodb_file_format=barracuda
+        environment:
+          MYSQL_DATABASE: sifrr_test
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
     steps:
       - add_ssh_keys:
           fingerprints:
