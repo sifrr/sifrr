@@ -17,8 +17,7 @@ if (cluster.isMaster) {
 } else {
   http.createServer((req, res) => {
     if (req.method === 'GET' && req.url.match(/\/.*/)) {
-      res.setHeader('Content-Type', 'text/html');
-      res.end('Hello World!' + process.pid);
+      res.end('Hello World!');
     }
   }).listen(3000, (p) => console.log('listening on', 3000, 'process', process.pid));
 }
