@@ -864,7 +864,7 @@
       }
       sifrrClone(deep = false, state) {
         const clone = this.cloneNode(deep);
-        clone._state = state;
+        clone._state = Object.assign({}, this.constructor.defaultState, state);
         return clone;
       }
       clearState() {
