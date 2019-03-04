@@ -52,7 +52,7 @@ try {
 let rollupConfigFileString = '../.' + folder + '/rollup.config.js';
 const config = `const getConfig = require('../../../rollup.base');
 
-export default getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase())}', true);
+module.exports = getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s => s.toUpperCase())}', __dirname, true);
 `;
 fs.writeFileSync(__dirname + '/' + rollupConfigFileString, config);
 

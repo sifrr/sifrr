@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "test": "./scripts/test/runall",
-    "build": "./scripts/yarn build",
+    "build": "./node_modules/.bin/rollup -c",
     "publish": "./scripts/yarn publish",
     "dom-benchmark": "cd packages/browser/sifrr-dom && yarn benchmark"
   },

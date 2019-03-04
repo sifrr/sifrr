@@ -1,3 +1,3 @@
 const getConfig = require('../../../rollup.base');
 
-export default getConfig('Sifrr.Fetch', true);
+module.exports = getConfig('Sifrr.Fetch', __dirname, true);

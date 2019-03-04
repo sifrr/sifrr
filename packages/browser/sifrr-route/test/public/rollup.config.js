@@ -1,11 +1,11 @@
 'use strict';
 
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import { terser } from 'rollup-plugin-terser';
-import commonjs from 'rollup-plugin-commonjs';
+const babel = require('rollup-plugin-babel');
+const resolve = require('rollup-plugin-node-resolve');
+const { terser } = require('rollup-plugin-terser');
+const commonjs = require('rollup-plugin-commonjs');
 
-export default {
+module.exports = {
   input: 'index.js',
   output: {
     file: 'index.bundled.js',

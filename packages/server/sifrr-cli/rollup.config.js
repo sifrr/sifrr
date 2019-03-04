@@ -1,3 +1,3 @@
 const getConfig = require('../../../rollup.base');
 
-export default getConfig('Sifrr.Cli', false);
+module.exports = getConfig('Sifrr.Cli', __dirname, false);

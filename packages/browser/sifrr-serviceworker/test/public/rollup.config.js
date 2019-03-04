@@ -1,10 +1,10 @@
 'use strict';
 
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+const babel = require('rollup-plugin-babel');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
 
-export default [{
+module.exports = [{
   input: 'sw.js',
   output: {
     file: 'sw.bundled.js',
