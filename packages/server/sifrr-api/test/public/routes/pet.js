@@ -34,7 +34,7 @@ module.exports = {
     },
     '/pet/:id': (req, res) => {
       etg.resolve(`
-        query($id: Int) {
+        query($id: Int!) {
           getPet(id: $id) {
             id
             name

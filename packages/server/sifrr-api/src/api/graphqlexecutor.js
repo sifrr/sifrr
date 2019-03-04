@@ -10,7 +10,7 @@ class GraphqlExecutor {
     return graphql({
       schema: this._schema,
       source: query,
-      variables,
+      variableValues: variables,
       contextValue: context
     });
   }
