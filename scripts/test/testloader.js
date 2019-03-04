@@ -17,20 +17,22 @@ module.exports = async (relativeDir, mocha, { runUnitTests, runBrowserTests }, f
     // Add unit test.js files to the mocha instance
     loadDir(unitTestDir, (filePath) => {
       if (filter.map(bf => filePath.indexOf(bf) >= 0).indexOf(true) >= 0) {
-        mocha.addFile(filePath);
+        if (filePath.endsWith('.test.js')) mocha.addFile(filePath);
       }
     });
   }
 
   const testPublicPath = path.join(dir, './test/public');
   if ((runBrowserTests || !runUnitTests) && fs.existsSync(browserTestDir)) {
+    // Run yarn if there is a package.json in public folder
+    if (fs.existsSync(path.join(testPublicPath, './package.json'))) await exec(`cd ${testPublicPath} && yarn`);
     // Run yarn rollup if there is a rollup config in public folder
     if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);
 
     // Add browser test.js files to the mocha instance
     loadDir(browserTestDir, (filePath) => {
       if (filter.map(bf => filePath.indexOf(bf) >= 0).indexOf(true) >= 0) {
-        mocha.addFile(filePath);
+        if (filePath.endsWith('.test.js')) mocha.addFile(filePath);
       }
     });
   }

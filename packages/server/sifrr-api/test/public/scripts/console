@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const repl = require('repl');
+require('../config/setup');
+
+repl.start('demo> ');
