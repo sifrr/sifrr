@@ -5,8 +5,8 @@ set -ex
 ./scripts/release/config
 ./scripts/yarn build
 
-# Add files left to generate
-git add -A
+# Add dist files not generated before
+git ls-files '*/dist/*.js*' | xargs git add
 (git commit -m "chore: Add dist files" && git push && exit 0) || echo 'Dist files up to date'
 
 ./scripts/release/tag || exit 0

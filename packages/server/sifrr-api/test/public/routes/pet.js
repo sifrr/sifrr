@@ -1,4 +1,4 @@
-const { reqToVariables } = require('@sifrr/api');
+const reqToVariables = require('../../../src/api/reqtovariables');
 
 module.exports = {
   // basePath is optional, by default it is '', it can also be an array of basePaths like ['/v1', '/v2']

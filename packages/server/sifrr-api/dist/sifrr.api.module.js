@@ -895,10 +895,10 @@ function getTypeDef(qs, resolvers) {
   }
   return flatten(attrtypes(qs), '\n  ', true);
 }
-function createSchemaFromModels(models, { extra = '', queries = {}, mutations = {}, saveSchema = true, schemaPath = './db/schema.graphql' } = {}) {
+function createSchemaFromModels(models, { extra = '', queries = {}, mutations = {}, schemaPath } = {}) {
   const connections = {}, typeDefs = [], resolvers = {};
   for(let modelName in models) {
-    const model = models[modelName].graphqlModel;
+    const model = models[modelName];
     typeDefs.push(model.getSchema());
     Object.assign(queries, model.queries);
     Object.assign(mutations, model.mutations);
@@ -929,8 +929,7 @@ ${extra}`;
   typeDefs.unshift(queryMut);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
-  if (saveSchema) {
-    schemaPath = path.resolve(schemaPath);
+  if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
     const comment = fileHeader + `# Genarated at ${new Date().toUTCString()} (${Date.now()}) \n` + fileSeparator;
     const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : '';
