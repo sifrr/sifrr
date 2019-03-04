@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/sifrr/sifrr-api-example#readme",
   "dependencies": {
-    "@sifrr/api": "file:../../",
     "@sifrr/cli": "file:../../../sifrr-cli",
     "body-parser": "^1.18.3",
     "dataloader-sequelize": "^1.7.9",

@@ -1,5 +1,4 @@
 const BaseType = require('./basetype');
-const attrTypes = require('../attrtypes');
 const flatten = require('../flatten');
 
 class Connection extends BaseType {
@@ -19,11 +18,7 @@ class Connection extends BaseType {
     return conn;
   }
 
-  getArgs({ required = [], allowed = [] }) {
-    return attrTypes(this.args, required, allowed);
-  }
-
-  addArg(name, type) {
+  addArgument(name, type) {
     this.args[name] = type;
   }
 

@@ -18,7 +18,7 @@ module.exports = (attrs, required = [], allowed = []) => {
       bang = true;
     } else if (attrs[attr].type.name) {
       type = attrs[attr].type.name;
-    } else if (attrs[attr].type.ofType) {
+    } else if (attrs[attr].type.ofType && attrs[attr].type.ofType.name) {
       type = attrs[attr].type.ofType.name;
     } else {
       type = attrs[attr].type;

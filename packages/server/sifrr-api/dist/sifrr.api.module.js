@@ -10,7 +10,7 @@ var flatten = (attrs, separator = ', ', addDescription = false) => {
   const str = [];
   for (let attr in attrs) {
     if (addDescription && attrs[attr].description) str.push(`"""${attrs[attr].description}"""`);
-    str.push(`${attr}: ${attrs[attr].type}`);
+    str.push(`${attr}: ${attrs[attr].type || attrs[attr]}`);
   }
   return str.join(separator);
 };
@@ -40,7 +40,7 @@ var attrtypes = (attrs, required = [], allowed = []) => {
       bang = true;
     } else if (attrs[attr].type.name) {
       type = attrs[attr].type.name;
-    } else if (attrs[attr].type.ofType) {
+    } else if (attrs[attr].type.ofType && attrs[attr].type.ofType.name) {
       type = attrs[attr].type.ofType.name;
     } else {
       type = attrs[attr].type;
@@ -124,10 +124,7 @@ class Connection extends basetype {
     conn.description = this.description;
     return conn;
   }
-  getArgs({ required = [], allowed = [] }) {
-    return attrtypes(this.args, required, allowed);
-  }
-  addArg(name, type) {
+  addArgument(name, type) {
     this.args[name] = type;
   }
   getSchema() {

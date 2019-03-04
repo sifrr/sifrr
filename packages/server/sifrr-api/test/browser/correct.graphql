@@ -31,7 +31,7 @@ type User {
   name: String
   createdAt: Date!
   updatedAt: Date!
-  pets(after: String, first: Int, before: String, last: Int): PetConnection
+  pets(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
 }
 
 type PetConnection {

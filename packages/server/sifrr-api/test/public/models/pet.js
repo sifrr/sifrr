@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../sequelize');
-const { SequelizeModel } = require('@sifrr/api');
+const SequelizeModel = require('../../../src/api/ormmodels/sequelize');
 
 class Pet extends SequelizeModel {
   static init() {
@@ -85,6 +85,9 @@ class Pet extends SequelizeModel {
       returnType: 'Int',
       description: 'Total pets'
     });
+
+    // Add extra arguments to pet connection
+    this.graphqlConnection.addArgument('orderBy', '[[String]] = [["name", "ASC"]]');
   }
 
   // example custom resolver
