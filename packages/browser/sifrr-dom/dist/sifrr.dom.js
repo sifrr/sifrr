@@ -990,7 +990,7 @@
     onProgress
   } = {}) {
     if (window.customElements.get(elemName)) {
-      return window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`);
+      return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`));
     }
     let loader = new SifrrDom.Loader(elemName, url, onProgress);
     const wd = customElements.whenDefined(elemName);

@@ -85,7 +85,7 @@ describe('Sifrr.Dom.load and Loader', () => {
     assert(loaded);
   });
 
-  it("warns if script doesn't register element", async () => {
+  it("warns if script doesn't register element and resolves promise", async () => {
     const message = await page.evaluate(async () => {
       let message;
       window.console.warn = w => {
