@@ -16,7 +16,7 @@ describe('GraphqlExecutor', () => {
   });
 
   it('executes given graphql with variables', async () => {
-    const data = (await getReq('/api/v1/pet/1')).data;
+    const data = (await getReq('/api/v1/pet/1?where={"id":2}')).data;
 
     assert.equal(data.getPet.length, 1);
     assert.equal(data.getPet[0].id, 1);

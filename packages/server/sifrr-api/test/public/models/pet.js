@@ -25,6 +25,9 @@ class Pet extends SequelizeModel {
 
   static onInit() {
     const me = this;
+    // Add description
+    this.graphqlModel.description = 'A pet';
+
     // don't add createdAt, updatedAt to schema, and allow extra field 'type'
     this.graphqlModel.filterAttributes({
       required: ['name', 'ownerId'],

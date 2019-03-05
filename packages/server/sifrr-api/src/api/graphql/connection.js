@@ -23,8 +23,7 @@ class Connection extends BaseType {
   }
 
   getSchema() {
-    const schema = `${this.description ? `""" ${this.description} """ \n` : '' }`;
-    return schema + `type ${this.type} {
+    return this.schemaPrefix + `type ${this.type} {
   edges: [${this.type + 'Edge'}]
   ${flatten(this.attributes, '\n  ', true)}
 }

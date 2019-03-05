@@ -29,6 +29,10 @@ class BaseType {
   get attributes() {
     return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
   }
+
+  get schemaPrefix() {
+    return `${this.description ? `""" ${this.description} """ \n` : '' }`;
+  }
 }
 
 module.exports = BaseType;

@@ -76,6 +76,9 @@ class BaseType {
   get attributes() {
     return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
   }
+  get schemaPrefix() {
+    return `${this.description ? `""" ${this.description} """ \n` : '' }`;
+  }
 }
 var basetype = BaseType;
 
@@ -101,8 +104,7 @@ class Model extends basetype {
     this.mutations[name] = mutation;
   }
   getSchema() {
-    const schema = `${this.description ? `""" ${this.description} """ \n` : '' }`;
-    return schema + `type ${this.type} {
+    return this.schemaPrefix + `type ${this.type} {
   ${flatten(this.attributes, '\n  ', true)}
 }`;
   }
@@ -128,8 +130,7 @@ class Connection extends basetype {
     this.args[name] = type;
   }
   getSchema() {
-    const schema = `${this.description ? `""" ${this.description} """ \n` : '' }`;
-    return schema + `type ${this.type} {
+    return this.schemaPrefix + `type ${this.type} {
   edges: [${this.type + 'Edge'}]
   ${flatten(this.attributes, '\n  ', true)}
 }

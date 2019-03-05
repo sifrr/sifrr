@@ -27,8 +27,7 @@ class Model extends BaseType {
   }
 
   getSchema() {
-    const schema = `${this.description ? `""" ${this.description} """ \n` : '' }`;
-    return schema + `type ${this.type} {
+    return this.schemaPrefix + `type ${this.type} {
   ${flatten(this.attributes, '\n  ', true)}
 }`;
   }

@@ -16,6 +16,7 @@ scalar SequelizeJSON
 scalar Date
 scalar Random
 
+""" A pet """ 
 type Pet {
   id: Int!
   name: String!

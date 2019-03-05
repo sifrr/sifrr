@@ -48,7 +48,7 @@ module.exports = {
             }
           }
         }
-      `, reqToVariables(req, { allowed: ['id'] }), { random: 1 }).then(data => res.json(data));
+      `, reqToVariables(req), { random: 1 }).then(data => res.json(data));
     }
   }
 };
