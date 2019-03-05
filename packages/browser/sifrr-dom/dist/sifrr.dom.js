@@ -473,9 +473,7 @@
     KEY_ATTR
   } = constants;
   function update(element, stateMap) {
-    if (!element._refs) {
-      return false;
-    }
+    if (!element._refs) return false;
     stateMap = stateMap || element.constructor.stateMap;
     let data, dom, newValue;
     const l = element._refs.length;
@@ -794,7 +792,7 @@
       static get ctemp() {
         if (this._ctemp) return this._ctemp;
         this._ctemp = this.template;
-        if (window.ShadyCSS && this.useShadowRoot) {
+        if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
         return this._ctemp;

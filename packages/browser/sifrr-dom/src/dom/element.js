@@ -23,7 +23,7 @@ function elementClassFactory(baseClass) {
     static get ctemp() {
       if (this._ctemp) return this._ctemp;
       this._ctemp = this.template;
-      if (window.ShadyCSS && this.useShadowRoot) {
+      if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
         window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
       }
       return this._ctemp;

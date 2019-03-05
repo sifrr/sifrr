@@ -61,11 +61,17 @@ class SifrrRoute extends Sifrr.Dom.Element {
       }
     }
     this.classList.add('active');
+    this.onActivation();
   }
+
+  onActivation() {}
 
   deactivate() {
     this.classList.remove('active');
+    this.onDeactivation();
   }
+
+  onDeactivation() {}
 
   static get currentUrl() {
     return this._curl;

@@ -5,9 +5,7 @@ const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 
 function update(element, stateMap) {
-  if (!element._refs) {
-    return false;
-  }
+  if (!element._refs) return false;
   stateMap = stateMap || element.constructor.stateMap;
   let data, dom, newValue;
   // Update nodes
