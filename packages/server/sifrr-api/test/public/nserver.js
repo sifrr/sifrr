@@ -3,7 +3,7 @@ const cluster = require('cluster');
 const numCPUs = process.env.WORKERS || require('os').cpus().length;
 
 if (cluster.isMaster) {
-  console.log(`Master ${process.pid} is running`);
+  process.stdout.write(`Master ${process.pid} is running \n`);
 
   // Fork workers.
   for (let i = 0; i < numCPUs; i++) {
@@ -11,7 +11,7 @@ if (cluster.isMaster) {
   }
 
   cluster.on('disconnect', (worker) => {
-    console.error(`worker ${worker.process.pid} disconnected`);
+    process.stdout.write(`worker ${worker.process.pid} disconnected \n`);
     cluster.fork();
   });
 } else {
@@ -19,5 +19,5 @@ if (cluster.isMaster) {
     if (req.method === 'GET' && req.url.match(/\/.*/)) {
       res.end('Hello World!');
     }
-  }).listen(3000, (p) => console.log('listening on', 3000, 'process', process.pid));
+  }).listen(3000, () => process.stdout.write(`listening on 3000, process ${process.pid} \n`));
 }

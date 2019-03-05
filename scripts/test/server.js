@@ -1,5 +1,5 @@
-const https = require('https'),
-  http = require('http'),
+// const https = require('https'),
+const http = require('http'),
   express = require('express'),
   compression = require('compression'),
   serveStatic = require('serve-static'),
@@ -63,8 +63,8 @@ const sss = function(port, dirS = dir) {
     server.get('/**', (req, res) => res.sendFile(path.join(dirS, './index.html')));
   }
 
-  const key = fs.readFileSync(path.join(__dirname, 'keys/server.key'));
-  const cert = fs.readFileSync(path.join(__dirname, 'keys/server.crt'));
+  // const key = fs.readFileSync(path.join(__dirname, 'keys/server.key'));
+  // const cert = fs.readFileSync(path.join(__dirname, 'keys/server.crt'));
   // https.createServer({ key, cert }, server).listen(port + 1);
   return http.createServer(server).listen(port, () => global.console.log(`Listening on port ${port} and directories`, dirS));
 };
