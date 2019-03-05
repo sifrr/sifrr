@@ -1,24 +1,27 @@
+// import SifrrDom from '@sifrr/dom';
+// const Sifrr = { Dom: SifrrDom };
+
+const useAnimation = window.location.href.indexOf('useAnim') >= 0;
+const keyedKey = window.location.href.indexOf('useKey') >= 0 ? 'id' : '';
+const useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
+
+const css = useAnimation ? `tr {
+  animation: slide-up 0.4s ease;
+}
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}` : '';
+
 const template = `<link href="/css/currentStyle.css" rel="stylesheet">
 <style media="screen">
-  \${
-    if (useAnimation) {
-      return \`tr {
-        animation: slide-up 0.4s ease;
-      }
-      @keyframes slide-up {
-        0% {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }\`
-    } else {
-      return '';
-    }
-  }
+  ${css}
 </style>
 <div class="container">
   <div class="jumbotron">
@@ -51,7 +54,7 @@ const template = `<link href="/css/currentStyle.css" rel="stylesheet">
     </div>
   </div>
   <table class="table table-hover table-striped test-data">
-    <tbody data-sifrr-repeat=\${this.state.data} data-sifrr-key='id' data-sifrr-default-state='{"class":""}'>
+    <tbody data-sifrr-repeat=\${this.state.data} data-sifrr-key='${keyedKey}' data-sifrr-default-state='{"class":""}'>
       <tr class=\${this.state.class}>
         <td class='col-md-1 id'>\${this.state.id}</td>
         <td class='col-md-4'><a class='lbl'>\${this.state.label}</a></td>
@@ -93,10 +96,7 @@ function getParent(elem) {
 class MainElement extends Sifrr.Dom.Element {
   static get template() {
     const temp = Sifrr.Dom.template(template);
-    if (!window.keyedKey) {
-      temp.content.querySelector('tbody').removeAttribute('data-sifrr-key');
-    }
-    if (window.useSifrrInArray) {
+    if (useSifrrInArray) {
       const row = document.createElement('tr', { is: 'sifrr-row' });
       temp.content.querySelector('tr').replaceWith(row);
     }

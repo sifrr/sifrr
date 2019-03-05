@@ -1,4 +1,5 @@
-const Parser = require('./parser');
+const { collect, create } = require('./ref');
+const creator = require('./creator');
 const update = require('./update');
 const Loader = require('./loader');
 
@@ -30,7 +31,7 @@ function elementClassFactory(baseClass) {
     }
 
     static get stateMap() {
-      this._stateMap = this._stateMap || Parser.createStateMap(this.ctemp.content);
+      this._stateMap = this._stateMap || create(this.ctemp.content, creator);
       return this._stateMap;
     }
 
@@ -47,7 +48,7 @@ function elementClassFactory(baseClass) {
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = Parser.collectRefs(content, this.constructor.stateMap);
+        this._refs = collect(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'

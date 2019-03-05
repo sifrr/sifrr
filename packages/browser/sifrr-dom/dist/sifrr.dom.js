@@ -135,13 +135,12 @@
     COMMENT_NODE
   } = constants;
   function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
-    const oldL = parent.childNodes.length,
-          newL = newChildren.length;
-    let curNewChild = newChildren[0];
+    const newL = newChildren.length;
     if (newL === 0) {
       parent.textContent = '';
       return;
     }
+    const oldL = parent.childNodes.length;
     if (oldL > newL) {
       let i = oldL;
       while (i > newL) {
@@ -150,7 +149,8 @@
       }
     }
     let item,
-        head = parent.firstChild;
+        head = parent.firstChild,
+        curNewChild = newChildren[0];
     if (isNode) {
       while (head) {
         item = curNewChild.nextSibling;
@@ -541,6 +541,10 @@
   }
   var update_1 = update;
 
+  const {
+    collect: collect$1,
+    create: create$1
+  } = ref;
   function SimpleElement(content, defaultState = null) {
     if (!content.nodeType && typeof content !== 'string') {
       if (!content[0] || !content[0].nodeType) {
@@ -556,7 +560,7 @@
       }
       return content;
     }
-    const stateMap = parser.createStateMap(content, defaultState);
+    const stateMap = create$1(content, creator_1, defaultState);
     const stateProps = {
       get: function () {
         return this._state;
@@ -567,7 +571,7 @@
       }
     };
     function setProps(me, state) {
-      me._refs = parser.collectRefsSimple(me, stateMap);
+      me._refs = collect$1(me, stateMap, 'nextNode');
       me._state = Object.assign({}, defaultState, state);
       Object.defineProperty(me, 'state', stateProps);
       update_1(me, stateMap);
@@ -609,7 +613,7 @@
     getBindingFxns: getBindingFxns$1,
     getStringBindingFxn
   } = bindings;
-  function customElementCreator(el, filter, defaultState) {
+  function creator(el, filter, defaultState) {
     if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
       const x = el.data;
       if (x.indexOf('${') > -1) {
@@ -669,32 +673,7 @@
     }
     return 0;
   }
-  var creator = customElementCreator;
-
-  const {
-    collect: collect$1,
-    create: create$1
-  } = ref;
-  const Parser = {
-    collectRefs: collect$1,
-    collectRefsSimple: (element, stateMap) => collect$1(element, stateMap, 'nextNode'),
-    createStateMap: (element, defaultState) => create$1(element, creator, defaultState),
-    twoWayBind: e => {
-      const target = e.composedPath ? e.composedPath()[0] : e.target;
-      if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
-      const value = target.value || target.textContent;
-      let state = {};
-      if (!target._root) {
-        let root;
-        root = target;
-        while (root && !root.isSifrr) root = root.parentNode || root.host;
-        if (root) target._root = root;else target._root = null;
-      }
-      state[target.getAttribute('data-sifrr-bind')] = value;
-      if (target._root) target._root.state = state;
-    }
-  };
-  var parser = Parser;
+  var creator_1 = creator;
 
   class Loader {
     constructor(elemName, url, onProgress) {
@@ -773,6 +752,10 @@
   Loader._all = {};
   var loader = Loader;
 
+  const {
+    collect: collect$2,
+    create: create$2
+  } = ref;
   function elementClassFactory(baseClass) {
     return class extends baseClass {
       static extends(htmlElementClass) {
@@ -798,7 +781,7 @@
         return this._ctemp;
       }
       static get stateMap() {
-        this._stateMap = this._stateMap || parser.createStateMap(this.ctemp.content);
+        this._stateMap = this._stateMap || create$2(this.ctemp.content, creator_1);
         return this._stateMap;
       }
       static get elementName() {
@@ -812,7 +795,7 @@
         if (this.constructor.ctemp) {
           this._state = Object.assign({}, this.constructor.defaultState, this.state);
           const content = this.constructor.ctemp.content.cloneNode(true);
-          this._refs = parser.collectRefs(content, this.constructor.stateMap);
+          this._refs = collect$2(content, this.constructor.stateMap);
           if (this.constructor.useShadowRoot) {
             this.attachShadow({
               mode: 'open'
@@ -878,6 +861,21 @@
     };
   }
   var element = elementClassFactory(window.HTMLElement);
+
+  var twoWayBind = e => {
+    const target = e.composedPath ? e.composedPath()[0] : e.target;
+    if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
+    const value = target.value || target.textContent;
+    let state = {};
+    if (!target._root) {
+      let root;
+      root = target;
+      while (root && !root.isSifrr) root = root.parentNode || root.host;
+      if (root) target._root = root;else target._root = null;
+    }
+    state[target.getAttribute('data-sifrr-bind')] = value;
+    if (target._root) target._root.state = state;
+  };
 
   const SYNTHETIC_EVENTS = {};
   const opts = {
@@ -945,7 +943,7 @@
   SifrrDom.elements = {};
   SifrrDom.loadingElements = [];
   SifrrDom.Element = element;
-  SifrrDom.Parser = parser;
+  SifrrDom.twoWayBind = twoWayBind;
   SifrrDom.Loader = loader;
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event_1;
@@ -981,8 +979,8 @@
     if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
     SifrrDom.Event.add('input');
     SifrrDom.Event.add('change');
-    SifrrDom.Event.addListener('input', 'document', SifrrDom.Parser.twoWayBind);
-    SifrrDom.Event.addListener('change', 'document', SifrrDom.Parser.twoWayBind);
+    SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
+    SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
   };
   SifrrDom.load = function (elemName, {
     url,

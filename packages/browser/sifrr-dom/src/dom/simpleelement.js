@@ -1,6 +1,7 @@
 const template = require('./template');
 const update = require('./update');
-const Parser = require('./parser');
+const { collect, create } = require('./ref');
+const creator = require('./creator');
 
 function SimpleElement(content, defaultState = null) {
   if (!content.nodeType && typeof content !== 'string') {
@@ -21,7 +22,7 @@ function SimpleElement(content, defaultState = null) {
     }
     return content;
   }
-  const stateMap = Parser.createStateMap(content, defaultState);
+  const stateMap = create(content, creator, defaultState);
 
   const stateProps = {
     get: function() { return this._state; },
@@ -31,7 +32,7 @@ function SimpleElement(content, defaultState = null) {
     }
   };
   function setProps(me, state) {
-    me._refs = Parser.collectRefsSimple(me, stateMap);
+    me._refs = collect(me, stateMap, 'nextNode');
     me._state = Object.assign({}, defaultState, state);
     Object.defineProperty(me, 'state', stateProps);
     update(me, stateMap);

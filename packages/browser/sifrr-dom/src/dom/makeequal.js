@@ -3,14 +3,14 @@ const { shallowEqual } = require('../utils/json');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
 function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
-  const oldL = parent.childNodes.length, newL = newChildren.length;
-  let curNewChild = newChildren[0];
+  const newL = newChildren.length;
   // Fast path for clear
   if (newL === 0) {
     parent.textContent = '';
     return;
   }
 
+  const oldL = parent.childNodes.length;
   // Lesser children now
   if (oldL > newL) {
     let i = oldL;
@@ -20,7 +20,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
     }
   }
 
-  let item, head = parent.firstChild;
+  let item, head = parent.firstChild, curNewChild = newChildren[0];
   if (isNode) {
     // Make old children equal to new children
     while(head) {

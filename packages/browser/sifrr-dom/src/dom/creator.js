@@ -8,7 +8,7 @@ const repeatref = require('./repeatref');
 const { getBindingFxns, getStringBindingFxn } = require('./bindings');
 const updateAttribute = require('./updateattribute');
 
-function customElementCreator(el, filter, defaultState) {
+function creator(el, filter, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
     if (x.indexOf('${') > -1) {
@@ -74,4 +74,4 @@ function customElementCreator(el, filter, defaultState) {
   return 0;
 }
 
-module.exports = customElementCreator;
+module.exports = creator;
