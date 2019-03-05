@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Dom v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/fetch')) :
   typeof define === 'function' && define.amd ? define(['@sifrr/fetch'], factory) :

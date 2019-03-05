@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Dom v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import fetch from '@sifrr/fetch';
 
 const temp = window.document.createElement('template');

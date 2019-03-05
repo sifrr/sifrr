@@ -1,4 +1,4 @@
-/*! Sifrr.Cli v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Cli v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import child_process from 'child_process';
 import path from 'path';
 import fs from 'fs';

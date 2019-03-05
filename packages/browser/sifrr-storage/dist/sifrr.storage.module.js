@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.2-alpha - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Storage v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 class Json {
   static parse(data) {
     let ans = {};
