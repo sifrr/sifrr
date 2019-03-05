@@ -29,6 +29,7 @@ const SifrrSeo = require('@sifrr/seo');
 // `fullUrl`: function for middleware to determine fullUrl of express request
 // `beforeRender`: this function will be executed in browser before rendering, doesn't take any arguments
 // `afterRender`: this function will be executed in browser after rendering, doesn't take any arguments
+// `filterOutgoingRequests`: This function is executed for every outgoing request in sifrr renderer, if this return false request will be blocked, else it will be allowed
 //
 // default values
 const options = {
@@ -38,7 +39,8 @@ const options = {
   cacheKey: (req) => req.fullUrl,
   fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`
   beforeRender: () => {},
-  afterRender: () => {}
+  afterRender: () => {},
+  filterOutgoingRequests: (url) => true
 }
 
 const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);

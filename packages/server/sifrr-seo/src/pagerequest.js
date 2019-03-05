@@ -6,8 +6,9 @@ function isTypeOf(request, types) {
 }
 
 class PageRequest {
-  constructor(npage) {
+  constructor(npage, filter = () => true) {
     this.npage = npage;
+    this.filter = filter;
     this.pendingRequests = 0;
     this.pendingPromise = new Promise(res => this.pendingResolver = res);
     this.addOnRequestListener();
@@ -16,12 +17,14 @@ class PageRequest {
 
   addOnRequestListener() {
     const me = this;
-    this.npage.setRequestInterception(true).then(() => {
+    this.addListener = this.npage.setRequestInterception(true).then(() => {
       me.npage.on('request', (request) => {
-        if (isTypeOf(request, whiteTypes)) {
+        if (isTypeOf(request, whiteTypes) && this.filter(request.url())) {
           me.pendingRequests++;
+          request.__allowed = true;
           request.continue();
         } else {
+          request.__allowed = false;
           request.abort();
         }
       });
@@ -39,12 +42,10 @@ class PageRequest {
     });
   }
 
-  onEnd(req) {
-    if (isTypeOf(req, whiteTypes)) {
+  onEnd(request) {
+    if (request.__allowed) {
       this.pendingRequests--;
-      if (this.pendingRequests === 0) {
-        this.pendingResolver();
-      }
+      if (this.pendingRequests === 0)this.pendingResolver();
     }
   }
 

@@ -41,7 +41,8 @@ class Renderer {
 
     if (!this.launched) pro = this.launchBrowser();
     return pro.then(() => this.browser.newPage()).then(async (newp) => {
-      const fetches = new PageRequest(newp);
+      const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
+      await fetches.addListener;
 
       const headers = req.headers || {};
       delete headers['user-agent'];
