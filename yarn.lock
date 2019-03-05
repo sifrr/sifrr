@@ -1842,6 +1842,13 @@ connect-static-transform@^0.9.1:
     connect "^2.8.1"
     parseurl "^1.3.1"
 
+connect-static-transform@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/connect-static-transform/-/connect-static-transform-0.9.2.tgz#c4685afaf7be35e86c2804a51fb9912c679bc22a"
+  integrity sha512-heebmD+mRc9y6YyvS8SRvYK9zO9y/F6G+0z6mn6nz9zWJ++nANIXwm8VqhT3h2HFyC2Vs2421BZXy5WS0lYN6w==
+  dependencies:
+    parseurl "^1.3.1"
+
 connect-timeout@~1.6.2:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/connect-timeout/-/connect-timeout-1.6.2.tgz#de9a5ec61e33a12b6edaab7b5f062e98c599b88e"
