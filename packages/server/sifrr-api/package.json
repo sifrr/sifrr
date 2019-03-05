@@ -1,42 +1,16 @@
 {
   "name": "@sifrr/api",
-  "version": "0.0.2-alpha",
-  "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
-  "main": "src/sifrr.api.js",
-  "module": "dist/sifrr.api.module.js",
+  "version": "0.0.3",
   "license": "MIT",
-  "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-api",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ./test/public/server.js -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
-  "keywords": [
-    "sifrr",
-    "api",
-    "graphql",
-    "sequelize"
-  ],
   "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {
-    "graphql": "^14.0.2",
-    "graphql-relay": "^0.6.0",
-    "graphql-tools": "^4.0.3",
-    "mkdirp": "^0.5.1"
-  },
-  "peerDependencies": {
-    "graphql-sequelize": "^9.3.1",
-    "sequelize": "^4.42.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-external-helpers": "^7.2.0",
@@ -76,9 +50,35 @@
     "semantic-release": "^15.13.3",
     "sinon": "^7.2.4"
   },
+  "scripts": {
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-api",
+    "build": "./node_modules/.bin/rollup -c",
+    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ./test/public/server.js -p 1111",
+    "test-server": "yarn test-build; yarn test-server-only"
+  },
   "files": [
     "bin",
     "dist",
     "src"
+  ],
+  "peerDependencies": {
+    "graphql-sequelize": "^9.3.1",
+    "sequelize": "^4.42.0"
+  },
+  "dependencies": {
+    "graphql": "^14.0.2",
+    "graphql-relay": "^0.6.0",
+    "graphql-tools": "^4.0.3",
+    "mkdirp": "^0.5.1"
+  },
+  "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
+  "main": "src/sifrr.api.js",
+  "module": "dist/sifrr.api.module.js",
+  "keywords": [
+    "sifrr",
+    "api",
+    "graphql",
+    "sequelize"
   ]
 }

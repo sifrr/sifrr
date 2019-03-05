@@ -34,14 +34,14 @@ try {
   pkgFile  = require(pkgFileString);
 
   // change peerDependencies & dependencies
-  pkgToMerge.peerDependencies = dependencyVersion(pkgFile.peerDependencies, pkgToMerge.devDependencies, pkg.version);
-  pkgToMerge.dependencies = dependencyVersion(pkgFile.dependencies, pkgToMerge.devDependencies, pkg.version);
+  pkgFile.peerDependencies = dependencyVersion(pkgFile.peerDependencies, pkgToMerge.devDependencies, pkg.version);
+  pkgFile.dependencies = dependencyVersion(pkgFile.dependencies, pkgToMerge.devDependencies, pkg.version);
 
   Object.assign(pkgFile, pkgToMerge);
   fs.writeFileSync(__dirname + '/' + pkgFileString, JSON.stringify(pkgFile, null, 2) + '\n');
-  process.stdout.write('Done: package.json');
+  process.stdout.write('Done: package.json \n');
 } catch(e) {
-  process.stdout.write('No package file in this folder');
+  process.stdout.write('No package file in this folder \n');
 }
 
 let rollupConfigFileString = '../.' + folder + '/rollup.config.js';

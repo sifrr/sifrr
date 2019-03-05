@@ -1,40 +1,25 @@
 {
   "name": "@sifrr/fetch",
-  "version": "0.0.2-alpha",
-  "description": "Fetch based http requests library for browsers.",
-  "license": "MIT",
   "main": "src/sifrr.fetch.js",
-  "module": "dist/sifrr.fetch.module.js",
   "browser": "dist/sifrr.fetch.js",
+  "module": "dist/sifrr.fetch.module.js",
+  "version": "0.0.3",
+  "license": "MIT",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
     "opera >= 42",
     "firefox >= 63"
   ],
-  "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-fetch/test/public -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
-  "keywords": [
-    "sifrr",
-    "fetch",
-    "ajax"
-  ],
   "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {},
-  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-external-helpers": "^7.2.0",
@@ -74,9 +59,24 @@
     "semantic-release": "^15.13.3",
     "sinon": "^7.2.4"
   },
+  "scripts": {
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch",
+    "build": "./node_modules/.bin/rollup -c",
+    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-fetch/test/public -p 1111",
+    "test-server": "yarn test-build; yarn test-server-only"
+  },
   "files": [
     "bin",
     "dist",
     "src"
+  ],
+  "peerDependencies": {},
+  "dependencies": {},
+  "description": "Fetch based http requests library for browsers.",
+  "keywords": [
+    "sifrr",
+    "fetch",
+    "ajax"
   ]
 }

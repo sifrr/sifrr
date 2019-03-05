@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 
-set -ex
-
 ./scripts/release/config_browser
 ./scripts/release/config_server
