@@ -53,7 +53,8 @@ var pagerequest = PageRequest;
 
 var constants = {
   noop: () => {},
-  footer: '<!-- Server side rendering powered by @sifrr/seo -->'
+  headerName: 'X-SSR-Powered-By',
+  headerValue: '@sifrr/seo'
 };
 
 const { noop } = constants;
@@ -1794,7 +1795,7 @@ var getcache = (ops) => {
   });
 };
 
-const { footer } = constants;
+const { headerName, headerValue } = constants;
 var middleware = function(req, res, next) {
   if (req.method !== 'GET') return next();
   const renderReq = {
@@ -1816,8 +1817,10 @@ var middleware = function(req, res, next) {
     };
   }
   return this.render(renderReq).then((html) => {
-    if (html) res.send(html + footer);
-    else next();
+    if (html) {
+      res.set(headerName, headerValue);
+      res.send(html);
+    } else next();
   }).catch((e) => {
     if (e.message === 'No Render') {
       commonjsGlobal.console.log(`Not rendering for ${renderReq.fullUrl}`);

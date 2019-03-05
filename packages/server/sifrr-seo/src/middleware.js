@@ -1,4 +1,4 @@
-const { footer } = require('./constants');
+const { headerName, headerValue } = require('./constants');
 
 // this = sifrr seo instance
 module.exports = function(req, res, next) {
@@ -26,8 +26,10 @@ module.exports = function(req, res, next) {
   }
 
   return this.render(renderReq).then((html) => {
-    if (html) res.send(html + footer);
-    else next();
+    if (html) {
+      res.set(headerName, headerValue);
+      res.send(html);
+    } else next();
   }).catch((e) => {
     if (e.message === 'No Render') {
       global.console.log(`Not rendering for ${renderReq.fullUrl}`);

@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../sequelize');
-const SequelizeModel = require('../../../src/api/ormmodels/sequelize');
+const { SequelizeModel } = require('../../../src/sifrr.api');
 
 class User extends SequelizeModel {
   static init() {

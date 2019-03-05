@@ -1,4 +1,5 @@
 module.exports = {
   noop: () => {},
-  footer: '<!-- Server side rendering powered by @sifrr/seo -->'
+  headerName: 'X-SSR-Powered-By',
+  headerValue: '@sifrr/seo'
 };
