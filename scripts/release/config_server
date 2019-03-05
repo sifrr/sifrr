@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+set -ex
+
 for dir in ./packages/server/*
 do
   echo "Changing config files in ${dir}:"
-  ./scripts/release/change_config_server "${dir}" "$@"
+  node ./scripts/release/change_config_server.js "${dir}" "$@"
 done
