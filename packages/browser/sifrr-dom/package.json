@@ -26,7 +26,11 @@
   },
   "keywords": [
     "sifrr",
-    "dom"
+    "dom",
+    "custom elements",
+    "shadow dom",
+    "ui",
+    "frontend"
   ],
   "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {

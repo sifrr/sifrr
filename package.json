@@ -5,7 +5,7 @@
     "packages/*/*"
   ],
   "version": "0.0.2-alpha",
-  "description": "a vanilla js fullstack framework",
+  "description": "a fullstack nodeJS/vanillaJS framework",
   "license": "MIT",
   "browserslist": [
     "chrome >= 55",
@@ -24,7 +24,21 @@
     "url": "git+https://github.com/sifrr/sifrr.git"
   },
   "keywords": [
-    "sifrr"
+    "sifrr",
+    "nodejs",
+    "backend",
+    "frontend",
+    "fullstack",
+    "ui",
+    "serviceworker",
+    "sw",
+    "browser storage",
+    "fetch",
+    "shadowdom",
+    "custom elements",
+    "router",
+    "graphql",
+    "ssr"
   ],
   "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {

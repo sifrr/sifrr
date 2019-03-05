@@ -18,7 +18,9 @@
   },
   "keywords": [
     "sifrr",
-    "api"
+    "api",
+    "graphql",
+    "sequelize"
   ],
   "author": "aadityataparia <aadityataparia@gmail.com>",
   "bugs": {
