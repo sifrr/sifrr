@@ -5,7 +5,8 @@
   "description": "Sifrr-Api Example",
   "main": "index.js",
   "scripts": {
-    "start": "node server"
+    "start": "node server",
+    "build": "yarn sifrr db:reset && yarn sequelize db:seed:all"
   },
   "repository": {
     "type": "git",

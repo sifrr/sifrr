@@ -28,6 +28,10 @@ module.exports = {
           getPet(where: $where, id: $id) {
             id
             name
+            owner {
+              id
+              name
+            }
           }
         }
       `, reqToVariables(req, { allowed: ['where', 'id'] }), { random: 1 }).then(data => res.json(data));

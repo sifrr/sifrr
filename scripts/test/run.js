@@ -4,7 +4,7 @@ const listen = require('./server');
 const testLoader = require('./testloader');
 const inspector = require('inspector');
 
-global.ENV = 'test';
+global.ENV = process.env.NODE_ENV = 'test';
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');
@@ -152,9 +152,11 @@ if (filter > 0) {
       await loadBrowser();
     }
 
-    mocha.run((failures) => {
+    mocha.run(async (failures) => {
       // close server if open
-      if (ser) ser.close();
+      if (ser) {
+        ser.close();
+      }
 
       if (failures) {
         process.stdout.write(`---------- ${failures} FAILURES. ----------\n`);
@@ -162,12 +164,14 @@ if (filter > 0) {
       }
 
       // close browser
-      if (global.browser) browser.close();
+      if (global.browser) await browser.close();
 
-      // Get and fix code coverage
+      // Get and write code coverage
       if (toCover) {
         writeCoverage(global.__coverage__, path.join(nycReport, `./${Date.now()}-unit-coverage.json`));
       }
+
+      process.exit(process.exitCode);
     });
   } catch(e) {
     process.exitCode = 1;

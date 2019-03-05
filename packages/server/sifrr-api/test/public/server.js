@@ -63,7 +63,11 @@ server.use('/graphql', expressGraphql({
   context: { [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize), random: 1 }
 }));
 
-if (ENV === 'development') {
+server.get('/sifrr.fetch.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../../browser/sifrr-fetch/dist/sifrr.fetch.min.js'));
+});
+
+if (ENV === 'development' || ENV === 'test') {
   server.use(function(req, res){
     res.status(404);
 
@@ -87,6 +91,7 @@ if (ENV === 'development') {
 ${availRoutes}
 </tbody>
 </table>
+<script src="/sifrr.fetch.js" charset="utf-8"></script>
 </body>`
     );
   });
@@ -94,7 +99,7 @@ ${availRoutes}
 
 function sss(p) {
   return server.listen(p, () => {
-    process.stdout.write('Server is running on localhost:1111 \n');
+    process.stdout.write(`Server is running on localhost:${p} \n`);
   });
 }
 

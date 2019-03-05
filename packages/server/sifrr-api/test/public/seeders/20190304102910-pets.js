@@ -20,7 +20,7 @@ module.exports = {
       {
         id: 3,
         name: 'Billu',
-        ownerId: 1,
+        ownerId: 2,
         createdAt: currentDate(),
         updatedAt: currentDate()
       }

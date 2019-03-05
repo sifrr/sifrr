@@ -26,7 +26,7 @@ class SequelizeModel extends Sequelize.Model {
   static belongsTo(model, options) {
     const name = options.as || model.graphqlModel.type;
     this[name] = super.belongsTo(model, options);
-    this.graphqlModel.addAttribute(name, { resolver: resolver(model), returnType: model.graphqlModel.type, description: `${name} of ${this.name}` });
+    this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: `${name} of ${this.name}` });
     return this[name];
   }
 
@@ -40,7 +40,7 @@ class SequelizeModel extends Sequelize.Model {
   static hasOne(model, options) {
     const name = options.as || model.graphqlModel.type;
     this[name] = super.hasOne(model, options);
-    this.graphqlModel.addAttribute(name, { resolver: resolver(model), returnType: model.graphqlModel.type, description: `${this.name}'s ${name}` });
+    this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: `${this.name}'s ${name}` });
     return this[name];
   }
 
@@ -106,11 +106,11 @@ class SequelizeModel extends Sequelize.Model {
     if (column) assocs.pop();
     const assocName = assocs.shift();
     const include = [{
-      model: model[assocName],
+      association: model[assocName],
       as: assocName
     }];
     if (assocs.length > 0) {
-      include[0].include = this._assocsToInclude(assocs, false, model[assocName]);
+      include[0].include = this._assocsToInclude(assocs, false, model[assocName].target);
     }
     return include;
   }

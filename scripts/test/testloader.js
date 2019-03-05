@@ -29,6 +29,7 @@ module.exports = async (relativeDir, mocha, { runUnitTests, runBrowserTests }, f
       process.env.NODE_PATH = path.join(testPublicPath, './node_modules');
       require('module').Module._initPaths();
       await exec(`cd ${testPublicPath} && yarn`);
+      await exec(`cd ${testPublicPath} && (yarn build || exit 0)`);
     }
     // Run yarn rollup if there is a rollup config in public folder
     if (fs.existsSync(path.join(testPublicPath, './rollup.config.js'))) await exec(`cd ${testPublicPath} && ../../node_modules/.bin/rollup -c`);

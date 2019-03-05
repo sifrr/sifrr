@@ -1,5 +1,5 @@
 // Env
-module.exports = () => {
+module.exports = (saveSchema = true) => {
   global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 
   const createSchemaFromModels = require('../../../src/api/createschemafrommodels');
@@ -24,7 +24,7 @@ module.exports = () => {
       }
     },
     extra: 'scalar Random', // Add scalar Random as we have returnType Random for 'count'
-    schemaPath: path.join(__dirname, '../db/schema.graphql')
+    schemaPath: saveSchema ? path.join(__dirname, '../db/schema.graphql') : ''
   });
   global.etg = new GraphqlExecutor(graphqlSchema);
 

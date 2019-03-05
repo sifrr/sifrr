@@ -4,7 +4,7 @@ const mkdirp = require('mkdirp');
 const attrsToTypes = require('./attrtypes');
 const flatten = require('./flatten');
 const { makeExecutableSchema } = require('graphql-tools');
-const { fileHeader, fileSeparator } = require('./constants');
+const { fileHeader, timestampHeader, fileSeparator } = require('./constants');
 
 function getTypeDef(qs, resolvers) {
   for (let q in qs) {
@@ -55,7 +55,7 @@ ${extra}`;
 
   if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
-    const comment = fileHeader + `# Genarated at ${new Date().toUTCString()} (${Date.now()}) \n` + fileSeparator;
+    const comment = fileHeader + timestampHeader + fileSeparator;
     const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : '';
     const newFileContent = typeDefs.join('\n\n') + '\n';
     if (oldFileContent !== newFileContent) fs.writeFileSync(schemaPath, comment + newFileContent);
