@@ -2,13 +2,6 @@
 
 set -ex
 
-./scripts/release/config
-./scripts/yarn build
-
-# Add dist files not generated before
-git ls-files '*/dist/*.js*' | xargs git add
-(git commit -m "chore: Add dist files" && git push && exit 0) || echo 'Dist files up to date'
-
-./scripts/release/tag || exit 0
 ./node_modules/.bin/semantic-release
+./scripts/release/tag || exit 0
 ./scripts/repeat "./packages/*/*" "npm publish --access=public"

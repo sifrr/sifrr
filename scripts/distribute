@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -ex
+
+./scripts/release/config
+./scripts/yarn build
+
+# Add dist files not generated before
+git ls-files '*/dist/*.js*' | xargs git add
+(git commit -m "chore: Add dist files" && git push && exit 1) || echo 'Dist files up to date'
