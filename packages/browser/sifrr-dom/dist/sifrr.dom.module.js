@@ -707,7 +707,7 @@ function elementClassFactory(baseClass) {
       return this._ctemp;
     }
     static get stateMap() {
-      this._stateMap = this._stateMap || create$2(this.ctemp.content, creator_1);
+      this._stateMap = this._stateMap || create$2(this.ctemp.content, creator_1, this.defaultState);
       return this._stateMap;
     }
     static get elementName() {

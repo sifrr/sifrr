@@ -31,7 +31,7 @@ function elementClassFactory(baseClass) {
     }
 
     static get stateMap() {
-      this._stateMap = this._stateMap || create(this.ctemp.content, creator);
+      this._stateMap = this._stateMap || create(this.ctemp.content, creator, this.defaultState);
       return this._stateMap;
     }
 
