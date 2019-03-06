@@ -12,15 +12,8 @@ const { makeEqual } = require('./makeequal');
 // without maintaining nodes arrays, and uses manipukates dom only when required
 
 function makeChildrenEqualKeyed(parent, newData, createFn, key) {
-  // Fast path for clear
-  const newL = newData.length;
-  if (newL === 0) {
-    parent.textContent = '';
-    return;
-  }
+  const newL = newData.length, oldL = parent.childNodes.length;
 
-  // Fast path for create
-  const oldL = parent.childNodes.length;
   if (oldL === 0) {
     for(let i = 0; i < newL; i++) {
       parent.appendChild(createFn(newData[i]));

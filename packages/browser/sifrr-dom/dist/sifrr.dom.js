@@ -133,12 +133,8 @@
     COMMENT_NODE
   } = constants;
   function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
-    const newL = newChildren.length;
-    if (newL === 0) {
-      parent.textContent = '';
-      return;
-    }
-    const oldL = parent.childNodes.length;
+    const newL = newChildren.length,
+          oldL = parent.childNodes.length;
     if (oldL > newL) {
       let i = oldL;
       while (i > newL) {
@@ -210,12 +206,8 @@
     makeEqual: makeEqual$1
   } = makeequal;
   function makeChildrenEqualKeyed(parent, newData, createFn, key) {
-    const newL = newData.length;
-    if (newL === 0) {
-      parent.textContent = '';
-      return;
-    }
-    const oldL = parent.childNodes.length;
+    const newL = newData.length,
+          oldL = parent.childNodes.length;
     if (oldL === 0) {
       for (let i = 0; i < newL; i++) {
         parent.appendChild(createFn(newData[i]));
@@ -479,7 +471,7 @@
       data = stateMap[i].ref;
       dom = element._refs[i];
       if (data.type === 0) {
-        newValue = element._state[data.text];
+        newValue = element.state[data.text];
         if (dom.data != newValue) dom.data = newValue;
         continue;
       } else if (data.type === 1) {
@@ -491,7 +483,7 @@
         for (let key in data.attributes) {
           if (key !== 'events') {
             if (data.attributes[key].type === 0) {
-              newValue = element._state[data.attributes[key].text];
+              newValue = element.state[data.attributes[key].text];
             } else {
               newValue = evaluateBindings(data.attributes[key].text, element);
             }
@@ -509,6 +501,9 @@
       }
       if (data.text === undefined) continue;
       newValue = evaluateBindings(data.text, element);
+      if (!newValue || newValue.length === 0) {
+        dom.textContent = '';
+      }
       if (data.type === 3) {
         let key;
         if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
