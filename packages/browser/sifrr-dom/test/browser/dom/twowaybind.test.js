@@ -50,8 +50,8 @@ describe('Two way bind', () => {
       const input = await getField('input');
       await input.type('some');
 
-      await assertStateValue('input', 'someinput');
-      await assertFieldValue('input', 'someinput');
+      await assertStateValue('input', 'inputsome');
+      await assertFieldValue('input', 'inputsome');
     });
 
     it('works with html', async () => {
