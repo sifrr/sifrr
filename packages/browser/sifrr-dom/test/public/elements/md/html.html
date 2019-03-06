@@ -1,5 +1,12 @@
 <template>
   <style media="screen">
+    h1, h3 {
+      font-size: 24px;
+      margin: 8px 0;
+    }
+    p {
+      margin: 6px 0;
+    }
     .s-6 {
       width: 50%;
       float: left;
@@ -8,11 +15,8 @@
       width: 100%;
       float: left;
     }
-    #headings {
-      height: 5%;
-    }
     #converter {
-      height: 95%;
+      height: calc(100% - 130px);
     }
     #md, #html {
       padding: 16px;
@@ -27,28 +31,17 @@
       box-sizing: border-box;
       font-family: system-ui;
     }
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      background-color: #f8f8f8;
-      border: 1px solid #dfdfdf;
-      margin-top: 1.5em;
-      margin-bottom: 1.5em;
-      padding: 0.125rem 0.3125rem 0.0625rem;
-    }
-    blockquote {
-      margin: 32px 8px;
-      padding: 0px 24px;
-      border-left: 4px solid rgba(0, 0, 0, 0.5);
-    }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@gh-pages/github-markdown.css">
   <div class="s-12" id="headings">
-    <h3 class='s-6'>Markdown to</h3>
-    <h3 class='s-6'>HTML</h3>
+    <h1>Markdown To HTML with Sifrr diffing</h1>
+    <p>For this big md text, one keypress takes ~16ms with Sifrr Live preview as compared to ~50ms in showdown's <a href='http://demo.showdownjs.com/'>live preview demo</a></p>
+    <h3 class='s-6'>Markdown</h3>
+    <h3 class='s-6'>Live HTML Preview with github styles</h3>
   </div>
   <div class="s-12" id="converter">
     <textarea class="s-6" id="md" data-sifrr-bind="content" rows="10000">${this.state.content}</textarea>
-    <div class="s-6" id="html" data-sifrr-html="true">${this.mdtohtml()}</div>
+    <div class="s-6 markdown-body" id="html" data-sifrr-html="true">${this.mdtohtml()}</div>
   </div>
 </template>
 <script type="text/javascript">
@@ -63,7 +56,7 @@
     parseImgDimensions: true,
     simplifiedAutoLink: true
   });
-  const content =`![Showdown](https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png)
+  const content =`# ShowdownJS
 
 Showdown is a Javascript Markdown to HTML converter, based on the original works by John Gruber. It can be used client side (in the browser) or server side (with Node or io).
 
@@ -182,7 +175,7 @@ If you DO want to add soft line breaks (which translate to\`<br\` in HTML) to a 
 you can do so by adding 3 space characters to the end of the line \` \`).
 
 You can also force every line break in paragraphs to translate to\`<br\` (as Github does) by
-enabling the option *\`simpleLineBreak\`**.
+enabling the option *\`simpleLineBreak\`*.
 
 ## Headings
 
@@ -197,7 +190,7 @@ You can create a heading by adding one or more # symbols before your heading tex
 ###### The 6th largest heading (an <h6> tag)
 \`\`\`
 
-The space between\`\` and the heading text is not required but you can make that space mandatory by enabling the option *\`requireSpaceBeforeHeadingTex\`**.
+The space between\`\` and the heading text is not required but you can make that space mandatory by enabling the option *\`requireSpaceBeforeHeadingTex\`*.
 
 You can wrap the headings in\`\`. Both leading and trailing\`\` will be removed.
 
@@ -230,7 +223,7 @@ In live preview editors, when a paragraph is followed by a list it can cause an 
 
 ![awkward effect][]
 
-You can prevent this by enabling the option *\`smoothPrevie\`**.
+You can prevent this by enabling the option *\`smoothPrevie\`*.
 
 ### Header IDs
 
@@ -246,10 +239,10 @@ Showdown generates bookmarks anchors in titles automatically, by adding an id pr
 
 This behavior can be modified with options:
 
- - *\`noHeaderI\`** disables automatic id generation;
- - *\`ghCompatibleHeaderI\`** generates header ids compatible with github style (spaces are replaced with dashes and a bunch of non alphanumeric chars are removed)
- - *\`prefixHeaderI\`** adds a prefix to the generated header ids (either automatic or custom).
- - *\`headerLevelStar\`** sets the header starting level. For instance, setting this to 3 means that\`# heade\` will be converted to\`<h3\`.
+ - *\`noHeaderI\`* disables automatic id generation;
+ - *\`ghCompatibleHeaderI\`* generates header ids compatible with github style (spaces are replaced with dashes and a bunch of non alphanumeric chars are removed)
+ - *\`prefixHeaderI\`* adds a prefix to the generated header ids (either automatic or custom).
+ - *\`headerLevelStar\`* sets the header starting level. For instance, setting this to 3 means that\`# heade\` will be converted to\`<h3\`.
 
 Read the [README.md][readme] for more info
 
@@ -287,7 +280,7 @@ Both bold and italic can use either a \\* or an \\_ around the text for styling.
 
 ## Strikethrough
 
-With the option *\`strikethroug\`** enabled, Showdown supports strikethrough elements.
+With the option *\`strikethroug\`* enabled, Showdown supports strikethrough elements.
 The syntax is the same as GFM, that is, by adding two tilde \`~\`) characters around
 a word or groups of words.
 
@@ -317,7 +310,7 @@ Use single backticks \` to format text in a special monospace format. Everything
 Here's an idea: why don't we take \`SuperiorProject\` and turn it into\`**Reasonable**Project\`.
 \`\`\`
 
-\`\`\`html
+\`\`\`
 <p>Here's an idea: why don't we take <code>SuperiorProject</code> and turn it into <code>**Reasonable**Project</code>.</p>
 \`\`\`
 
@@ -369,7 +362,7 @@ It’s important to note that the actual numbers you use to mark the list have n
 
 ### TaskLists (GFM Style)
 
-Showdown also supports GFM styled takslists if the *\`tasklist\`** option is enabled.
+Showdown also supports GFM styled takslists if the *\`tasklist\`* option is enabled.
 
 \`\`\`md
  - [x] checked list item
@@ -515,9 +508,9 @@ this is my email <somedude@mail.com>
 \`\`\`
 
 In the case of email addreses, Showdown will also perform a bit of randomized decimal and hex entity-encoding to help obscure your address from address-harvesting spambots.
-You can disable this obfuscation setting *\`encodeEmail\`** option to\`fals\`.
+You can disable this obfuscation setting *\`encodeEmail\`* option to\`false\`.
 
-With the option *\`simplifiedAutoLin\`** enabled, Showdown will automagically turn every valid URL it finds in the text body to links for you, without the need to wrap them in\`<\`.
+With the option *\`simplifiedAutoLin\`* enabled, Showdown will automagically turn every valid URL it finds in the text body to links for you, without the need to wrap them in\`<\`.
 
 \`\`\`md
 link to http://www.google.com/
@@ -594,7 +587,7 @@ Implicit references are also supported in images, similar to what happens with l
 
 ### Image dimensions
 
-When the option *\`parseImgDimensio\`** is activated, you can also define the image dimensions, like this:
+When the option *\`parseImgDimensio\`* is activated, you can also define the image dimensions, like this:
 
 \`\`\`md
 ![Alt text](url/to/image =250x250 "Optional title")
@@ -673,13 +666,13 @@ You can also use other markdown syntax inside them.
 
 ## Mentions
 
-Showdown supports github mentions by enabling the option *\`ghMention\`**. This will turn every\`@usernam\` into a link to their github profile.
+Showdown supports github mentions by enabling the option *\`ghMention\`*. This will turn every\`@usernam\` into a link to their github profile.
 
 \`\`\`md
 hey @tivie, check this out
 \`\`\`
 
-Since version 1.6.2 you can customize the generated link in mentions with the option *\`ghMentionsLin\`**.
+Since version 1.6.2 you can customize the generated link in mentions with the option *\`ghMentionsLin\`*.
 For instance, setting this option to\`http://mysite.com/{u}/profil\`:
 
 \`\`\`html
@@ -710,7 +703,7 @@ some markdown **here** with <code>foo & bar <baz></baz></code>
 <p>some markdown <strong>here</strong> with <code>foo &amp; bar &lt;baz&gt;&lt;/baz&gt;</code></p>
 \`\`\`
 
-If you wish to enable markdown parsing inside a specific HTML tag, you can enable it by using the html attribute *\`markdow\`** or  *\`markdown="1\`**  or *\`data-markdown="1\`**.
+If you wish to enable markdown parsing inside a specific HTML tag, you can enable it by using the html attribute *\`markdow\`* or  *\`markdown="1\`*  or *\`data-markdown="1\`*.
 
 \`\`\`md
 some markdown **here**

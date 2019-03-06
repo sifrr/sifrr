@@ -9,14 +9,21 @@
   <a href="https://coveralls.io/github/sifrr/sifrr?branch=master"><img src="https://coveralls.io/repos/github/sifrr/sifrr/badge.svg?branch=master" alt="Coverage Status" /></a>
   <a href="https://www.codacy.com/app/aadityataparia/sifrr"><img src="https://api.codacy.com/project/badge/Grade/c7e9c6f6e0734118abb68f9d59529b73" alt="Codacy Badge" /></a>
 </p>
+<p align="center">
+<a href="./docs/CHANGELOG.md">Changelog</a> | <a href="./docs/CONTRIBUTORS">Contributors</a> | <a href="./docs/CONTRIBUTING.md">Contributing guidelines</a> | <a href="./docs/CODE_OF_CONDUCT.md">Code of Conduct</a>
+</p>
 
 * * *
 
 sifrr is a set of customizable, independent libraries for creating modern and fast webapps.
 
+## Repository Info
+
+This repository is a monorepo managed using yarn workspaces. This means there are [multiple packages](#packages) managed in this codebase, even though they are published to NPM as separate packages. They will always have same latest version and are released together.
+
 ## Packages
 
-### Browser
+### Browser (VanillaJS)
 
 | Package                                                       | Description                                                    | NPM                                                                                                                         | Documentation                                                                                                  |                       Tests                       |
 | :------------------------------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :-----------------------------------------------: |
@@ -28,7 +35,7 @@ sifrr is a set of customizable, independent libraries for creating modern and fa
 
 `sifrr-dom`, `sifrr-fetch`, `sifrr-serviceworker`, `sifrr-storage` can be used independently. `sifrr-route` is a `sifrr-dom` element, hence it should be used with `sifrr-dom`.
 
-### Server
+### Server (NodeJS)
 
 | Package                                  | Description                                                          | NPM                                                                                                     | Documentation                                                                                              |                  Tests                 |
 | :--------------------------------------- | :------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------- | :------------------------------------: |
@@ -41,7 +48,7 @@ sifrr is a set of customizable, independent libraries for creating modern and fa
 ## Usage
 
 All the packages can be used with requireJS (node's `require` syntax) and module syntax (`import`)
-Browser packages have standalone distribution as well, which can be used directly in browser.
+Browser packages have standalone distribution as well, which can be used directly in browser with link tags.
 
 ### Packages that have tests have a working example of that package in `test/public` folder
 
@@ -74,19 +81,6 @@ Individual libraries may support older versions too with polyfills listed in rea
 Approximately amounts to > 80% of total worldwide browser usage.
 
 To support mini browsers (opera mini, uc browser etc.), You can use sifrr-seo to provide server side rendering.
-
-## \[WIP] Contributing
-
-[Contributing](docs/CONTRIBUTING.md) \| [Contributors](docs/CONTRIBUTORS)
-
-Contributing guidelines, Open a Pull Request if it:
-
--   Fixes a bug
--   Doesn't decrease performance or increase package size
--   Decreases size of package without compromising on features or performance
--   Simplifies the API
--   Improve documentation
--   Improves testing or increases test coverage
 
 ## License
 

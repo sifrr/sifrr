@@ -3,7 +3,7 @@ module.exports = {
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', {
-      changelogFile: 'CHANGELOG.md',
+      changelogFile: './docs/CHANGELOG.md',
     }],
     '@semantic-release/git'
   ]
