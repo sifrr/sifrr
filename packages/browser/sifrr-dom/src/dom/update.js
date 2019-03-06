@@ -81,7 +81,6 @@ function update(element, stateMap) {
       makeChildrenEqual(dom, children, undefined, isNode);
     }
   }
-  if (element.onUpdate) element.onUpdate();
 }
 
 module.exports = update;

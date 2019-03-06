@@ -101,6 +101,7 @@ function elementClassFactory(baseClass) {
 
     update() {
       update(this);
+      this.onUpdate();
     }
 
     onUpdate() {}

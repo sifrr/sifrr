@@ -537,7 +537,6 @@
         makeChildrenEqual$1(dom, children, undefined, isNode);
       }
     }
-    if (element.onUpdate) element.onUpdate();
   }
   var update_1 = update;
 
@@ -834,6 +833,7 @@
       onStateChange() {}
       update() {
         update_1(this);
+        this.onUpdate();
       }
       onUpdate() {}
       isSifrr(name = null) {
