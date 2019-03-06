@@ -1,7 +1,7 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-const { HTML_ATTR } = require('./constants');
+const { HTML_ATTR, TEXT_NODE } = require('./constants');
 
 function isHtml(el) {
   return el.hasAttribute && el.hasAttribute(HTML_ATTR);
@@ -29,17 +29,23 @@ function collect(element, stateMap, next = 'nextFilteredNode') {
 }
 
 function create(node, fxn, passedArg) {
-  let indices = [], ref, idx = 0;
+  let indices = [], ref, idx = 0, ntr;
   TREE_WALKER.currentNode = node;
   while(node) {
-    // eslint-disable-next-line no-cond-assign
-    if (ref = fxn(node, isHtml, passedArg)) {
-      indices.push({ idx: idx+1, ref });
-      idx = 1;
+    if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
+      ntr = node;
+      node = TREE_WALKER.nextFilteredNode(node);
+      ntr.remove();
     } else {
-      idx++;
+      // eslint-disable-next-line no-cond-assign
+      if (ref = fxn(node, isHtml, passedArg)) {
+        indices.push({ idx: idx+1, ref });
+        idx = 1;
+      } else {
+        idx++;
+      }
+      node = TREE_WALKER.nextFilteredNode(node);
     }
-    node = TREE_WALKER.nextFilteredNode(node);
   }
   return indices;
 }

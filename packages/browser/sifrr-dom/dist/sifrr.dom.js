@@ -25,7 +25,8 @@
 
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   const {
-    HTML_ATTR
+    HTML_ATTR,
+    TEXT_NODE
   } = constants;
   function isHtml(el) {
     return el.hasAttribute && el.hasAttribute(HTML_ATTR);
@@ -54,19 +55,26 @@
   function create(node, fxn, passedArg) {
     let indices = [],
         ref,
-        idx = 0;
+        idx = 0,
+        ntr;
     TREE_WALKER.currentNode = node;
     while (node) {
-      if (ref = fxn(node, isHtml, passedArg)) {
-        indices.push({
-          idx: idx + 1,
-          ref
-        });
-        idx = 1;
+      if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
+        ntr = node;
+        node = TREE_WALKER.nextFilteredNode(node);
+        ntr.remove();
       } else {
-        idx++;
+        if (ref = fxn(node, isHtml, passedArg)) {
+          indices.push({
+            idx: idx + 1,
+            ref
+          });
+          idx = 1;
+        } else {
+          idx++;
+        }
+        node = TREE_WALKER.nextFilteredNode(node);
       }
-      node = TREE_WALKER.nextFilteredNode(node);
     }
     return indices;
   }
@@ -93,7 +101,7 @@
     } else {
       return str;
     }
-    str = str.replace(/>\n+/g, '>').replace(/\s+</g, '<').replace(/>\s+/g, '>').replace(/(\\)?\$(\\)?\{/g, '${');
+    str = str.replace(/(\\)?\$(\\)?\{/g, '${');
     tmp.innerHTML = str;
     return tmp;
   };
@@ -129,7 +137,7 @@
     shallowEqual
   } = json;
   const {
-    TEXT_NODE,
+    TEXT_NODE: TEXT_NODE$1,
     COMMENT_NODE
   } = constants;
   function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
@@ -172,7 +180,7 @@
   }
   function makeEqual(oldNode, newNode) {
     if (!newNode.nodeType) {
-      if (!shallowEqual(oldNode.state, newNode)) {
+      if (!shallowEqual(oldNode._state, newNode)) {
         oldNode.state = newNode;
       }
       return oldNode;
@@ -181,7 +189,7 @@
       oldNode.replaceWith(newNode);
       return newNode;
     }
-    if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
+    if (oldNode.nodeType === TEXT_NODE$1 || oldNode.nodeType === COMMENT_NODE) {
       if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
       return oldNode;
     }
@@ -194,7 +202,7 @@
     for (let j = oldAttrs.length - 1; j >= 0; --j) {
       if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
     }
-    makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
+    makeChildrenEqual(oldNode, newNode.childNodes, undefined, true);
     return oldNode;
   }
   var makeequal = {
@@ -592,7 +600,7 @@
   };
 
   const {
-    TEXT_NODE: TEXT_NODE$1,
+    TEXT_NODE: TEXT_NODE$2,
     COMMENT_NODE: COMMENT_NODE$1,
     ELEMENT_NODE,
     REPEAT_ATTR
@@ -602,7 +610,7 @@
     getStringBindingFxn
   } = bindings;
   function creator(el, filter, defaultState) {
-    if (el.nodeType === TEXT_NODE$1 || el.nodeType === COMMENT_NODE$1) {
+    if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
       const x = el.data;
       if (x.indexOf('${') > -1) {
         const binding = getStringBindingFxn(x.trim());

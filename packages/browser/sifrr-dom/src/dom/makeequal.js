@@ -46,7 +46,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode.state, newNode)) {
+    if (!shallowEqual(oldNode._state, newNode)) {
       oldNode.state = newNode;
     }
     return oldNode;
@@ -78,7 +78,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   // make children equal
-  makeChildrenEqual(oldNode, Array.prototype.slice.call(newNode.childNodes));
+  makeChildrenEqual(oldNode, newNode.childNodes, undefined, true);
 
   return oldNode;
 }
