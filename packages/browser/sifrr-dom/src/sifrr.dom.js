@@ -7,7 +7,7 @@ SifrrDom.loadingElements = [];
 
 // Classes
 SifrrDom.Element = require('./dom/element');
-SifrrDom.twoWayBind = require('./dom/twoWayBind');
+SifrrDom.twoWayBind = require('./dom/twowaybind');
 SifrrDom.Loader = require('./dom/loader');
 SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');

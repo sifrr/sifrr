@@ -691,14 +691,13 @@ function elementClassFactory(baseClass) {
     static get ctemp() {
       if (this._ctemp) return this._ctemp;
       this._ctemp = this.template;
-      if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
-        window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+      if (this._ctemp) {
+        if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
+          window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+        }
+        this.stateMap = create$2(this._ctemp.content, creator_1, this.defaultState);
       }
       return this._ctemp;
-    }
-    static get stateMap() {
-      this._stateMap = this._stateMap || create$2(this.ctemp.content, creator_1, this.defaultState);
-      return this._stateMap;
     }
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
@@ -782,7 +781,7 @@ function elementClassFactory(baseClass) {
 }
 var element = elementClassFactory(window.HTMLElement);
 
-var twoWayBind = (e) => {
+var twowaybind = (e) => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
   const value = target.value || target.textContent;
@@ -858,7 +857,7 @@ let SifrrDom = {};
 SifrrDom.elements = {};
 SifrrDom.loadingElements = [];
 SifrrDom.Element = element;
-SifrrDom.twoWayBind = twoWayBind;
+SifrrDom.twoWayBind = twowaybind;
 SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
 SifrrDom.Event = event_1;

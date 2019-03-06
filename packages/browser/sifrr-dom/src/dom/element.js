@@ -24,15 +24,13 @@ function elementClassFactory(baseClass) {
     static get ctemp() {
       if (this._ctemp) return this._ctemp;
       this._ctemp = this.template;
-      if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
-        window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+      if (this._ctemp) {
+        if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
+          window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
+        }
+        this.stateMap = create(this._ctemp.content, creator, this.defaultState);
       }
       return this._ctemp;
-    }
-
-    static get stateMap() {
-      this._stateMap = this._stateMap || create(this.ctemp.content, creator, this.defaultState);
-      return this._stateMap;
     }
 
     static get elementName() {
