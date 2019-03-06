@@ -31,17 +31,13 @@ function SimpleElement(content, defaultState = null) {
       update(this, stateMap);
     }
   };
-  function setProps(me, state) {
-    me._refs = collect(me, stateMap, 'nextNode');
-    me._state = Object.assign({}, defaultState, state);
-    Object.defineProperty(me, 'state', stateProps);
-    update(me, stateMap);
-  }
 
-  setProps(content);
   content.sifrrClone = function(deep = true, newState) {
     const clone = content.cloneNode(deep);
-    setProps(clone, newState);
+    clone._refs = collect(clone, stateMap, 'nextNode');
+    clone._state = Object.assign({}, defaultState, newState);
+    Object.defineProperty(clone, 'state', stateProps);
+    update(clone, stateMap);
     return clone;
   };
 

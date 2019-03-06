@@ -12,8 +12,6 @@ SifrrDom.Loader = require('./dom/loader');
 SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
 
-SifrrDom.makeEqual = require('./dom/makeequal');
-
 // HTML to template
 SifrrDom.template = require('./dom/template');
 

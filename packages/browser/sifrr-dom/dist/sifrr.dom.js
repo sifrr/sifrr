@@ -570,16 +570,12 @@
         update_1(this, stateMap);
       }
     };
-    function setProps(me, state) {
-      me._refs = collect$1(me, stateMap, 'nextNode');
-      me._state = Object.assign({}, defaultState, state);
-      Object.defineProperty(me, 'state', stateProps);
-      update_1(me, stateMap);
-    }
-    setProps(content);
     content.sifrrClone = function (deep = true, newState) {
       const clone = content.cloneNode(deep);
-      setProps(clone, newState);
+      clone._refs = collect$1(clone, stateMap, 'nextNode');
+      clone._state = Object.assign({}, defaultState, newState);
+      Object.defineProperty(clone, 'state', stateProps);
+      update_1(clone, stateMap);
       return clone;
     };
     return content;
@@ -947,7 +943,6 @@
   SifrrDom.Loader = loader;
   SifrrDom.SimpleElement = simpleelement;
   SifrrDom.Event = event_1;
-  SifrrDom.makeEqual = makeequal;
   SifrrDom.template = template;
   SifrrDom.register = (Element, options) => {
     Element.useSR = SifrrDom.config.useShadowRoot;

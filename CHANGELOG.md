@@ -3,7 +3,6 @@
 
 ### Bug Fixes
 
-* **package:** update yargs to version 13.1.0 ([#39](https://github.com/sifrr/sifrr/issues/39)) ([7789b21](https://github.com/sifrr/sifrr/commit/7789b21))
 * **sifrr-api:** default base path is added before each route ([54b1c8e](https://github.com/sifrr/sifrr/commit/54b1c8e))
 * **sifrr-cli:** Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c8))
 * **sifrr-dom:** Add listener on window instead of document ([bfda60b](https://github.com/sifrr/sifrr/commit/bfda60b))
@@ -40,7 +39,6 @@
 * **sifrr-seo:** Pass rendering error to express's next ([8663605](https://github.com/sifrr/sifrr/commit/8663605))
 * **sifrr-storage:** Check for openDatabase in webSQL ([d92d437](https://github.com/sifrr/sifrr/commit/d92d437))
 * **sifrr-storage:** Replace unnecessary let with const ([5396521](https://github.com/sifrr/sifrr/commit/5396521))
-* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
 * **sifrr-storage:** Return null if null ([aa8e7ba](https://github.com/sifrr/sifrr/commit/aa8e7ba))
 
 
