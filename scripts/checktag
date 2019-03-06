@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+const version = require('../package.json').version;
+const exec = require('./exec');
+const tag = 'v' + version;
+
+(async function() {
+  await exec('git pull');
+  exec(`git rev-parse ${tag}`).then(() => {
+    process.stdout.write(`Tag ${tag} already exists.`);
+    process.exitCode = 1;
+  }).catch(async () => {
+    process.exitCode = 0;
+  });
+})();

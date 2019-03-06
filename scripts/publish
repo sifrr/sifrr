@@ -2,6 +2,7 @@
 
 set -ex
 
+./scripts/checktag || exit 0
 ./node_modules/.bin/semantic-release
-./scripts/release/tag || exit 0
+./scripts/release/tag
 ./scripts/repeat "./packages/*/*" "npm publish --access=public"
