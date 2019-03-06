@@ -29,18 +29,15 @@ TREE_WALKER.nextFilteredNode = function() {
   } else node = this.nextNode();
   return node;
 };
-TREE_WALKER.roll = function(n, next = 'nextFilteredNode') {
-  let node = this.currentNode;
-  while(--n) {
-    node = this[next]();
-  }
-  return node;
-};
-function collect(element, stateMap, next) {
+function collect(element, stateMap, next = 'nextFilteredNode') {
   const refs = [], l = stateMap.length;
-  TREE_WALKER.currentNode = element;
+  let node = TREE_WALKER.currentNode = element, n;
   for (let i = 0; i < l; i++) {
-    refs.push(TREE_WALKER.roll(stateMap[i].idx, next));
+    n = stateMap[i].idx;
+    while(--n) {
+      node = TREE_WALKER[next]();
+    }
+    refs.push(node);
   }
   return refs;
 }
