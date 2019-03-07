@@ -1,20 +1,18 @@
-const fetch = require('@sifrr/fetch');
 const template = require('./template');
 
 class Loader {
-  constructor(elemName, url, onProgress) {
-    if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
+  constructor(elemName, url) {
+    if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     this.url = url;
-    this.onProgress = onProgress;
   }
 
   get html() {
     if (this._html) return this._html;
     Loader.add(this.elementName, this);
     const me = this;
-    this._html = fetch.file(this.htmlUrl, { onProgress: this.onProgress })
+    this._html = window.fetch(this.htmlUrl)
       .then((resp) => resp.text())
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -26,7 +24,7 @@ class Loader {
   get js() {
     if (this._js) return this._js;
     Loader.add(this.elementName, this);
-    this._js = fetch.file(this.jsUrl, { onProgress: this.onProgress })
+    this._js = window.fetch(this.jsUrl)
       .then((resp) => resp.text());
     return this._js;
   }

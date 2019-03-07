@@ -1,11 +1,9 @@
 /*! Sifrr.Dom v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/fetch')) :
-  typeof define === 'function' && define.amd ? define(['@sifrr/fetch'], factory) :
-  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory(global.Sifrr.Fetch)));
-}(this, function (fetch) { 'use strict';
-
-  fetch = fetch && fetch.hasOwnProperty('default') ? fetch['default'] : fetch;
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Dom = factory()));
+}(this, function () { 'use strict';
 
   const temp = window.document.createElement('template');
   const script = window.document.createElement('script');
@@ -672,20 +670,17 @@
   var creator_1 = creator;
 
   class Loader {
-    constructor(elemName, url, onProgress) {
-      if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
+    constructor(elemName, url) {
+      if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
       if (this.constructor.all[elemName]) return this.constructor.all[elemName];
       this.elementName = elemName;
       this.url = url;
-      this.onProgress = onProgress;
     }
     get html() {
       if (this._html) return this._html;
       Loader.add(this.elementName, this);
       const me = this;
-      this._html = fetch.file(this.htmlUrl, {
-        onProgress: this.onProgress
-      }).then(resp => resp.text()).then(file => template(file).content).then(content => {
+      this._html = window.fetch(this.htmlUrl).then(resp => resp.text()).then(file => template(file).content).then(content => {
         me.template = content.querySelector('template');
         return content;
       });
@@ -694,9 +689,7 @@
     get js() {
       if (this._js) return this._js;
       Loader.add(this.elementName, this);
-      this._js = fetch.file(this.jsUrl, {
-        onProgress: this.onProgress
-      }).then(resp => resp.text());
+      this._js = window.fetch(this.jsUrl).then(resp => resp.text());
       return this._js;
     }
     get htmlUrl() {
@@ -979,13 +972,12 @@
   };
   SifrrDom.load = function (elemName, {
     url,
-    js = true,
-    onProgress
+    js = true
   } = {}) {
     if (window.customElements.get(elemName)) {
       return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`));
     }
-    let loader = new SifrrDom.Loader(elemName, url, onProgress);
+    let loader = new SifrrDom.Loader(elemName, url);
     const wd = customElements.whenDefined(elemName);
     SifrrDom.loadingElements.push(wd);
     return loader.executeScripts(js).then(() => {

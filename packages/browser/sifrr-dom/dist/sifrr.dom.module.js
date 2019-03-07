@@ -1,6 +1,4 @@
 /*! Sifrr.Dom v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-import fetch from '@sifrr/fetch';
-
 const temp = window.document.createElement('template');
 const script = window.document.createElement('script');
 const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';
@@ -602,18 +600,17 @@ function creator(el, filter, defaultState) {
 var creator_1 = creator;
 
 class Loader {
-  constructor(elemName, url, onProgress) {
-    if (!fetch) throw Error('Sifrr.Dom.load requires Sifrr.Fetch to work.');
+  constructor(elemName, url) {
+    if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     this.url = url;
-    this.onProgress = onProgress;
   }
   get html() {
     if (this._html) return this._html;
     Loader.add(this.elementName, this);
     const me = this;
-    this._html = fetch.file(this.htmlUrl, { onProgress: this.onProgress })
+    this._html = window.fetch(this.htmlUrl)
       .then((resp) => resp.text())
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -624,7 +621,7 @@ class Loader {
   get js() {
     if (this._js) return this._js;
     Loader.add(this.elementName, this);
-    this._js = fetch.file(this.jsUrl, { onProgress: this.onProgress })
+    this._js = window.fetch(this.jsUrl)
       .then((resp) => resp.text());
     return this._js;
   }
@@ -895,9 +892,9 @@ SifrrDom.setup = function(config) {
   SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
   SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
 };
-SifrrDom.load = function(elemName, { url, js = true, onProgress } = {}) {
+SifrrDom.load = function(elemName, { url, js = true } = {}) {
   if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
-  let loader = new SifrrDom.Loader(elemName, url, onProgress);
+  let loader = new SifrrDom.Loader(elemName, url);
   const wd = customElements.whenDefined(elemName);
   SifrrDom.loadingElements.push(wd);
   return loader.executeScripts(js).then(() => {
