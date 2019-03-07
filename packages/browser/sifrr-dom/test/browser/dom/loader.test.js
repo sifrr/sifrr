@@ -97,18 +97,4 @@ describe('Sifrr.Dom.load and Loader', () => {
 
     expect(message).to.equal("Executing 'loading-noregister' file didn't register the element. Ignore if you are registering element in a promise or async function.");
   });
-
-  it('does on progress in load', async () => {
-    const per = await page.evaluate(async () => {
-      let per;
-      try {
-        await Sifrr.Dom.load('main-element', { onProgress: (per) => { throw Error(per); } });
-      } catch (e) {
-        per = e.message;
-      }
-      return per;
-    });
-
-    expect(parseInt(per, 10)).to.be.at.most(100);
-  });
 });

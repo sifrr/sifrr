@@ -1,22 +1,21 @@
-const mock = require('mock-require');
 
 describe('Loader', () => {
   afterEach(() => {
-    mock.stopAll();
     const loader = require.resolve('../../../src/dom/loader');
     delete require.cache[loader];
     sinon.restore();
   });
 
   it('throws error if sifrr-fetch is not present', () => {
-    mock('@sifrr/fetch', undefined);
+    const fetch = window.fetch;
+    window.fetch = undefined;
     const Loader = require('../../../src/dom/loader');
 
     expect(() => new Loader()).to.throw();
+    window.fetch = fetch;
   });
 
   it('returns loader if already present', () => {
-    mock('@sifrr/fetch', true);
     const Loader = require('../../../src/dom/loader');
     const a = {};
     Loader.all['random'] = a;
@@ -25,7 +24,6 @@ describe('Loader', () => {
   });
 
   it('returns html and js if already present', () => {
-    mock('@sifrr/fetch', true);
     const Loader = require('../../../src/dom/loader');
     const l = new Loader('random', 'ok');
     const html = {}, js = {};
@@ -36,7 +34,6 @@ describe('Loader', () => {
   });
 
   it('throws error on html execute script fail', async () => {
-    mock('@sifrr/fetch', true);
     const Loader = require('../../../src/dom/loader');
     const l = new Loader('random', 'ok');
     l._html = Promise.reject('err');

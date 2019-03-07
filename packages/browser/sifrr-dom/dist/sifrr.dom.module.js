@@ -647,18 +647,18 @@ class Loader {
     }
   }
   executeHTMLScripts() {
-    return this.html.then((file) => {
-      file.querySelectorAll('script').forEach((script) => {
+    return this.html.then((content) => {
+      content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           const newScript = constants.SCRIPT();
           newScript.src = script.src;
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: file.querySelector('template') });
+          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: content.querySelector('template') });
         }
       });
-    }).catch(e => { throw e; });
+    });
   }
   static add(elemName, instance) {
     Loader._all[elemName] = instance;
@@ -900,6 +900,7 @@ SifrrDom.load = function(elemName, { url, js = true } = {}) {
   return loader.executeScripts(js).then(() => {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
+      SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
     }
   }).catch(e => {
     SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);

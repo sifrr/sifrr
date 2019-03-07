@@ -48,7 +48,8 @@ global.window = {
     log: sinon.stub(),
     error: sinon.stub(),
     warn: sinon.stub()
-  }
+  },
+  fetch: () => {}
 };
 
 // check if should inspect or not

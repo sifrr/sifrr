@@ -61,6 +61,7 @@ SifrrDom.load = function(elemName, { url, js = true } = {}) {
   return loader.executeScripts(js).then(() => {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
+      SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
     }
   }).catch(e => {
     SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);

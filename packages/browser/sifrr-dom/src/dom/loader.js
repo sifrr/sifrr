@@ -54,8 +54,8 @@ class Loader {
   }
 
   executeHTMLScripts() {
-    return this.html.then((file) => {
-      file.querySelectorAll('script').forEach((script) => {
+    return this.html.then((content) => {
+      content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           // Appending script node directly doesn't work
           const newScript = require('./constants').SCRIPT();
@@ -63,10 +63,10 @@ class Loader {
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: file.querySelector('template') });
+          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: content.querySelector('template') });
         }
       });
-    }).catch(e => { throw e; });
+    });
   }
 
   static add(elemName, instance) {

@@ -714,8 +714,8 @@
       }
     }
     executeHTMLScripts() {
-      return this.html.then(file => {
-        file.querySelectorAll('script').forEach(script => {
+      return this.html.then(content => {
+        content.querySelectorAll('script').forEach(script => {
           if (script.src) {
             const newScript = constants.SCRIPT();
             newScript.src = script.src;
@@ -723,12 +723,10 @@
             window.document.body.appendChild(newScript);
           } else {
             new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({
-              currentTempate: file.querySelector('template')
+              currentTempate: content.querySelector('template')
             });
           }
         });
-      }).catch(e => {
-        throw e;
       });
     }
     static add(elemName, instance) {
@@ -983,6 +981,7 @@
     return loader.executeScripts(js).then(() => {
       if (!window.customElements.get(elemName)) {
         window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
+        SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
       }
     }).catch(e => {
       SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
