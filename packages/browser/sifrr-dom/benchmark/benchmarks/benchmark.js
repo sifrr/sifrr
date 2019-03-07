@@ -4,7 +4,7 @@ class Benchmark {
   }
 
   static async setup() {
-    await page.waitForFunction(`!!${this.prototype.main}`);
+    await page.waitForFunction(`${this.prototype.main}.isSifrr()`);
     this.start = await page.evaluate(`window.from - 1`);
   }
 

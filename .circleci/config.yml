@@ -41,16 +41,16 @@ jobs:
           name: Check chrome version
           command: google-chrome --version
       - run:
+          name: Add git user email and name
+          command: |
+            git config --global user.email "aadityataparia@gmail.com"
+            git config --global user.name "Aaditya Taparia"
+      - run:
           name: Update dist files
           command: ./scripts/distribute
       - run:
           name: Run tests
           command: COVERAGE=true LCOV=true yarn test -j
-      - run:
-          name: Add git user email and name
-          command: |
-            git config --global user.email "aadityataparia@gmail.com"
-            git config --global user.name "Aaditya Taparia"
       - run:
           name: New Release
           command: |

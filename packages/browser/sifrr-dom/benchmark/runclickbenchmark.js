@@ -3,11 +3,10 @@ const verbose =  Math.max(process.argv.indexOf(`--verbose`), process.argv.indexO
 module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, metrics = ['ScriptDuration', 'LayoutCount', 'TaskDuration']) {
   const BM = require(`./benchmarks/${benchmark}`);
   let totals = {};
-  if (verbose) process.stdout.write(`Running ${benchmark} benchmark for ${warmups} warmups and ${runs} runs: \n`);
+  if (verbose) process.stdout.write(`Running ${benchmark} benchmark with ${warmups} warmups for ${runs} runs: \n`);
 
   // Reload page
   url = url || `http://localhost:${port}/speedtest.html`;
-  if (url !== page.url()) await page.goto(url);
 
   await page.evaluate(async () => {
     if (typeof Sifrr !== 'undefined') {
@@ -15,16 +14,19 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
     }
   });
 
-  // setup
-  await BM.setup();
-
-  // Run before all
-  BM.beforeAll();
-  await page.waitForFunction(BM.beforeAllWait());
-
-  const times = warmups + runs;
+  const times = (warmups + 1) * runs;
   for (let i = 0; i < times; i++) {
-    const bm = new BM(i, !url);
+    if (i % (warmups + 1) === 0) {
+      if (verbose) process.stdout.write('> ');
+      // if (url!== page.url()) await page.goto(url);
+      await page.goto(url);
+      await BM.setup();
+
+      // Run before all
+      BM.beforeAll();
+      await page.waitForFunction(BM.beforeAllWait());
+    }
+    const bm = new BM(i % (warmups + 1));
     if (verbose) process.stdout.write(`${i + 1} `);
 
     // Run before
@@ -37,7 +39,8 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
     await page.waitForFunction(bm.runWait());
     const afterMetrics = await BM.metrics();
 
-    if (i >= warmups) {
+    if (i % (warmups + 1) === warmups) {
+      if (verbose) process.stdout.write('-');
       const diff = BM.metricsDiff(beforeMetrics, afterMetrics);
       for (let m in diff) {
         totals[m] = totals[m] || 0;

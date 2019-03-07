@@ -21,7 +21,8 @@ let benchmarks = [
     '1k-append'
   ],
   url = `${PATH}/speedtest.html`,
-  runs = parseInt(getArg('runs') || 1, 10);
+  runs = parseInt(getArg('runs') || 1, 10),
+  warmups = parseInt(getArg('warmups') || 1, 10);
 
 const benchmarkFilters = (getArg('benchmarks') || '').split(',');
 benchmarks = benchmarks.filter((b) => {
@@ -68,7 +69,7 @@ describe('Speed tests', async function() {
       for (let i = 0; i < benchmarks.length; i++) {
         const bm = benchmarks[i];
 
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, url: url + suffix }, false).run();
+        const results = await new BenchmarkRunner([bm], { port, runs: runs, warmups: warmups, url: url + suffix }, false).run();
         const bmd = results[bm];
 
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
