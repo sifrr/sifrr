@@ -2,13 +2,15 @@ class GraphWS {
   constructor(url, protocol, fallback) {
     this.url = url;
     this.protocol = protocol;
+    this._fallback = !window.WebSocket;
     this.fallback = fallback;
     this.id = 1;
-    this._resolvers = {};
+    this._requests = {};
     this._openSocket();
   }
 
   async send(query, variables = {}) {
+    if (this._fallback) return this.fallback(query, variables);
     const id = this.id;
     this.id++;
     await this._openSocket();
@@ -19,9 +21,13 @@ class GraphWS {
     };
     this.ws.send(JSON.stringify(message));
     const ret = new Promise((res) => {
-      this._resolvers[id] = (v) => {
-        delete this._resolvers[id];
-        res(v);
+      this._requests[id] = {
+        res: (v) => {
+          delete this._requests[id];
+          res(v);
+        },
+        query,
+        variables
       };
     });
     return ret;
@@ -49,8 +55,12 @@ class GraphWS {
     return Promise.resolve(true);
   }
 
-  onerror(e) {
-    window.console.error(`Sifrr WebSocket(${this.url}) error:`, e);
+  onerror() {
+    this._fallback = !!this.fallback;
+    for (let r in this._requests) {
+      const req = this._requests[r];
+      this.fallback(req.query, req.variables).then(result => req.res(result));
+    }
   }
 
   onopen() {}
@@ -59,7 +69,8 @@ class GraphWS {
 
   onmessage(event) {
     const data = JSON.parse(event.data);
-    if (data.sifrrQueryId) this._resolvers[data.sifrrQueryId](data.result);
+    if (data.sifrrQueryId) this._requests[data.sifrrQueryId].res(data.result);
+    delete this._requests[data.sifrrQueryId];
   }
 }
 

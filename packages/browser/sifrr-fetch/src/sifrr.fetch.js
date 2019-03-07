@@ -37,8 +37,14 @@ class SifrrFetch {
     return new Request(url, options).response;
   }
 
-  static graphqlWS(url, protocol, fallback) {
-    return new GraphWS(url, protocol, fallback);
+  static graphqlSocket(url, protocol, fallback) {
+    return new GraphWS(url, protocol, fallback ? (query, variables) => {
+      return this.graphql(fallback.url, {
+        method: fallback.method.toUpperCase(),
+        query,
+        variables
+      });
+    } : false);
   }
 
   static file(purl, poptions) {
