@@ -57,16 +57,13 @@
   }
   var regexpath = RegexPath;
 
-  window.Sifrr = window.Sifrr || {};
-  window.Sifrr.Dom = window.Sifrr.Dom || dom;
-  const Sifrr = window.Sifrr;
-  Sifrr.Dom.Route = {
+  dom.Route = {
     RegexPath: regexpath
   };
   const firstTitle = window.document.title;
-  class SifrrRoute extends Sifrr.Dom.Element {
+  class SifrrRoute extends dom.Element {
     static get template() {
-      return Sifrr.Dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+      return dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
     }
     static observedAttrs() {
       return ['path'];
@@ -80,7 +77,7 @@
     }
     onAttributeChange(attrName) {
       if (attrName === 'path') {
-        this._routeRegex = new Sifrr.Dom.Route.RegexPath(this.getAttribute('path'));
+        this._routeRegex = new dom.Route.RegexPath(this.getAttribute('path'));
         this.refresh();
       }
     }
@@ -106,7 +103,7 @@
         if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
           const tags = this.dataset.sifrrElements.split(',');
           tags.filter((value, index, self) => self.indexOf(value) === index).forEach(tag => {
-            Sifrr.Dom.load(tag);
+            dom.load(tag);
           });
         }
       }
@@ -160,8 +157,8 @@
     }
   }
   SifrrRoute.all = [];
-  Sifrr.Dom.Route.Element = SifrrRoute;
-  Sifrr.Dom.register(SifrrRoute);
+  dom.Route.Element = SifrrRoute;
+  dom.register(SifrrRoute);
   window.addEventListener('popstate', SifrrRoute.popstateEventListener);
   window.document.addEventListener('click', SifrrRoute.clickEventListener);
   var sifrr_route = SifrrRoute;

@@ -1,15 +1,13 @@
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Dom = window.Sifrr.Dom || require('@sifrr/dom');
-const Sifrr = window.Sifrr;
+const SifrrDom = require('@sifrr/dom');
 
-Sifrr.Dom.Route =  {
+SifrrDom.Route =  {
   RegexPath: require('./regexpath')
 };
 
 const firstTitle = window.document.title;
-class SifrrRoute extends Sifrr.Dom.Element {
+class SifrrRoute extends SifrrDom.Element {
   static get template() {
-    return Sifrr.Dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+    return SifrrDom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
   }
 
   static observedAttrs() {
@@ -27,7 +25,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
 
   onAttributeChange(attrName) {
     if (attrName === 'path') {
-      this._routeRegex = new Sifrr.Dom.Route.RegexPath(this.getAttribute('path'));
+      this._routeRegex = new SifrrDom.Route.RegexPath(this.getAttribute('path'));
       this.refresh();
     }
   }
@@ -56,7 +54,7 @@ class SifrrRoute extends Sifrr.Dom.Element {
         tags
           .filter((value, index, self) => self.indexOf(value) === index)
           .forEach((tag) => {
-            Sifrr.Dom.load(tag);
+            SifrrDom.load(tag);
           });
       }
     }
@@ -124,8 +122,8 @@ class SifrrRoute extends Sifrr.Dom.Element {
 }
 SifrrRoute.all = [];
 
-Sifrr.Dom.Route.Element = SifrrRoute;
-Sifrr.Dom.register(SifrrRoute);
+SifrrDom.Route.Element = SifrrRoute;
+SifrrDom.register(SifrrRoute);
 
 window.addEventListener('popstate', SifrrRoute.popstateEventListener);
 window.document.addEventListener('click', SifrrRoute.clickEventListener);

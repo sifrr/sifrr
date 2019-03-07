@@ -10,16 +10,14 @@ describe('Route with window sifrr/dom', () => {
     sinon.restore();
   });
 
-  it('sets up properly', () => {
-    mock('@sifrr/dom', {});
-    const sfr = window.Sifrr;
-    window.Sifrr = undefined;
+  it('sets up Sifrr.Dom.Route properly', () => {
+    const dom = {};
+    mock('@sifrr/dom', dom);
 
-    assert.notExists(window.Sifrr);
+    assert.notExists(dom.Route);
     expect(() => require('../../src/sifrr.route')).to.throw();
-    assert.exists(window.Sifrr);
+    assert.exists(dom.Route);
 
-    window.Sifrr = sfr;
     mock.stop('@sifrr/dom');
   });
 });
