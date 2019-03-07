@@ -103,7 +103,7 @@ Sifrr.Fetch.file(url, options).then((response) => {
 
 #### GRAPHQL request
 
-graphql request is POST request by default, but you can overide it by proving method key in otherOptions.
+graphql request is a POST request.
 
 ```js
 Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' }, ...otherOptions})
