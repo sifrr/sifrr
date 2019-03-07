@@ -186,7 +186,7 @@
     static socket(url, protocol, fallback) {
       return new websocket(url, protocol, fallback ? message => {
         const options = {
-          method: fallback.method.toUpperCase()
+          method: fallback.method
         };
         if (options.method === 'POST') options.body = message;else options.query = message;
         return this.request(fallback.url, options);
@@ -208,7 +208,7 @@
       SifrrFetch._middlewares.push(fxn);
     }
     static afterUse(url, options = {}, method) {
-      options.method = options.method || method;
+      options.method = (options.method || method).toUpperCase();
       SifrrFetch._middlewares.forEach(fxn => {
         const res = fxn(url, options);
         url = res.url;

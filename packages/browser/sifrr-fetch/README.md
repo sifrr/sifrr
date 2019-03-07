@@ -1,6 +1,6 @@
 # sifrr-fetch · [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch)
 
-Fetch and websockets based requests library for browsers.
+> Fetch API and websockets API based small, easy to use, promise based requests library for browsers.
 
 ## Size
 
@@ -50,7 +50,13 @@ window.Sifrr.Fetch = Fetch;
 
 ## API
 
--   GET request
+### HTTP Requests
+
+**options** are Fetch API options with some extra keys:
+
+-   **params** `json object` key, value pairs will be added to url as ?key=value
+
+#### GET request
 
 ```js
 Sifrr.Fetch.get(url, options).then((response) => {
@@ -59,7 +65,7 @@ Sifrr.Fetch.get(url, options).then((response) => {
 });
 ```
 
--   PUT request
+#### PUT request
 
 ```js
 Sifrr.Fetch.put(url, options).then((response) => {
@@ -68,7 +74,7 @@ Sifrr.Fetch.put(url, options).then((response) => {
 });
 ```
 
--   POST request
+#### POST request
 
 ```js
 Sifrr.Fetch.post(url, options).then((response) => {
@@ -77,7 +83,7 @@ Sifrr.Fetch.post(url, options).then((response) => {
 });
 ```
 
--   DELETE request
+#### DELETE request
 
 ```js
 Sifrr.Fetch.delete(url, options).then((response) => {
@@ -86,25 +92,28 @@ Sifrr.Fetch.delete(url, options).then((response) => {
 });
 ```
 
--   GET file request
+#### GET file request
 
 ```js
 Sifrr.Fetch.file(url, options).then((response) => {
   // response is a Fetch API response object.
+  // You can get file text content using response.text() or other fetch response methods
 });
 ```
 
-options are Fetch API options some extra keys:
+#### GRAPHQL request
 
--   **params** `json object` key, value pairs will be added to url as ?key=value
--   POST GRAPHQL request
+graphql request is POST request by default, but you can overide it by proving method key in otherOptions.
 
 ```js
-Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' }, ...otherOptions }).then((response) => {
-  // response is JSON if response has `content-type: application/json` header
-  // else it is a Fetch API response object.
-});
+Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' }, ...otherOptions})
+  .then((response) => {
+    // response is JSON if response has `content-type: application/json` header
+    // else it is a Fetch API response object.
+  });
 ```
+
+## Sockets
 
 ## References
 
