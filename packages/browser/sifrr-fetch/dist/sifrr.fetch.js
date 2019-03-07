@@ -183,7 +183,7 @@
       };
       return this.request(purl, poptions, 'POST');
     }
-    static graphqlSocket(url, protocol, fallback) {
+    static socket(url, protocol, fallback) {
       return new websocket(url, protocol, fallback ? message => {
         const options = {
           method: fallback.method.toUpperCase()
