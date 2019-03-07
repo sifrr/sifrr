@@ -1,4 +1,4 @@
-# 0.0.3 (2019-03-05)
+## [0.0.3](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha2...v0.0.3) (2019-03-05)
 
 
 ### Bug Fixes
@@ -97,3 +97,10 @@
 * **sifrr-dom:** Improve update performance ([89a61ec](https://github.com/sifrr/sifrr/commit/89a61ec))
 * **sifrr-dom:** Make makeequal work with nodes ([5d98d09](https://github.com/sifrr/sifrr/commit/5d98d09))
 * **sifrr-seo:** Always keep browser open and cache rendered html ([be70607](https://github.com/sifrr/sifrr/commit/be70607))
+
+
+
+## [0.0.1-alpha2](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha...v0.0.1-alpha2) (2019-01-10)
+
+
+

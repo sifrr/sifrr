@@ -7,4 +7,6 @@ set -ex
 
 # Add dist files not generated before
 git ls-files '*/dist/*.js*' | xargs git add
-(git commit -m "chore: Add dist files" && git push && exit 1) || echo 'Dist files up to date'
+git ls-files 'packages/*/package.json' | xargs git add
+git ls-files 'packages/*/rollup.config.js' | xargs git add
+(git commit -m "chore: Add auto generated files" && git push && exit 1) || echo 'Files up to date'
