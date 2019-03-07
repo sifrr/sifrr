@@ -1,4 +1,5 @@
 const Request = require('./request');
+const GraphWS = require('./graphws');
 
 class SifrrFetch {
   static get(purl, poptions) {
@@ -34,6 +35,10 @@ class SifrrFetch {
       variables
     };
     return new Request(url, options).response;
+  }
+
+  static graphqlWS(url, protocol, fallback) {
+    return new GraphWS(url, protocol, fallback);
   }
 
   static file(purl, poptions) {

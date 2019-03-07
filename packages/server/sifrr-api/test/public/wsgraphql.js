@@ -31,11 +31,13 @@ uWS.App().ws('/*', {
     global.console.log(`message received ${ws.id}: `, message);
     etg.resolve(message.query, message.variables, { random: 1 }).then(json => {
       const res = {};
-      res.message = json;
-      res.id = message.id || null;
+      res.result = json;
+      res.sifrrQueryId = message.sifrrQueryId;
       let ok = ws.send(JSON.stringify(res));
       if (!ok) {
-        global.console.log(`Message sending to websocket ${ws.id} failed: ${parseBuffer(message)}`);
+        global.console.log(`Message sending to websocket ${ws.id} failed:`, res);
+      } else {
+        global.console.log(`Message sent to websocket ${ws.id}:`, res);
       }
     });
   },
