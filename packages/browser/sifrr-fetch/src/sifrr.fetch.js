@@ -1,56 +1,54 @@
 const Request = require('./request');
-const GraphWS = require('./graphws');
+const WebSocket = require('./websocket');
 
 class SifrrFetch {
   static get(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'GET');
-    return new Request(url, options).response;
+    return this.request(purl, poptions, 'GET');
   }
 
   static post(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'POST');
-    return new Request(url, options).response;
+    return this.request(purl, poptions, 'POST');
   }
 
   static put(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'PUT');
-    return new Request(url, options).response;
+    return this.request(purl, poptions, 'PUT');
   }
 
   static delete(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'DELETE');
-    return new Request(url, options).response;
+    return this.request(purl, poptions, 'DELETE');
   }
 
   static graphql(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'POST');
-    const { query, variables = {} } = options;
-    delete options.query;
-    delete options.variables;
-    options.headers = options.headers || {};
-    options.headers['Content-Type'] = 'application/json';
-    options.headers['Accept'] = 'application/json';
-    options.body = {
+    const { query, variables = {} } = poptions;
+    delete poptions.query;
+    delete poptions.variables;
+    poptions.headers = poptions.headers || {};
+    poptions.headers['Content-Type'] = 'application/json';
+    poptions.headers['Accept'] = 'application/json';
+    poptions.body = {
       query,
       variables
     };
-    return new Request(url, options).response;
+    return this.request(purl, poptions, 'POST');
   }
 
   static graphqlSocket(url, protocol, fallback) {
-    return new GraphWS(url, protocol, fallback ? (query, variables) => {
-      return this.graphql(fallback.url, {
-        method: fallback.method.toUpperCase(),
-        query,
-        variables
-      });
+    return new WebSocket(url, protocol, fallback ? (message) => {
+      const options = { method: fallback.method.toUpperCase() };
+      if (options.method === 'POST') options.body = message;
+      else options.query = message;
+      return this.request(fallback.url, options);
     } : false);
   }
 
   static file(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'GET');
-    options.headers = options.headers || {};
-    options.headers.accept = options.headers.accept || '*/*';
+    poptions.headers = poptions.headers || {};
+    poptions.headers.accept = poptions.headers.accept || '*/*';
+    return this.request(purl, poptions, 'GET');
+  }
+
+  static request(purl, poptions, method) {
+    const { url, options } = this.afterUse(purl, poptions, method);
     return new Request(url, options).response;
   }
 
@@ -59,7 +57,7 @@ class SifrrFetch {
   }
 
   static afterUse(url, options = {}, method) {
-    options.method = method;
+    options.method = options.method || method;
     SifrrFetch._middlewares.forEach((fxn) => {
       const res = fxn(url, options);
       url = res.url;
@@ -70,5 +68,6 @@ class SifrrFetch {
 }
 
 SifrrFetch._middlewares = [];
+SifrrFetch.WebSocket = WebSocket;
 
 module.exports = SifrrFetch;

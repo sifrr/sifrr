@@ -1,4 +1,4 @@
-class GraphWS {
+class WebSocket {
   constructor(url, protocol, fallback) {
     this.url = url;
     this.protocol = protocol;
@@ -9,16 +9,12 @@ class GraphWS {
     this._openSocket();
   }
 
-  async send(query, variables = {}) {
-    if (this._fallback) return this.fallback(query, variables);
+  async send(message) {
+    if (this._fallback) return this.fallback(message);
     const id = this.id;
     this.id++;
     await this._openSocket();
-    const message = {
-      query: query,
-      variables: variables,
-      sifrrQueryId: id
-    };
+    message.sifrrQueryId = id;
     this.ws.send(JSON.stringify(message));
     const ret = new Promise((res) => {
       this._requests[id] = {
@@ -26,8 +22,7 @@ class GraphWS {
           delete this._requests[id];
           res(v);
         },
-        query,
-        variables
+        message
       };
     });
     return ret;
@@ -59,7 +54,7 @@ class GraphWS {
     this._fallback = !!this.fallback;
     for (let r in this._requests) {
       const req = this._requests[r];
-      this.fallback(req.query, req.variables).then(result => req.res(result));
+      this.fallback(req.message).then(result => req.res(result));
     }
   }
 
@@ -74,4 +69,4 @@ class GraphWS {
   }
 }
 
-module.exports = GraphWS;
+module.exports = WebSocket;

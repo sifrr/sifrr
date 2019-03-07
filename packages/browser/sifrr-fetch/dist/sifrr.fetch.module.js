@@ -78,7 +78,7 @@ class Request {
 }
 var request = Request;
 
-class GraphWS {
+class WebSocket {
   constructor(url, protocol, fallback) {
     this.url = url;
     this.protocol = protocol;
@@ -88,16 +88,12 @@ class GraphWS {
     this._requests = {};
     this._openSocket();
   }
-  async send(query, variables = {}) {
-    if (this._fallback) return this.fallback(query, variables);
+  async send(message) {
+    if (this._fallback) return this.fallback(message);
     const id = this.id;
     this.id++;
     await this._openSocket();
-    const message = {
-      query: query,
-      variables: variables,
-      sifrrQueryId: id
-    };
+    message.sifrrQueryId = id;
     this.ws.send(JSON.stringify(message));
     const ret = new Promise((res) => {
       this._requests[id] = {
@@ -105,8 +101,7 @@ class GraphWS {
           delete this._requests[id];
           res(v);
         },
-        query,
-        variables
+        message
       };
     });
     return ret;
@@ -136,7 +131,7 @@ class GraphWS {
     this._fallback = !!this.fallback;
     for (let r in this._requests) {
       const req = this._requests[r];
-      this.fallback(req.query, req.variables).then(result => req.res(result));
+      this.fallback(req.message).then(result => req.res(result));
     }
   }
   onopen() {}
@@ -147,59 +142,56 @@ class GraphWS {
     delete this._requests[data.sifrrQueryId];
   }
 }
-var graphws = GraphWS;
+var websocket = WebSocket;
 
 class SifrrFetch {
   static get(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'GET');
-    return new request(url, options).response;
+    return this.request(purl, poptions, 'GET');
   }
   static post(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'POST');
-    return new request(url, options).response;
+    return this.request(purl, poptions, 'POST');
   }
   static put(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'PUT');
-    return new request(url, options).response;
+    return this.request(purl, poptions, 'PUT');
   }
   static delete(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'DELETE');
-    return new request(url, options).response;
+    return this.request(purl, poptions, 'DELETE');
   }
   static graphql(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'POST');
-    const { query, variables = {} } = options;
-    delete options.query;
-    delete options.variables;
-    options.headers = options.headers || {};
-    options.headers['Content-Type'] = 'application/json';
-    options.headers['Accept'] = 'application/json';
-    options.body = {
+    const { query, variables = {} } = poptions;
+    delete poptions.query;
+    delete poptions.variables;
+    poptions.headers = poptions.headers || {};
+    poptions.headers['Content-Type'] = 'application/json';
+    poptions.headers['Accept'] = 'application/json';
+    poptions.body = {
       query,
       variables
     };
-    return new request(url, options).response;
+    return this.request(purl, poptions, 'POST');
   }
   static graphqlSocket(url, protocol, fallback) {
-    return new graphws(url, protocol, fallback ? (query, variables) => {
-      return this.graphql(fallback.url, {
-        method: fallback.method.toUpperCase(),
-        query,
-        variables
-      });
+    return new websocket(url, protocol, fallback ? (message) => {
+      const options = { method: fallback.method.toUpperCase() };
+      if (options.method === 'POST') options.body = message;
+      else options.query = message;
+      return this.request(fallback.url, options);
     } : false);
   }
   static file(purl, poptions) {
-    const { url, options } = this.afterUse(purl, poptions, 'GET');
-    options.headers = options.headers || {};
-    options.headers.accept = options.headers.accept || '*/*';
+    poptions.headers = poptions.headers || {};
+    poptions.headers.accept = poptions.headers.accept || '*/*';
+    return this.request(purl, poptions, 'GET');
+  }
+  static request(purl, poptions, method) {
+    const { url, options } = this.afterUse(purl, poptions, method);
     return new request(url, options).response;
   }
   static use(fxn) {
     SifrrFetch._middlewares.push(fxn);
   }
   static afterUse(url, options = {}, method) {
-    options.method = method;
+    options.method = options.method || method;
     SifrrFetch._middlewares.forEach((fxn) => {
       const res = fxn(url, options);
       url = res.url;
@@ -209,6 +201,7 @@ class SifrrFetch {
   }
 }
 SifrrFetch._middlewares = [];
+SifrrFetch.WebSocket = websocket;
 var sifrr_fetch = SifrrFetch;
 
 export default sifrr_fetch;

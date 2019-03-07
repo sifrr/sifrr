@@ -1,6 +1,6 @@
 # sifrr-fetch · [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch)
 
-Fetch based http requests library for browsers.
+Fetch and websockets based requests library for browsers.
 
 ## Size
 
