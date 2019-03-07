@@ -15,48 +15,46 @@
       return window.fetch(this.url, this.options).then(resp => {
         const contentType = resp.headers.get('content-type');
         const isJson = contentType && contentType.includes('application/json');
-        if (resp.ok) {
-          if (typeof me._options.onProgress === 'function') {
-            const contentLength = resp.headers.get('content-length');
-            const total = parseInt(contentLength, 10);
-            if (!total || !resp.body) {
-              me._options.onProgress(100);
-            } else {
-              const reader = resp.body.getReader();
-              let loaded = 0;
-              resp = new Response(new ReadableStream({
-                start(controller) {
-                  function read() {
-                    return reader.read().then(({
-                      done,
-                      value
-                    }) => {
-                      if (done) {
-                        me._options.onProgress(100);
-                        controller.close();
-                      } else {
-                        loaded += value.byteLength;
-                        me._options.onProgress(loaded / total * 100);
-                        controller.enqueue(value);
-                        return read();
-                      }
-                    });
-                  }
-                  return read();
+        if (resp.ok && typeof me._options.onProgress === 'function') {
+          const contentLength = resp.headers.get('content-length');
+          const total = parseInt(contentLength, 10);
+          if (!total || !resp.body) {
+            me._options.onProgress(100);
+          } else {
+            const reader = resp.body.getReader();
+            let loaded = 0;
+            resp = new Response(new ReadableStream({
+              start(controller) {
+                function read() {
+                  return reader.read().then(({
+                    done,
+                    value
+                  }) => {
+                    if (done) {
+                      me._options.onProgress(100);
+                      controller.close();
+                    } else {
+                      loaded += value.byteLength;
+                      me._options.onProgress(loaded / total * 100);
+                      controller.enqueue(value);
+                      return read();
+                    }
+                  });
                 }
-              }));
-            }
+                return read();
+              }
+            }));
           }
-          return {
-            response: resp,
-            isJson
-          };
-        } else {
+        } else if (!resp.ok) {
           if (typeof me._options.onProgress === 'function') me._options.onProgress(100);
           let error = Error(resp.statusText);
           error.response = resp;
           throw error;
         }
+        return {
+          response: resp,
+          isJson
+        };
       }).then(({
         response,
         isJson

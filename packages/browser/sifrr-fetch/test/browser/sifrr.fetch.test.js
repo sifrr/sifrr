@@ -150,6 +150,18 @@ describe('sifrr-fetch', () => {
     expect(parseInt(resp2, 10)).to.equal(100);
   });
 
+  it('progresses to 100 when response not okay', async () => {
+    const resp2 = await page.evaluate(async () => {
+      return await new Promise(res => {
+        Sifrr.Fetch.get('/404', {
+          onProgress: per => res(per)
+        });
+      });
+    });
+
+    expect(parseInt(resp2, 10)).to.equal(100);
+  });
+
   // Keep this test in the end
   it('middlewares work', async () => {
     await page.evaluate(() => {
