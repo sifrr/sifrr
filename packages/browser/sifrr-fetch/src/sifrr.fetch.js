@@ -40,7 +40,7 @@ class SifrrFetch {
       if (method === 'post') options.body = message;
       else options.query = message;
       return this[method](fallback.url, options);
-    } : false);
+    } : undefined);
   }
 
   static file(purl, poptions) {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      function testSocket(requests, connections = 1, wsevent = 'GRAPHQL_QUERY') {
+        const reqPerConn = requests / connections;
+        let k = 0, size = 0, startTime = performance.now();
+        return new Promise(res => {
+          for (let i = 0; i < connections; i++) {
+            const gql = Sifrr.Fetch.socket('ws://localhost:3333/graphql', undefined, {
+              url: 'http://localhost:2222/graphql',
+              method: 'POST'
+            });
+            for (let j = 0; j < reqPerConn; j++) {
+              gql.send({
+                query: `query($id: Int!) {
+                    getPet(id: $id) {
+                      id
+                      name
+                      owner {
+                        id
+                        name
+                      }
+                    }
+                  }`,
+                variables: { id: 1 }
+              }, wsevent).then((response) => {
+                size += lengthInUtf8Bytes(response);
+                k++;
+                if (k === 1) window.console.log(response);
+                if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
+              });
+            }
+          }
+        });
+      }
+
+      function testFetch(requests) {
+        let startTime = performance.now();
+        let k = 0, size = 0;
+        return new Promise(res => {
+          for (let j = 0; j < requests; j++) {
+            Sifrr.Fetch.graphql('http://localhost:2222/graphql', {
+              query: `query($id: Int!) {
+                  getPet(id: $id) {
+                    id
+                    name
+                    owner {
+                      id
+                      name
+                    }
+                  }
+                }`,
+              variables: { id: 1 }
+            }).then((response) => {
+              size += lengthInUtf8Bytes(response);
+              k++;
+              if (k === 1) window.console.log(response);
+              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
+            });
+          }
+        });
+      }
+
+      function testNormalFetch(requests) {
+        let startTime = performance.now();
+        let k = 0, size = 0;
+        return new Promise(res => {
+          for (let j = 0; j < requests; j++) {
+            Sifrr.Fetch.get('http://localhost:2222/api/v1/user/1').then((response) => {
+              size += lengthInUtf8Bytes(response);
+              k++;
+              if (k === 1) window.console.log(response);
+              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
+            });
+          }
+        });
+      }
+
+      function lengthInUtf8Bytes(json) {
+        const str = JSON.stringify(json);
+        let m = encodeURIComponent(str).match(/%[89ABab]/g);
+        return str.length + (m ? m.length : 0);
+      }
+    </script>
+  </body>
+</html>
