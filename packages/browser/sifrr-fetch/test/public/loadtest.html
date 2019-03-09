@@ -14,7 +14,7 @@
         return new Promise(res => {
           for (let i = 0; i < connections; i++) {
             const gql = Sifrr.Fetch.socket('ws://localhost:3333/graphql', undefined, {
-              url: 'http://localhost:2222/graphql',
+              url: 'http://localhost:3333/graphql',
               method: 'POST'
             });
             for (let j = 0; j < reqPerConn; j++) {
@@ -73,7 +73,21 @@
         let k = 0, size = 0;
         return new Promise(res => {
           for (let j = 0; j < requests; j++) {
-            Sifrr.Fetch.get('http://localhost:2222/api/v1/user/1').then((response) => {
+            Sifrr.Fetch.post('http://localhost:3333/graphql', {
+              body: {
+                query: `query($id: Int!) {
+                    getPet(id: $id) {
+                      id
+                      name
+                      owner {
+                        id
+                        name
+                      }
+                    }
+                  }`,
+                variables: { id: 1 }
+              }
+            }).then((response) => {
               size += lengthInUtf8Bytes(response);
               k++;
               if (k === 1) window.console.log(response);

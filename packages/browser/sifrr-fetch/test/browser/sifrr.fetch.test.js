@@ -1,52 +1,50 @@
-function stubRequests() {
-  page.on('request', request => {
-    switch (request.method()) {
-    case 'GET':
-      if (request.url().indexOf('file') >= 0) {
-        request.respond({
-          status: 200,
-          contentType: 'text/plain',
-          body: 'abcd'
-        });
-      } else if (request.url().indexOf('test') >= 0) {
-        request.respond({
-          status: 200,
-          contentType: 'bang,application/json',
-          body: '{"a": "GET"}'
-        });
-      } else if (request.url().indexOf('error') >= 0) {
-        request.respond({ status: 404 });
-      } else if (request.url().indexOf('param=value') >= 0) {
-        request.respond({
-          status: 200,
-          contentType: 'bang,application/json',
-          body: '{"param": "value"}'
-        });
-      } else {
-        request.continue();
-      }
-      break;
-    case 'PUT':
-    case 'POST':
-    case 'DELETE':
-      if (request.url().indexOf('test') >= 0) {
-        request.respond({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ a: request.postData() || request.method() })
-        });
-      } else if (request.url().indexOf('graphql') >= 0) {
-        request.respond({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ body: JSON.parse(request.postData()) })
-        });
-      }
-      break;
-    default:
+function stubRequest(request) {
+  switch (request.method()) {
+  case 'GET':
+    if (request.url().indexOf('file') >= 0) {
+      request.respond({
+        status: 200,
+        contentType: 'text/plain',
+        body: 'abcd'
+      });
+    } else if (request.url().indexOf('test') >= 0) {
+      request.respond({
+        status: 200,
+        contentType: 'bang,application/json',
+        body: '{"a": "GET"}'
+      });
+    } else if (request.url().indexOf('error') >= 0) {
+      request.respond({ status: 404 });
+    } else if (request.url().indexOf('param=value') >= 0) {
+      request.respond({
+        status: 200,
+        contentType: 'bang,application/json',
+        body: '{"param": "value"}'
+      });
+    } else {
       request.continue();
     }
-  });
+    break;
+  case 'PUT':
+  case 'POST':
+  case 'DELETE':
+    if (request.url().indexOf('test') >= 0) {
+      request.respond({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ a: request.postData() || request.method() })
+      });
+    } else if (request.url().indexOf('graphql') >= 0) {
+      request.respond({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ body: JSON.parse(request.postData()) })
+      });
+    }
+    break;
+  default:
+    request.continue();
+  }
 }
 
 async function getResponse(type, url, options, text = false) {
@@ -62,8 +60,13 @@ async function getResponse(type, url, options, text = false) {
 describe('sifrr-fetch', () => {
   before(async () => {
     await page.setRequestInterception(true);
-    stubRequests();
+    page.on('request', stubRequest);
     await page.goto(`${PATH}/`, { waitUntil: 'networkidle0' });
+  });
+
+  after(async () => {
+    page.off('request', stubRequest);
+    await page.setRequestInterception(false);
   });
 
   it('gets request', async () => {

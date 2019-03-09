@@ -1,5 +1,5 @@
 class WebSocket {
-  constructor(url, protocol, fallback = () => { throw Error('No fallback provided for websocket failure.'); }) {
+  constructor(url, protocol, fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))) {
     this.url = url;
     this.protocol = protocol;
     this._fallback = !window.WebSocket;
@@ -48,6 +48,7 @@ class WebSocket {
         if (me.ws.readyState === me.ws.CONNECTING) {
           window.requestAnimationFrame(waiting);
         } else if (me.ws.readyState !== me.ws.OPEN) {
+          window.console.error(`Failed to open socket on ${me.url}`);
           res(false);
         } else {
           res(true);

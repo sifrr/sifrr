@@ -25,7 +25,7 @@ const instrumenter = require('istanbul-lib-instrument').createInstrumenter();
 function staticTMiddleware(directory) {
   return staticTransform({
     root: directory,
-    match: /.+\.js/,
+    match: /.+\.js$/,
     transform: function (path, text, send) {
       if (fs.existsSync(path + '.map')) {
         send(instrumenter.instrumentSync(text, path, JSON.parse(fs.readFileSync(path + '.map'))), { 'content-type': 'application/javascript; charset=UTF-8' });

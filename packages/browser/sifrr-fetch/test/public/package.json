@@ -1,0 +1,26 @@
+{
+  "name": "sifrr-fetch-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sifrr-Fetch Test server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "build": "echo 'ok'"
+  },
+  "keywords": [
+    "Sifrr",
+    "api",
+    "graphql",
+    "express",
+    "sequelize"
+  ],
+  "author": "@aadityataparia",
+  "license": "MIT",
+  "dependencies": {
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0"
+  }
+}

@@ -8,7 +8,7 @@ class Request {
     const me = this;
     return window.fetch(this.url, this.options).then(resp => {
       const contentType = resp.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
+      const isJson = contentType && (contentType.includes('application/json'));
       if (resp.ok && typeof me._options.onProgress === 'function') {
         const contentLength = resp.headers.get('content-length');
         const total = parseInt(contentLength,10);

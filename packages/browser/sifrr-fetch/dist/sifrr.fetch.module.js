@@ -8,7 +8,7 @@ class Request {
     const me = this;
     return window.fetch(this.url, this.options).then(resp => {
       const contentType = resp.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
+      const isJson = contentType && (contentType.includes('application/json'));
       if (resp.ok && typeof me._options.onProgress === 'function') {
         const contentLength = resp.headers.get('content-length');
         const total = parseInt(contentLength,10);
@@ -79,7 +79,7 @@ class Request {
 var request = Request;
 
 class WebSocket {
-  constructor(url, protocol, fallback = () => { throw Error('No fallback provided for websocket failure.'); }) {
+  constructor(url, protocol, fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))) {
     this.url = url;
     this.protocol = protocol;
     this._fallback = !window.WebSocket;
@@ -126,6 +126,7 @@ class WebSocket {
         if (me.ws.readyState === me.ws.CONNECTING) {
           window.requestAnimationFrame(waiting);
         } else if (me.ws.readyState !== me.ws.OPEN) {
+          window.console.error(`Failed to open socket on ${me.url}`);
           res(false);
         } else {
           res(true);
