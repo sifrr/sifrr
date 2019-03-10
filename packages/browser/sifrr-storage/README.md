@@ -15,7 +15,7 @@ Browser key-value(JSON) storage library with cow powers.
 -   IndexedDB (Persisted - on page refresh or open/close)
 -   WebSQL (Persisted - on page refresh or open/close)
 -   LocalStorage (Persisted - on page refresh or open/close)
--   Cookies (Persisted - on page refresh or open/close)
+-   Cookies (Persisted - on page refresh or open/close), Sent to server with every request
 -   JsonStorage (In memory - deleted on page refresh or open/close)
 
 ## How to use
@@ -33,10 +33,10 @@ Add script tag in your website.
 | APIs         | caniuse                                       | polyfills                                     |
 | :----------- | :-------------------------------------------- | :-------------------------------------------- |
 | Promises API | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise> |
-| IndexedDB    | <https://caniuse.com/#feat=indexeddb>         | -                                             |
-| WebSQL       | <https://caniuse.com/#feat=sql-storage>       | -                                             |
-| LocalStorage | <https://caniuse.com/#feat=namevalue-storage> | -                                             |
-| Cookies      | 100%                                          | -                                             |
+| IndexedDB    | <https://caniuse.com/#feat=indexeddb>         | N/A                                           |
+| WebSQL       | <https://caniuse.com/#feat=sql-storage>       | N/A                                           |
+| LocalStorage | <https://caniuse.com/#feat=namevalue-storage> | N/A                                           |
+| Cookies      | 100%                                          | N/A                                           |
 
 ### Using npm
 
@@ -97,86 +97,56 @@ storage.name; // name of storage
 storage.version; // version number
 ```
 
-### Inserting key-value
+### Setting key-value
 
 ```js
 // insert single key-value
 let key = 'key';
 let value = { value: 'value' };
-storage.insert(key, value).then(() => {/* Do something here */});
+storage.set(key, value).then(() => {/* Do something here */});
 
 // insert multiple key-values
 let data = { a: 'b', c: { d: 'e' } }
-storage.insert(data).then(() => {/* Do something here */});
+storage.set(data).then(() => {/* Do something here */});
 ```
 
 ### Getting value
 
 ```js
 // select single key-value
-storage.select('key').then((value) => console.log(value)); // > { key: { value: 'value' } }
+storage.get('key').then((value) => console.log(value)); // > { key: { value: 'value' } }
 
 // select multiple key-values
-storage.select(['a', 'c']).then((value) => console.log(value)); // > { a: 'b', c: { d: 'e' } }
+storage.get(['a', 'c']).then((value) => console.log(value)); // > { a: 'b', c: { d: 'e' } }
 ```
 
 ### Deleting a key
 
 ```js
 // delete single key-value
-storage.delete('key').then(() => {/* Do something here */});
+storage.del('key').then(() => {/* Do something here */});
 
 // delete multiple key-values
-storage.delete(['a', 'c']).then(() => {/* Do something here */});
+storage.del(['a', 'c']).then(() => {/* Do something here */});
 ```
 
 ### Updating a key
 
-```js
-// update single key-value
-let newValue = { newValue: 'new' };
-storage.update('key', newValue).then(() => {
-  // checking if value is updated
-  storage.select('key').then((v) => console.log(v)); // > { key: { newValue: 'new' } }
-});
-
-// update multiple key-values
-storage.update({ a: 'bnew', c: { dnew: 'enew' } }).then(() => {
-  // checking if value is updated
-  storage.select(['a', 'c']).then((v) => console.log(v)); // > { a: 'bnew', c: { dnew: 'enew' } }
-});
-```
-
-### Upserting a key-value (Insert else update)
-
-```js
-// upsert single key-value
-let upValue = { upValue: 'up' };
-storage.upsert('key', upValue).then(() => {
-  // checking if value is updated
-  storage.select('key').then((v) => console.log(v)); // > { key: { upValue: 'up' } }
-});
-
-// upsert multiple key-values
-storage.upsert({ a: 'bup', c: { dup: 'eup' } }).then(() => {
-  // checking if value is updated
-  storage.select(['a', 'c']).then((v) => console.log(v)); // > { a: 'bup', c: { dup: 'eup' } }
-});
-```
+`.set()` will update the value.
 
 ### Clear table
 
 ```js
 storage.clear().then(() => {
   // checking if value is deleted
-  storage.select('key').then((v) => console.log(v)); // > {}
+  storage.get('key').then((v) => console.log(v)); // > {}
 });
 ```
 
 ### Get all data in table
 
 ```js
-storage.data().then((data) => console.log(data)); // > { key: { upValue: 'up' }, a: 'bup', c: { dup: 'eup' } }
+storage.all().then((data) => console.log(data)); // > { key: { upValue: 'up' }, a: 'bup', c: { dup: 'eup' } }
 ```
 
 ### Get all created storage instances

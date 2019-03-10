@@ -41,29 +41,28 @@ for (let key in SifrrStorage.availableStores) {
       assert.equal(result, true);
     });
 
-    it(`${key}.data gives all storage`, async () => {
+    it(`${key}.all gives all storage`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
           (new Function(`save_${key}();`))();
           let storage = new Sifrr.Storage(key);
-          return { data: await storage.data(), all: await storage.all() };
+          return await storage.all();
         } catch(e) {
           return e.message;
         }
       }, key);
-      assert.equal(result.data.a, 'b');
-      assert.equal(result.all.a, 'b');
+      assert.equal(result.a, 'b');
     });
 
-    it(`${key}.select selects cookie`, async () => {
+    it(`${key}.get selects value`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
           let storage = new Sifrr.Storage(key);
-          await storage.insert('w', 'x');
-          await storage.insert('y', 'z');
+          await storage.set('w', 'x');
+          await storage.set('y', 'z');
           return {
-            y: await storage.select('y'),
-            all: await storage.select(['w', 'y'])
+            y: await storage.get('y'),
+            all: await storage.get(['w', 'y'])
           };
         } catch(e) {
           return e.message;
@@ -74,16 +73,16 @@ for (let key in SifrrStorage.availableStores) {
       assert.equal(result.y.y, 'z');
     });
 
-    it(`${key}.upsert updates or inserts cookie`, async () => {
+    it(`${key}.set updates or sets value`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
           let storage = new Sifrr.Storage(key);
-          await storage.upsert('w', 'abc');
-          await storage.upsert('y', 'abc');
-          await storage.upsert('z', 'abc');
-          await storage.upsert({ w: 'x' });
-          await storage.update({ y: 'z' });
-          return storage.data();
+          await storage.set('w', 'abc');
+          await storage.set('y', 'abc');
+          await storage.set('z', 'abc');
+          await storage.set({ w: 'x' });
+          await storage.set({ y: 'z' });
+          return storage.all();
         } catch(e) {
           return e.message;
         }
@@ -93,16 +92,16 @@ for (let key in SifrrStorage.availableStores) {
       assert.equal(result['z'], 'abc');
     });
 
-    it(`${key}.delete deletes cookie`, async () => {
+    it(`${key}.del deletes value`, async () => {
       const result = await page.evaluate((key) => {
         try {
           let storage = new Sifrr.Storage(key);
-          storage.insert('w', 'x');
-          storage.insert('y', 'z');
-          storage.insert('a', 'b');
-          storage.delete('w');
-          storage.delete(['y', 'a']);
-          return storage.data();
+          storage.set('w', 'x');
+          storage.set('y', 'z');
+          storage.set('a', 'b');
+          storage.del('w');
+          storage.del(['y', 'a']);
+          return storage.all();
         } catch(e) {
           return e.message;
         }
@@ -118,13 +117,13 @@ for (let key in SifrrStorage.availableStores) {
           let st1 = new Sifrr.Storage({ priority: [key], name: 'first', version: 1 });
           let st2 = new Sifrr.Storage({ priority: [key], name: 'first', version: 2 });
           let st3 = new Sifrr.Storage({ priority: [key], name: 'third', version: 1 });
-          await st1.insert('m', 'a');
-          await st2.insert('m', 'b');
-          await st3.insert('m', 'c');
+          await st1.set('m', 'a');
+          await st2.set('m', 'b');
+          await st3.set('m', 'c');
           return [
-            await st1.select('m'),
-            await st2.select('m'),
-            await st3.select('m')
+            await st1.get('m'),
+            await st2.get('m'),
+            await st3.get('m')
           ];
         } catch(e) {
           return e.message;
@@ -135,12 +134,12 @@ for (let key in SifrrStorage.availableStores) {
       assert.equal(result[2].m, 'c');
     });
 
-    it(`${key}.insert works with json`, async () => {
+    it(`${key}.set works with json`, async () => {
       const result = await page.evaluate(async (key) => {
         try {
           let storage = new Sifrr.Storage(key);
-          await storage.insert('aadi', { name: { first: 'aaditya' } });
-          return storage.data();
+          await storage.set('aadi', { name: { first: 'aaditya' } });
+          return storage.all();
         } catch(e) {
           return e.message;
         }
@@ -152,15 +151,15 @@ for (let key in SifrrStorage.availableStores) {
       const result = await page.evaluate(async (key) => {
         try {
           let storage = new Sifrr.Storage(key), ans = {};
-          await storage.insert('a', 'b');
-          ans.before = await storage.select('a');
+          await storage.set('a', 'b');
+          ans.before = await storage.get('a');
           await storage.clear();
-          ans.after = await storage.select('a');
+          ans.after = await storage.get('a');
 
-          await storage.insert('a', 'b');
-          ans.before2 = await storage.select('a');
-          await storage.deleteAll();
-          ans.after2 = await storage.select('a');
+          await storage.set('a', 'b');
+          ans.before2 = await storage.get('a');
+          await storage.clear();
+          ans.after2 = await storage.get('a');
           return ans;
         } catch(e) {
           return e.message;

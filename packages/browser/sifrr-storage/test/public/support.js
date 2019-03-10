@@ -29,5 +29,5 @@ function save_indexeddb() {
 
 function save_jsonstorage() {
   let storage = new Sifrr.Storage('jsonstorage');
-  storage.insert('a', 'b');
+  storage.set('a', 'b');
 }

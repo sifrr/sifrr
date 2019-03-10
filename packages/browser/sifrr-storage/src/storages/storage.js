@@ -27,7 +27,7 @@ class Storage {
   }
 
   _select(keys) {
-    return this.data().then((data) => {
+    return this.all().then((data) => {
       let ans = {};
       keys.forEach((key) => ans[key] = data[key]);
       return ans;
@@ -84,35 +84,19 @@ class Storage {
   }
 
   all() {
-    return this.data();
-  }
-
-  data() {
     return Promise.resolve(this._parsedData());
   }
 
-  select(key) {
+  get(key) {
     return Promise.resolve(this._select(this._parseKeyValue(key)));
   }
 
-  insert(key, value) {
+  set(key, value) {
     return Promise.resolve(this._upsert(this._parseKeyValue(key, value)));
   }
 
-  update(key, value) {
-    return Promise.resolve(this._upsert(this._parseKeyValue(key, value)));
-  }
-
-  upsert(key, value) {
-    return Promise.resolve(this._upsert(this._parseKeyValue(key, value)));
-  }
-
-  delete(key) {
+  del(key) {
     return Promise.resolve(this._delete(this._parseKeyValue(key)));
-  }
-
-  deleteAll() {
-    return Promise.resolve(this._clear());
   }
 
   clear() {
