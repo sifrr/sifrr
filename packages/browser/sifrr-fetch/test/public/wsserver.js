@@ -43,7 +43,9 @@ function webSocketServer(port) {
       } else {
         res.data = { dataYouSent: message.data };
       }
+      // setTimeout(() => {
       ok = ws.send(JSON.stringify(res));
+      // }, Math.random() * 100);
       if (!ok) {
         if (ENV == 'development') global.console.log(`Message sending to websocket ${ws.id} failed:`, res);
       } else {

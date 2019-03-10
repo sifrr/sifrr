@@ -8,33 +8,24 @@
     <h1>OK</h1>
     <script src="/sifrr.fetch.js" charset="utf-8"></script>
     <script type="text/javascript">
-      function testSocket(requests, connections = 1, wsevent = 'GRAPHQL_QUERY') {
+      function testSocket(requests, connections = 1, wsevent = 'NORMAL') {
         const reqPerConn = requests / connections;
-        let k = 0, size = 0, startTime = performance.now();
+        let k = 0, size = 0, startTime = performance.now(), firstResponse;
         return new Promise(res => {
           for (let i = 0; i < connections; i++) {
-            const gql = Sifrr.Fetch.socket('ws://localhost:3333/graphql', undefined, {
-              url: 'http://localhost:3333/graphql',
+            const sock = Sifrr.Fetch.socket('ws://localhost:3333/test', undefined, {
+              url: 'http://localhost:3333/test',
               method: 'POST'
             });
             for (let j = 0; j < reqPerConn; j++) {
-              gql.send({
-                query: `query($id: Int!) {
-                    getPet(id: $id) {
-                      id
-                      name
-                      owner {
-                        id
-                        name
-                      }
-                    }
-                  }`,
-                variables: { id: 1 }
+              sock.send({
+                number: j
               }, wsevent).then((response) => {
                 size += lengthInUtf8Bytes(response);
+                if (k === 0) firstResponse = performance.now() - startTime;
+                // console.log(k, response.dataYouSent.number);
                 k++;
-                if (k === 1) window.console.log(response);
-                if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
+                if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
               });
             }
           }
@@ -42,56 +33,20 @@
       }
 
       function testFetch(requests) {
-        let startTime = performance.now();
+        let startTime = performance.now(), firstResponse;
         let k = 0, size = 0;
         return new Promise(res => {
           for (let j = 0; j < requests; j++) {
-            Sifrr.Fetch.graphql('http://localhost:2222/graphql', {
-              query: `query($id: Int!) {
-                  getPet(id: $id) {
-                    id
-                    name
-                    owner {
-                      id
-                      name
-                    }
-                  }
-                }`,
-              variables: { id: 1 }
-            }).then((response) => {
-              size += lengthInUtf8Bytes(response);
-              k++;
-              if (k === 1) window.console.log(response);
-              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
-            });
-          }
-        });
-      }
-
-      function testNormalFetch(requests) {
-        let startTime = performance.now();
-        let k = 0, size = 0;
-        return new Promise(res => {
-          for (let j = 0; j < requests; j++) {
-            Sifrr.Fetch.post('http://localhost:3333/graphql', {
+            Sifrr.Fetch.post('http://localhost:3333/test', {
               body: {
-                query: `query($id: Int!) {
-                    getPet(id: $id) {
-                      id
-                      name
-                      owner {
-                        id
-                        name
-                      }
-                    }
-                  }`,
-                variables: { id: 1 }
+                number: j
               }
             }).then((response) => {
               size += lengthInUtf8Bytes(response);
+              if (k === 0) firstResponse = performance.now() - startTime;
+              // console.log(k, response.dataYouSent.number);
               k++;
-              if (k === 1) window.console.log(response);
-              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime) });
+              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
             });
           }
         });
