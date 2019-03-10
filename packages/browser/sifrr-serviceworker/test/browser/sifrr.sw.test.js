@@ -2,6 +2,8 @@ function stubRequests() {
   page.on('request', request => {
     if (page.__post) {
       request.continue({ method: 'POST' });
+    } else if (page.__offline) {
+      request.abort();
     } else {
       request.continue();
     }
@@ -14,6 +16,7 @@ describe('sifrr-serviceworker', () => {
     // await page.setRequestInterception(true);
     // stubRequests();
     // [TODO]: Change status 404 to offline tests
+    await browser.current.defaultBrowserContext().overridePermissions(PATH, ['notifications']);
     await page.goto(`${PATH}/`);
     await page.evaluate('navigator.serviceWorker.ready');
   });
@@ -28,7 +31,7 @@ describe('sifrr-serviceworker', () => {
   });
 
   it('only response with sw when method is GET', async () => {
-    // Test when stubRequests starts working on puppeteer
+    // Test when stubRequests starts working on puppeteer with service worker
     page.__post = true;
 
     const response = await page.goto(`${PATH}/index.html`);
@@ -39,10 +42,23 @@ describe('sifrr-serviceworker', () => {
   });
 
   it('shows push notification on payload', async () => {
-    // [TODO]
-    // Can't test till https://github.com/GoogleChrome/puppeteer/issues/3432
-    // await page.evaluate(async () => await window.sendPush());
-    // const notifications = await page.evaluate('(await navigator.serviceWorker.getRegistration()).getNotifications()');
+    // [TODO] Doesn't work in headless
+    await page.goto(`${PATH}/`);
+    // await page.evaluate('window.sendPush()');
+    // await page.evaluate('window.sendPush({"title": "ok", "body": "body"})');
+    const notifications = await page.evaluate(async () => {
+      const notifs = await (await navigator.serviceWorker.getRegistration()).getNotifications();
+      return notifs.map(n => {
+        return {
+          title: n.title,
+          body: n.body
+        };
+      });
+    });
+    // expect(notifications).to.deep.equal([
+    //   { title: 'default title', body: 'default body' },
+    //   { title: 'ok', body: 'body' }
+    // ]);
   });
 
   it('has precached files in sw cache', async () => {

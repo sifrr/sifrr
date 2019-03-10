@@ -76,7 +76,7 @@
       let data = {};
 
       if (event.data) {
-        if (typeof event.data.json === 'function') data = event.data.json();else data = event.data.json;
+        if (typeof event.data.json === 'function') data = event.data.json();else data = event.data || {};
       }
 
       const title = data.title || this.defaultPushTitle;

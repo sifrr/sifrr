@@ -10,6 +10,11 @@
   <h1>OK</h1>
   <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
   <script type="text/javascript">
+    window.VAPID = {
+      public: 'BPBd/HZ3wdfWAIa8+RpovOqWbbBeogrnZ9TrGwZzrmtfoFsO3cHnLT9jsPGf7u4beErBp7SrT7gro520ictbIL8=',
+      private: 'n1dpMYSzWcfg8rRVaOILgoBH+oDrHAFULKkjMSrRjbk='
+    };
+
     function base64UrlToUint8Array(base64UrlData) {
       const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
       const base64 = (base64UrlData + padding)
@@ -30,7 +35,7 @@
           window.console.log('ServiceWorker registration successful with scope: ', registration.scope);
           registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: base64UrlToUint8Array('BA5yK_1yHG2nmv1yJoVJY51zvXauoquAbPV2EwgdAkmiiUZEQeWpSKHv5DqGJkm_WU47GHBPfDkDR6qkG7s4BUM')
+            applicationServerKey: base64UrlToUint8Array(window.VAPID.public)
           })
             .then(function(subscription) {
               window.pushSubscription = JSON.parse(JSON.stringify(subscription));
@@ -38,7 +43,8 @@
               window.console.log('User is subscribed.');
             })
             .catch(function(err) {
-              window.console.log('Failed to subscribe the user: ', err);
+              window.console.log('Failed to subscribe the user: ');
+              window.console.error(err);
             });
         }, function(err) {
           // registration failed :(
@@ -47,7 +53,7 @@
           window.send_message_to_sw = function(msg) {
             return new Promise(function(resolve, reject) {
               // Create a Message Channel
-              var msg_chan = new MessageChannel();
+              let msg_chan = new MessageChannel();
 
               // Handler for recieving message reply from service worker
               msg_chan.port1.onmessage = function(event) {
@@ -70,13 +76,11 @@
         });
       });
     }
-    window.sendPush = async function(json) {
+    window.sendPush = async function(data) {
       const event = {
-        data: {
-          json: json
-        }
+        data: data
       };
-      await window.send_message_to_sw({ type: 'push', event: event });
+      await window.send_message_to_sw({ type: 'push', event });
     };
   </script>
 </body>
