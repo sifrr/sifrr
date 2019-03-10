@@ -6,7 +6,7 @@
 }(this, function () { 'use strict';
 
   class Request {
-    constructor(url, options = {}) {
+    constructor(url, options) {
       this._options = options;
       this._url = url;
     }
