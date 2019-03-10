@@ -98,6 +98,17 @@ describe('sifrr-fetch', () => {
     expect(resp2.body).to.deep.equal({ query: 'query { hello }', variables: {} });
   });
 
+  it('posts body for ws fallback', async () => {
+    const resp = await page.evaluate(async (path) => {
+      const sock = Sifrr.Fetch.socket(`ws://localhost:0909/`, undefined, {
+        url: `${path}/test`,
+        method: 'pOsT'
+      });
+      return await sock.send('post body');
+    }, PATH);
+    expect(resp).to.deep.equal({ a: 'post body' });
+  });
+
   it('gets text if content type is not application/json', async () => {
     const resp = await getResponse('get', '/file', {}, true);
     expect(resp).to.deep.equal('abcd');

@@ -931,7 +931,7 @@ ${extra}`;
   if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
     const comment = fileHeader + timestampHeader + fileSeparator;
-    const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : '';
+    const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : null;
     const newFileContent = typeDefs.join('\n\n') + '\n';
     if (oldFileContent !== newFileContent) fs.writeFileSync(schemaPath, comment + newFileContent);
   }

@@ -2,10 +2,11 @@ process.env.NODE_PATH = require('path').join(__dirname, './node_modules');
 require('module').Module._initPaths();
 require('./config/setup')();
 
+const { reqToVariables } = require('../../src/sifrr.api');
+
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const expressGraphql = require('express-graphql');
 const { loadRoutes } = require('../../src/sifrr.api');
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize');
 let port = false;
@@ -57,11 +58,10 @@ server.use(bodyParser.urlencoded({
 // this base path is added before each route (in addition to base paths defined in individual route files)
 loadRoutes(server, path.join(__dirname, './routes'), { basePath: '/api' /* , ignore: [ 'user.js' ] */ });
 
-server.use('/graphql', expressGraphql({
-  schema: graphqlSchema,
-  graphiql: true,
-  context: { [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize), random: 1 }
-}));
+server.post('/graphql', (req, res) => {
+  const vars = reqToVariables(req, { allowed: ['query', 'variables'] });
+  etg.resolve(vars.query, vars.variables, { [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize), random: 1 }).then((resp) => res.json(resp));
+});
 
 server.get('/sifrr.fetch.js', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../../browser/sifrr-fetch/dist/sifrr.fetch.min.js'));

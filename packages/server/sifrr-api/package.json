@@ -66,15 +66,15 @@
     "dist",
     "src"
   ],
-  "peerDependencies": {
-    "graphql-sequelize": "^9.3.1",
-    "sequelize": "^4.42.0"
-  },
   "dependencies": {
     "graphql": "^14.0.2",
     "graphql-relay": "^0.6.0",
     "graphql-tools": "^4.0.3",
     "mkdirp": "^0.5.1"
+  },
+  "peerDependencies": {
+    "graphql-sequelize": "^9.3.1",
+    "sequelize": "^4.42.0"
   },
   "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
   "main": "src/sifrr.api.js",
