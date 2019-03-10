@@ -98,7 +98,7 @@ Sifrr.Dom.setup(config);
 
 ### Sifrr element
 
-**Note**: `Sifrr.Dom.load` requires [Sifrr.Fetch](../sifrr-fetch).
+**Note**: `Sifrr.Dom.load` requires Fetch API to work.
 
 #### HTML Element
 
@@ -173,7 +173,7 @@ Sifrr.Dom.register(CustomTag);
 const config = {
   baseUrl: ''
 }
-// Requires Sifrr.Fetch
+// Requires Fetch API
 Sifrr.Dom.load('custom-tag', config = { url, js: true });
 // If url is given in config, custom-tag element is loaded from that url, else
 // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html

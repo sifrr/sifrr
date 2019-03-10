@@ -58,8 +58,12 @@ window.Sifrr.Fetch = Fetch;
 
 #### GET request
 
+you can add query parameters to get request options.
+
 ```js
+options.query = { key: 'value' }
 Sifrr.Fetch.get(url, options).then((response) => {
+  // This will send request to url?key=value
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -76,7 +80,12 @@ Sifrr.Fetch.put(url, options).then((response) => {
 
 #### POST request
 
+you can add post request body parameters to post request options.
 ```js
+options.body = { key: 'value' };
+options.headers = {
+  'content-type': 'aaplication/json'
+}
 Sifrr.Fetch.post(url, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
@@ -114,6 +123,30 @@ Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' },
 ```
 
 ## Sockets
+
+**Note**: Only works with JSON messages/responses
+
+```js
+// Open a socket
+const socket = Sifrr.Fetch.socket(url, protocols, fallback /* { url: 'fallback url', method: 'fallback method' } */);
+// send a message
+socket.send(message).then(resp => {
+  // do something
+});
+
+// Server will receive data as:
+// {
+//   sifrrRequestId: Int,
+//   data: message
+// },
+// and should send back
+// {
+// sifrrRequestId: same id as received
+// data: response
+// }
+// then resp will be equal to response sent above
+
+```
 
 ## References
 
