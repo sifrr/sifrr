@@ -60,7 +60,7 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       if(this.__content) {
-        this.textContent = '';
+        if (this.childNodes.length !== 0) this.textContent = '';
         this.appendChild(this.__content);
         delete this.__content;
       }
