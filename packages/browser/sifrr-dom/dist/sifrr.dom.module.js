@@ -478,6 +478,8 @@ function update(element, stateMap) {
         temp.innerHTML = newValue.toString();
         children = temp.content.childNodes;
         isNode = true;
+      } else if (newValue instanceof NodeList) {
+        isNode = true;
       } else {
         children = Array.prototype.slice.call(newValue);
       }
