@@ -3,14 +3,14 @@
   <a href="https://github.com/sifrr/sifrr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" /></a>
   <a href="https://circleci.com/gh/sifrr/sifrr"><img src="https://circleci.com/gh/sifrr/sifrr.svg?style=shield" alt="CircleCI" /></a>
   <a href="https://www.npmjs.com/package/@sifrr/dom"><img src="https://img.shields.io/npm/v/@sifrr/dom.svg" alt="npm version" /></a>
-  <a href="./docs/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Not%20yet-red.svg" alt="No PRs yet" /></a>
+  <a href="./misc/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Not%20yet-red.svg" alt="No PRs yet" /></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_shield"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=shield" alt="FOSSA Status" /></a>
   <a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/sifrr/sifrr.svg" alt="Greenkeeper badge" /></a>
   <a href="https://coveralls.io/github/sifrr/sifrr?branch=master"><img src="https://coveralls.io/repos/github/sifrr/sifrr/badge.svg?branch=master" alt="Coverage Status" /></a>
   <a href="https://www.codacy.com/app/aadityataparia/sifrr"><img src="https://api.codacy.com/project/badge/Grade/c7e9c6f6e0734118abb68f9d59529b73" alt="Codacy Badge" /></a>
 </p>
 <p align="center">
-<a href="./docs/CHANGELOG.md">Changelog</a> | <a href="./docs/CONTRIBUTORS">Contributors</a> | <a href="./docs/CONTRIBUTING.md">Contributing guidelines</a> | <a href="./docs/CODE_OF_CONDUCT.md">Code of Conduct</a>
+<a href="./misc/CHANGELOG.md">Changelog</a> | <a href="./misc/CONTRIBUTORS">Contributors</a> | <a href="./misc/CONTRIBUTING.md">Contributing guidelines</a> | <a href="./misc/CODE_OF_CONDUCT.md">Code of Conduct</a>
 </p>
 
 * * *

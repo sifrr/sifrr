@@ -1,0 +1,1 @@
+../packages/browser/sifrr-dom/dist/sifrr.dom.js
