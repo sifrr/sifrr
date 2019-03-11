@@ -1,6 +1,7 @@
 {
   "name": "@sifrr/server",
   "version": "0.0.3",
+  "description": "Server Side Redering for any js based app as a express middleware.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,6 +12,21 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
+  "main": "src/sifrr.server.js",
+  "module": "dist/sifrr.server.module.js",
+  "keywords": [
+    "sifrr",
+    "seo",
+    "ssr",
+    "server side rendering"
+  ],
+  "scripts": {
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-server",
+    "build": "./node_modules/.bin/rollup -c",
+    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ./test/public/server.js -p 1111",
+    "test-server": "yarn test-build; yarn test-server-only"
+  },
   "dependencies": {
     "cache-manager": "^2.9.0",
     "puppeteer": "^1.13.0"
@@ -59,25 +75,9 @@
     "semantic-release": "^15.13.3",
     "sinon": "^7.2.4"
   },
-  "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-server",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ./test/public/server.js -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
-  },
   "files": [
     "bin",
     "dist",
     "src"
-  ],
-  "description": "Server Side Redering for any js based app as a express middleware.",
-  "main": "src/sifrr.server.js",
-  "module": "dist/sifrr.server.module.js",
-  "keywords": [
-    "sifrr",
-    "seo",
-    "ssr",
-    "server side rendering"
   ]
 }

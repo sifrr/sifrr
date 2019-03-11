@@ -3,6 +3,15 @@
   "version": "0.0.3",
   "description": "History API based Routing library for sifrr in browser.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sifrr/sifrr.git"
+  },
+  "author": "aadityataparia <aadityataparia@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/sifrr/sifrr/issues"
+  },
+  "homepage": "https://github.com/sifrr/sifrr",
   "main": "src/sifrr.route.js",
   "module": "dist/sifrr.route.module.js",
   "browser": "dist/sifrr.route.js",
@@ -12,6 +21,12 @@
     "opera >= 42",
     "firefox >= 63"
   ],
+  "keywords": [
+    "sifrr",
+    "route",
+    "router",
+    "sifrr element"
+  ],
   "scripts": {
     "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-route",
     "build": "./node_modules/.bin/rollup -c",
@@ -19,21 +34,6 @@
     "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-route/test/public -p 1111",
     "test-server": "yarn test-build; yarn test-server-only"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sifrr/sifrr.git"
-  },
-  "keywords": [
-    "sifrr",
-    "route",
-    "router",
-    "sifrr element"
-  ],
-  "author": "aadityataparia <aadityataparia@gmail.com>",
-  "bugs": {
-    "url": "https://github.com/sifrr/sifrr/issues"
-  },
-  "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {
     "@sifrr/dom": "0.0.3"
   },

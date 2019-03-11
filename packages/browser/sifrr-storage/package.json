@@ -1,16 +1,8 @@
 {
   "name": "@sifrr/storage",
-  "main": "src/sifrr.storage.js",
-  "browser": "dist/sifrr.storage.js",
-  "module": "dist/sifrr.storage.module.js",
   "version": "0.0.3",
+  "description": "Frontend key-value(JSON to JSON) persisted storage library",
   "license": "MIT",
-  "browserslist": [
-    "chrome >= 55",
-    "safari >= 10.1",
-    "opera >= 42",
-    "firefox >= 63"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
@@ -20,6 +12,33 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
+  "main": "src/sifrr.storage.js",
+  "module": "dist/sifrr.storage.module.js",
+  "browser": "dist/sifrr.storage.js",
+  "browserslist": [
+    "chrome >= 55",
+    "safari >= 10.1",
+    "opera >= 42",
+    "firefox >= 63"
+  ],
+  "keywords": [
+    "indexeddb",
+    "localstorage",
+    "storage",
+    "websql",
+    "json",
+    "sifrr",
+    "storage"
+  ],
+  "scripts": {
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
+    "build": "./node_modules/.bin/rollup -c",
+    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-storage/test/public -p 1111",
+    "test-server": "yarn test-build; yarn test-server-only"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-external-helpers": "^7.2.0",
@@ -63,28 +82,9 @@
     "semantic-release": "^15.13.3",
     "sinon": "^7.2.4"
   },
-  "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-storage/test/public -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
-  },
   "files": [
     "bin",
     "dist",
     "src"
-  ],
-  "peerDependencies": {},
-  "dependencies": {},
-  "description": "Frontend key-value(JSON to JSON) persisted storage library",
-  "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql",
-    "json",
-    "sifrr",
-    "storage"
   ]
 }
