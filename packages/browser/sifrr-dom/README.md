@@ -176,10 +176,8 @@ const config = {
 // Requires Fetch API
 Sifrr.Dom.load('custom-tag', config = { url, js: true });
 // If url is given in config, custom-tag element is loaded from that url, else
-// custom-tag element is loaded from ${baseUrl}/elements/custom/tag.html
-// or ${baseUrl}/elements/custom/tag.js if html gives 404
-//
-// set js to false if element file is html instead of js
+// custom-tag element is loaded from ${baseUrl}/elements/custom/tag.js (if js === true)
+// or ${baseUrl}/elements/custom/tag.html (if js === false)
 ```
 
 2.  As module - js elements only
