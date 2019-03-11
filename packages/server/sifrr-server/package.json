@@ -1,5 +1,5 @@
 {
-  "name": "@sifrr/cli",
+  "name": "@sifrr/server",
   "version": "0.0.3",
   "license": "MIT",
   "repository": {
@@ -11,6 +11,11 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
+  "dependencies": {
+    "cache-manager": "^2.9.0",
+    "puppeteer": "^1.13.0"
+  },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/plugin-external-helpers": "^7.2.0",
@@ -55,7 +60,7 @@
     "sinon": "^7.2.4"
   },
   "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-cli",
+    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-server",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ./test/public/server.js -p 1111",
@@ -66,21 +71,13 @@
     "dist",
     "src"
   ],
-  "peerDependencies": {
-    "sequelize-cli": "^5.4.0"
-  },
-  "dependencies": {
-    "mkdirp": "^0.5.1",
-    "yargs": "^13.1.0"
-  },
-  "description": "Sifrr Cli for creating web apps.",
-  "main": "src/sifrr.cli.js",
-  "bin": {
-    "sifrr": "./src/sifrr.cli"
-  },
+  "description": "Server Side Redering for any js based app as a express middleware.",
+  "main": "src/sifrr.server.js",
+  "module": "dist/sifrr.server.module.js",
   "keywords": [
     "sifrr",
-    "cli"
-  ],
-  "module": "dist/sifrr.cli.module.js"
+    "seo",
+    "ssr",
+    "server side rendering"
+  ]
 }
