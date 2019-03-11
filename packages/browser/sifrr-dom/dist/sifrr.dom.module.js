@@ -693,7 +693,7 @@ function elementClassFactory(baseClass) {
     constructor() {
       super();
       if (this.constructor.ctemp) {
-        this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        this.state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         this._refs = collect$2(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
@@ -722,16 +722,13 @@ function elementClassFactory(baseClass) {
     onDisconnect() {}
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
-        this.state = JSON.parse(newVal);
+        this.setState(JSON.parse(newVal));
       }
       this.onAttributeChange(attrName, oldVal, newVal);
     }
     onAttributeChange() {}
-    get state() {
-      return this._state;
-    }
-    set state(v) {
-      if (this._state !== v) Object.assign(this._state, v);
+    setState(v) {
+      if (this.state !== v) Object.assign(this.state, v);
       this.update();
       this.onStateChange();
     }
@@ -747,11 +744,11 @@ function elementClassFactory(baseClass) {
     }
     sifrrClone(state) {
       const clone = this.cloneNode(false);
-      clone._state = Object.assign({}, this.constructor.defaultState, state);
+      clone.setState(state);
       return clone;
     }
     clearState() {
-      this._state = {};
+      this.state = {};
       this.update();
     }
     $(args, sr = true) {
