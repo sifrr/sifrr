@@ -255,8 +255,8 @@ will render to
 
 ```js
 const customtag = window.querySelector('custom-tag');
-customtag.state = { id: 2, attr: 'xyz' }
-// Note: doing `customtag.state.id = 2` doesn't work
+customtag.setState({ id: 2, attr: 'xyz' })
+// Note: if you do `customtag.state.id = 2`, you will have to `customtag.update()` to update bindings
 ```
 
 This will change custom-tag to
