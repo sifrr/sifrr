@@ -169,7 +169,7 @@
   }
   function makeEqual(oldNode, newNode) {
     if (!newNode.nodeType) {
-      if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
+      if (!shallowEqual(oldNode._state, newNode)) oldNode.setState(newNode);
       return oldNode;
     }
     if (oldNode.nodeName !== newNode.nodeName) {
@@ -180,7 +180,7 @@
       if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
       return oldNode;
     }
-    if (newNode.state) oldNode.state = newNode.state;
+    if (newNode.state) oldNode.setState(newNode.state);
     const oldAttrs = oldNode.attributes,
           newAttrs = newNode.attributes;
     for (let i = newAttrs.length - 1; i >= 0; --i) {
@@ -834,15 +834,15 @@
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
     const value = target.value || target.textContent;
-    let state = {};
     if (!target._root) {
       let root;
       root = target;
       while (root && !root.isSifrr) root = root.parentNode || root.host;
       if (root) target._root = root;else target._root = null;
     }
-    state[target.getAttribute('data-sifrr-bind')] = value;
-    if (target._root) target._root.state = state;
+    if (target._root) target._root.setState({
+      [target.getAttribute('data-sifrr-bind')]: value
+    });
   };
 
   const SYNTHETIC_EVENTS = {};

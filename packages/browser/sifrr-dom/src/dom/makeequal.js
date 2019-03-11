@@ -41,7 +41,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
+    if (!shallowEqual(oldNode._state, newNode)) oldNode.setState(newNode);
     return oldNode;
   }
 
@@ -57,7 +57,7 @@ function makeEqual(oldNode, newNode) {
   }
 
   // copy sifrr state
-  if (newNode.state) oldNode.state = newNode.state;
+  if (newNode.state) oldNode.setState(newNode.state);
 
   // copy Attributes
   const oldAttrs = oldNode.attributes, newAttrs = newNode.attributes;
