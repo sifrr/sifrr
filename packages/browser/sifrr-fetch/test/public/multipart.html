@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <form name=form"" id="form">
+      <input type="text" name="name" value="Aaditya">
+      <input type="file" name="file" accept="image/png, image/jpeg">
+      <input type="file" name="file2" accept="*/*">
+      <button type="submit" name="submit">Submit</button>
+    </form>
+    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      const form = document.querySelector('#form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const data = new FormData();
+        for (let i in form.elements) {
+          const elem = form.elements[i];
+          if (elem.tagName !== 'INPUT') continue;
+          if (elem.name.indexOf('file') > -1) {
+            data.append(elem.name, elem.files[0]);
+          } else {
+            data.append(elem.name, elem.value);
+          }
+        }
+        Sifrr.Fetch.post('/what', {
+          body: data
+        });
+      };
+    </script>
+  </body>
+</html>

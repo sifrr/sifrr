@@ -72,7 +72,7 @@ class Request {
     options.headers = Object.assign({
       accept: 'application/json'
     }, this._options.headers || {});
-    if (typeof options.body === 'object') {
+    if (options.body && options.body.constructor === ({}).constructor) {
       options.body = JSON.stringify(options.body);
     }
     return options;
