@@ -8,7 +8,7 @@
     onConnect() {
       const me = this;
       Sifrr.Fetch.get('https://jsonplaceholder.typicode.com/todos').then(resp => {
-        setTimeout(() => me.state = { todos: resp }, 2000);
+        setTimeout(() => me.setState({  todos: resp  }), 2000);
       });
     }
   }

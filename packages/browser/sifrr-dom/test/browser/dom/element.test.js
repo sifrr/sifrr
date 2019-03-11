@@ -148,8 +148,8 @@ describe('Sifrr.Dom.Element', () => {
     it('merges old and new states', async () => {
       const state = await page.evaluate(() => {
         const el = document.createElement('element-nods-sr');
-        el.state = { a: 'b' };
-        el.state = { c: 'd' };
+        el.setState({  a: 'b'  });
+        el.setState({  c: 'd'  });
         return el.state;
       });
 
@@ -164,7 +164,7 @@ describe('Sifrr.Dom.Element', () => {
     it('clears state', async () => {
       const state = await page.evaluate(() => {
         const el = document.createElement('element-nods-sr');
-        el.state = { a: 'b' };
+        el.setState({  a: 'b'  });
         el.clearState();
         return el.state;
       });

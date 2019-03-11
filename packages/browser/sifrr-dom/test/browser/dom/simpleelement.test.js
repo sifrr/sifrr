@@ -23,11 +23,11 @@ describe('Sifrr.Dom.SimpleElement', () => {
 
   it('renders again when state is changed', async () => {
     /* eslint-disable no-undef */
-    await page.evaluate(() => { seState.state = { p: 'new' }; return seState.innerHTML; });
+    await page.evaluate(() => { seState.setState({  p: 'new'  }); return seState.innerHTML; });
     // double render shouldn't change anything
-    const inner = await page.evaluate(() => { seState.state = { p: 'new' }; return seState.innerHTML; });
-    const data = await page.evaluate(() => { seTextState.state = { text: 'newyay' }; return seTextState.data; });
-    const nulled = await page.evaluate(() => { seState.state = { p: null }; return seState.innerHTML; });
+    const inner = await page.evaluate(() => { seState.setState({  p: 'new'  }); return seState.innerHTML; });
+    const data = await page.evaluate(() => { seTextState.setState({  text: 'newyay'  }); return seTextState.data; });
+    const nulled = await page.evaluate(() => { seState.setState({  p: null  }); return seState.innerHTML; });
     /* eslint-enable no-undef */
 
     expect(inner).to.eq('new');
@@ -38,7 +38,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
   it('works with attributes', async () => {
     /* eslint-disable no-undef */
     const state = await page.evaluate(() => {
-      seAttr.state = { attr: 'attrvalue', class: 'cls' };
+      seAttr.setState({  attr: 'attrvalue', class: 'cls'  });
       return {
         attr: seAttr.querySelector('p').dataset.attr,
         class: seAttr.querySelector('p').className
@@ -55,7 +55,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
   it('Negative state attributes are removed', async () => {
     /* eslint-disable no-undef */
     const hasClass = await page.evaluate(() => {
-      seAttr.state = { class: null };
+      seAttr.setState({  class: null  });
       return seAttr.querySelector('p').hasAttribute('class');
     });
     /* eslint-enable no-undef */
@@ -67,7 +67,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     /* eslint-disable no-undef */
     const same = await page.evaluate(() => {
       const span1 = seExtra.querySelector('span');
-      seExtra.state = { p: 'new' };
+      seExtra.setState({  p: 'new'  });
       const span2 = seExtra.querySelector('span');
       return span1 === span2;
     });
@@ -149,7 +149,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     it("doesn't update original when clone is updated", async () => {
       /* eslint-disable no-undef */
       const same = await page.evaluate(() => {
-        seClone.state = { some: 'cloned' };
+        seClone.setState({  some: 'cloned'  });
 
         return {
           stateEqual: seClone.state === seComplex.state,

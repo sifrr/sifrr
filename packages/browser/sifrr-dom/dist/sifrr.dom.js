@@ -813,7 +813,7 @@
       }
       sifrrClone(state) {
         const clone = this.cloneNode(false);
-        clone.setState(state);
+        clone.state = state;
         return clone;
       }
       clearState() {

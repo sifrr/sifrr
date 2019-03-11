@@ -1,5 +1,5 @@
 function setState(state) {
-  return page.$eval('sifrr-update', (el, st) => el.state = st, state);
+  return page.$eval('sifrr-update', (el, st) => el.setState(st), state);
 }
 
 async function asyncForEach(array, callback) {
@@ -84,11 +84,11 @@ describe('Update and updateAttribute', () => {
     const res = await page.evaluate(() => {
       const newrow = document.createElement('tr', { is: 'sifrr-row' });
       newrow.id = 'row';
-      newrow.state = {
+      newrow.setState({
         id: 2,
         label: 'new'
-      };
-      window.su.state = { row: newrow };
+      });
+      window.su.setState({  row: newrow  });
       return {
         sameRow: window.row === window.su.$('#row'),
         state: window.su.$('#row').state
