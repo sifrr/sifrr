@@ -52,17 +52,16 @@ Browser packages have standalone distribution as well, which can be used directl
 
 ### Packages that have tests have a working example of that package in `test/public` folder
 
-## Node support
+## Node support (server packages and development)
 
-Sifrr officially supports node v8 (Maintanence), v10 (LTS), v11 (current). Other versions might work.
+Sifrr officially supports node v10 (LTS), v11 (current). Other versions might work for some packages.
 
 | Node Version | CI                                                                                                                       |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
 | v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
 | v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
-| v8           | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/3)](https://travis-ci.org/sifrr/sifrr) |
 
-## Browser Support
+## Browser Support (browser packages)
 
 Sifrr browser packages officially supports these browser versions (for dist files):
 
