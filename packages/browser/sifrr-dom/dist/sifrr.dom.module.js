@@ -145,17 +145,14 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
     }
     while(i < newL) {
       item = newChildren[i];
-      if (!item.nodeType) item = createFn(item);
-      parent.appendChild(item);
+      parent.appendChild(item.nodeType ? item : createFn(item));
       i++;
     }
   }
 }
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode._state, newNode)) {
-      oldNode.state = newNode;
-    }
+    if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
   if (oldNode.nodeName !== newNode.nodeName) {
@@ -462,8 +459,8 @@ function update(element, stateMap) {
     if (data.type === 3) {
       let key;
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
-        makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone, key);
-      } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone);
+        makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone.bind(data.se), key);
+      } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
       let children, isNode = false;
       if (Array.isArray(newValue)) {
@@ -858,6 +855,9 @@ SifrrDom.twoWayBind = twowaybind;
 SifrrDom.Loader = loader;
 SifrrDom.SimpleElement = simpleelement;
 SifrrDom.Event = event_1;
+SifrrDom.makeChildrenEqual = makeequal.makeChildrenEqual;
+SifrrDom.makeChildrenEqualKeyed = keyed.makeChildrenEqualKeyed;
+SifrrDom.makeEqual = makeequal.makeEqual;
 SifrrDom.template = template;
 SifrrDom.register = (Element, options) => {
   Element.useSR = SifrrDom.config.useShadowRoot;

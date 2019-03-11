@@ -60,8 +60,8 @@ function update(element, stateMap) {
       let key;
       // eslint-disable-next-line no-inner-declarations
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
-        makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone, key);
-      } else makeChildrenEqual(dom, newValue, data.se.sifrrClone);
+        makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone.bind(data.se), key);
+      } else makeChildrenEqual(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
       // html node
       let children, isNode = false;

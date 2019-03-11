@@ -37,8 +37,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
     // Add extra new children
     while(i < newL) {
       item = newChildren[i];
-      if (!item.nodeType) item = createFn(item);
-      parent.appendChild(item);
+      parent.appendChild(item.nodeType ? item : createFn(item));
       i++;
     }
   }
@@ -46,9 +45,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode._state, newNode)) {
-      oldNode.state = newNode;
-    }
+    if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
 

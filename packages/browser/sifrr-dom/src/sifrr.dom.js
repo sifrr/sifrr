@@ -11,6 +11,9 @@ SifrrDom.twoWayBind = require('./dom/twowaybind');
 SifrrDom.Loader = require('./dom/loader');
 SifrrDom.SimpleElement = require('./dom/simpleelement');
 SifrrDom.Event = require('./dom/event');
+SifrrDom.makeChildrenEqual = require('./dom/makeequal').makeChildrenEqual;
+SifrrDom.makeChildrenEqualKeyed = require('./dom/keyed').makeChildrenEqualKeyed;
+SifrrDom.makeEqual = require('./dom/makeequal').makeEqual;
 
 // HTML to template
 SifrrDom.template = require('./dom/template');
