@@ -36,17 +36,14 @@
     } else node = this.nextNode();
     return node;
   };
-  function collect(element, stateMap, next = 'nextFilteredNode') {
-    const refs = [],
-          l = stateMap.length;
-    let node = TREE_WALKER.currentNode = element,
-        n;
-    for (let i = 0; i < l; i++) {
+  function collect(node, stateMap, next = 'nextFilteredNode') {
+    const l = stateMap.length,
+          refs = new Array(l);
+    TREE_WALKER.currentNode = node;
+    for (let i = 0, n; i < l; i++) {
       n = stateMap[i].idx;
-      while (--n) {
-        node = TREE_WALKER[next]();
-      }
-      refs.push(node);
+      while (--n) TREE_WALKER[next]();
+      refs[i] = TREE_WALKER.currentNode;
     }
     return refs;
   }
@@ -152,26 +149,21 @@
         head = parent.firstChild,
         curNewChild = newChildren[0];
     if (isNode) {
-      while (head) {
-        item = curNewChild.nextSibling;
-        head = makeEqual(head, curNewChild).nextSibling;
-        curNewChild = item;
-      }
       while (curNewChild) {
         item = curNewChild.nextSibling;
-        parent.appendChild(curNewChild);
+        if (head) {
+          head = makeEqual(head, curNewChild).nextSibling;
+        } else {
+          parent.appendChild(curNewChild);
+        }
         curNewChild = item;
       }
     } else {
-      let i = 0;
-      while (head) {
-        head = makeEqual(head, newChildren[i]).nextSibling;
-        i++;
-      }
-      while (i < newL) {
-        item = newChildren[i];
-        parent.appendChild(item.nodeType ? item : createFn(item));
-        i++;
+      for (let i = 0; i < newL; i++) {
+        if (head) head = makeEqual(head, newChildren[i]).nextSibling;else {
+          item = newChildren[i];
+          parent.appendChild(item.nodeType ? item : createFn(item));
+        }
       }
     }
   }
@@ -556,20 +548,15 @@
       return content;
     }
     const stateMap = create$1(content, creator_1, defaultState);
-    const stateProps = {
-      get: function () {
-        return this._state;
-      },
-      set: function (v) {
-        Object.assign(this._state, v);
-        update_1(this, stateMap);
-      }
-    };
+    function setState(v) {
+      Object.assign(this.state, v);
+      update_1(this, stateMap);
+    }
     content.sifrrClone = function (newState) {
       const clone = content.cloneNode(true);
       clone._refs = collect$1(clone, stateMap, 'nextNode');
-      clone._state = Object.assign({}, defaultState, newState);
-      Object.defineProperty(clone, 'state', stateProps);
+      clone.state = Object.assign({}, defaultState, newState);
+      clone.setState = setState;
       update_1(clone, stateMap);
       return clone;
     };

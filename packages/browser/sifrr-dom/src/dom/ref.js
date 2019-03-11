@@ -15,15 +15,13 @@ TREE_WALKER.nextFilteredNode = function() {
   return node;
 };
 
-function collect(element, stateMap, next = 'nextFilteredNode') {
-  const refs = [], l = stateMap.length;
-  let node = TREE_WALKER.currentNode = element, n;
-  for (let i = 0; i < l; i++) {
+function collect(node, stateMap, next = 'nextFilteredNode') {
+  const l = stateMap.length, refs = new Array(l);
+  TREE_WALKER.currentNode = node;
+  for (let i = 0, n; i < l; i++) {
     n = stateMap[i].idx;
-    while(--n) {
-      node = TREE_WALKER[next]();
-    }
-    refs.push(node);
+    while(--n) TREE_WALKER[next]();
+    refs[i] = TREE_WALKER.currentNode;
   }
   return refs;
 }

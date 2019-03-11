@@ -24,19 +24,16 @@ function SimpleElement(content, defaultState = null) {
   }
   const stateMap = create(content, creator, defaultState);
 
-  const stateProps = {
-    get: function() { return this._state; },
-    set: function(v) {
-      Object.assign(this._state, v);
-      update(this, stateMap);
-    }
-  };
+  function setState(v) {
+    Object.assign(this.state, v);
+    update(this, stateMap);
+  }
 
   content.sifrrClone = function(newState) {
     const clone = content.cloneNode(true);
     clone._refs = collect(clone, stateMap, 'nextNode');
-    clone._state = Object.assign({}, defaultState, newState);
-    Object.defineProperty(clone, 'state', stateProps);
+    clone.state = Object.assign({}, defaultState, newState);
+    clone.setState = setState;
     update(clone, stateMap);
     return clone;
   };
