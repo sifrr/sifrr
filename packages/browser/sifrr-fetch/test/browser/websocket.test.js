@@ -84,6 +84,6 @@ describe('websockets', () => {
     });
 
     expect(result.total).to.equal(1000);
-    expect(result.time).to.be.at.most(300);
+    expect(result.time).to.be.at.most(400);
   });
 });
