@@ -109,8 +109,8 @@ function elementClassFactory(baseClass) {
       else return true;
     }
 
-    sifrrClone(deep = false, state) {
-      const clone = this.cloneNode(deep);
+    sifrrClone(state) {
+      const clone = this.cloneNode(false);
       clone._state = Object.assign({}, this.constructor.defaultState, state);
       return clone;
     }

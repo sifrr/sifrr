@@ -513,8 +513,8 @@
       if (data.type === 3) {
         let key;
         if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
-          makeChildrenEqualKeyed$1(dom, newValue, state => data.se.sifrrClone(undefined, state), key);
-        } else makeChildrenEqual$1(dom, newValue, state => data.se.sifrrClone(undefined, state));
+          makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone, key);
+        } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone);
       } else {
         let children,
             isNode = false;
@@ -568,8 +568,8 @@
         update_1(this, stateMap);
       }
     };
-    content.sifrrClone = function (deep = true, newState) {
-      const clone = content.cloneNode(deep);
+    content.sifrrClone = function (newState) {
+      const clone = content.cloneNode(true);
       clone._refs = collect$1(clone, stateMap, 'nextNode');
       clone._state = Object.assign({}, defaultState, newState);
       Object.defineProperty(clone, 'state', stateProps);
@@ -830,8 +830,8 @@
       isSifrr(name = null) {
         if (name) return name === this.constructor.elementName;else return true;
       }
-      sifrrClone(deep = false, state) {
-        const clone = this.cloneNode(deep);
+      sifrrClone(state) {
+        const clone = this.cloneNode(false);
         clone._state = Object.assign({}, this.constructor.defaultState, state);
         return clone;
       }
