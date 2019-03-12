@@ -77,7 +77,7 @@ function webSocketServer(port) {
         stream.pipe(busb);
         const response = {};
         busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-          response[fieldname] = {
+          const resp = {
             type: 'file',
             filename,
             encoding,
@@ -85,10 +85,16 @@ function webSocketServer(port) {
             size: 0
           };
           file.on('data', function(data) {
-            response[fieldname].size += data.length;
+            resp.size += data.length;
           });
           file.on('end', function() {
-
+            if (Array.isArray(response[fieldname])) {
+              response[fieldname].push(resp);
+            } else if (response[fieldname]) {
+              response[fieldname] = [response[fieldname], resp];
+            }  else {
+              response[fieldname] = resp;
+            }
           });
         });
         busb.on('field', function(fieldname, val) {

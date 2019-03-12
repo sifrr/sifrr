@@ -8,8 +8,8 @@
     <h1>OK</h1>
     <form name=form"" id="form">
       <input type="text" name="name" value="Aaditya">
-      <input type="file" name="file" accept="image/png, image/jpeg">
-      <input type="file" name="file2" accept="*/*">
+      <input type="file" name="file" accept="image/png, image/jpeg" required>
+      <input type="file" name="file2" accept="*/*" multiple>
       <button type="submit" name="submit">Submit</button>
     </form>
     <pre id="response">
@@ -23,8 +23,12 @@
         for (let i in form.elements) {
           const elem = form.elements[i];
           if (elem.tagName !== 'INPUT') continue;
-          if (elem.name.indexOf('file') > -1) {
+          if (elem.name === 'file') {
             data.append(elem.name, elem.files[0]);
+          } else if (elem.name === 'file2') {
+            for (let i = 0; i < elem.files.length; i++) {
+              data.append('file2', elem.files[i]);
+            }
           } else {
             data.append(elem.name, elem.value);
           }
