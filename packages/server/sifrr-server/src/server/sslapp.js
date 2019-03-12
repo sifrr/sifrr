@@ -1,8 +1,10 @@
 const uWS = require('uWebSockets.js');
+const BaseApp = require('./baseapp');
 
-class SSLApp extends uWS.SSLApp {
+class SSLApp extends BaseApp {
   constructor(options) {
-    super(options);
+    super();
+    this._app = uWS.SSLApp(options);
   }
 }
 

@@ -1,17 +1,3 @@
-/*! Sifrr.Server v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-import uWebSockets from 'uWebSockets.js';
-import fs from 'fs';
-import path from 'path';
-
-var delegate = (fxns, proto, delTo) => {
-  fxns.forEach(fxn => {
-    proto[fxn] = function () {
-      this[delTo][fxn](...arguments);
-      return this;
-    };
-  });
-};
-
 const DEFAULT_EXT = 'application/octet-stream';
 const extTypes = {
   '3gp' : 'video/3gpp',
@@ -180,76 +166,7 @@ const extTypes = {
   yml   : 'text/yaml',
   zip   : 'application/zip'
 };
-var ext = (path) => {
+module.exports = (path) => {
   const i = path.lastIndexOf('.');
   return extTypes[path.substr(i + 1).toLowerCase()] || DEFAULT_EXT;
 };
-
-const errHandler = (err) => { throw err; };
-class BaseApp {
-  file(folder, base = folder) {
-    fs.readdirSync(folder).forEach(file => {
-      const filePath = path.join(folder, file);
-      if (fs.statSync(filePath).isDirectory()) {
-        this.file(filePath, base);
-      } else {
-        this._app.get('/' + path.relative(base, filePath), (res, req) => {
-          this._getFile(res, req, filePath);
-        });
-      }
-    });
-    return this;
-  }
-  _getFile(res, req, filePath) {
-    res.onAborted(errHandler);
-    res.writeHeader('content-type', ext(filePath));
-    const src = fs.createReadStream(filePath);
-    src.on('data', (chunk) => res.write(chunk));
-    src.on('end', () => res.end());
-    src.on('error', errHandler);
-  }
-}
-const methods = [
-  'any',
-  'connect',
-  'del',
-  'get',
-  'head',
-  'listen',
-  'options',
-  'patch',
-  'post',
-  'put',
-  'trace',
-  'ws',
-];
-delegate(methods, BaseApp.prototype, '_app');
-var baseapp = BaseApp;
-
-class App extends baseapp {
-  constructor(options) {
-    super();
-    this._app = uWebSockets.App(options);
-  }
-}
-var app = App;
-
-class SSLApp extends baseapp {
-  constructor(options) {
-    super();
-    this._app = uWebSockets.SSLApp(options);
-  }
-}
-var sslapp = SSLApp;
-
-var sifrr_server = {
-  App: app,
-  SSLApp: sslapp
-};
-var sifrr_server_1 = sifrr_server.App;
-var sifrr_server_2 = sifrr_server.SSLApp;
-
-export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp };
-/*! (c) @aadityataparia */
-//# sourceMappingURL=sifrr.server.module.js.map
