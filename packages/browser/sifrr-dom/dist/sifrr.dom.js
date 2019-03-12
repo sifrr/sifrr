@@ -641,7 +641,7 @@
       };
       for (let i = 0; i < l; i++) {
         const attribute = attrs[i];
-        if (attribute.name[0] === '_') {
+        if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
           attrStateMap.events[attribute.name] = getBindingFxns$1(attribute.value);
         } else if (attribute.value.indexOf('${') >= 0) {
           const binding = getStringBindingFxn(attribute.value);

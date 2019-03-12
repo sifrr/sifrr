@@ -45,7 +45,7 @@ function creator(el, filter, defaultState) {
     const attrStateMap = { events: {} };
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.name[0] === '_') {
+      if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
         attrStateMap.events[attribute.name] = getBindingFxns(attribute.value);
       } else if (attribute.value.indexOf('${') >= 0) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
