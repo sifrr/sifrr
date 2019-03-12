@@ -16,9 +16,9 @@ var constants = {
 };
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-const { HTML_ATTR, TEXT_NODE } = constants;
+const { HTML_ATTR, TEXT_NODE, REPEAT_ATTR } = constants;
 function isHtml(el) {
-  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
+  return el.hasAttribute && (el.hasAttribute(HTML_ATTR) || el.hasAttribute(REPEAT_ATTR));
 }
 TREE_WALKER.nextFilteredNode = function() {
   let node = this.currentNode;
@@ -535,7 +535,7 @@ var repeatref = (sm, el, attr) => {
   el.removeAttribute(attr);
 };
 
-const { TEXT_NODE: TEXT_NODE$2, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, REPEAT_ATTR } = constants;
+const { TEXT_NODE: TEXT_NODE$2, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, REPEAT_ATTR: REPEAT_ATTR$1 } = constants;
 const { getBindingFxns: getBindingFxns$1, getStringBindingFxn } = bindings;
 function creator(el, filter, defaultState) {
   if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
@@ -563,8 +563,8 @@ function creator(el, filter, defaultState) {
         sm.type = 2;
         sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
-    } else if (el.hasAttribute(REPEAT_ATTR)) {
-      repeatref(sm, el, REPEAT_ATTR);
+    } else if (el.hasAttribute(REPEAT_ATTR$1)) {
+      repeatref(sm, el, REPEAT_ATTR$1);
     }
     const attrs = el.attributes, l = attrs.length;
     const attrStateMap = { events: {} };

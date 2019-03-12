@@ -1,10 +1,10 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 
 const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-const { HTML_ATTR, TEXT_NODE } = require('./constants');
+const { HTML_ATTR, TEXT_NODE, REPEAT_ATTR } = require('./constants');
 
 function isHtml(el) {
-  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
+  return el.hasAttribute && (el.hasAttribute(HTML_ATTR) || el.hasAttribute(REPEAT_ATTR));
 }
 
 TREE_WALKER.nextFilteredNode = function() {
