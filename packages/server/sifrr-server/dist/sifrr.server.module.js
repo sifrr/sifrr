@@ -208,6 +208,18 @@ class BaseApp {
     src.on('end', () => res.end());
     src.on('error', errHandler);
   }
+  listen(p, cb) {
+    this._app.listen(p, (socket) => {
+      this._socket = socket;
+      cb(socket);
+    });
+  }
+  close() {
+    if (this._socket) {
+      uWebSockets.us_listen_socket_close(this._socket);
+      this._socket = null;
+    }
+  }
 }
 const methods = [
   'any',

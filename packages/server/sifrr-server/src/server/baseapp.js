@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const ext = require('./ext');
 const errHandler = (err) => { throw err; };
+const uWS = require('uWebSockets.js');
 
 class BaseApp {
   file(folder, base = folder) {
@@ -26,6 +27,20 @@ class BaseApp {
     src.on('data', (chunk) => res.write(chunk));
     src.on('end', () => res.end());
     src.on('error', errHandler);
+  }
+
+  listen(p, cb) {
+    this._app.listen(p, (socket) => {
+      this._socket = socket;
+      cb(socket);
+    });
+  }
+
+  close() {
+    if (this._socket) {
+      uWS.us_listen_socket_close(this._socket);
+      this._socket = null;
+    }
   }
 }
 
