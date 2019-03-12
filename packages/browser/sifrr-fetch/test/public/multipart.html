@@ -12,6 +12,8 @@
       <input type="file" name="file2" accept="*/*">
       <button type="submit" name="submit">Submit</button>
     </form>
+    <pre id="response">
+    </pre>
     <script src="/sifrr.fetch.js" charset="utf-8"></script>
     <script type="text/javascript">
       const form = document.querySelector('#form');
@@ -27,8 +29,10 @@
             data.append(elem.name, elem.value);
           }
         }
-        Sifrr.Fetch.post('/what', {
+        Sifrr.Fetch.post('http://localhost:3333/what', {
           body: data
+        }).then(resp => {
+          document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
         });
       };
     </script>

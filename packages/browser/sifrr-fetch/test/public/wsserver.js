@@ -11,6 +11,8 @@ global.ENV = port ? 'development' : 'test';
 const uWS = require('uWebSockets.js');
 const fs = require('fs');
 const path = require('path');
+const Busboy = require('busboy');
+const Duplex = require('stream').Duplex;
 
 function webSocketServer(port) {
   const connections = {};
@@ -58,12 +60,49 @@ function webSocketServer(port) {
     close: (ws, code, message) => {
       global.console.log(`WebSocket ${ws.id} closed: ${parseBuffer(message)}`);
     }
-  }).post('/*', (res) => {
+  }).post('/*', (res, req) => {
+    const contType = req.getHeader('content-type');
     res.writeHeader('Access-Control-Allow-Origin', '*');
     res.writeHeader('Content-Type', 'application/json');
-    readJson(res, (obj) => {
-      res.end(JSON.stringify({ dataYouSent: obj }));
-    });
+    if (contType === 'application/json') {
+      readData(res, (obj) => {
+        res.end(JSON.stringify({ dataYouSent: JSON.parse(obj) }));
+      });
+    } else {
+      const busb = new Busboy({ headers: { 'content-type': contType } });
+      readData(res, (obj) => {
+        let stream = new Duplex();
+        stream.push(obj);
+        stream.push(null);
+        stream.pipe(busb);
+        const response = {};
+        busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
+          response[fieldname] = {
+            type: 'file',
+            filename,
+            encoding,
+            mimetype,
+            size: 0
+          };
+          file.on('data', function(data) {
+            response[fieldname].size += data.length;
+          });
+          file.on('end', function() {
+
+          });
+        });
+        busb.on('field', function(fieldname, val) {
+          response[fieldname] = {
+            type: 'field',
+            value: val
+          };
+        });
+        busb.on('finish', function() {
+          res.writeHeader('content-type', 'application/json');
+          res.end(JSON.stringify(response));
+        });
+      }, global.console.error);
+    }
   }).listen(port, (socket) => {
     if (socket) {
       app.socket = socket;
@@ -86,31 +125,16 @@ function parseBuffer(buf) {
 }
 
 /* Helper function for reading a posted JSON body */
-function readJson(res, cb, err) {
+function readData(res, cb, err) {
   let buffer;
   /* Register data cb */
   res.onData((ab, isLast) => {
     let chunk = Buffer.from(ab);
     if (isLast) {
-      let json;
       if (buffer) {
-        try {
-          json = JSON.parse(Buffer.concat([buffer, chunk]));
-        } catch (e) {
-          /* res.close calls onAborted */
-          res.close();
-          return;
-        }
-        cb(json);
+        cb(Buffer.concat([buffer, chunk]));
       } else {
-        try {
-          json = JSON.parse(chunk);
-        } catch (e) {
-          /* res.close calls onAborted */
-          res.close();
-          return;
-        }
-        cb(json);
+        cb(chunk);
       }
     } else {
       if (buffer) {
