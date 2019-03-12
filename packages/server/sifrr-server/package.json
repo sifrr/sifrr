@@ -28,8 +28,7 @@
     "test-server": "yarn test-build; yarn test-server-only"
   },
   "dependencies": {
-    "cache-manager": "^2.9.0",
-    "puppeteer": "^1.13.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.5.0"
   },
   "peerDependencies": {},
   "devDependencies": {

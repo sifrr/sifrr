@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const repl = require('repl');
+const Server = require('../src/sifrr.server');
+
+repl.start('sifrr-server> ').context.Sifrr = { Server };
