@@ -134,19 +134,19 @@ storage.del(['a', 'c']).then(() => {/* Do something here */});
 
 `.set()` will update the value.
 
+### Get all data in table
+
+```js
+storage.all().then((data) => console.log(data)); // > { key: { value: 'value' }, a: 'b', c: { d: 'e' } }
+```
+
 ### Clear table
 
 ```js
 storage.clear().then(() => {
-  // checking if value is deleted
-  storage.get('key').then((v) => console.log(v)); // > {}
+  // checking if data is deleted
+  storage.all().then((data) => console.log(data)); // > {}
 });
-```
-
-### Get all data in table
-
-```js
-storage.all().then((data) => console.log(data)); // > { key: { upValue: 'up' }, a: 'bup', c: { dup: 'eup' } }
 ```
 
 ### Get all created storage instances
