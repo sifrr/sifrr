@@ -124,4 +124,36 @@ function replaceAndRemove() {
   return document.body.$('main-element').$$('tr').length === 950;
 }
 
-module.exports = [swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, updateAll, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];
+function addInFront() {
+  const data = document.body.$('main-element').state.data;
+  document.body.$('main-element').state.data = window.buildData(45).concat(data);
+  document.body.$('main-element').update();
+
+  return document.body.$('main-element').$$('tr').length === 1045;
+}
+
+function addInBack() {
+  const data = document.body.$('main-element').state.data;
+  document.body.$('main-element').state.data = data.concat(window.buildData(45));
+  document.body.$('main-element').update();
+
+  return document.body.$('main-element').$$('tr').length === 1045;
+}
+
+function removeInFront() {
+  const data = document.body.$('main-element').state.data;
+  data.splice(0, 50);
+  document.body.$('main-element').update();
+
+  return document.body.$('main-element').$$('tr').length === 950;
+}
+
+function removeInBack() {
+  const data = document.body.$('main-element').state.data;
+  data.splice(950, 50);
+  document.body.$('main-element').update();
+
+  return document.body.$('main-element').$$('tr').length === 950;
+}
+
+module.exports = [addInFront, addInBack, removeInFront, removeInBack, swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, updateAll, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];

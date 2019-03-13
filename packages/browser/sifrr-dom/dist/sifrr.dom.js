@@ -24,11 +24,10 @@
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   const {
     HTML_ATTR,
-    TEXT_NODE,
-    REPEAT_ATTR
+    TEXT_NODE
   } = constants;
   function isHtml(el) {
-    return el.hasAttribute && (el.hasAttribute(HTML_ATTR) || el.hasAttribute(REPEAT_ATTR));
+    return el.hasAttribute && el.hasAttribute(HTML_ATTR);
   }
   TREE_WALKER.nextFilteredNode = function () {
     let node = this.currentNode;
@@ -297,7 +296,7 @@
       if (newStart <= newEnd) {
         while (newStart <= newEnd) {
           _node = createFn(newData[newStart]);
-          parent.insertBefore(_node, prevEndNode.nextSibling);
+          parent.insertBefore(_node, finalNode);
           prevEndNode = _node;
           newStart++;
         }
@@ -599,7 +598,7 @@
     TEXT_NODE: TEXT_NODE$2,
     COMMENT_NODE: COMMENT_NODE$1,
     ELEMENT_NODE,
-    REPEAT_ATTR: REPEAT_ATTR$1
+    REPEAT_ATTR
   } = constants;
   const {
     getBindingFxns: getBindingFxns$1,
@@ -631,8 +630,8 @@
           sm.type = 2;
           sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
         }
-      } else if (el.hasAttribute(REPEAT_ATTR$1)) {
-        repeatref(sm, el, REPEAT_ATTR$1);
+      } else if (el.hasAttribute(REPEAT_ATTR)) {
+        repeatref(sm, el, REPEAT_ATTR);
       }
       const attrs = el.attributes,
             l = attrs.length;
