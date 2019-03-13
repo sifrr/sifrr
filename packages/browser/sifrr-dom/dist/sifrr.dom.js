@@ -463,7 +463,7 @@
       data = stateMap[i].ref;
       dom = element._refs[i];
       if (data.type === 0) {
-        newValue = element.state[data.text];
+        newValue = element._state[data.text];
         if (dom.data != newValue) dom.data = newValue;
         continue;
       } else if (data.type === 1) {
@@ -475,7 +475,7 @@
         for (let key in data.attributes) {
           if (key !== 'events') {
             if (data.attributes[key].type === 0) {
-              newValue = element.state[data.attributes[key].text];
+              newValue = element._state[data.attributes[key].text];
             } else {
               newValue = evaluateBindings(data.attributes[key].text, element);
             }

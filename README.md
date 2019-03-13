@@ -42,7 +42,7 @@ This repository is a monorepo managed using yarn workspaces. This means there ar
 | [sifrr-api](./packages/server/sifrr-api)       | Create normal/GraphQL APIs with same codebase      | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)       | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-api#readme)    | [OK](./packages/server/sifrr-api/test) |
 | [sifrr-cli](./packages/server/sifrr-cli)       | Sifrr cli for creating webapps using sifrr         | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli)       | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-cli#readme)    |                 \[WIP]                 |
 | [sifrr-seo](./packages/server/sifrr-seo)       | Server side rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)       | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-seo#readme)    | [OK](./packages/server/sifrr-seo/test) |
-| [sifrr-server](./packages/server/sifrr-server) | Fast HTTP + WS server                              | [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-server#readme) |                  [WIP]                 |
+| [sifrr-server](./packages/server/sifrr-server) | Fast HTTP + WebSockets server                      | [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) | [![In Readme](https://img.shields.io/badge/API%20docs-Readme-red.svg)](./packages/server/sifrr-server#readme) |                  [WIP]                 |
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
@@ -57,7 +57,7 @@ Browser packages have standalone distribution as well, which can be used directl
 
 Sifrr officially supports node v10 (LTS), v11 (current). Other versions might work for some packages.
 
-| Node Version | CI                                                                                                                       |
+| Node Version | CI Status                                                                                                                |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
 | v11          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
 | v10          | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
