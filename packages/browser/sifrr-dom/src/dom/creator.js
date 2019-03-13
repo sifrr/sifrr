@@ -1,4 +1,4 @@
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, REPEAT_ATTR } = require('./constants');
+const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } = require('./constants');
 const repeatref = require('./repeatref');
 // ref types:
 // 0: state
@@ -8,7 +8,11 @@ const repeatref = require('./repeatref');
 const { getBindingFxns, getStringBindingFxn } = require('./bindings');
 const updateAttribute = require('./updateattribute');
 
-function creator(el, filter, defaultState) {
+function isHtml(el) {
+  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
+}
+
+function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
     if (x.indexOf('${') > -1) {
@@ -31,12 +35,13 @@ function creator(el, filter, defaultState) {
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     // Html ?
-    if (filter(el)) {
+    if (isHtml(el)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') >= 0) {
         sm.type = 2;
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
+      el.textContent = '';
     } else if (el.hasAttribute(REPEAT_ATTR)) {
       repeatref(sm, el, REPEAT_ATTR);
     }

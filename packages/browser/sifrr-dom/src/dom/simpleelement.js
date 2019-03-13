@@ -34,7 +34,7 @@ function SimpleElement(content, defaultState = null) {
 
   content.sifrrClone = function(newState) {
     const clone = content.cloneNode(true);
-    clone._refs = collect(clone, stateMap, 'nextNode');
+    clone._refs = collect(clone, stateMap);
     clone._state = Object.assign({}, defaultState, newState);
     Object.defineProperty(clone, 'state', stateProps);
     update(clone, stateMap);

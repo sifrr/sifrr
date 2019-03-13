@@ -23,20 +23,9 @@
 
   const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
   const {
-    HTML_ATTR,
     TEXT_NODE
   } = constants;
-  function isHtml(el) {
-    return el.hasAttribute && el.hasAttribute(HTML_ATTR);
-  }
-  TREE_WALKER.nextFilteredNode = function () {
-    let node = this.currentNode;
-    if (isHtml(node)) {
-      node = this.nextSibling() || (this.parentNode(), this.nextSibling());
-    } else node = this.nextNode();
-    return node;
-  };
-  function collect(element, stateMap, next = 'nextFilteredNode') {
+  function collect(element, stateMap) {
     const refs = [],
           l = stateMap.length;
     let node = TREE_WALKER.currentNode = element,
@@ -44,7 +33,7 @@
     for (let i = 0; i < l; i++) {
       n = stateMap[i].idx;
       while (--n) {
-        node = TREE_WALKER[next]();
+        node = TREE_WALKER.nextNode();
       }
       refs.push(node);
     }
@@ -59,10 +48,10 @@
     while (node) {
       if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
         ntr = node;
-        node = TREE_WALKER.nextFilteredNode(node);
+        node = TREE_WALKER.nextNode(node);
         ntr.remove();
       } else {
-        if (ref = fxn(node, isHtml, passedArg)) {
+        if (ref = fxn(node, passedArg)) {
           indices.push({
             idx: idx + 1,
             ref
@@ -71,7 +60,7 @@
         } else {
           idx++;
         }
-        node = TREE_WALKER.nextFilteredNode(node);
+        node = TREE_WALKER.nextNode(node);
       }
     }
     return indices;
@@ -567,7 +556,7 @@
     };
     content.sifrrClone = function (newState) {
       const clone = content.cloneNode(true);
-      clone._refs = collect$1(clone, stateMap, 'nextNode');
+      clone._refs = collect$1(clone, stateMap);
       clone._state = Object.assign({}, defaultState, newState);
       Object.defineProperty(clone, 'state', stateProps);
       update_1(clone, stateMap);
@@ -598,13 +587,17 @@
     TEXT_NODE: TEXT_NODE$2,
     COMMENT_NODE: COMMENT_NODE$1,
     ELEMENT_NODE,
+    HTML_ATTR,
     REPEAT_ATTR
   } = constants;
   const {
     getBindingFxns: getBindingFxns$1,
     getStringBindingFxn
   } = bindings;
-  function creator(el, filter, defaultState) {
+  function isHtml(el) {
+    return el.hasAttribute && el.hasAttribute(HTML_ATTR);
+  }
+  function creator(el, defaultState) {
     if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
       const x = el.data;
       if (x.indexOf('${') > -1) {
@@ -624,12 +617,13 @@
       }
     } else if (el.nodeType === ELEMENT_NODE) {
       const sm = {};
-      if (filter(el)) {
+      if (isHtml(el)) {
         const innerHTML = el.innerHTML;
         if (innerHTML.indexOf('${') >= 0) {
           sm.type = 2;
           sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
         }
+        el.textContent = '';
       } else if (el.hasAttribute(REPEAT_ATTR)) {
         repeatref(sm, el, REPEAT_ATTR);
       }
