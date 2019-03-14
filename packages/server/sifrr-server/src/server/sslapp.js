@@ -3,7 +3,7 @@ const BaseApp = require('./baseapp');
 
 class SSLApp extends BaseApp {
   constructor(options) {
-    super();
+    super(options);
     this._app = uWS.SSLApp(options);
   }
 }

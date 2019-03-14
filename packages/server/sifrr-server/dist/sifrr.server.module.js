@@ -186,7 +186,33 @@ var ext = (path) => {
 };
 
 const errHandler = (err) => { throw err; };
+function sendFile(res, path, headers) {
+  res.onAborted(errHandler);
+  res.writeHeader('content-type', ext(path));
+  const src = fs.createReadStream(path);
+  fs.stat(path, function onstat (err, stat) {
+    if (err) return errHandler(err);
+    if (headers['if-modified-since']) {
+      const ims = new Date(headers['if-modified-since']);
+      stat.mtime.setMilliseconds(0);
+      if (ims.toString() === stat.mtime.toString()) {
+        res.writeStatus('304 Not Modified');
+        return res.end();
+      }
+    }
+    res.writeHeader('last-modified', stat.mtime.toString());
+    src.on('data', (chunk) => res.write(chunk));
+    src.on('end', () => res.end());
+    src.on('error', errHandler);
+  });
+}
+var sendfile = sendFile;
+
 class BaseApp {
+  constructor(options = {}) {
+    this._origins = options.allowedOrigins;
+    this._methods = options.allowedMethods;
+  }
   file(folder, base = folder) {
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
@@ -201,12 +227,11 @@ class BaseApp {
     return this;
   }
   _getFile(res, req, filePath) {
-    res.onAborted(errHandler);
-    res.writeHeader('content-type', ext(filePath));
-    const src = fs.createReadStream(filePath);
-    src.on('data', (chunk) => res.write(chunk));
-    src.on('end', () => res.end());
-    src.on('error', errHandler);
+    const headers = {};
+    req.forEach((k ,v) => headers[k] = v);
+    if (this._origins) res.writeHeader('access-control-allow-origin', this._origins.join(','));
+    if (this._methods) res.writeHeader('access-control-allow-methods', this._methods.join(','));
+    sendfile(res, filePath, headers);
   }
   listen(p, cb) {
     this._app.listen(p, (socket) => {
@@ -240,7 +265,7 @@ var baseapp = BaseApp;
 
 class App extends baseapp {
   constructor(options) {
-    super();
+    super(options);
     this._app = uWebSockets.App(options);
   }
 }
@@ -248,7 +273,7 @@ var app = App;
 
 class SSLApp extends baseapp {
   constructor(options) {
-    super();
+    super(options);
     this._app = uWebSockets.SSLApp(options);
   }
 }

@@ -1,0 +1,27 @@
+{
+  "name": "sifrr-server-test",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sifrr-Server Test server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "build": "echo 'ok'"
+  },
+  "keywords": [
+    "Sifrr",
+    "api",
+    "graphql",
+    "express",
+    "sequelize"
+  ],
+  "author": "@aadityataparia",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "serve-static": "^1.13.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0"
+  }
+}

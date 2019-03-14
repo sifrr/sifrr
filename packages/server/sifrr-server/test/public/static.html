@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      function testFetch(url, requests) {
+        let startTime = performance.now(), firstResponse;
+        let k = 0, size = 0;
+        return new Promise(res => {
+          for (let j = 0; j < requests; j++) {
+            Sifrr.Fetch.file(url).then((response) => {
+              size += lengthInUtf8Bytes(response);
+              if (k === 0) firstResponse = performance.now() - startTime;
+              // console.log(k, response.dataYouSent.number);
+              k++;
+              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
+            });
+          }
+        });
+      }
+
+      function lengthInUtf8Bytes(json) {
+        const str = JSON.stringify(json);
+        let m = encodeURIComponent(str).match(/%[89ABab]/g);
+        return str.length + (m ? m.length : 0);
+      }
+    </script>
+  </body>
+</html>

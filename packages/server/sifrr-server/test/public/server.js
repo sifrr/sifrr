@@ -1,3 +1,6 @@
+process.env.NODE_PATH = require('path').join(__dirname, './node_modules');
+require('module').Module._initPaths();
+
 let port = false;
 const index = Math.max(process.argv.indexOf('--port'), process.argv.indexOf('-p'));
 if (index !== -1) {
@@ -5,13 +8,14 @@ if (index !== -1) {
 }
 global.ENV = port ? 'development' : 'test';
 
+const path = require('path');
 const { App } = require('../../src/sifrr.server');
 // const { App } = require('uWebSockets.js');
 
 function webSocketServer(port) {
   let id = 0;
   const app = new App();
-  app.ws('/ws', {
+  app.ws('/*', {
     /* Options */
     maxPayloadLength: 16 * 1024 * 1024,
     idleTimeout: 120,
@@ -37,19 +41,23 @@ function webSocketServer(port) {
     close: (ws, code, message) => {
       global.console.log(`WebSocket ${ws.id} closed: ${message}`);
     }
-  }).get('/ok/now', (res) => {
-    res.end('ok');
-  }).file(__dirname).get('/not/file', (res) => {
-    res.writeHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ ok: true }));
-  }).listen(port, (socket) => {
-    if (socket) {
-      app.socket = socket;
-      global.console.log('Listening to port ' + port);
-    } else {
-      global.console.log('Failed to listen to port ' + port);
-    }
-  });
+  })
+    .file(path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
+    .file(path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
+    .file(__dirname)
+    .get('/ok/now', (res) => {
+      res.end('ok');
+    }).get('/not/file', (res) => {
+      res.writeHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ ok: true }));
+    }).listen(port, (socket) => {
+      if (socket) {
+        app.socket = socket;
+        global.console.log('Listening to port ' + port);
+      } else {
+        global.console.log('Failed to listen to port ' + port);
+      }
+    });
 
   return app;
 }

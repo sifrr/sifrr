@@ -1,11 +1,15 @@
 const delegate = require('./delegate');
 const fs = require('fs');
 const path = require('path');
-const ext = require('./ext');
-const errHandler = (err) => { throw err; };
 const uWS = require('uWebSockets.js');
+const sendFile = require('./sendfile');
 
 class BaseApp {
+  constructor(options = {}) {
+    this._origins = options.allowedOrigins;
+    this._methods = options.allowedMethods;
+  }
+
   file(folder, base = folder) {
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
@@ -21,12 +25,11 @@ class BaseApp {
   }
 
   _getFile(res, req, filePath) {
-    res.onAborted(errHandler);
-    res.writeHeader('content-type', ext(filePath));
-    const src = fs.createReadStream(filePath);
-    src.on('data', (chunk) => res.write(chunk));
-    src.on('end', () => res.end());
-    src.on('error', errHandler);
+    const headers = {};
+    req.forEach((k ,v) => headers[k] = v);
+    if (this._origins) res.writeHeader('access-control-allow-origin', this._origins.join(','));
+    if (this._methods) res.writeHeader('access-control-allow-methods', this._methods.join(','));
+    sendFile(res, filePath, headers);
   }
 
   listen(p, cb) {

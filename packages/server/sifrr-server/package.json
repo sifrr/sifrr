@@ -28,7 +28,7 @@
     "test-server": "yarn test-build; yarn test-server-only"
   },
   "dependencies": {
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.7.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#binaries"
   },
   "peerDependencies": {},
   "devDependencies": {
