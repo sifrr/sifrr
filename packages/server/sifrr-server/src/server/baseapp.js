@@ -12,7 +12,6 @@ class BaseApp {
     if (basePath[basePath.length - 1] === '/') basePath = basePath.slice(0, -1);
     options = Object.assign({
       lastModified: true,
-      contentType: true,
       basePath
     }, options);
     const filter = options.filter || noOp;
@@ -57,7 +56,7 @@ class BaseApp {
     };
   }
 
-  listen(h, p, cb) {
+  listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._app.listen(h, p, (socket) => {
         this._socket = socket;
@@ -86,7 +85,6 @@ const methods = [
   'del',
   'get',
   'head',
-  'listen',
   'options',
   'patch',
   'post',
