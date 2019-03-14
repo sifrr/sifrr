@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server",
-    "build": "echo 'ok'"
+    "build": ""
   },
   "keywords": [
     "Sifrr",

@@ -44,7 +44,7 @@ function webSocketServer(port) {
   })
     .file('/', path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
     .file('/', path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
-    .file('/', '/Users/aaditya-taparia/Downloads/example.mp4')
+    // .file('/video', '/Users/aaditya-taparia/Downloads/example.mp4')
     .file('/', __dirname, {
       filter: (path) => path.indexOf('node_modules') < 0
     })

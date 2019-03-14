@@ -258,8 +258,8 @@ var sendfile = sendFile;
 const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 class BaseApp {
-  file(servingPattern, folder, options = {}, base = folder) {
-    if (servingPattern === '/') servingPattern = '';
+  file(basePath, folder, options = {}, base = folder) {
+    if (basePath === '/') basePath = '';
     options = Object.assign({
       lastModified: true,
       contentType: true
@@ -268,7 +268,7 @@ class BaseApp {
     if (!fs.statSync(folder).isDirectory()) {
       const fileName = path.basename(folder);
       const folderName = path.dirname(folder);
-      this._app.get(servingPattern + '/' + fileName, this._serveFromFolder(folderName, options));
+      this._app.get(basePath + '/' + fileName, this._serveFromFolder(folderName, options));
       return this;
     }
     fs.readdirSync(folder).forEach(file => {
@@ -276,9 +276,9 @@ class BaseApp {
       if (!filter(filePath)) return;
       const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(servingPattern, filePath, options, base);
+        this.file(basePath, filePath, options, base);
       } else {
-        this._app.get(servingPattern + '/' + path.relative(base, filePath), serveFromThisFolder);
+        this._app.get(basePath + '/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;

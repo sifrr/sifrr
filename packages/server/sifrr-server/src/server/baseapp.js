@@ -8,8 +8,8 @@ const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 
 class BaseApp {
-  file(servingPattern, folder, options = {}, base = folder) {
-    if (servingPattern === '/') servingPattern = '';
+  file(basePath, folder, options = {}, base = folder) {
+    if (basePath === '/') basePath = '';
     options = Object.assign({
       lastModified: true,
       contentType: true
@@ -20,7 +20,7 @@ class BaseApp {
     if (!fs.statSync(folder).isDirectory()) {
       const fileName = path.basename(folder);
       const folderName = path.dirname(folder);
-      this._app.get(servingPattern + '/' + fileName, this._serveFromFolder(folderName, options));
+      this._app.get(basePath + '/' + fileName, this._serveFromFolder(folderName, options));
       return this;
     }
 
@@ -35,10 +35,10 @@ class BaseApp {
       const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
         // Recursive if directory
-        this.file(servingPattern, filePath, options, base);
+        this.file(basePath, filePath, options, base);
       } else {
         // serve from this folder
-        this._app.get(servingPattern + '/' + path.relative(base, filePath), serveFromThisFolder);
+        this._app.get(basePath + '/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;
