@@ -41,11 +41,6 @@ class BaseApp {
     return this;
   }
 
-  _defaultServer() {
-    this.__defS = this.__defS || this._serveStatic({ lastModified: true });
-    return this.__defS;
-  }
-
   _serveStatic(res, req) {
     const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
     const reqHeaders = {};
