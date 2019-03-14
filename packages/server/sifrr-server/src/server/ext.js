@@ -1,4 +1,3 @@
-const DEFAULT_EXT = 'application/octet-stream';
 const extensions = {
   '3gp' : 'video/3gpp',
   a     : 'application/octet-stream',
@@ -164,12 +163,13 @@ const extensions = {
   xslt  : 'application/xslt+xml',
   yaml  : 'text/yaml',
   yml   : 'text/yaml',
-  zip   : 'application/zip'
+  zip   : 'application/zip',
+  default: 'text/html'
 };
 module.exports = {
   getExt: (path) => {
     const i = path.lastIndexOf('.');
-    return extensions[path.substr(i + 1).toLowerCase()] || DEFAULT_EXT;
+    return extensions[path.substr(i + 1).toLowerCase()] || extensions['default'];
   },
   extensions
 };

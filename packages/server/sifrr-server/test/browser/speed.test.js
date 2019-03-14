@@ -16,15 +16,11 @@ describe('speed test', function() {
   });
 
   it('faster in static files (no-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000);
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-store' });
   });
 
   it('faster in static files (with-304)', async () => {
     await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
-  });
-
-  it('faster in static files (big, no-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000);
   });
 
   it('faster in static files (big, with-304)', async () => {

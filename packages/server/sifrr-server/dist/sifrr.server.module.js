@@ -25,7 +25,6 @@ var utils = {
   writeHeaders
 };
 
-const DEFAULT_EXT = 'application/octet-stream';
 const extensions = {
   '3gp' : 'video/3gpp',
   a     : 'application/octet-stream',
@@ -191,12 +190,13 @@ const extensions = {
   xslt  : 'application/xslt+xml',
   yaml  : 'text/yaml',
   yml   : 'text/yaml',
-  zip   : 'application/zip'
+  zip   : 'application/zip',
+  default: 'text/html'
 };
 var ext = {
   getExt: (path) => {
     const i = path.lastIndexOf('.');
-    return extensions[path.substr(i + 1).toLowerCase()] || DEFAULT_EXT;
+    return extensions[path.substr(i + 1).toLowerCase()] || extensions['default'];
   },
   extensions
 };
