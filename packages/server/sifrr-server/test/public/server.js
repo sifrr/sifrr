@@ -44,7 +44,9 @@ function webSocketServer(port) {
   })
     .file(path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
     .file(path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
-    .file(__dirname)
+    .file(__dirname, {
+      filter: (path) => path.indexOf('node_modules') < 0
+    })
     .get('/ok/now', (res) => {
       res.end('ok');
     }).get('/not/file', (res) => {

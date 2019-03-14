@@ -4,39 +4,62 @@ const path = require('path');
 const uWS = require('uWebSockets.js');
 const sendFile = require('./sendfile');
 
-class BaseApp {
-  constructor(options = {}) {
-    this._origins = options.allowedOrigins;
-    this._methods = options.allowedMethods;
-  }
+const requiredHeaders = ['if-modified-since'];
+const noOp = () => true;
 
-  file(folder, base = folder) {
+class BaseApp {
+  file(folder, options = {}, base = folder) {
+    options = Object.assign({
+      lastModified: true,
+      contentType: true
+    }, options);
+    const filter = options.filter || noOp;
     fs.readdirSync(folder).forEach(file => {
+      // Absolute path
       const filePath = path.join(folder, file);
+
+      // Return if filtered
+      if (!filter(filePath)) return;
+
+      const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(filePath, base);
+        // Recursive if directory
+        this.file(filePath, options, base);
       } else {
-        this._app.get('/' + path.relative(base, filePath), (res, req) => {
-          this._getFile(res, req, filePath);
-        });
+        // serve from this folder
+        this._app.get('/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;
   }
 
-  _getFile(res, req, filePath) {
-    const headers = {};
-    req.forEach((k ,v) => headers[k] = v);
-    if (this._origins) res.writeHeader('access-control-allow-origin', this._origins.join(','));
-    if (this._methods) res.writeHeader('access-control-allow-methods', this._methods.join(','));
-    sendFile(res, filePath, headers);
+  _serveFromFolder(folder, options) {
+    return (res, req) => {
+      const filePath = path.join(folder, req.getUrl().substr(1));
+      const reqHeaders = {};
+      requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
+
+      if (options.headers) {
+        for (let n in options.headers) {
+          res.writeHeader(n, options.headers[n]);
+        }
+      }
+      sendFile(res, filePath, reqHeaders, options);
+    };
   }
 
-  listen(p, cb) {
-    this._app.listen(p, (socket) => {
-      this._socket = socket;
-      cb(socket);
-    });
+  listen(h, p, cb) {
+    if (typeof cb === 'function') {
+      this._app.listen(h, p, (socket) => {
+        this._socket = socket;
+        cb(socket);
+      });
+    } else {
+      this._app.listen(h, (socket) => {
+        this._socket = socket;
+        p(socket);
+      });
+    }
   }
 
   close() {

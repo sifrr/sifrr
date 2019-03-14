@@ -28,6 +28,7 @@
     "test-server": "yarn test-build; yarn test-server-only"
   },
   "dependencies": {
+    "send": "^0.16.2",
     "uWebSockets.js": "uNetworking/uWebSockets.js#binaries"
   },
   "peerDependencies": {},

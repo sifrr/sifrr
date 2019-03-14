@@ -186,58 +186,76 @@ var ext = (path) => {
 };
 
 const errHandler = (err) => { throw err; };
-function sendFile(res, path, headers) {
+const noOp = () => true;
+function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);
-  res.writeHeader('content-type', ext(path));
-  const src = fs.createReadStream(path);
-  fs.stat(path, function onstat (err, stat) {
+  fs.stat(path, (err, stat) => {
     if (err) return errHandler(err);
-    if (headers['if-modified-since']) {
-      const ims = new Date(headers['if-modified-since']);
-      stat.mtime.setMilliseconds(0);
-      if (ims.toString() === stat.mtime.toString()) {
+    const lastModified = stat.mtime.toUTCString();
+    if (reqHeaders['if-modified-since']) {
+      if (new Date(reqHeaders['if-modified-since']).toUTCString() === lastModified) {
         res.writeStatus('304 Not Modified');
         return res.end();
       }
     }
-    res.writeHeader('last-modified', stat.mtime.toString());
-    src.on('data', (chunk) => res.write(chunk));
-    src.on('end', () => res.end());
+    if (options.contentType) res.writeHeader('content-type', ext(path));
+    if (options.lastModified) res.writeHeader('last-modified', lastModified);
+    res.on = noOp;
+    res.once = noOp;
+    res.emit = noOp;
+    const src = fs.createReadStream(path);
     src.on('error', errHandler);
+    src.pipe(res);
   });
 }
 var sendfile = sendFile;
 
+const requiredHeaders = ['if-modified-since'];
+const noOp$1 = () => true;
 class BaseApp {
-  constructor(options = {}) {
-    this._origins = options.allowedOrigins;
-    this._methods = options.allowedMethods;
-  }
-  file(folder, base = folder) {
+  file(folder, options = {}, base = folder) {
+    options = Object.assign({
+      lastModified: true,
+      contentType: true
+    }, options);
+    const filter = options.filter || noOp$1;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
+      if (!filter(filePath)) return;
+      const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(filePath, base);
+        this.file(filePath, options, base);
       } else {
-        this._app.get('/' + path.relative(base, filePath), (res, req) => {
-          this._getFile(res, req, filePath);
-        });
+        this._app.get('/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;
   }
-  _getFile(res, req, filePath) {
-    const headers = {};
-    req.forEach((k ,v) => headers[k] = v);
-    if (this._origins) res.writeHeader('access-control-allow-origin', this._origins.join(','));
-    if (this._methods) res.writeHeader('access-control-allow-methods', this._methods.join(','));
-    sendfile(res, filePath, headers);
+  _serveFromFolder(folder, options) {
+    return (res, req) => {
+      const filePath = path.join(folder, req.getUrl().substr(1));
+      const reqHeaders = {};
+      requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
+      if (options.headers) {
+        for (let n in options.headers) {
+          res.writeHeader(n, options.headers[n]);
+        }
+      }
+      sendfile(res, filePath, reqHeaders, options);
+    };
   }
-  listen(p, cb) {
-    this._app.listen(p, (socket) => {
-      this._socket = socket;
-      cb(socket);
-    });
+  listen(h, p, cb) {
+    if (typeof cb === 'function') {
+      this._app.listen(h, p, (socket) => {
+        this._socket = socket;
+        cb(socket);
+      });
+    } else {
+      this._app.listen(h, (socket) => {
+        this._socket = socket;
+        p(socket);
+      });
+    }
   }
   close() {
     if (this._socket) {

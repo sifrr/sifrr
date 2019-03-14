@@ -13,13 +13,27 @@ describe('speed test', () => {
     sapp.close();
   });
 
-  it('faster in static files', async () => {
-    const expressResults = await page.evaluate(async (port) => {
-      return await testFetch(`http://localhost:${port}/example.json`, 1000);
-    }, EPORT);
-    const sifrrResults = await page.evaluate(async (port) => {
-      return await testFetch(`http://localhost:${port}/example.json`, 1000);
-    }, SPORT);
-    console.log(expressResults, sifrrResults);
+  it('faster in static files (no-cache)', async () => {
+    await staticTest((p) => `http://localhost:${p}/example.json`, 1000);
+  });
+
+  it('faster in static files (with-cache)', async () => {
+    await staticTest((p) => `http://localhost:${p}/example.json`, 1000, { cache: 'default' });
+  });
+
+  it('faster in static files (bid)', async () => {
+    await staticTest((p) => `http://localhost:${p}/random.html`, 100, { text: true });
   });
 });
+
+async function staticTest(url, num, option) {
+  const expressResults = await page.evaluate(async (u, n, o) => {
+    return await testFetch(u, n, o );
+  }, url(EPORT), num, option);
+  const sifrrResults = await page.evaluate(async (u, n, o) => {
+    return await testFetch(u, n, o );
+  }, url(SPORT), num, option);
+  global.console.table({ sifrr: sifrrResults, express: expressResults });
+  assert(sifrrResults.rps > expressResults.rps);
+  assert(sifrrResults.size === expressResults.size);
+}
