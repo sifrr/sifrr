@@ -196,17 +196,16 @@ function sendFile(res, path, reqHeaders, options) {
     if (err) throw err;
     const lastModified = stat.mtime, totalSize = stat.size;
     const responseHeaders = options.headers || {};
-    if (options.contentType) responseHeaders['content-type'] = ext$1(path);
     if (options.lastModified) {
-      responseHeaders['last-modified'] = lastModified.toUTCString();
       if (reqHeaders['if-modified-since']) {
         if (new Date(reqHeaders['if-modified-since']) <= lastModified) {
-          writeHeaders(res, responseHeaders);
           res.writeStatus('304 Not Modified');
           return res.end();
         }
       }
+      responseHeaders['last-modified'] = lastModified.toUTCString();
     }
+    if (options.contentType) responseHeaders['content-type'] = ext$1(path);
     let start = 0, end = totalSize - 1;
     if (reqHeaders.range) {
       const parts = reqHeaders.range.replace(/bytes=/, '').split('-');

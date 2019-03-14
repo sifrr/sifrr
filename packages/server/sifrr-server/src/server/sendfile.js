@@ -12,21 +12,21 @@ function sendFile(res, path, reqHeaders, options) {
 
     // headers
     const responseHeaders = options.headers || {};
-    if (options.contentType) responseHeaders['content-type'] = ext(path);
 
     // handling last modified
     if (options.lastModified) {
-      responseHeaders['last-modified'] = lastModified.toUTCString();
-
       // Return 304 if last-modified is same as request header
       if (reqHeaders['if-modified-since']) {
         if (new Date(reqHeaders['if-modified-since']) <= lastModified) {
-          writeHeaders(res, responseHeaders);
           res.writeStatus('304 Not Modified');
           return res.end();
         }
       }
+
+      responseHeaders['last-modified'] = lastModified.toUTCString();
     }
+
+    if (options.contentType) responseHeaders['content-type'] = ext(path);
 
     // write data
     let start = 0, end = totalSize - 1;
