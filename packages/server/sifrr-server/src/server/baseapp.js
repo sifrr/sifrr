@@ -4,16 +4,27 @@ const path = require('path');
 const uWS = require('uWebSockets.js');
 const sendFile = require('./sendfile');
 
-const requiredHeaders = ['if-modified-since'];
+const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 
 class BaseApp {
-  file(folder, options = {}, base = folder) {
+  file(servingPattern, folder, options = {}, base = folder) {
+    if (servingPattern === '/') servingPattern = '';
     options = Object.assign({
       lastModified: true,
       contentType: true
     }, options);
     const filter = options.filter || noOp;
+
+    // serve single file
+    if (!fs.statSync(folder).isDirectory()) {
+      const fileName = path.basename(folder);
+      const folderName = path.dirname(folder);
+      this._app.get(servingPattern + '/' + fileName, this._serveFromFolder(folderName, options));
+      return this;
+    }
+
+    // serve folder
     fs.readdirSync(folder).forEach(file => {
       // Absolute path
       const filePath = path.join(folder, file);
@@ -24,10 +35,10 @@ class BaseApp {
       const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
         // Recursive if directory
-        this.file(filePath, options, base);
+        this.file(servingPattern, filePath, options, base);
       } else {
         // serve from this folder
-        this._app.get('/' + path.relative(base, filePath), serveFromThisFolder);
+        this._app.get(servingPattern + '/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const errHandler = (err) => { if (err) throw(err); };
-const ext = require('./ext');
+const ext = require('./ext').getExt;
 
 function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);

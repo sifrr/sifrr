@@ -189,6 +189,7 @@ var ext = {
 };
 
 const errHandler = (err) => { if (err) throw(err); };
+const ext$1 = ext.getExt;
 function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);
   fs.stat(path, (err, stat) => {
@@ -200,7 +201,7 @@ function sendFile(res, path, reqHeaders, options) {
         return res.end();
       }
     }
-    if (options.contentType) res.writeHeader('content-type', ext(path));
+    if (options.contentType) res.writeHeader('content-type', ext$1(path));
     if (options.lastModified) res.writeHeader('last-modified', lastModified);
     const src = fs.createReadStream(path);
     const totalSize = stat.size;
@@ -233,23 +234,30 @@ function sendFile(res, path, reqHeaders, options) {
 }
 var sendfile = sendFile;
 
-const requiredHeaders = ['if-modified-since'];
+const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 class BaseApp {
-  file(folder, options = {}, base = folder) {
+  file(servingPattern, folder, options = {}, base = folder) {
+    if (servingPattern === '/') servingPattern = '';
     options = Object.assign({
       lastModified: true,
       contentType: true
     }, options);
     const filter = options.filter || noOp;
+    if (!fs.statSync(folder).isDirectory()) {
+      const fileName = path.basename(folder);
+      const folderName = path.dirname(folder);
+      this._app.get(servingPattern + '/' + fileName, this._serveFromFolder(folderName, options));
+      return this;
+    }
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
       const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(filePath, options, base);
+        this.file(servingPattern, filePath, options, base);
       } else {
-        this._app.get('/' + path.relative(base, filePath), serveFromThisFolder);
+        this._app.get(servingPattern + '/' + path.relative(base, filePath), serveFromThisFolder);
       }
     });
     return this;
