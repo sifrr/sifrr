@@ -194,17 +194,33 @@ function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);
   fs.stat(path, (err, stat) => {
     if (err) throw err;
-    const lastModified = stat.mtime.toUTCString();
+    const lastModified = stat.mtime.toUTCString(), totalSize = stat.size;
+    const responseHeaders = options.headers || {};
+    if (options.contentType) responseHeaders['content-type'] = ext$1(path);
+    if (options.lastModified) responseHeaders['last-modified'] = lastModified;
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']).toUTCString() === lastModified) {
+        writeHeaders(res, responseHeaders);
         res.writeStatus('304 Not Modified');
         return res.end();
       }
     }
-    if (options.contentType) res.writeHeader('content-type', ext$1(path));
-    if (options.lastModified) res.writeHeader('last-modified', lastModified);
-    const src = fs.createReadStream(path);
-    const totalSize = stat.size;
+    let start = 0, end = totalSize - 1;
+    if (reqHeaders.range) {
+      const parts = reqHeaders.range.replace(/bytes=/, '').split('-');
+      start = parseInt(parts[0], 10);
+      end = parts[1]
+        ? parseInt(parts[1], 10)
+        : totalSize - 1;
+      Object.assign(responseHeaders, {
+        'content-range': `bytes ${start}-${end}/${totalSize}`,
+        'accept-ranges': 'bytes'
+      });
+      res.writeStatus('206 Partial Content');
+    }
+    writeHeaders(res, responseHeaders);
+    const src = fs.createReadStream(path, { start, end });
+    res.onAborted(() => src.destroy());
     src.on('data', (buffer) => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
       const lastOffset = res.getWriteOffset();
@@ -229,8 +245,12 @@ function sendFile(res, path, reqHeaders, options) {
     src.on('end', () => {
       res.end();
     });
-    res.onAborted(() => src.destroy());
   });
+}
+function writeHeaders(res, headers) {
+  for (let n in headers) {
+    res.writeHeader(n, headers[n].toString());
+  }
 }
 var sendfile = sendFile;
 
@@ -267,11 +287,6 @@ class BaseApp {
       const filePath = path.join(folder, req.getUrl().substr(1));
       const reqHeaders = {};
       requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
-      if (options.headers) {
-        for (let n in options.headers) {
-          res.writeHeader(n, options.headers[n]);
-        }
-      }
       sendfile(res, filePath, reqHeaders, options);
     };
   }

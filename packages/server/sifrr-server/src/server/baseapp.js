@@ -50,11 +50,6 @@ class BaseApp {
       const reqHeaders = {};
       requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
 
-      if (options.headers) {
-        for (let n in options.headers) {
-          res.writeHeader(n, options.headers[n]);
-        }
-      }
       sendFile(res, filePath, reqHeaders, options);
     };
   }
