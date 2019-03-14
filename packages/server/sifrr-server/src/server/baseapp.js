@@ -9,10 +9,11 @@ const noOp = () => true;
 
 class BaseApp {
   file(basePath, folder, options = {}, base = folder) {
-    if (basePath === '/') basePath = '';
+    if (basePath[basePath.length - 1] === '/') basePath = basePath.slice(0, -1);
     options = Object.assign({
       lastModified: true,
-      contentType: true
+      contentType: true,
+      basePath
     }, options);
     const filter = options.filter || noOp;
 
@@ -45,8 +46,10 @@ class BaseApp {
   }
 
   _serveFromFolder(folder, options) {
+    const regex = new RegExp(`^${options.basePath}/`);
     return (res, req) => {
-      const filePath = path.join(folder, req.getUrl().substr(1));
+      const url = req.getUrl().replace(regex, '');
+      const filePath = path.join(folder, url);
       const reqHeaders = {};
       requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
 
@@ -66,6 +69,7 @@ class BaseApp {
         p(socket);
       });
     }
+    return this;
   }
 
   close() {
