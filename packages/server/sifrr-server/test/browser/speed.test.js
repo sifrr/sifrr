@@ -21,8 +21,12 @@ describe('speed test', () => {
     await staticTest((p) => `http://localhost:${p}/example.json`, 1000, { cache: 'default' });
   });
 
-  it('faster in static files (bid)', async () => {
+  it('faster in static files (big)', async () => {
     await staticTest((p) => `http://localhost:${p}/random.html`, 100, { text: true });
+  });
+
+  it('faster in static files (big, with-cache)', async () => {
+    await staticTest((p) => `http://localhost:${p}/random.html`, 1000, { cache: 'default' });
   });
 });
 

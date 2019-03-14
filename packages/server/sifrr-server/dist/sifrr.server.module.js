@@ -13,7 +13,7 @@ var delegate = (fxns, proto, delTo) => {
 };
 
 const DEFAULT_EXT = 'application/octet-stream';
-const extTypes = {
+const extensions = {
   '3gp' : 'video/3gpp',
   a     : 'application/octet-stream',
   ai    : 'application/postscript',
@@ -180,17 +180,19 @@ const extTypes = {
   yml   : 'text/yaml',
   zip   : 'application/zip'
 };
-var ext = (path) => {
-  const i = path.lastIndexOf('.');
-  return extTypes[path.substr(i + 1).toLowerCase()] || DEFAULT_EXT;
+var ext = {
+  getExt: (path) => {
+    const i = path.lastIndexOf('.');
+    return extensions[path.substr(i + 1).toLowerCase()] || DEFAULT_EXT;
+  },
+  extensions
 };
 
-const errHandler = (err) => { throw err; };
-const noOp = () => true;
+const errHandler = (err) => { if (err) throw(err); };
 function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);
   fs.stat(path, (err, stat) => {
-    if (err) return errHandler(err);
+    if (err) throw err;
     const lastModified = stat.mtime.toUTCString();
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']).toUTCString() === lastModified) {
@@ -200,25 +202,46 @@ function sendFile(res, path, reqHeaders, options) {
     }
     if (options.contentType) res.writeHeader('content-type', ext(path));
     if (options.lastModified) res.writeHeader('last-modified', lastModified);
-    res.on = noOp;
-    res.once = noOp;
-    res.emit = noOp;
     const src = fs.createReadStream(path);
-    src.on('error', errHandler);
-    src.pipe(res);
+    const totalSize = stat.size;
+    src.on('data', (buffer) => {
+      const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+      const lastOffset = res.getWriteOffset();
+      const [ok, done] = res.tryEnd(chunk, totalSize);
+      if (done) {
+        src.destroy();
+      } else if (!ok) {
+        src.pause();
+        res.ab = chunk;
+        res.abOffset = lastOffset;
+        res.onWritable((offset) => {
+          const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), totalSize);
+          if (done) {
+            src.destroy();
+          } else if (ok) {
+            src.resume();
+          }
+          return ok;
+        });
+      }
+    }).on('error', res.close);
+    src.on('end', () => {
+      res.end();
+    });
+    res.onAborted(() => src.destroy());
   });
 }
 var sendfile = sendFile;
 
 const requiredHeaders = ['if-modified-since'];
-const noOp$1 = () => true;
+const noOp = () => true;
 class BaseApp {
   file(folder, options = {}, base = folder) {
     options = Object.assign({
       lastModified: true,
       contentType: true
     }, options);
-    const filter = options.filter || noOp$1;
+    const filter = options.filter || noOp;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
@@ -299,12 +322,16 @@ var sslapp = SSLApp;
 
 var sifrr_server = {
   App: app,
-  SSLApp: sslapp
+  SSLApp: sslapp,
+  extensions: ext.extensions,
+  getExtension: ext.getExt
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;
+var sifrr_server_3 = sifrr_server.extensions;
+var sifrr_server_4 = sifrr_server.getExtension;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map
