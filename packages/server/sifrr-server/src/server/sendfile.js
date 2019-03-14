@@ -1,15 +1,15 @@
 const fs = require('fs');
+
+const writeHeaders = require('./utils').writeHeaders;
 const ext = require('./ext').getExt;
 const bytes = /bytes=/;
 
-function sendFile(res, path, reqHeaders, options) {
+function sendFile(res, path, reqHeaders, lastModified, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
-
-  // headers
-  const responseHeaders = options.headers || {};
+  mtime.setMilliseconds(0);
 
   // handling last modified
-  if (options.lastModified) {
+  if (lastModified) {
     // Return 304 if last-modified
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
@@ -71,12 +71,6 @@ function sendFile(res, path, reqHeaders, options) {
     .on('end', () => {
       res.end();
     });
-}
-
-function writeHeaders(res, headers) {
-  for (let n in headers) {
-    res.writeHeader(n, headers[n].toString());
-  }
 }
 
 module.exports = sendFile;

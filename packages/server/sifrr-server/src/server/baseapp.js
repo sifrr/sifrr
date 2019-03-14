@@ -8,23 +8,19 @@ const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 
 class BaseApp {
-  file(basePath, folder, options = {}, base = folder) {
-    if (basePath[basePath.length - 1] === '/') basePath = basePath.slice(0, -1);
-    options = Object.assign({
-      lastModified: true,
-      basePath
-    }, options);
-    const filter = options.filter || noOp;
+  file(folder, options = {}, base = folder) {
+    options.lastModified = options.lastModified !== false;
 
     // serve single file
     if (!fs.statSync(folder).isDirectory()) {
-      const fileName = path.basename(folder);
-      const folderName = path.dirname(folder);
-      this._app.get(basePath + '/' + fileName, this._serveFromFolder(folderName, options));
+      if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
+      this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
+      this._app.get(options.urlPath, this._serveStatic.bind(this));
       return this;
     }
 
     // serve folder
+    const filter = options.filter || noOp;
     fs.readdirSync(folder).forEach(file => {
       // Absolute path
       const filePath = path.join(folder, file);
@@ -32,28 +28,30 @@ class BaseApp {
       // Return if filtered
       if (!filter(filePath)) return;
 
-      const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
         // Recursive if directory
-        this.file(basePath, filePath, options, base);
+        this.file(filePath, options, base);
       } else {
         // serve from this folder
-        this._app.get(basePath + '/' + path.relative(base, filePath), serveFromThisFolder);
+        const url = '/' + path.relative(base, filePath);
+        this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
+        this._app.get(url, this._serveStatic.bind(this));
       }
     });
     return this;
   }
 
-  _serveFromFolder(folder, options) {
-    const regex = new RegExp(`^${options.basePath}/`);
-    return (res, req) => {
-      const url = req.getUrl().replace(regex, '');
-      const filePath = path.join(folder, url);
-      const reqHeaders = {};
-      requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
+  _defaultServer() {
+    this.__defS = this.__defS || this._serveStatic({ lastModified: true });
+    return this.__defS;
+  }
 
-      sendFile(res, filePath, reqHeaders, options);
-    };
+  _serveStatic(res, req) {
+    const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
+    const reqHeaders = {};
+    requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
+
+    sendFile(res, filePath, reqHeaders, lm, headers);
   }
 
   listen(h, p = noOp, cb) {
@@ -94,5 +92,6 @@ const methods = [
 ];
 
 delegate(methods, BaseApp.prototype, '_app');
+BaseApp.prototype._staticPaths = {};
 
 module.exports = BaseApp;

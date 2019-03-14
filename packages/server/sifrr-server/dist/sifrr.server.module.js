@@ -12,6 +12,26 @@ var delegate = (fxns, proto, delTo) => {
   });
 };
 
+function writeHeaders(res, headers, other) {
+  if (typeof other !== 'undefined') {
+    res.writeHeader(headers, other.toString());
+  } else {
+    for (let n in headers) {
+      res.writeHeader(n, headers[n].toString());
+    }
+  }
+}
+var utils = {
+  writeHeaders
+};
+var utils_1 = utils.writeHeaders;
+
+const utils$1 = /*#__PURE__*/Object.freeze({
+  default: utils,
+  __moduleExports: utils,
+  writeHeaders: utils_1
+});
+
 const DEFAULT_EXT = 'application/octet-stream';
 const extensions = {
   '3gp' : 'video/3gpp',
@@ -188,12 +208,13 @@ var ext = {
   extensions
 };
 
+const writeHeaders$1 = utils$1.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
-function sendFile(res, path, reqHeaders, options) {
+function sendFile(res, path, reqHeaders, lastModified, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
-  const responseHeaders = options.headers || {};
-  if (options.lastModified) {
+  mtime.setMilliseconds(0);
+  if (lastModified) {
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
         res.writeStatus('304 Not Modified');
@@ -214,7 +235,7 @@ function sendFile(res, path, reqHeaders, options) {
   }
   const src = fs.createReadStream(path, { start, end });
   res.onAborted(() => src.destroy());
-  writeHeaders(res, responseHeaders);
+  writeHeaders$1(res, responseHeaders);
   src.on('data', (buffer) => {
     const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
       lastOffset = res.getWriteOffset();
@@ -241,50 +262,42 @@ function sendFile(res, path, reqHeaders, options) {
       res.end();
     });
 }
-function writeHeaders(res, headers) {
-  for (let n in headers) {
-    res.writeHeader(n, headers[n].toString());
-  }
-}
 var sendfile = sendFile;
 
 const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 class BaseApp {
-  file(basePath, folder, options = {}, base = folder) {
-    if (basePath[basePath.length - 1] === '/') basePath = basePath.slice(0, -1);
-    options = Object.assign({
-      lastModified: true,
-      basePath
-    }, options);
-    const filter = options.filter || noOp;
+  file(folder, options = {}, base = folder) {
+    options.lastModified = options.lastModified !== false;
     if (!fs.statSync(folder).isDirectory()) {
-      const fileName = path.basename(folder);
-      const folderName = path.dirname(folder);
-      this._app.get(basePath + '/' + fileName, this._serveFromFolder(folderName, options));
+      if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
+      this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
+      this._app.get(options.urlPath, this._serveStatic.bind(this));
       return this;
     }
+    const filter = options.filter || noOp;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
-      const serveFromThisFolder = this._serveFromFolder(folder, options);
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(basePath, filePath, options, base);
+        this.file(filePath, options, base);
       } else {
-        this._app.get(basePath + '/' + path.relative(base, filePath), serveFromThisFolder);
+        const url = '/' + path.relative(base, filePath);
+        this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
+        this._app.get(url, this._serveStatic.bind(this));
       }
     });
     return this;
   }
-  _serveFromFolder(folder, options) {
-    const regex = new RegExp(`^${options.basePath}/`);
-    return (res, req) => {
-      const url = req.getUrl().replace(regex, '');
-      const filePath = path.join(folder, url);
-      const reqHeaders = {};
-      requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
-      sendfile(res, filePath, reqHeaders, options);
-    };
+  _defaultServer() {
+    this.__defS = this.__defS || this._serveStatic({ lastModified: true });
+    return this.__defS;
+  }
+  _serveStatic(res, req) {
+    const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
+    const reqHeaders = {};
+    requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
+    sendfile(res, filePath, reqHeaders, lm, headers);
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
@@ -321,6 +334,7 @@ const methods = [
   'ws',
 ];
 delegate(methods, BaseApp.prototype, '_app');
+BaseApp.prototype._staticPaths = {};
 var baseapp = BaseApp;
 
 class App extends baseapp {
@@ -343,14 +357,16 @@ var sifrr_server = {
   App: app,
   SSLApp: sslapp,
   extensions: ext.extensions,
-  getExtension: ext.getExt
+  getExtension: ext.getExt,
+  writeHeaders: utils$1.writeHeaders
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;
 var sifrr_server_3 = sifrr_server.extensions;
 var sifrr_server_4 = sifrr_server.getExtension;
+var sifrr_server_5 = sifrr_server.writeHeaders;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_5 as writeHeaders };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map

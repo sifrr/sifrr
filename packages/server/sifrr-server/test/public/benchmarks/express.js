@@ -8,5 +8,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(require('serve-static')(path.join(__dirname, 'public')));
+app.use(require('serve-static')(path.join(__dirname, '../a')));
 
 module.exports = app;

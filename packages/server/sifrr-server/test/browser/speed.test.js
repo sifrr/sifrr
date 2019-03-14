@@ -1,7 +1,9 @@
 const EPORT = 4444, SPORT = 4445;
 let eapp = require('../public/benchmarks/express'), sapp = require('../public/benchmarks/sifrr');
 
-describe('speed test', () => {
+describe('speed test', function() {
+  this.timeout(30000);
+
   before(async () => {
     eapp = eapp.listen(EPORT, () => global.console.log('listening express on ', EPORT));
     sapp.listen(SPORT, () => global.console.log('listening sifrr on ', SPORT));
@@ -13,20 +15,20 @@ describe('speed test', () => {
     sapp.close();
   });
 
-  it('faster in static files (no-cache)', async () => {
-    await staticTest((p) => `http://localhost:${p}/example.json`, 1000);
+  it('faster in static files (no-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000);
   });
 
-  it('faster in static files (with-cache)', async () => {
-    await staticTest((p) => `http://localhost:${p}/example.json`, 1000, { cache: 'default' });
+  it('faster in static files (with-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
   });
 
-  it('faster in static files (big)', async () => {
-    await staticTest((p) => `http://localhost:${p}/random.html`, 100, { text: true });
+  it('faster in static files (big, no-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000);
   });
 
-  it('faster in static files (big, with-cache)', async () => {
-    await staticTest((p) => `http://localhost:${p}/random.html`, 1000, { cache: 'default' });
+  it('faster in static files (big, with-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
   });
 });
 
