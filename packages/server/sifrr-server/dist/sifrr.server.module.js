@@ -24,13 +24,6 @@ function writeHeaders(res, headers, other) {
 var utils = {
   writeHeaders
 };
-var utils_1 = utils.writeHeaders;
-
-const utils$1 = /*#__PURE__*/Object.freeze({
-  default: utils,
-  __moduleExports: utils,
-  writeHeaders: utils_1
-});
 
 const DEFAULT_EXT = 'application/octet-stream';
 const extensions = {
@@ -208,7 +201,7 @@ var ext = {
   extensions
 };
 
-const writeHeaders$1 = utils$1.writeHeaders;
+const writeHeaders$1 = utils.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
 function sendFile(res, path, reqHeaders, lastModified, responseHeaders = {}) {
@@ -358,7 +351,7 @@ var sifrr_server = {
   SSLApp: sslapp,
   extensions: ext.extensions,
   getExtension: ext.getExt,
-  writeHeaders: utils$1.writeHeaders
+  writeHeaders: utils.writeHeaders
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;

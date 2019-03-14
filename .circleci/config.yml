@@ -13,16 +13,16 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6"
-      # - restore_cache:
-      #     keys:
-      #       - sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
-      #       - sifrr-v1-source-{{ .Branch }}-
-      #       - sifrr-v1-source-
+      - restore_cache:
+          keys:
+            - sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
+            - sifrr-v1-source-{{ .Branch }}-
+            - sifrr-v1-source-
       - checkout
-      # - save_cache:
-      #     key: sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
-      #     paths:
-      #       - ".git"
+      - save_cache:
+          key: sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
       - run:
           name: Yarn workspaces
           command: yarn config set workspaces-experimental true
