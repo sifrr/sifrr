@@ -1,12 +1,12 @@
 # sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)
 
-Server Side Redering for any js based app using puppeteer (headless chrome) with caching.
+Server Side Pre-Redering for any js based app using puppeteer (headless chrome) with caching. Mainly focused on serving rendered content to crawlers/bots.
 
 ## Features
 
 -   Works with Custom Elements, Shadow DOM
 -   Add custom JS to execute before or after rendering
--   Time based Caching
+-   Time, key based Caching
 
 ## How to use
 
