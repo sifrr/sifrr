@@ -194,15 +194,17 @@ function sendFile(res, path, reqHeaders, options) {
   res.onAborted(errHandler);
   fs.stat(path, (err, stat) => {
     if (err) throw err;
-    const lastModified = stat.mtime.toUTCString(), totalSize = stat.size;
+    const lastModified = stat.mtime, totalSize = stat.size;
     const responseHeaders = options.headers || {};
     if (options.contentType) responseHeaders['content-type'] = ext$1(path);
-    if (options.lastModified) responseHeaders['last-modified'] = lastModified;
-    if (reqHeaders['if-modified-since']) {
-      if (new Date(reqHeaders['if-modified-since']).toUTCString() === lastModified) {
-        writeHeaders(res, responseHeaders);
-        res.writeStatus('304 Not Modified');
-        return res.end();
+    if (options.lastModified) {
+      responseHeaders['last-modified'] = lastModified.toUTCString();
+      if (reqHeaders['if-modified-since']) {
+        if (new Date(reqHeaders['if-modified-since']) <= lastModified) {
+          writeHeaders(res, responseHeaders);
+          res.writeStatus('304 Not Modified');
+          return res.end();
+        }
       }
     }
     let start = 0, end = totalSize - 1;
@@ -218,9 +220,9 @@ function sendFile(res, path, reqHeaders, options) {
       });
       res.writeStatus('206 Partial Content');
     }
-    writeHeaders(res, responseHeaders);
     const src = fs.createReadStream(path, { start, end });
     res.onAborted(() => src.destroy());
+    writeHeaders(res, responseHeaders);
     src.on('data', (buffer) => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
       const lastOffset = res.getWriteOffset();
