@@ -65,9 +65,7 @@ class Request {
 
   get options() {
     const options = Object.assign({
-      mode: 'cors',
-      redirect: 'follow',
-      cache: 'no-cache'
+      redirect: 'follow'
     }, this._options);
     options.headers = Object.assign({
       accept: 'application/json'

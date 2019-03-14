@@ -63,9 +63,7 @@ class Request {
   }
   get options() {
     const options = Object.assign({
-      mode: 'cors',
-      redirect: 'follow',
-      cache: 'no-cache'
+      redirect: 'follow'
     }, this._options);
     options.headers = Object.assign({
       accept: 'application/json'
@@ -165,7 +163,7 @@ class SifrrFetch {
   static delete(purl, poptions) {
     return this.request(purl, poptions, 'DELETE');
   }
-  static graphql(purl, poptions) {
+  static graphql(purl, poptions = {}) {
     const { query, variables = {} } = poptions;
     delete poptions.query;
     delete poptions.variables;
@@ -188,12 +186,12 @@ class SifrrFetch {
       return this[method](fallback.url, options);
     } : undefined);
   }
-  static file(purl, poptions) {
+  static file(purl, poptions = {}) {
     poptions.headers = poptions.headers || {};
     poptions.headers.accept = poptions.headers.accept || '*/*';
     return this.request(purl, poptions, 'GET');
   }
-  static request(purl, poptions, method) {
+  static request(purl, poptions = {}, method) {
     const { url, options } = this.afterUse(purl, poptions, method);
     return new request(url, options).response;
   }
