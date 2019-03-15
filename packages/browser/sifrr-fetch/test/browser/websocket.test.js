@@ -80,10 +80,15 @@ describe('websockets', () => {
 
   it('load test', async () => {
     const result = await page.evaluate(async () => {
-      return await window.testSocket(1000, 1);
+      return {
+        socket: await window.testSocket(1000),
+        fetch: await window.testFetch(1000)
+      };
     });
 
-    expect(result.total).to.equal(1000);
-    expect(result.time).to.be.at.most(500);
+    global.console.table(result);
+    expect(result.socket.total).to.equal(result.fetch.total);
+    expect(result.socket.size).to.equal(result.fetch.size);
+    expect(result.socket.time).to.be.at.most(result.fetch.time / 8);
   });
 });

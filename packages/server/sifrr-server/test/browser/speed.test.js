@@ -23,7 +23,11 @@ describe('speed test', function() {
     await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
   });
 
-  it('faster in static files (big, with-304)', async () => {
+  it.skip('faster in static files (big, no-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-store' });
+  });
+
+  it.skip('faster in static files (big, with-304)', async () => {
     await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
   });
 });

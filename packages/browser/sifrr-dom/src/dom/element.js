@@ -111,7 +111,7 @@ function elementClassFactory(baseClass) {
 
     sifrrClone(state) {
       const clone = this.cloneNode(false);
-      clone._state = Object.assign({}, this.constructor.defaultState, state);
+      clone._state = state;
       return clone;
     }
 

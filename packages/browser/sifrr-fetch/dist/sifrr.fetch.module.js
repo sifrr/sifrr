@@ -69,6 +69,7 @@ class Request {
       accept: 'application/json'
     }, this._options.headers || {});
     if (options.body && options.body.constructor === ({}).constructor) {
+      options.headers['content-type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
     return options;

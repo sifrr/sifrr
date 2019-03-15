@@ -60,9 +60,15 @@ function webSocketServer(port) {
     close: (ws, code, message) => {
       global.console.log(`WebSocket ${ws.id} closed: ${parseBuffer(message)}`);
     }
+  }).options('/*', (res) => {
+    res.writeHeader('Access-Control-Allow-Origin', '*');
+    res.writeHeader('Access-Control-Allow-Headers', 'content-type');
+    res.end();
   }).post('/*', (res, req) => {
+    res.onAborted(() => true);
     const contType = req.getHeader('content-type');
     res.writeHeader('Access-Control-Allow-Origin', '*');
+    res.writeHeader('Access-Control-Allow-Headers', 'content-type');
     res.writeHeader('Content-Type', 'application/json');
     if (contType === 'application/json') {
       readData(res, (obj) => {
