@@ -9,7 +9,7 @@ const { makeEqual } = require('./makeequal');
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L86
 //
 // How this implementation differs from others, is that it's working with data directly,
-// without maintaining nodes arrays, and uses manipukates dom only when required
+// without maintaining nodes arrays, and manipulates dom only when required
 
 function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   const newL = newData.length, oldL = parent.childNodes.length;
@@ -119,7 +119,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     return;
   }
 
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = [], toDelete = [];
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = new Array(prevEnd - prevStart + 1), toDelete = [];
 
   for(let i = newStart; i <= newEnd; i++) {
     // Positions for reusing nodes from current DOM state
@@ -141,15 +141,16 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     prevStart++;
   }
 
+  // Remove extra nodes
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(toDelete[i]);
+  }
+
   // Fast path for full replace
   if (reusingNodes === 0) {
     for(let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
       parent.insertBefore(createFn(newData[i]), prevStartNode);
-    }
-    // Remove extra nodes
-    for(let i = 0; i < toDelete.length; i++) {
-      parent.removeChild(toDelete[i]);
     }
     return;
   }
@@ -172,10 +173,6 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       parent.insertBefore(tmpD, finalNode);
       finalNode = tmpD;
     }
-  }
-
-  for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(toDelete[i]);
   }
 }
 

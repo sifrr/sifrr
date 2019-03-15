@@ -37,7 +37,7 @@ function moduleConfig(name, root, min = false, isModule = false) {
       name: name,
       banner: banner,
       footer: footer,
-      sourcemap: true,
+      sourcemap: !min,
       preferConst: true,
       globals: globals
     },

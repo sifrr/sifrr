@@ -261,7 +261,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     }
     return;
   }
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = [], toDelete = [];
+  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = new Array(prevEnd - prevStart + 1), toDelete = [];
   for(let i = newStart; i <= newEnd; i++) {
     oldKeys[i] = -1;
     newKeys.set(newData[i][key], i);
@@ -278,12 +278,12 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     prevStartNode = prevStartNode.nextSibling;
     prevStart++;
   }
+  for(let i = 0; i < toDelete.length; i++) {
+    parent.removeChild(toDelete[i]);
+  }
   if (reusingNodes === 0) {
     for(let i = newStart; i <= newEnd; i++) {
       parent.insertBefore(createFn(newData[i]), prevStartNode);
-    }
-    for(let i = 0; i < toDelete.length; i++) {
-      parent.removeChild(toDelete[i]);
     }
     return;
   }
@@ -304,9 +304,6 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       parent.insertBefore(tmpD, finalNode);
       finalNode = tmpD;
     }
-  }
-  for(let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(toDelete[i]);
   }
 }
 function longestPositiveIncreasingSubsequence(ns, newStart) {
