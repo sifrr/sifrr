@@ -17,7 +17,6 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
   const times = (warmups + 1) * runs;
   for (let i = 0; i < times; i++) {
     if (i % (warmups + 1) === 0) {
-      if (verbose) process.stdout.write('> ');
       // if (url!== page.url()) await page.goto(url);
       await page.goto(url);
       await BM.setup();
@@ -27,7 +26,6 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
       await page.waitForFunction(BM.beforeAllWait());
     }
     const bm = new BM(i % (warmups + 1));
-    if (verbose) process.stdout.write(`${i + 1} `);
 
     // Run before
     bm.before();
@@ -40,12 +38,14 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
     const afterMetrics = await BM.metrics();
 
     if (i % (warmups + 1) === warmups) {
-      if (verbose) process.stdout.write('-');
+      if (verbose) process.stdout.write(`${i + 1}R `);
       const diff = BM.metricsDiff(beforeMetrics, afterMetrics);
       for (let m in diff) {
         totals[m] = totals[m] || 0;
         totals[m] += diff[m];
       }
+    } else {
+      if (verbose) process.stdout.write(`${i + 1}W `);
     }
   }
   if (verbose) process.stdout.write('\n');

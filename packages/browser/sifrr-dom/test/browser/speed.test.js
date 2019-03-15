@@ -20,7 +20,6 @@ let benchmarks = [
     '10k-update10th',
     '1k-append'
   ],
-  url = `${PATH}/speedtest.html`,
   runs = parseInt(getArg('runs') || 1, 10),
   warmups = parseInt(getArg('warmups') || 1, 10);
 
@@ -43,39 +42,28 @@ const ExpectedLayoutCounts = {
   '1k-append': 1
 };
 
-const ExpectedTotalDurations = {
-  '1k-run': 130,
-  '10k-run': 1200,
-  '1k-replace': 50,
-  '10k-replace': 400,
-  '1k-clear': 30,
-  '10k-clear': 170,
-  '1k-swap': 15,
-  '1k-select': 1,
-  '1k-delete': 40,
-  '10k-update10th': 90,
-  '1k-append': 140
-};
-
 describe('Speed tests', async function() {
   this.timeout(0);
 
   it('passes speed tests', async () => {
     const suffixes = ['?', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
+    const url = `${PATH}/speedtest.html`;
+    const urls = suffixes.map(s => url + s);
+    // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
 
-    for(let j = 0; j < suffixes.length; j++) {
-      const suffix = suffixes[j];
+    for(let j = 0; j < urls.length; j++) {
+      const u = urls[j];
 
       for (let i = 0; i < benchmarks.length; i++) {
         const bm = benchmarks[i];
 
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, warmups: warmups, url: url + suffix }, false).run();
+        const results = await new BenchmarkRunner([bm], { port, runs: runs, warmups: warmups, url: u }, false).run();
         const bmd = results[bm];
 
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
         compare[bm] = compare[bm] || {};
-        compare[bm][suffix] = bmd['TaskDuration'];
+        compare[bm][u] = bmd['TaskDuration'];
       }
     }
 
