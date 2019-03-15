@@ -204,7 +204,7 @@ var ext = {
 const writeHeaders$1 = utils.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
-function sendFile(res, path, reqHeaders, lastModified, responseHeaders = {}) {
+function sendFile(res, path, reqHeaders = {}, lastModified = true, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
   if (lastModified) {

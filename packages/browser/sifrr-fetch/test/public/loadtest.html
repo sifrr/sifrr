@@ -25,7 +25,10 @@
                 if (k === 0) firstResponse = performance.now() - startTime;
                 // console.log(k, response.dataYouSent.number);
                 k++;
-                if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
+                if (k >= requests) {
+                  sock.close();
+                  res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
+                }
               });
             }
           }

@@ -4,7 +4,7 @@ const writeHeaders = require('./utils').writeHeaders;
 const ext = require('./ext').getExt;
 const bytes = /bytes=/;
 
-function sendFile(res, path, reqHeaders, lastModified, responseHeaders = {}) {
+function sendFile(res, path, reqHeaders = {}, lastModified = true, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
 

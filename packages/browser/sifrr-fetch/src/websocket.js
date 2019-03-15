@@ -70,6 +70,10 @@ class WebSocket {
 
   onclose() {}
 
+  close() {
+    this.ws.close();
+  }
+
   onmessage(event) {
     const data = JSON.parse(event.data);
     if (data.sifrrQueryId) this._requests[data.sifrrQueryId].res(data.data);
