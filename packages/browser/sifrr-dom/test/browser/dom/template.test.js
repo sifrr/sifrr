@@ -34,6 +34,11 @@ describe('Sifrr.Dom.template', () => {
       temp.innerHTML = 'ok';
       return Sifrr.Dom.template(temp);
     });
+    await testTemplate(() => {
+      const temp = document.createElement('template');
+      temp.innerHTML = 'ok';
+      return Sifrr.Dom.template(temp.content.childNodes);
+    });
   });
 
   it('works with bindings', async () => {

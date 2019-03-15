@@ -4,9 +4,9 @@ module.exports = (str, ...extra) => {
   const tmp = TEMPLATE();
   if (typeof str === 'string') {
     // nothing
-  } else if (str[0] && typeof str[0] === 'string') {
+  } else if (Array.isArray(str) && typeof str[0] === 'string') {
     str = String.raw(str, ...extra);
-  } else if (str[0]) {
+  } else if (str instanceof NodeList || (Array.isArray(str) && str[0].nodeType)) {
     Array.from(str).forEach((s) => {
       tmp.content.appendChild(s);
     });
