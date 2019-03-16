@@ -1,4 +1,4 @@
-const { nativeToSyntheticEvent } = require('../../../src/dom/event');
+const { getEventListener } = require('../../../src/dom/event');
 
 describe('Event', () => {
   it('takes composedPath if exists', async () => {
@@ -8,7 +8,8 @@ describe('Event', () => {
     const event = {
       composedPath: () => [target]
     };
-    await nativeToSyntheticEvent(event, 'click');
+    const nativeToSyntheticEvent = getEventListener('click');
+    nativeToSyntheticEvent(event);
 
     assert(target._click.calledOnce);
   });

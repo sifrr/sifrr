@@ -21,7 +21,7 @@ let benchmarks = [
     '1k-append'
   ],
   runs = parseInt(getArg('runs') || 1, 10),
-  warmups = parseInt(getArg('warmups') || 1, 10);
+  warmups = parseInt(getArg('warmups') || 0, 10);
 
 const benchmarkFilters = (getArg('benchmarks') || '').split(',');
 benchmarks = benchmarks.filter((b) => {
