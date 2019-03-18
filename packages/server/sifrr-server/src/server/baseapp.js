@@ -1,4 +1,3 @@
-const delegate = require('./delegate');
 const fs = require('fs');
 const path = require('path');
 const uWS = require('uWebSockets.js');
@@ -14,7 +13,7 @@ class BaseApp {
     if (!fs.statSync(folder).isDirectory()) {
       if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
       this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
-      this._app.get(options.urlPath, this._serveStatic.bind(this));
+      this.get(options.urlPath, this._serveStatic);
       return this;
     }
 
@@ -34,7 +33,7 @@ class BaseApp {
         // serve from this folder
         const url = '/' + path.relative(base, filePath);
         this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
-        this._app.get(url, this._serveStatic.bind(this));
+        this.get(url, this._serveStatic);
       }
     });
     return this;
@@ -48,12 +47,12 @@ class BaseApp {
 
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this._app.listen(h, p, (socket) => {
+      this.listen(h, p, (socket) => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this._app.listen(h, (socket) => {
+      this.listen(h, (socket) => {
         this._socket = socket;
         p(socket);
       });
@@ -68,22 +67,5 @@ class BaseApp {
     }
   }
 }
-
-const methods = [
-  'any',
-  'connect',
-  'del',
-  'get',
-  'head',
-  'options',
-  'patch',
-  'post',
-  'put',
-  'trace',
-  'ws',
-];
-
-delegate(methods, BaseApp.prototype, '_app');
-BaseApp.prototype._staticPaths = {};
 
 module.exports = BaseApp;

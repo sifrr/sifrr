@@ -1,10 +1,12 @@
 const uWS = require('uWebSockets.js');
 const BaseApp = require('./baseapp');
+const { extend } = require('./utils');
 
-class App extends BaseApp {
+class App extends uWS.App {
   constructor(options) {
     super(options);
-    this._app = uWS.App(options);
+    this._staticPaths = {};
+    extend(this, BaseApp);
   }
 }
 

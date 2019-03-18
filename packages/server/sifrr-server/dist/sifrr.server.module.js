@@ -3,15 +3,6 @@ import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
 import path from 'path';
 
-var delegate = (fxns, proto, delTo) => {
-  fxns.forEach(fxn => {
-    proto[fxn] = function () {
-      this[delTo][fxn](...arguments);
-      return this;
-    };
-  });
-};
-
 function writeHeaders(res, headers, other) {
   if (typeof other !== 'undefined') {
     res.writeHeader(headers, other.toString());
@@ -21,8 +12,15 @@ function writeHeaders(res, headers, other) {
     }
   }
 }
+function extend(who, from) {
+  const ownProps = Object.getOwnPropertyNames(from.prototype);
+  ownProps.forEach(prop => {
+    who[prop] = who[prop] || from.prototype[prop].bind(who);
+  });
+}
 var utils = {
-  writeHeaders
+  writeHeaders,
+  extend
 };
 
 const extensions = {
@@ -268,7 +266,7 @@ class BaseApp {
     if (!fs.statSync(folder).isDirectory()) {
       if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
       this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
-      this._app.get(options.urlPath, this._serveStatic.bind(this));
+      this.get(options.urlPath, this._serveStatic);
       return this;
     }
     const filter = options.filter || noOp;
@@ -280,7 +278,7 @@ class BaseApp {
       } else {
         const url = '/' + path.relative(base, filePath);
         this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
-        this._app.get(url, this._serveStatic.bind(this));
+        this.get(url, this._serveStatic);
       }
     });
     return this;
@@ -291,12 +289,12 @@ class BaseApp {
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this._app.listen(h, p, (socket) => {
+      this.listen(h, p, (socket) => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this._app.listen(h, (socket) => {
+      this.listen(h, (socket) => {
         this._socket = socket;
         p(socket);
       });
@@ -310,35 +308,24 @@ class BaseApp {
     }
   }
 }
-const methods = [
-  'any',
-  'connect',
-  'del',
-  'get',
-  'head',
-  'options',
-  'patch',
-  'post',
-  'put',
-  'trace',
-  'ws',
-];
-delegate(methods, BaseApp.prototype, '_app');
-BaseApp.prototype._staticPaths = {};
 var baseapp = BaseApp;
 
-class App extends baseapp {
+const { extend: extend$1 } = utils;
+class App extends uWebSockets.App {
   constructor(options) {
     super(options);
-    this._app = uWebSockets.App(options);
+    this._staticPaths = {};
+    extend$1(this, baseapp);
   }
 }
 var app = App;
 
-class SSLApp extends baseapp {
+const { extend: extend$2 } = utils;
+class SSLApp extends uWebSockets.App {
   constructor(options) {
     super(options);
-    this._app = uWebSockets.SSLApp(options);
+    this._staticPaths = {};
+    extend$2(this, baseapp);
   }
 }
 var sslapp = SSLApp;
