@@ -204,8 +204,12 @@ var ext = {
 const writeHeaders$1 = utils.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
-function sendFile(res, path, reqHeaders = {}, lastModified = true, responseHeaders = {}) {
+function sendFile(res, req, path, lastModified = true, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
+  const reqHeaders = {
+    'if-modified-since': req.getHeader('if-modified-since'),
+    range: req.getHeader('range')
+  };
   mtime.setMilliseconds(0);
   if (lastModified) {
     if (reqHeaders['if-modified-since']) {
@@ -257,7 +261,6 @@ function sendFile(res, path, reqHeaders = {}, lastModified = true, responseHeade
 }
 var sendfile = sendFile;
 
-const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 class BaseApp {
   file(folder, options = {}, base = folder) {
@@ -284,9 +287,7 @@ class BaseApp {
   }
   _serveStatic(res, req) {
     const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
-    const reqHeaders = {};
-    requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
-    sendfile(res, filePath, reqHeaders, lm, headers);
+    sendfile(res, req, filePath, lm, headers);
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
@@ -347,15 +348,17 @@ var sifrr_server = {
   SSLApp: sslapp,
   extensions: ext.extensions,
   getExtension: ext.getExt,
-  writeHeaders: utils.writeHeaders
+  writeHeaders: utils.writeHeaders,
+  sendFile: sendfile
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;
 var sifrr_server_3 = sifrr_server.extensions;
 var sifrr_server_4 = sifrr_server.getExtension;
 var sifrr_server_5 = sifrr_server.writeHeaders;
+var sifrr_server_6 = sifrr_server.sendFile;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_5 as writeHeaders };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_5 as writeHeaders, sifrr_server_6 as sendFile };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map

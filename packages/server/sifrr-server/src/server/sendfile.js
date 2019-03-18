@@ -4,8 +4,12 @@ const writeHeaders = require('./utils').writeHeaders;
 const ext = require('./ext').getExt;
 const bytes = /bytes=/;
 
-function sendFile(res, path, reqHeaders = {}, lastModified = true, responseHeaders = {}) {
+function sendFile(res, req, path, lastModified = true, responseHeaders = {}) {
   const { mtime, size } = fs.statSync(path);
+  const reqHeaders = {
+    'if-modified-since': req.getHeader('if-modified-since'),
+    range: req.getHeader('range')
+  };
   mtime.setMilliseconds(0);
 
   // handling last modified

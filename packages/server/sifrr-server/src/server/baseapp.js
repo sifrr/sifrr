@@ -4,7 +4,6 @@ const path = require('path');
 const uWS = require('uWebSockets.js');
 const sendFile = require('./sendfile');
 
-const requiredHeaders = ['if-modified-since', 'range'];
 const noOp = () => true;
 
 class BaseApp {
@@ -43,10 +42,8 @@ class BaseApp {
 
   _serveStatic(res, req) {
     const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
-    const reqHeaders = {};
-    requiredHeaders.forEach(k => reqHeaders[k] = req.getHeader(k));
 
-    sendFile(res, filePath, reqHeaders, lm, headers);
+    sendFile(res, req, filePath, lm, headers);
   }
 
   listen(h, p = noOp, cb) {
