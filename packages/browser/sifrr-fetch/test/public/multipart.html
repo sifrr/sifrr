@@ -19,20 +19,7 @@
       const form = document.querySelector('#form');
       form.onsubmit = (e) => {
         e.preventDefault();
-        const data = new FormData();
-        for (let i in form.elements) {
-          const elem = form.elements[i];
-          if (elem.tagName !== 'INPUT') continue;
-          if (elem.name === 'file') {
-            data.append(elem.name, elem.files[0]);
-          } else if (elem.name === 'file2') {
-            for (let i = 0; i < elem.files.length; i++) {
-              data.append('file2', elem.files[i]);
-            }
-          } else {
-            data.append(elem.name, elem.value);
-          }
-        }
+        const data = new FormData(form);
         Sifrr.Fetch.post('http://localhost:3333/what', {
           body: data
         }).then(resp => {

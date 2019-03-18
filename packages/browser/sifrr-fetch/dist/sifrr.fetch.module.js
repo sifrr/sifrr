@@ -12,7 +12,7 @@ class Request {
       if (resp.ok && typeof me._options.onProgress === 'function') {
         const contentLength = resp.headers.get('content-length');
         const total = parseInt(contentLength,10);
-        if (!total || !resp.body) {
+        if (!total || !resp.body || !ReadableStream) {
           me._options.onProgress(100);
         } else {
           const reader = resp.body.getReader();
@@ -87,24 +87,32 @@ class WebSocket {
     this._requests = {};
     this._openSocket();
   }
-  async send(data, event = 'SIFRR') {
-    const id = this.id;
-    this.id++;
+  send(data, type) {
+    if (data.constructor === ({}).constructor) {
+      return this.sendJSON(data, type);
+    } else {
+      return this.sendRaw(data, this.id++);
+    }
+  }
+  sendJSON(data, type = 'JSON') {
     const message = {};
-    message.event = event;
-    message.sifrrQueryId = id;
-    if (this._fallback) return this.fallback(data);
-    const sock = await this._openSocket();
-    if (!sock) return this.fallback(data);
+    message.sifrrQueryType = type;
+    message.sifrrQueryId = this.id++;
     message.data = data;
-    this.ws.send(JSON.stringify(message));
+    return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
+  }
+  async sendRaw(message, id, original = message) {
+    if (this._fallback) return this.fallback(original);
+    const sock = await this._openSocket();
+    if (!sock) return this.fallback(original);
+    this.ws.send(message);
     const ret = new Promise((res) => {
       this._requests[id] = {
         res: (v) => {
           delete this._requests[id];
           res(v);
         },
-        data
+        original
       };
     });
     return ret;
@@ -115,9 +123,12 @@ class WebSocket {
       this.ws.onopen = this.onopen.bind(this);
       this.ws.onerror = this.onerror.bind(this);
       this.ws.onclose = this.onclose.bind(this);
-      this.ws.onmessage = this.onmessage.bind(this);
+      this.ws.onmessage = this._onmessage.bind(this);
     } else if (this.ws.readyState === this.ws.OPEN) {
       return Promise.resolve(true);
+    } else {
+      this.ws = null;
+      return this._openSocket();
     }
     const me = this;
     return new Promise(res => {
@@ -146,11 +157,13 @@ class WebSocket {
   close() {
     this.ws.close();
   }
-  onmessage(event) {
+  _onmessage(event) {
     const data = JSON.parse(event.data);
     if (data.sifrrQueryId) this._requests[data.sifrrQueryId].res(data.data);
     delete this._requests[data.sifrrQueryId];
+    this.onmessage(event);
   }
+  onmessage() {}
 }
 var websocket = WebSocket;
 

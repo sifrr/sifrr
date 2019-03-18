@@ -22,7 +22,7 @@ function webSocketServer(port) {
   app.ws('/*', {
     /* Options */
     compression: uWS.SHARED_COMPRESSOR,
-    maxPayloadLength: 16 * 1024 * 1024,
+    maxPayloadLength: 1 * 1024 * 1024,
     idleTimeout: 120,
     /* Handlers */
     open: (ws, req) => {
@@ -40,7 +40,7 @@ function webSocketServer(port) {
       let ok, res;
       res = {};
       res.sifrrQueryId = message.sifrrQueryId;
-      if (message.event === 'FILE') {
+      if (message.sifrrQueryType === 'FILE') {
         res.data = fs.readFileSync(path.join(__dirname, message.data.url), 'UTF-8');
       } else {
         res.data = { dataYouSent: message.data };
@@ -69,7 +69,6 @@ function webSocketServer(port) {
     const contType = req.getHeader('content-type');
     res.writeHeader('Access-Control-Allow-Origin', '*');
     res.writeHeader('Access-Control-Allow-Headers', 'content-type');
-    res.writeHeader('Content-Type', 'application/json');
     if (contType === 'application/json') {
       readData(res, (obj) => {
         res.end(JSON.stringify({ dataYouSent: JSON.parse(obj) }));

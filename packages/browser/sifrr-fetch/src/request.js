@@ -12,7 +12,7 @@ class Request {
       if (resp.ok && typeof me._options.onProgress === 'function') {
         const contentLength = resp.headers.get('content-length');
         const total = parseInt(contentLength,10);
-        if (!total || !resp.body) {
+        if (!total || !resp.body || !ReadableStream) {
           me._options.onProgress(100);
         } else {
           const reader = resp.body.getReader();
