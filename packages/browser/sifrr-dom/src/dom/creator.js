@@ -37,7 +37,7 @@ function creator(el, defaultState) {
     // Html ?
     if (isHtml(el)) {
       const innerHTML = el.innerHTML;
-      if (innerHTML.indexOf('${') >= 0) {
+      if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }

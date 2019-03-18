@@ -5,24 +5,21 @@ const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 
 function update(element, stateMap) {
-  if (!element._refs) return false;
   stateMap = stateMap || element.constructor.stateMap;
-  let data, dom, newValue;
   // Update nodes
-  const l = element._refs.length;
+  const l = element._refs ? element._refs.length : 0;
   for (let i = 0; i < l; i++) {
-    data = stateMap[i].ref;
-    dom = element._refs[i];
+    const data = stateMap[i].ref, dom = element._refs[i];
 
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      newValue = element._state[data.text];
+      const newValue = element._state[data.text];
       if (dom.data != newValue) dom.data = newValue;
       continue;
     } else if (data.type === 1) {
       // text node
-      newValue = evaluateBindings(data.text, element);
+      const newValue = evaluateBindings(data.text, element);
       if (dom.data != newValue) dom.data = newValue;
       continue;
     }
@@ -31,6 +28,7 @@ function update(element, stateMap) {
     if (data.attributes) {
       for(let key in data.attributes) {
         if (key !== 'events') {
+          let newValue;
           if (data.attributes[key].type === 0) {
             newValue = element._state[data.attributes[key].text];
           } else {
@@ -52,7 +50,7 @@ function update(element, stateMap) {
     if (data.text === undefined) continue;
 
     // update element
-    newValue = evaluateBindings(data.text, element);
+    const newValue = evaluateBindings(data.text, element);
 
     if (!newValue || newValue.length === 0) { dom.textContent = ''; }
     if (data.type === 3) {
