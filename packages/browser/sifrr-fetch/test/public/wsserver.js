@@ -70,6 +70,7 @@ function webSocketServer(port) {
     res.writeHeader('Access-Control-Allow-Origin', '*');
     res.writeHeader('Access-Control-Allow-Headers', 'content-type');
     if (contType === 'application/json') {
+      res.writeHeader('content-type', 'application/json');
       readData(res, (obj) => {
         res.end(JSON.stringify({ dataYouSent: JSON.parse(obj) }));
       });

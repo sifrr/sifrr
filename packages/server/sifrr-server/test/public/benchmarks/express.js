@@ -1,4 +1,5 @@
 const express = require('express');
+const compression = require('compression');
 const app = express();
 const path = require('path');
 
@@ -8,6 +9,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(require('serve-static')(path.join(__dirname, 'public')));
-app.use(require('serve-static')(path.join(__dirname, '../a')));
+app.get('/*', compression(), require('serve-static')(path.join(__dirname, 'public/compress')));
 
 module.exports = app;

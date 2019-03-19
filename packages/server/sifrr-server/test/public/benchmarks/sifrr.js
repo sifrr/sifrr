@@ -6,13 +6,15 @@ app.file(path.join(__dirname, 'public'), {
   headers: {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': '*'
-  }
+  },
+  compress: false
 });
-app.file(path.join(__dirname, '../a'), {
+app.file(path.join(__dirname, 'public/compress'), {
   headers: {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': '*'
-  }
+  },
+  compress: true
 });
 
 module.exports = app;

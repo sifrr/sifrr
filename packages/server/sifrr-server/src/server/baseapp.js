@@ -32,7 +32,8 @@ class BaseApp {
       } else {
         // serve from this folder
         const url = '/' + path.relative(base, filePath);
-        this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
+        options.responseHeaders = options.headers;
+        this._staticPaths[url] = [filePath, options ];
         this.get(url, this._serveStatic);
       }
     });
@@ -40,19 +41,19 @@ class BaseApp {
   }
 
   _serveStatic(res, req) {
-    const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
+    const options = this._staticPaths[req.getUrl()];
 
-    sendFile(res, req, filePath, lm, headers);
+    sendFile(res, req, options[0], options[1]);
   }
 
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this.listen(h, p, (socket) => {
+      this._listen(h, p, (socket) => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this.listen(h, (socket) => {
+      this._listen(h, (socket) => {
         this._socket = socket;
         p(socket);
       });

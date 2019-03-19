@@ -23,7 +23,7 @@
               }, wsevent).then((response) => {
                 size += lengthInUtf8Bytes(response);
                 if (k === 0) firstResponse = performance.now() - startTime;
-                // console.log(k, response.dataYouSent.number);
+                console.log(response);
                 k++;
                 if (k >= requests) {
                   sock.close();
@@ -47,7 +47,7 @@
             }).then((response) => {
               size += lengthInUtf8Bytes(response);
               if (k === 0) firstResponse = performance.now() - startTime;
-              // console.log(k, response.dataYouSent.number);
+              console.log(response);
               k++;
               if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
             });

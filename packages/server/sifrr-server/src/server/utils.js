@@ -11,7 +11,10 @@ function writeHeaders(res, headers, other) {
 function extend(who, from) {
   const ownProps = Object.getOwnPropertyNames(from.prototype);
   ownProps.forEach(prop => {
-    who[prop] = who[prop] || from.prototype[prop].bind(who);
+    if (who[prop]) {
+      who[`_${prop}`] = who[prop];
+    }
+    who[prop] = from.prototype[prop].bind(who);
   });
 }
 

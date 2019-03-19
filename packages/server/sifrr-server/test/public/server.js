@@ -9,7 +9,7 @@ if (index !== -1) {
 global.ENV = port ? 'development' : 'test';
 
 const path = require('path');
-const { App } = require('../../src/sifrr.server');
+const { App, sendFile } = require('../../src/sifrr.server');
 // const { App } = require('uWebSockets.js');
 
 function webSocketServer(port) {
@@ -53,6 +53,8 @@ function webSocketServer(port) {
     }).get('/not/file', (res) => {
       res.writeHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ ok: true }));
+    }).get('/static/*', (res, req) => {
+      sendFile(res, req, path.join(__dirname, './static.html'));
     }).listen(port, (socket) => {
       if (socket) {
         app.socket = socket;

@@ -16,28 +16,37 @@ describe('speed test', function() {
   });
 
   it('faster in static files (no-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-store' });
+    await staticTest((p) => `http://localhost:${p}/example.json`, 1000, { cache: 'no-store' });
   });
 
   it('faster in static files (with-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
+    await staticTest((p) => `http://localhost:${p}/example.json`, 1000, { cache: 'no-cache' });
   });
 
-  it.skip('faster in static files (big, no-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-store' });
+  it('faster in static files (big, no-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/random.html`, 1000, { cache: 'no-store' });
   });
 
-  it.skip('faster in static files (big, with-304)', async () => {
-    await staticTest((p) => `http://localhost:${p}/b/c/d.html`, 1000, { cache: 'no-cache' });
+  it('faster in static files (big, no-304, compression)', async () => {
+    await staticTest((p) => `http://localhost:${p}/compressed.html`, 100, {
+      cache: 'no-store',
+      headers: {
+        'accept-encoding': 'gzip'
+      }
+    });
+  });
+
+  it('faster in static files (big, with-304)', async () => {
+    await staticTest((p) => `http://localhost:${p}/random.html`, 1000, { cache: 'no-cache' });
   });
 });
 
 async function staticTest(url, num, option) {
   const expressResults = await page.evaluate(async (u, n, o) => {
-    return await testFetch(u, n, o );
+    return await testFetch(u, n, o);
   }, url(EPORT), num, option);
   const sifrrResults = await page.evaluate(async (u, n, o) => {
-    return await testFetch(u, n, o );
+    return await testFetch(u, n, o);
   }, url(SPORT), num, option);
   global.console.table({ sifrr: sifrrResults, express: expressResults });
   assert(sifrrResults.rps > expressResults.rps);

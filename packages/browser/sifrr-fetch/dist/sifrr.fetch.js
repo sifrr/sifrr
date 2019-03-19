@@ -136,7 +136,7 @@
         this.ws.onmessage = this._onmessage.bind(this);
       } else if (this.ws.readyState === this.ws.OPEN) {
         return Promise.resolve(true);
-      } else {
+      } else if (this.ws.readyState !== this.ws.CONNECTING) {
         this.ws = null;
         return this._openSocket();
       }

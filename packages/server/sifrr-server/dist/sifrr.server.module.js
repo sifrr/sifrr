@@ -2,6 +2,7 @@
 import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
 import path from 'path';
+import zlib from 'zlib';
 
 function writeHeaders(res, headers, other) {
   if (typeof other !== 'undefined') {
@@ -15,7 +16,10 @@ function writeHeaders(res, headers, other) {
 function extend(who, from) {
   const ownProps = Object.getOwnPropertyNames(from.prototype);
   ownProps.forEach(prop => {
-    who[prop] = who[prop] || from.prototype[prop].bind(who);
+    if (who[prop]) {
+      who[`_${prop}`] = who[prop];
+    }
+    who[prop] = from.prototype[prop].bind(who);
   });
 }
 var utils = {
@@ -199,14 +203,22 @@ var ext = {
   extensions
 };
 
+const compressions = {
+  br: zlib.createBrotliCompress,
+  gzip: zlib.createGzip,
+  deflate: zlib.createDeflate
+};
 const writeHeaders$1 = utils.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
-function sendFile(res, req, path, lastModified = true, responseHeaders = {}) {
+function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, compress = true, compressionOptions = {
+  priority: [ 'gzip', 'br', 'deflate' ]
+} } = {}) {
   const { mtime, size } = fs.statSync(path);
   const reqHeaders = {
     'if-modified-since': req.getHeader('if-modified-since'),
-    range: req.getHeader('range')
+    range: req.getHeader('range'),
+    'accept-encoding': req.getHeader('accept-encoding')
   };
   mtime.setMilliseconds(0);
   if (lastModified) {
@@ -221,6 +233,7 @@ function sendFile(res, req, path, lastModified = true, responseHeaders = {}) {
   responseHeaders['content-type'] = ext$1(path);
   let start = 0, end = size - 1;
   if (reqHeaders.range) {
+    compress = false;
     const parts = reqHeaders.range.replace(bytes, '').split('-');
     start = parseInt(parts[0], 10);
     end = parts[1] ? parseInt(parts[1], 10) : end;
@@ -228,30 +241,52 @@ function sendFile(res, req, path, lastModified = true, responseHeaders = {}) {
     responseHeaders['accept-ranges'] = 'bytes';
     res.writeStatus('206 Partial Content');
   }
-  const src = fs.createReadStream(path, { start, end });
-  res.onAborted(() => src.destroy());
+  let readStream = fs.createReadStream(path, { start, end });
+  res.onAborted(() => readStream.destroy());
   writeHeaders$1(res, responseHeaders);
-  src.on('data', (buffer) => {
-    const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
-      lastOffset = res.getWriteOffset();
-    const [ok, done] = res.tryEnd(chunk, size);
-    if (done) {
-      src.destroy();
-    } else if (!ok) {
-      src.pause();
-      res.ab = chunk;
-      res.abOffset = lastOffset;
-      res.onWritable((offset) => {
-        const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
-        if (done) {
-          src.destroy();
-        } else if (ok) {
-          src.resume();
-        }
-        return ok;
-      });
+  let compressed = false;
+  if (compress) {
+    const l = compressionOptions.priority.length;
+    for (let i = 0; i < l; i++) {
+      const type = compressionOptions.priority[i];
+      if (reqHeaders['accept-encoding'].indexOf(type) > -1) {
+        compressed = true;
+        const compressor = compressions[type](compressionOptions);
+        readStream.pipe(compressor);
+        readStream = compressor;
+        responseHeaders['content-encoding'] = compressionOptions.priority[i];
+        break;
+      }
     }
-  })
+  }
+  if (compressed) {
+    readStream.on('data', (buffer) => {
+      res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
+    });
+  } else {
+    readStream.on('data', (buffer) => {
+      const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
+        lastOffset = res.getWriteOffset();
+      const [ok, done] = res.tryEnd(chunk, size);
+      if (done) {
+        readStream.destroy();
+      } else if (!ok) {
+        readStream.pause();
+        res.ab = chunk;
+        res.abOffset = lastOffset;
+        res.onWritable((offset) => {
+          const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
+          if (done) {
+            readStream.destroy();
+          } else if (ok) {
+            readStream.resume();
+          }
+          return ok;
+        });
+      }
+    });
+  }
+  readStream
     .on('error', res.close)
     .on('end', () => {
       res.end();
@@ -277,24 +312,25 @@ class BaseApp {
         this.file(filePath, options, base);
       } else {
         const url = '/' + path.relative(base, filePath);
-        this._staticPaths[url] = { filePath, lm: options.lastModified, headers: options.headers };
+        options.responseHeaders = options.headers;
+        this._staticPaths[url] = [filePath, options ];
         this.get(url, this._serveStatic);
       }
     });
     return this;
   }
   _serveStatic(res, req) {
-    const { filePath, lm, headers } = this._staticPaths[req.getUrl()];
-    sendfile(res, req, filePath, lm, headers);
+    const options = this._staticPaths[req.getUrl()];
+    sendfile(res, req, options[0], options[1]);
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this.listen(h, p, (socket) => {
+      this._listen(h, p, (socket) => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this.listen(h, (socket) => {
+      this._listen(h, (socket) => {
         this._socket = socket;
         p(socket);
       });
