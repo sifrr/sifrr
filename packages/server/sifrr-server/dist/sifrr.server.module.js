@@ -211,10 +211,10 @@ const compressions = {
 const writeHeaders$1 = utils.writeHeaders;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
-function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, compress = true, compressionOptions = {
+function sendFile(res, req, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
   priority: [ 'gzip', 'br', 'deflate' ]
 } } = {}) {
-  const { mtime, size } = fs.statSync(path);
+  let { mtime, size } = fs.statSync(path);
   const reqHeaders = {
     'if-modified-since': req.getHeader('if-modified-since'),
     range: req.getHeader('range'),
@@ -228,17 +228,18 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
         return res.end();
       }
     }
-    responseHeaders['last-modified'] = mtime.toUTCString();
+    headers['last-modified'] = mtime.toUTCString();
   }
-  responseHeaders['content-type'] = ext$1(path);
+  headers['content-type'] = ext$1(path);
   let start = 0, end = size - 1;
   if (reqHeaders.range) {
     compress = false;
     const parts = reqHeaders.range.replace(bytes, '').split('-');
     start = parseInt(parts[0], 10);
     end = parts[1] ? parseInt(parts[1], 10) : end;
-    responseHeaders['content-range'] = `bytes ${start}-${end}/${size}`;
-    responseHeaders['accept-ranges'] = 'bytes';
+    headers['accept-ranges'] = 'bytes';
+    headers['content-range'] = `bytes ${start}-${end}/${size}`;
+    size = end - start + 1;
     res.writeStatus('206 Partial Content');
   }
   let readStream = fs.createReadStream(path, { start, end });
@@ -253,12 +254,12 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
         const compressor = compressions[type](compressionOptions);
         readStream.pipe(compressor);
         readStream = compressor;
-        responseHeaders['content-encoding'] = compressionOptions.priority[i];
+        headers['content-encoding'] = compressionOptions.priority[i];
         break;
       }
     }
   }
-  writeHeaders$1(res, responseHeaders);
+  writeHeaders$1(res, headers);
   if (compressed) {
     readStream.on('data', (buffer) => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
@@ -296,25 +297,28 @@ var sendfile = sendFile;
 
 const noOp = () => true;
 class BaseApp {
-  file(folder, options = {}, base = folder) {
-    options.lastModified = options.lastModified !== false;
+  file(pattern, path, options) {
+    this.get(pattern, (res, req) => {
+      sendfile(res, req, path, options);
+    });
+    return this;
+  }
+  folder(prefix, folder, options, base = folder) {
     if (!fs.statSync(folder).isDirectory()) {
-      if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
-      this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
-      this.get(options.urlPath, this._serveStatic);
-      return this;
+      throw Error('Given path is not a directory: ' + folder);
     }
-    const filter = options.filter || noOp;
+    if (prefix[0] !== '/') prefix = '/' + prefix;
+    if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
+    const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
       if (fs.statSync(filePath).isDirectory()) {
-        this.file(filePath, options, base);
+        this.folder(prefix, filePath, options, base);
       } else {
         const url = '/' + path.relative(base, filePath);
-        options.responseHeaders = options.headers;
-        this._staticPaths[url] = [filePath, options ];
-        this.get(url, this._serveStatic);
+        this._staticPaths[prefix + url] = [filePath, options ];
+        this.get(prefix + url, this._serveStatic);
       }
     });
     return this;

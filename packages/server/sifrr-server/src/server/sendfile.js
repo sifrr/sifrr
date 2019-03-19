@@ -10,10 +10,10 @@ const writeHeaders = require('./utils').writeHeaders;
 const ext = require('./ext').getExt;
 const bytes = /bytes=/;
 
-function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, compress = true, compressionOptions = {
+function sendFile(res, req, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
   priority: [ 'gzip', 'br', 'deflate' ]
 } } = {}) {
-  const { mtime, size } = fs.statSync(path);
+  let { mtime, size } = fs.statSync(path);
   const reqHeaders = {
     'if-modified-since': req.getHeader('if-modified-since'),
     range: req.getHeader('range'),
@@ -31,10 +31,10 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
       }
     }
 
-    responseHeaders['last-modified'] = mtime.toUTCString();
+    headers['last-modified'] = mtime.toUTCString();
   }
 
-  responseHeaders['content-type'] = ext(path);
+  headers['content-type'] = ext(path);
 
   // write data
   let start = 0, end = size - 1;
@@ -44,8 +44,9 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
     const parts = reqHeaders.range.replace(bytes, '').split('-');
     start = parseInt(parts[0], 10);
     end = parts[1] ? parseInt(parts[1], 10) : end;
-    responseHeaders['content-range'] = `bytes ${start}-${end}/${size}`;
-    responseHeaders['accept-ranges'] = 'bytes';
+    headers['accept-ranges'] = 'bytes';
+    headers['content-range'] = `bytes ${start}-${end}/${size}`;
+    size = end - start + 1;
     res.writeStatus('206 Partial Content');
   }
 
@@ -63,13 +64,13 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
         const compressor = compressions[type](compressionOptions);
         readStream.pipe(compressor);
         readStream = compressor;
-        responseHeaders['content-encoding'] = compressionOptions.priority[i];
+        headers['content-encoding'] = compressionOptions.priority[i];
         break;
       }
     }
   }
 
-  writeHeaders(res, responseHeaders);
+  writeHeaders(res, headers);
   if (compressed) {
     readStream.on('data', (buffer) => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));

@@ -6,19 +6,25 @@ const sendFile = require('./sendfile');
 const noOp = () => true;
 
 class BaseApp {
-  file(folder, options = {}, base = folder) {
-    options.lastModified = options.lastModified !== false;
+  file(pattern, path, options) {
+    this.get(pattern, (res, req) => {
+      sendFile(res, req, path, options);
+    });
+    return this;
+  }
 
-    // serve single file
+  folder(prefix, folder, options, base = folder) {
+    // not a folder
     if (!fs.statSync(folder).isDirectory()) {
-      if (!options.urlPath) throw Error('No urlPath was specified in options for file route: ' + folder);
-      this._staticPaths[options.urlPath] = { filePath: folder, lm: options.lastModified, headers: options.headers };
-      this.get(options.urlPath, this._serveStatic);
-      return this;
+      throw Error('Given path is not a directory: ' + folder);
     }
 
+    // ensure slash in beginning and no trailing slash for prefix
+    if (prefix[0] !== '/') prefix = '/' + prefix;
+    if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
+
     // serve folder
-    const filter = options.filter || noOp;
+    const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
       // Absolute path
       const filePath = path.join(folder, file);
@@ -28,13 +34,12 @@ class BaseApp {
 
       if (fs.statSync(filePath).isDirectory()) {
         // Recursive if directory
-        this.file(filePath, options, base);
+        this.folder(prefix, filePath, options, base);
       } else {
         // serve from this folder
         const url = '/' + path.relative(base, filePath);
-        options.responseHeaders = options.headers;
-        this._staticPaths[url] = [filePath, options ];
-        this.get(url, this._serveStatic);
+        this._staticPaths[prefix + url] = [filePath, options ];
+        this.get(prefix + url, this._serveStatic);
       }
     });
     return this;

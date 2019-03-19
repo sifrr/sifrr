@@ -9,7 +9,7 @@ if (index !== -1) {
 global.ENV = port ? 'development' : 'test';
 
 const path = require('path');
-const { App, sendFile } = require('../../src/sifrr.server');
+const { App } = require('../../src/sifrr.server');
 // const { App } = require('uWebSockets.js');
 
 function webSocketServer(port) {
@@ -42,10 +42,10 @@ function webSocketServer(port) {
       global.console.log(`WebSocket ${ws.id} closed: ${message}`);
     }
   })
-    .file(path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
-    .file(path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
-    // .file('/Users/aaditya-taparia/Downloads/example.mp4', { urlPath: '/video' })
-    .file(__dirname, {
+    .folder('/', path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
+    .folder('/', path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
+    .file('/video', '/Users/aaditya-taparia/Downloads/example.mp4')
+    .folder('/', __dirname, {
       filter: (path) => path.indexOf('node_modules') < 0
     })
     .get('/ok/now', (res) => {
@@ -53,9 +53,9 @@ function webSocketServer(port) {
     }).get('/not/file', (res) => {
       res.writeHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ ok: true }));
-    }).get('/static/*', (res, req) => {
-      sendFile(res, req, path.join(__dirname, './static.html'));
-    }).listen(port, (socket) => {
+    })
+    .file('/static/*', path.join(__dirname, './static.html'))
+    .listen(port, (socket) => {
       if (socket) {
         app.socket = socket;
         global.console.log('Listening to port ' + port);
