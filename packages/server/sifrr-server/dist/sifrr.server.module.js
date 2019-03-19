@@ -3349,11 +3349,6 @@ var formdata = function(contType, options = {}) {
   });
 };
 
-const formdata$1 = /*#__PURE__*/Object.freeze({
-  default: formdata,
-  __moduleExports: formdata
-});
-
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp$1 = () => true;
 class BaseApp {
@@ -3429,7 +3424,7 @@ class BaseApp {
         });
       };
       if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
-      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata$1.bind(res, contType);
+      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata.bind(res, contType);
       handler(res, req);
     });
     return this;
