@@ -243,7 +243,6 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
   }
   let readStream = fs.createReadStream(path, { start, end });
   res.onAborted(() => readStream.destroy());
-  writeHeaders$1(res, responseHeaders);
   let compressed = false;
   if (compress) {
     const l = compressionOptions.priority.length;
@@ -259,6 +258,7 @@ function sendFile(res, req, path, { lastModified = true, responseHeaders = {}, c
       }
     }
   }
+  writeHeaders$1(res, responseHeaders);
   if (compressed) {
     readStream.on('data', (buffer) => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
