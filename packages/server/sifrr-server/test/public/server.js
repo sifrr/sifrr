@@ -42,6 +42,27 @@ function webSocketServer(port) {
       global.console.log(`WebSocket ${ws.id} closed: ${message}`);
     }
   })
+    .post('/what', (res) => {
+      res.onAborted(err => { throw Error(err); });
+
+      res.writeHeader('content-type', 'application/json');
+      if (typeof res.formData === 'function') {
+        res.formData({
+          // required else promise will not resolve
+          onFile: (fieldname, file) => {
+            file.resume();
+            global.console.log(fieldname);
+          },
+          onField: (fieldname, value) => {
+            global.console.log(fieldname, value);
+          }
+        }).then(resp => res.end(JSON.stringify(resp)));
+      } else if (typeof json === 'function') {
+        res.json().then(resp => res.end(JSON.stringify(resp)));
+      } else {
+        res.end(JSON.stringify({ ok: false }));
+      }
+    })
     .folder('/', path.join(__dirname, '../../../../browser/sifrr-fetch/dist'))
     .folder('/', path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
     .file('/video', '/Users/aaditya-taparia/Downloads/example.mp4')

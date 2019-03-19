@@ -30,10 +30,8 @@ function sendFile(res, req, path, { lastModified = true, headers = {}, compress 
         return res.end();
       }
     }
-
     headers['last-modified'] = mtime.toUTCString();
   }
-
   headers['content-type'] = ext(path);
 
   // write data
@@ -107,7 +105,6 @@ function sendFile(res, req, path, { lastModified = true, headers = {}, compress 
         });
       }
     });
-
   }
   readStream
     .on('error', res.close)

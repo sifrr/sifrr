@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <form name=form"" id="form">
+      <input type="text" name="name" value="Aaditya">
+      <input type="text" name="name2" value="Aaditya2">
+      <input type="text" name="name2" value="Aaditya3">
+      <input type="file" name="file" accept="image/png, image/jpeg" required>
+      <input type="file" name="file2" accept="*/*" multiple>
+      <button type="submit" name="submit">Submit</button>
+    </form>
+    <pre id="response">
+    </pre>
+    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      const form = document.querySelector('#form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        Sifrr.Fetch.post('http://localhost:1111/what', {
+          body: data
+        }).then(resp => {
+          document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
+        });
+      };
+    </script>
+  </body>
+</html>

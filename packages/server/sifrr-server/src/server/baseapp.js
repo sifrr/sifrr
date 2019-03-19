@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const uWS = require('uWebSockets.js');
 const sendFile = require('./sendfile');
+const formData = require('./formdata');
+const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 
 const noOp = () => true;
 
@@ -65,6 +67,42 @@ class BaseApp {
       res.writeStatus('404 Not Found');
       res.end();
     } else sendFile(res, req, options[0], options[1]);
+  }
+
+  post(pattern, handler) {
+    if (typeof handler !== 'function') throw Error(`handler should be a function, give ${typeof handler}.`);
+    this._post(pattern, (res, req) => {
+      const contType = req.getHeader('content-type');
+
+      res.body = function() {
+        return new Promise(resolve => {
+          let buffer;
+          /* Register data cb */
+          res.onData((ab, isLast) => {
+            let chunk = Buffer.from(ab);
+            if (isLast) {
+              if (buffer) {
+                resolve(Buffer.concat([buffer, chunk]));
+              } else {
+                resolve(chunk);
+              }
+            } else {
+              if (buffer) {
+                buffer = Buffer.concat([buffer, chunk]);
+              } else {
+                buffer = Buffer.concat([chunk]);
+              }
+            }
+          });
+        });
+      };
+
+      if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
+      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formData.bind(res, contType);
+
+      handler(res, req);
+    });
+    return this;
   }
 
   listen(h, p = noOp, cb) {

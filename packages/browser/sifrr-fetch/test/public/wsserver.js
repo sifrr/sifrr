@@ -103,10 +103,11 @@ function webSocketServer(port) {
             }
           });
         });
-        busb.on('field', function(fieldname, val) {
+        busb.on('field', function(fieldname, value) {
           response[fieldname] = {
             type: 'field',
-            value: val
+            fieldname,
+            value
           };
         });
         busb.on('finish', function() {
