@@ -6,7 +6,7 @@ const compressions = {
   gzip: zlib.createGzip,
   deflate: zlib.createDeflate
 };
-const writeHeaders = require('./utils').writeHeaders;
+const { writeHeaders } = require('./utils');
 const ext = require('./ext').getExt;
 const bytes = /bytes=/;
 
@@ -49,6 +49,8 @@ function sendFile(res, req, path, { lastModified = true, headers = {}, compress 
     size = end - start + 1;
     res.writeStatus('206 Partial Content');
   }
+
+  if (end < 0) end = 0;
 
   let readStream = fs.createReadStream(path, { start, end });
   res.onAborted(() => readStream.destroy());

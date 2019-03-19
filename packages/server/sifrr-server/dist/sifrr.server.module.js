@@ -209,7 +209,7 @@ const compressions = {
   gzip: zlib.createGzip,
   deflate: zlib.createDeflate
 };
-const writeHeaders$1 = utils.writeHeaders;
+const { writeHeaders: writeHeaders$1 } = utils;
 const ext$1 = ext.getExt;
 const bytes = /bytes=/;
 function sendFile(res, req, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
@@ -243,6 +243,7 @@ function sendFile(res, req, path, { lastModified = true, headers = {}, compress 
     size = end - start + 1;
     res.writeStatus('206 Partial Content');
   }
+  if (end < 0) end = 0;
   let readStream = fs.createReadStream(path, { start, end });
   res.onAborted(() => readStream.destroy());
   let compressed = false;
@@ -322,11 +323,27 @@ class BaseApp {
         this.get(prefix + url, this._serveStatic);
       }
     });
+    fs.watch(folder, (event, filename) => {
+      if (event === 'rename') {
+        if (!filename) return;
+        const filePath = path.join(folder, filename);
+        const url = '/' + path.relative(base, filePath);
+        if (fs.existsSync(filePath)) {
+          this._staticPaths[prefix + url] = [filePath, options ];
+          this.get(prefix + url, this._serveStatic);
+        } else {
+          delete this._staticPaths[url];
+        }
+      }
+    });
     return this;
   }
   _serveStatic(res, req) {
     const options = this._staticPaths[req.getUrl()];
-    sendfile(res, req, options[0], options[1]);
+    if (typeof options === 'undefined') {
+      res.writeStatus('404 Not Found');
+      res.end();
+    } else sendfile(res, req, options[0], options[1]);
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {

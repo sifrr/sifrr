@@ -42,13 +42,29 @@ class BaseApp {
         this.get(prefix + url, this._serveStatic);
       }
     });
+
+    fs.watch(folder, (event, filename) => {
+      if (event === 'rename') {
+        if (!filename) return;
+        const filePath = path.join(folder, filename);
+        const url = '/' + path.relative(base, filePath);
+        if (fs.existsSync(filePath)) {
+          this._staticPaths[prefix + url] = [filePath, options ];
+          this.get(prefix + url, this._serveStatic);
+        } else {
+          delete this._staticPaths[url];
+        }
+      }
+    });
     return this;
   }
 
   _serveStatic(res, req) {
     const options = this._staticPaths[req.getUrl()];
-
-    sendFile(res, req, options[0], options[1]);
+    if (typeof options === 'undefined') {
+      res.writeStatus('404 Not Found');
+      res.end();
+    } else sendFile(res, req, options[0], options[1]);
   }
 
   listen(h, p = noOp, cb) {
