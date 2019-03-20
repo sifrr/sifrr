@@ -18,7 +18,8 @@ const external = [
   '@sifrr/fetch',
   'puppeteer',
   'events',
-  'uWebSockets.js'
+  'uWebSockets.js',
+  'stream'
 ];
 const globals = {
   '@sifrr/dom': 'Sifrr.Dom',
