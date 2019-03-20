@@ -51,7 +51,6 @@ function webSocketServer(port) {
           // required else promise will not resolve
           onFile: (fieldname, file) => {
             file.resume();
-            global.console.log(fieldname);
           }
         }).then(resp => {
           res.end(JSON.stringify(resp));

@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const { Readable } = require('stream');
 const uWS = require('uWebSockets.js');
+
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
-const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 
+const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
 
 class BaseApp {
@@ -74,19 +76,34 @@ class BaseApp {
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
 
+      res.bodyStream = function() {
+        const stream = new Readable();
+        stream._read = noOp;
+
+        this.onData((ab, isLast) => {
+          stream.push(Buffer.from(new Uint8Array(ab, ab.byteOffset, ab.byteLength), ab.byteOffset, ab.byteLength));
+          if (isLast) {
+            stream.push(null);
+          }
+        });
+
+        return stream;
+      };
+
       res.body = function() {
         return new Promise(resolve => {
           let buffer;
+          const stream = this.bodyStream();
           /* Register data cb */
-          res.onData((ab, isLast) => {
+          stream.on('data', chunk => {
             if (buffer) {
-              buffer = Buffer.concat([buffer, Buffer.from(ab)]);
+              buffer = Buffer.concat([buffer, chunk]);
             } else {
-              buffer = Buffer.concat([Buffer.from(ab)]);
+              buffer = chunk;
             }
-            if (isLast) {
-              resolve(buffer);
-            }
+          });
+          stream.on('end', () => {
+            resolve(buffer);
           });
         });
       };

@@ -1,6 +1,4 @@
-const { Readable } = require('stream');
 const Busboy = require('busboy');
-const noOp = () => true;
 
 module.exports = function(contType, options = {}) {
   options.headers = {
@@ -8,16 +6,9 @@ module.exports = function(contType, options = {}) {
   };
   return new Promise((resolve, reject) => {
     const busb = new Busboy(options);
-    const stream = new Readable();
     const response = {};
 
-    stream._read = noOp;
-    this.body().then(body => {
-      stream.push(body);
-      stream.push(null);
-    });
-
-    stream.pipe(busb);
+    this.bodyStream().pipe(busb);
 
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
       const resp = {

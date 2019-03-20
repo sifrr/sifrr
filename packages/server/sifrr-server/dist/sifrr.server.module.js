@@ -2,8 +2,8 @@
 import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
 import path from 'path';
-import zlib from 'zlib';
 import stream from 'stream';
+import zlib from 'zlib';
 import util from 'util';
 import events from 'events';
 
@@ -3295,22 +3295,14 @@ var TYPES = [
 ];
 var main = Busboy;
 
-const { Readable } = stream;
-const noOp = () => true;
 var formdata = function(contType, options = {}) {
   options.headers = {
     'content-type': contType
   };
   return new Promise((resolve, reject) => {
     const busb = new main(options);
-    const stream = new Readable();
     const response = {};
-    stream._read = noOp;
-    this.body().then(body => {
-      stream.push(body);
-      stream.push(null);
-    });
-    stream.pipe(busb);
+    this.bodyStream().pipe(busb);
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
       const resp = {
         filename,
@@ -3343,8 +3335,9 @@ var formdata = function(contType, options = {}) {
   });
 };
 
+const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
-const noOp$1 = () => true;
+const noOp = () => true;
 class BaseApp {
   file(pattern, path, options) {
     this.get(pattern, (res, req) => {
@@ -3358,7 +3351,7 @@ class BaseApp {
     }
     if (prefix[0] !== '/') prefix = '/' + prefix;
     if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
-    const filter = options ? options.filter || noOp$1 : noOp$1;
+    const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
@@ -3396,18 +3389,30 @@ class BaseApp {
     if (typeof handler !== 'function') throw Error(`handler should be a function, give ${typeof handler}.`);
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
+      res.bodyStream = function() {
+        const stream = new Readable();
+        stream._read = noOp;
+        this.onData((ab, isLast) => {
+          stream.push(Buffer.from(new Uint8Array(ab, ab.byteOffset, ab.byteLength), ab.byteOffset, ab.byteLength));
+          if (isLast) {
+            stream.push(null);
+          }
+        });
+        return stream;
+      };
       res.body = function() {
         return new Promise(resolve => {
           let buffer;
-          res.onData((ab, isLast) => {
+          const stream = this.bodyStream();
+          stream.on('data', chunk => {
             if (buffer) {
-              buffer = Buffer.concat([buffer, Buffer.from(ab)]);
+              buffer = Buffer.concat([buffer, chunk]);
             } else {
-              buffer = Buffer.concat([Buffer.from(ab)]);
+              buffer = chunk;
             }
-            if (isLast) {
-              resolve(buffer);
-            }
+          });
+          stream.on('end', () => {
+            resolve(buffer);
           });
         });
       };
@@ -3417,7 +3422,7 @@ class BaseApp {
     });
     return this;
   }
-  listen(h, p = noOp$1, cb) {
+  listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, (socket) => {
         this._socket = socket;
