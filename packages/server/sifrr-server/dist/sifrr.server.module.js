@@ -3313,8 +3313,6 @@ var formdata = function(contType, options = {}) {
     stream.pipe(busb);
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
       const resp = {
-        type: 'file',
-        fieldname,
         filename,
         encoding,
         mimetype
@@ -3329,17 +3327,13 @@ var formdata = function(contType, options = {}) {
       }
     });
     busb.on('field', function(fieldname, value) {
-      const resp = {
-        type: 'field',
-        value
-      };
       if (typeof options.onField === 'function') options.onField(fieldname, value);
       if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(resp);
+        response[fieldname].push(value);
       } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], resp];
+        response[fieldname] = [response[fieldname], value];
       }  else {
-        response[fieldname] = resp;
+        response[fieldname] = value;
       }
     });
     busb.on('finish', function() {
@@ -3406,19 +3400,13 @@ class BaseApp {
         return new Promise(resolve => {
           let buffer;
           res.onData((ab, isLast) => {
-            let chunk = Buffer.from(ab);
-            if (isLast) {
-              if (buffer) {
-                resolve(Buffer.concat([buffer, chunk]));
-              } else {
-                resolve(chunk);
-              }
+            if (buffer) {
+              buffer = Buffer.concat([buffer, Buffer.from(ab)]);
             } else {
-              if (buffer) {
-                buffer = Buffer.concat([buffer, chunk]);
-              } else {
-                buffer = Buffer.concat([chunk]);
-              }
+              buffer = Buffer.concat([Buffer.from(ab)]);
+            }
+            if (isLast) {
+              resolve(buffer);
             }
           });
         });

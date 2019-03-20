@@ -79,19 +79,13 @@ class BaseApp {
           let buffer;
           /* Register data cb */
           res.onData((ab, isLast) => {
-            let chunk = Buffer.from(ab);
-            if (isLast) {
-              if (buffer) {
-                resolve(Buffer.concat([buffer, chunk]));
-              } else {
-                resolve(chunk);
-              }
+            if (buffer) {
+              buffer = Buffer.concat([buffer, Buffer.from(ab)]);
             } else {
-              if (buffer) {
-                buffer = Buffer.concat([buffer, chunk]);
-              } else {
-                buffer = Buffer.concat([chunk]);
-              }
+              buffer = Buffer.concat([Buffer.from(ab)]);
+            }
+            if (isLast) {
+              resolve(buffer);
             }
           });
         });

@@ -21,8 +21,6 @@ module.exports = function(contType, options = {}) {
 
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
       const resp = {
-        type: 'file',
-        fieldname,
         filename,
         encoding,
         mimetype
@@ -37,17 +35,13 @@ module.exports = function(contType, options = {}) {
       }
     });
     busb.on('field', function(fieldname, value) {
-      const resp = {
-        type: 'field',
-        value
-      };
       if (typeof options.onField === 'function') options.onField(fieldname, value);
       if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(resp);
+        response[fieldname].push(value);
       } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], resp];
+        response[fieldname] = [response[fieldname], value];
       }  else {
-        response[fieldname] = resp;
+        response[fieldname] = value;
       }
     });
     busb.on('finish', function() {

@@ -43,7 +43,7 @@ function webSocketServer(port) {
     }
   })
     .post('/what', (res) => {
-      res.onAborted(err => { throw Error(err); });
+      res.onAborted(err => { if (err) throw Error(err); });
 
       res.writeHeader('content-type', 'application/json');
       if (typeof res.formData === 'function') {
@@ -52,12 +52,11 @@ function webSocketServer(port) {
           onFile: (fieldname, file) => {
             file.resume();
             global.console.log(fieldname);
-          },
-          onField: (fieldname, value) => {
-            global.console.log(fieldname, value);
           }
-        }).then(resp => res.end(JSON.stringify(resp)));
-      } else if (typeof json === 'function') {
+        }).then(resp => {
+          res.end(JSON.stringify(resp));
+        });
+      } else if (typeof res.json === 'function') {
         res.json().then(resp => res.end(JSON.stringify(resp)));
       } else {
         res.end(JSON.stringify({ ok: false }));
