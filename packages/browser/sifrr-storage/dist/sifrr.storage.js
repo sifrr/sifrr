@@ -238,7 +238,7 @@
       const me = this;
       return new Promise(resolve => {
         this.store.transaction(function (tx) {
-          tx.executeSql(`SELECT * FROM ${me.tableName}`, [], (txn, results) => {
+          tx.executeSql("SELECT * FROM ".concat(me.tableName), [], (txn, results) => {
             resolve(me.parse(results));
           });
         });
@@ -247,25 +247,25 @@
     _select(keys) {
       const me = this;
       const q = keys.map(() => '?').join(', ');
-      return this.execSql(`SELECT key, value FROM ${me.tableName} WHERE key in (${q})`, keys);
+      return this.execSql("SELECT key, value FROM ".concat(me.tableName, " WHERE key in (").concat(q, ")"), keys);
     }
     _upsert(data) {
       const table = this.tableName;
       this.store.transaction(tx => {
         for (let key in data) {
-          tx.executeSql(`INSERT OR IGNORE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
-          tx.executeSql(`UPDATE ${table} SET value = ? WHERE key = ?`, [this.constructor.stringify(data[key]), key]);
+          tx.executeSql("INSERT OR IGNORE INTO ".concat(table, "(key, value) VALUES (?, ?)"), [key, data[key]]);
+          tx.executeSql("UPDATE ".concat(table, " SET value = ? WHERE key = ?"), [this.constructor.stringify(data[key]), key]);
         }
       });
     }
     _delete(keys) {
       const table = this.tableName;
       const q = keys.map(() => '?').join(', ');
-      return this.execSql(`DELETE FROM ${table} WHERE key in (${q})`, keys);
+      return this.execSql("DELETE FROM ".concat(table, " WHERE key in (").concat(q, ")"), keys);
     }
     _clear() {
       const table = this.tableName;
-      return this.execSql(`DELETE FROM ${table}`);
+      return this.execSql("DELETE FROM ".concat(table));
     }
     get store() {
       return window.openDatabase('bs', 1, this._options.description, this._options.size);
@@ -273,7 +273,7 @@
     createStore() {
       const table = this.tableName;
       if (!window || typeof window.openDatabase !== 'function') return;
-      return this.execSql(`CREATE TABLE IF NOT EXISTS ${table} (key unique, value)`);
+      return this.execSql("CREATE TABLE IF NOT EXISTS ".concat(table, " (key unique, value)"));
     }
     execSql(query, args = []) {
       const me = this;
@@ -338,7 +338,7 @@
       return ans[this.tableName] || {};
     }
     set table(value) {
-      document.cookie = `${this.tableName}=${storage.stringify(value)}; path=/`;
+      document.cookie = "".concat(this.tableName, "=").concat(storage.stringify(value), "; path=/");
     }
     get store() {
       return document.cookie;

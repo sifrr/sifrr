@@ -398,7 +398,7 @@
     try {
       return new Function(f);
     } catch (e) {
-      window.console.log(`Error processing binding: \`${f}\``);
+      window.console.log("Error processing binding: `".concat(f, "`"));
       return '';
     }
   }
@@ -407,7 +407,7 @@
       if (typeof fxn === 'string') return fxn;else return fxn.call(el);
     } catch (e) {
       const str = fxn.toString();
-      window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
+      window.console.log("Error evaluating: `".concat(str.slice(str.indexOf('{') + 1, str.lastIndexOf('}')), "` for element"), el);
       window.console.error(e);
     }
   }
@@ -680,22 +680,22 @@
       return this._js;
     }
     get htmlUrl() {
-      return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.html`;
+      return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".html");
     }
     get jsUrl() {
-      return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
+      return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".js");
     }
     executeScripts(js) {
-      if (this._executed) throw Error(`'${this.elementName}' element's javascript was already executed`);
+      if (this._executed) throw Error("'".concat(this.elementName, "' element's javascript was already executed"));
       this._executed = true;
       if (!js) {
         return this.executeHTMLScripts();
       } else {
         return this.js.then(script => {
-          new Function(script + `\n //# sourceURL=${this.jsUrl}`).call();
+          new Function(script + "\n //# sourceURL=".concat(this.jsUrl)).call();
         }).catch(e => {
           window.console.error(e);
-          window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
+          window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
           return this.executeHTMLScripts();
         });
       }
@@ -709,7 +709,7 @@
             newScript.type = script.type;
             window.document.body.appendChild(newScript);
           } else {
-            new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({
+            new Function(script.text + "\n //# sourceURL=".concat(this.htmlUrl)).call({
               currentTempate: content.querySelector('template')
             });
           }
@@ -861,7 +861,7 @@
       const target = e.composedPath ? e.composedPath()[0] : e.target;
       let dom = target;
       while (dom) {
-        const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
+        const eventHandler = dom["_".concat(name)] || (dom.hasAttribute ? dom.getAttribute("_".concat(name)) : null);
         if (typeof eventHandler === 'function') {
           eventHandler.call(dom._root || window, e, target);
         } else if (typeof eventHandler === 'string') {
@@ -932,16 +932,16 @@
     if (!name) {
       throw Error('Error creating Custom Element: No name given.', Element);
     } else if (window.customElements.get(name)) {
-      throw Error(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
+      throw Error("Error creating Element: ".concat(name, " - Custom Element with this name is already defined."));
     } else if (name.indexOf('-') < 1) {
-      throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
+      throw Error("Error creating Element: ".concat(name, " - Custom Element name must have one dash '-'"));
     } else {
       try {
         window.customElements.define(name, Element, options);
         SifrrDom.elements[name] = Element;
         return true;
       } catch (error) {
-        window.console.error(`Error creating Custom Element: ${name} - ${error.message}`, error.trace);
+        window.console.error("Error creating Custom Element: ".concat(name, " - ").concat(error.message), error.trace);
         return false;
       }
     }
@@ -964,14 +964,14 @@
     js = true
   } = {}) {
     if (window.customElements.get(elemName)) {
-      return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`));
+      return Promise.resolve(window.console.warn("Error loading Element: ".concat(elemName, " - Custom Element with this name is already defined.")));
     }
     let loader = new SifrrDom.Loader(elemName, url);
     const wd = customElements.whenDefined(elemName);
     SifrrDom.loadingElements.push(wd);
     return loader.executeScripts(js).then(() => {
       if (!window.customElements.get(elemName)) {
-        window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
+        window.console.warn("Executing '".concat(elemName, "' file didn't register the element. Ignore if you are registering element in a promise or async function."));
         SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
       }
     }).catch(e => {
