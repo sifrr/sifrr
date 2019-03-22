@@ -3547,7 +3547,7 @@ class App extends uWebSockets.App {
 var app = App;
 
 const { extend: extend$2 } = utils;
-class SSLApp extends uWebSockets.App {
+class SSLApp extends uWebSockets.SSLApp {
   constructor(options) {
     super(options);
     this._staticPaths = {};
