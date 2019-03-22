@@ -22,6 +22,7 @@ app.folder('/', path.join(__dirname, 'public/compress'), {
 app.options('/*', res => {
   res.writeHeader('access-control-allow-origin', '*');
   res.writeHeader('access-control-allow-methods', '*');
+  res.writeHeader('access-control-allow-headers', 'content-type');
   res.end();
 });
 
@@ -39,10 +40,6 @@ app.post('/stream', res => {
     }).then(resp => {
       res.end(JSON.stringify(resp));
     });
-  } else if (typeof res.json === 'function') {
-    res.json().then(resp => res.end(JSON.stringify(resp)));
-  } else {
-    res.end(JSON.stringify({ ok: false }));
   }
 });
 
@@ -57,7 +54,15 @@ app.post('/tmpdir', res => {
     }).then(resp => {
       res.end(JSON.stringify(resp));
     });
-  } else if (typeof res.json === 'function') {
+  }
+});
+
+app.post('/json', res => {
+  res.onAborted(err => { if (err) throw Error(err); });
+  res.writeHeader('access-control-allow-origin', '*');
+  res.writeHeader('content-type', 'application/json');
+
+  if (typeof res.json === 'function') {
     res.json().then(resp => res.end(JSON.stringify(resp)));
   } else {
     res.end(JSON.stringify({ ok: false }));
