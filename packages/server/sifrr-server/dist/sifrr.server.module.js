@@ -3463,7 +3463,7 @@ class BaseApp {
           this._staticPaths[prefix + url] = [filePath, options];
           this.get(prefix + url, this._serveStatic);
         } else {
-          delete this._staticPaths[url];
+          delete this._staticPaths[prefix + url];
         }
       }
     });
@@ -3484,7 +3484,7 @@ class BaseApp {
         const stream = new Readable();
         stream._read = noOp;
         this.onData((ab, isLast) => {
-          stream.push(Buffer.from(new Uint8Array(ab, ab.byteOffset, ab.byteLength), ab.byteOffset, ab.byteLength));
+          stream.push(new Uint8Array(ab, ab.byteOffset, ab.byteLength).slice(0, ab.byteLength));
           if (isLast) {
             stream.push(null);
           }

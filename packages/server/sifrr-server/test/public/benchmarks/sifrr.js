@@ -11,7 +11,15 @@ app.folder('/', path.join(__dirname, 'public'), {
   compress: false
 });
 
-app.folder('/', path.join(__dirname, 'public/compress'), {
+app.folder('/p', path.join(__dirname, 'public'), {
+  headers: {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': '*'
+  },
+  compress: false
+});
+
+app.folder('', path.join(__dirname, 'public/compress'), {
   headers: {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': '*'

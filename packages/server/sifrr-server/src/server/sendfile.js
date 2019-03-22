@@ -48,6 +48,7 @@ function sendFile(res, req, path, { lastModified = true, headers = {}, compress 
     res.writeStatus('206 Partial Content');
   }
 
+  // for size = 0
   if (end < 0) end = 0;
 
   let readStream = fs.createReadStream(path, { start, end });

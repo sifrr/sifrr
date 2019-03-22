@@ -13,11 +13,11 @@ describe('speed test', function() {
     sapp.close();
   });
 
-  it('serves all folders recursively', async () => {
+  it('serves base folder', async () => {
     assert.equal(await okTest(`http://localhost:${SPORT}/example.json`), true);
   });
 
-  it('serves all folders recursively', async () => {
+  it('serves all subfolder folders recursively', async () => {
     assert.equal(await okTest(`http://localhost:${SPORT}/compress/compressed.html`), true);
   });
 
@@ -25,16 +25,20 @@ describe('speed test', function() {
     assert.equal(await okTest(`http://localhost:${SPORT}/skjshfdk.html`), false);
   });
 
+  it('servers with prefix', async () => {
+    assert.equal(await okTest(`http://localhost:${SPORT}/p/example.json`), true);
+  });
+
   it('serves newly created files and 404 for deleted files', async () => {
     const filePath = path.join(__dirname, '../public/benchmarks/public/abcd');
 
     fs.writeFileSync(filePath, '');
     await timeout(100);
-    assert.equal(await okTest(`http://localhost:${SPORT}/abcd`), true);
+    assert.equal(await okTest(`http://localhost:${SPORT}/p/abcd`), true);
 
     fs.unlinkSync(filePath);
     await timeout(100);
-    assert.equal(await okTest(`http://localhost:${SPORT}/abcd`), false);
+    assert.equal(await okTest(`http://localhost:${SPORT}/p/abcd`), false);
   });
 });
 
