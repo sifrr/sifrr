@@ -1,4 +1,4 @@
-const { loadTest, EPORT, SPORT } = require('./statictest');
+const { loadTest, EPORT, SPORT } = require('./utils');
 let eapp = require('../public/benchmarks/express'), sapp = require('../public/benchmarks/sifrr');
 
 describe('speed test', function() {

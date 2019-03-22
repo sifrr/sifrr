@@ -1,4 +1,6 @@
+const fs = require('fs');
 const Busboy = require('busboy');
+const mkdirp = require('mkdirp');
 
 module.exports = function(contType, options = {}) {
   options.headers = {
@@ -6,38 +8,63 @@ module.exports = function(contType, options = {}) {
   };
   return new Promise((resolve, reject) => {
     const busb = new Busboy(options);
-    const response = {};
+    const ret = {};
 
     this.bodyStream().pipe(busb);
 
+    busb.on('limit', () => {
+      if (options.abortOnLimit) {
+        reject('limit');
+      }
+    });
+
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      const resp = {
+      const value = {
         filename,
         encoding,
         mimetype
       };
-      options.onFile(fieldname, file, filename, encoding, mimetype);
-      if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(resp);
-      } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], resp];
-      }  else {
-        response[fieldname] = resp;
-      }
+
+      if (typeof options.tmpDir === 'string') {
+        const fileToSave = path.join(options.tmpDir, filename);
+        mkdirp(path.dirname(fileToSave));
+
+        file.pipe(fs.createWriteStream(fileToSave));
+        value.filePath = fileToSave;
+      } else options.onFile(fieldname, file, filename, encoding, mimetype);
+
+      setRetValue(ret, fieldname, value);
     });
+
     busb.on('field', function(fieldname, value) {
       if (typeof options.onField === 'function') options.onField(fieldname, value);
-      if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(value);
-      } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], value];
-      }  else {
-        response[fieldname] = value;
-      }
+
+      setRetValue(ret, fieldname, value);
     });
+
     busb.on('finish', function() {
-      resolve(response);
+      resolve(ret);
     });
+
     busb.on('error', reject);
   });
 };
+
+function setRetValue(ret, fieldname, value) {
+  if (fieldname.slice(-2) === '[]') {
+    fieldname = fieldname.slice(0, fieldname.length - 2);
+    if (Array.isArray(ret[fieldname])) {
+      ret[fieldname].push(value);
+    } else {
+      ret[fieldname] = [value];
+    }
+  } else {
+    if (Array.isArray(ret[fieldname])) {
+      ret[fieldname].push(value);
+    } else if (ret[fieldname]) {
+      ret[fieldname] = [ret[fieldname], value];
+    }  else {
+      ret[fieldname] = value;
+    }
+  }
+}

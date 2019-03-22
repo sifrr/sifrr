@@ -7,16 +7,16 @@
   <body>
     <h1>OK</h1>
     <form name="form" id="form">
-      <input type="text" name="name" value="Aaditya">
-      <input type="text" name="name2" value="Aaditya2">
-      <input type="text" name="name2" value="Aaditya3">
-      <input type="file" name="file" accept="image/png, image/jpeg" required>
-      <input type="file" name="file2" accept="*/*" multiple>
+      <input id="onefile" type="file" name="file" accept="*/*">
+      <input id="mulfile" type="file" name="file2" accept="*/*" multiple>
       <button type="submit" name="submit">Submit</button>
     </form>
     <form name="form2" id="form2">
+      <input type="text" name="name[]" value="Aaditya">
       <input type="text" name="firstname" value="Aaditya">
       <input type="text" name="lastname" value="Taparia">
+      <input type="text" name="address" value="address1">
+      <input type="text" name="address" value="address2">
       <button type="submit" name="submit">Submit</button>
     </form>
     <pre id="response">
@@ -24,32 +24,20 @@
     <script src="/sifrr.fetch.js" charset="utf-8"></script>
     <script type="text/javascript">
       const form = document.querySelector('#form');
-      form.onsubmit = (e) => {
-        e.preventDefault();
+      function submitForm(url) {
         const data = new FormData(form);
-        Sifrr.Fetch.post('http://localhost:1111/what', {
+        return Sifrr.Fetch.post(url, {
           body: data
-        }).then(resp => {
-          document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
         });
-      };
+      }
 
       const form2 = document.querySelector('#form2');
-      form2.onsubmit = (e) => {
-        e.preventDefault();
+      function submitForm2(url) {
         const data = new FormData(form2);
-        Sifrr.Fetch.post('http://localhost:1111/what', {
-          body: {
-            firstname: data.get('firstname'),
-            lastname: data.get('lastname')
-          },
-          headers: {
-            'content-type': 'application/json'
-          }
-        }).then(resp => {
-          document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
+        return Sifrr.Fetch.post(url, {
+          body: data
         });
-      };
+      }
     </script>
   </body>
 </html>

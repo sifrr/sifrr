@@ -53,7 +53,7 @@ class BaseApp {
         const filePath = path.join(folder, filename);
         const url = '/' + path.relative(base, filePath);
         if (fs.existsSync(filePath)) {
-          this._staticPaths[prefix + url] = [filePath, options ];
+          this._staticPaths[prefix + url] = [filePath, options];
           this.get(prefix + url, this._serveStatic);
         } else {
           delete this._staticPaths[url];
@@ -72,7 +72,7 @@ class BaseApp {
   }
 
   post(pattern, handler) {
-    if (typeof handler !== 'function') throw Error(`handler should be a function, give ${typeof handler}.`);
+    if (typeof handler !== 'function') throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
 

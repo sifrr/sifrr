@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "busboy": "^0.3.0",
+    "mkdirp": "^0.5.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.8.0"
   },
   "peerDependencies": {},

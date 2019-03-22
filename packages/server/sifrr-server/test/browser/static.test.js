@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const { okTest, SPORT } = require('./statictest');
+const { okTest, SPORT } = require('./utils');
 let sapp = require('../public/benchmarks/sifrr');
 
 describe('speed test', function() {

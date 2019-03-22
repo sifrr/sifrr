@@ -1,7 +1,7 @@
 /*! Sifrr.Server v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
-import path from 'path';
+import path$1 from 'path';
 import stream from 'stream';
 import zlib from 'zlib';
 import util from 'util';
@@ -3295,45 +3295,136 @@ var TYPES = [
 ];
 var main = Busboy;
 
+var _0777 = parseInt('0777', 8);
+var mkdirp = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
+function mkdirP (p, opts, f, made) {
+    if (typeof opts === 'function') {
+        f = opts;
+        opts = {};
+    }
+    else if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
+    }
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
+    }
+    if (!made) made = null;
+    var cb = f || function () {};
+    p = path$1.resolve(p);
+    xfs.mkdir(p, mode, function (er) {
+        if (!er) {
+            made = made || p;
+            return cb(null, made);
+        }
+        switch (er.code) {
+            case 'ENOENT':
+                mkdirP(path$1.dirname(p), opts, function (er, made) {
+                    if (er) cb(er, made);
+                    else mkdirP(p, opts, cb, made);
+                });
+                break;
+            default:
+                xfs.stat(p, function (er2, stat) {
+                    if (er2 || !stat.isDirectory()) cb(er, made);
+                    else cb(null, made);
+                });
+                break;
+        }
+    });
+}
+mkdirP.sync = function sync (p, opts, made) {
+    if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
+    }
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
+    }
+    if (!made) made = null;
+    p = path$1.resolve(p);
+    try {
+        xfs.mkdirSync(p, mode);
+        made = made || p;
+    }
+    catch (err0) {
+        switch (err0.code) {
+            case 'ENOENT' :
+                made = sync(path$1.dirname(p), opts, made);
+                sync(p, opts, made);
+                break;
+            default:
+                var stat;
+                try {
+                    stat = xfs.statSync(p);
+                }
+                catch (err1) {
+                    throw err0;
+                }
+                if (!stat.isDirectory()) throw err0;
+                break;
+        }
+    }
+    return made;
+};
+
 var formdata = function(contType, options = {}) {
   options.headers = {
     'content-type': contType
   };
   return new Promise((resolve, reject) => {
     const busb = new main(options);
-    const response = {};
+    const ret = {};
     this.bodyStream().pipe(busb);
+    busb.on('limit', () => {
+      if (options.abortOnLimit) {
+        reject('limit');
+      }
+    });
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      const resp = {
+      const value = {
         filename,
         encoding,
         mimetype
       };
-      options.onFile(fieldname, file, filename, encoding, mimetype);
-      if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(resp);
-      } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], resp];
-      }  else {
-        response[fieldname] = resp;
-      }
+      if (typeof options.tmpDir === 'string') {
+        const fileToSave = path.join(options.tmpDir, filename);
+        mkdirp(path.dirname(fileToSave));
+        file.pipe(fs.createWriteStream(fileToSave));
+        value.filePath = fileToSave;
+      } else options.onFile(fieldname, file, filename, encoding, mimetype);
+      setRetValue(ret, fieldname, value);
     });
     busb.on('field', function(fieldname, value) {
       if (typeof options.onField === 'function') options.onField(fieldname, value);
-      if (Array.isArray(response[fieldname])) {
-        response[fieldname].push(value);
-      } else if (response[fieldname]) {
-        response[fieldname] = [response[fieldname], value];
-      }  else {
-        response[fieldname] = value;
-      }
+      setRetValue(ret, fieldname, value);
     });
     busb.on('finish', function() {
-      resolve(response);
+      resolve(ret);
     });
     busb.on('error', reject);
   });
 };
+function setRetValue(ret, fieldname, value) {
+  if (fieldname.slice(-2) === '[]') {
+    fieldname = fieldname.slice(0, fieldname.length - 2);
+    if (Array.isArray(ret[fieldname])) {
+      ret[fieldname].push(value);
+    } else {
+      ret[fieldname] = [value];
+    }
+  } else {
+    if (Array.isArray(ret[fieldname])) {
+      ret[fieldname].push(value);
+    } else if (ret[fieldname]) {
+      ret[fieldname] = [ret[fieldname], value];
+    }  else {
+      ret[fieldname] = value;
+    }
+  }
+}
 
 const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
@@ -3353,12 +3444,12 @@ class BaseApp {
     if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
     const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
-      const filePath = path.join(folder, file);
+      const filePath = path$1.join(folder, file);
       if (!filter(filePath)) return;
       if (fs.statSync(filePath).isDirectory()) {
         this.folder(prefix, filePath, options, base);
       } else {
-        const url = '/' + path.relative(base, filePath);
+        const url = '/' + path$1.relative(base, filePath);
         this._staticPaths[prefix + url] = [filePath, options ];
         this.get(prefix + url, this._serveStatic);
       }
@@ -3366,10 +3457,10 @@ class BaseApp {
     fs.watch(folder, (event, filename) => {
       if (event === 'rename') {
         if (!filename) return;
-        const filePath = path.join(folder, filename);
-        const url = '/' + path.relative(base, filePath);
+        const filePath = path$1.join(folder, filename);
+        const url = '/' + path$1.relative(base, filePath);
         if (fs.existsSync(filePath)) {
-          this._staticPaths[prefix + url] = [filePath, options ];
+          this._staticPaths[prefix + url] = [filePath, options];
           this.get(prefix + url, this._serveStatic);
         } else {
           delete this._staticPaths[url];
@@ -3386,7 +3477,7 @@ class BaseApp {
     } else sendfile(res, req, options[0], options[1]);
   }
   post(pattern, handler) {
-    if (typeof handler !== 'function') throw Error(`handler should be a function, give ${typeof handler}.`);
+    if (typeof handler !== 'function') throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
       res.bodyStream = function() {
