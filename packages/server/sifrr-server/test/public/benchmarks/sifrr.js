@@ -1,4 +1,4 @@
-const { App } = require('../../../src/sifrr.server');
+const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
 
 const app = new App();
@@ -16,7 +16,7 @@ app.folder('/p', path.join(__dirname, 'public'), {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': '*'
   },
-  compress: false
+  lastModified: false
 });
 
 app.folder('', path.join(__dirname, 'public/compress'), {
@@ -27,10 +27,20 @@ app.folder('', path.join(__dirname, 'public/compress'), {
   compress: true
 });
 
+app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
+  headers: {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': '*'
+  },
+  compress: false
+});
+
 app.options('/*', res => {
-  res.writeHeader('access-control-allow-origin', '*');
-  res.writeHeader('access-control-allow-methods', '*');
-  res.writeHeader('access-control-allow-headers', 'content-type');
+  writeHeaders(res, {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': '*'
+  });
+  writeHeaders(res, 'access-control-allow-headers', 'content-type');
   res.end();
 });
 
