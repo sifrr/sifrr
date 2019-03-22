@@ -54,7 +54,8 @@ app.post('/stream', res => {
       // onFile pr tmpDir required else promise will not resolve if there are files
       onFile: (fieldname, file) => {
         file.resume();
-      }
+      },
+      onField: () => {}
     }).then(resp => {
       res.end(JSON.stringify(resp));
     });

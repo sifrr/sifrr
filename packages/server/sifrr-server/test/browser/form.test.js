@@ -21,7 +21,8 @@ describe('form test', function() {
     expect(resp).to.deep.equal({
       firstname: 'Aaditya',
       lastname: 'Taparia',
-      address: [ 'address1', 'address2' ],
+      address: [ 'address1', 'address2', 'address3' ],
+      some: [ 'some1', 'some2', 'some3' ],
       name: ['Aaditya']
     });
   });
