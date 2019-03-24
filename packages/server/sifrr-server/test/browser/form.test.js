@@ -40,6 +40,7 @@ describe('form test', function() {
 
     // Response doesn't have filePath
     expect(resp).to.deep.equal({
+      name: 'Aaditya',
       file: {
         filename: 'nocl.json',
         encoding: '7bit',
@@ -65,6 +66,7 @@ describe('form test', function() {
 
     // Response has filePath
     expect(resp2).to.deep.equal({
+      name: 'Aaditya',
       file: {
         filename: 'nocl.json',
         encoding: '7bit',
