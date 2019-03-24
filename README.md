@@ -48,8 +48,29 @@ This repository is a monorepo managed using yarn workspaces. This means there ar
 
 ## Usage
 
-All the packages can be used with requireJS (node's `require` syntax) and module syntax (`import`)
-Browser packages have standalone distribution as well, which can be used directly in browser with link tags.
+All the packages can be used with node, es6 modules, and are compatible with bundler of your choice (rollup, webpack, browserify)
+
+### commonJS (node)
+
+```js
+const SifrrDom = require('@sifrr/dom')
+```
+
+### ES6 modules (`import`)
+
+```js
+import SifrrDom from '@sifrr/dom'
+```
+
+### standalone distributions (browser packages only)
+
+For eg.
+
+```html
+<script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
+// for v0.0.3
+<script src="https://unpkg.com/@sifrr/dom@0.0.3/dist/sifrr.dom.min.js"></script>
+```
 
 ### Packages that have tests have a working example of that package in `test/public` folder
 

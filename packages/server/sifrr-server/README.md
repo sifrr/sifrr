@@ -91,7 +91,6 @@ for post responses there are extra helper methods added to uWS response object (
 -   `res.body().then(body => /* do something */)`: gives post body as buffer
 -   `res.bodyStream()`: Gives post body stream
 -   `res.json().then(jsonBody => /* do something */)`: gives post body as json if content-type is `application/json` (this method is only set if post body content-type is `application/json`)
-
 -   `res.formData().then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
 
 ```js
