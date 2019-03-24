@@ -180,7 +180,7 @@ class SifrrFetch {
   static delete(purl, poptions) {
     return this.request(purl, poptions, 'DELETE');
   }
-  static graphql(purl, poptions = {}) {
+  static graphql(purl, poptions) {
     const { query, variables = {} } = poptions;
     delete poptions.query;
     delete poptions.variables;
@@ -208,7 +208,7 @@ class SifrrFetch {
     poptions.headers.accept = poptions.headers.accept || '*/*';
     return this.request(purl, poptions, 'GET');
   }
-  static request(purl, poptions = {}, method) {
+  static request(purl, poptions, method) {
     const { url, options } = this.afterUse(purl, poptions, method);
     return new request(url, options).response;
   }

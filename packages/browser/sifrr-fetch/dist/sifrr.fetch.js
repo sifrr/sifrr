@@ -87,42 +87,6 @@
   }
   var request = Request;
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   class WebSocket {
     constructor(url, protocol, fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))) {
       this.url = url;
@@ -147,24 +111,21 @@
       message.data = data;
       return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
     }
-    sendRaw(message, id, original = message) {
-      var _this = this;
-      return _asyncToGenerator(function* () {
-        if (_this._fallback) return _this.fallback(original);
-        const sock = yield _this._openSocket();
-        if (!sock) return _this.fallback(original);
-        _this.ws.send(message);
-        const ret = new Promise(res => {
-          _this._requests[id] = {
-            res: v => {
-              delete _this._requests[id];
-              res(v);
-            },
-            original
-          };
-        });
-        return ret;
-      })();
+    async sendRaw(message, id, original = message) {
+      if (this._fallback) return this.fallback(original);
+      const sock = await this._openSocket();
+      if (!sock) return this.fallback(original);
+      this.ws.send(message);
+      const ret = new Promise(res => {
+        this._requests[id] = {
+          res: v => {
+            delete this._requests[id];
+            res(v);
+          },
+          original
+        };
+      });
+      return ret;
     }
     _openSocket() {
       if (!this.ws) {
@@ -185,7 +146,7 @@
           if (me.ws.readyState === me.ws.CONNECTING) {
             window.requestAnimationFrame(waiting);
           } else if (me.ws.readyState !== me.ws.OPEN) {
-            window.console.error("Failed to open socket on ".concat(me.url));
+            window.console.error(`Failed to open socket on ${me.url}`);
             res(false);
           } else {
             res(true);
@@ -229,7 +190,7 @@
     static delete(purl, poptions) {
       return this.request(purl, poptions, 'DELETE');
     }
-    static graphql(purl, poptions = {}) {
+    static graphql(purl, poptions) {
       const {
         query,
         variables = {}
@@ -260,7 +221,7 @@
       poptions.headers.accept = poptions.headers.accept || '*/*';
       return this.request(purl, poptions, 'GET');
     }
-    static request(purl, poptions = {}, method) {
+    static request(purl, poptions, method) {
       const {
         url,
         options
