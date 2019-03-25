@@ -48,6 +48,7 @@ class BaseApp {
       }
     });
 
+    this.watched = this.watched || [];
     if (this.watched.indexOf(folder) < 0) {
       fs.watch(folder, (event, filename) => {
         if (event === 'rename') {
@@ -147,7 +148,5 @@ class BaseApp {
     }
   }
 }
-
-BaseApp.prototype.watched = [];
 
 module.exports = BaseApp;

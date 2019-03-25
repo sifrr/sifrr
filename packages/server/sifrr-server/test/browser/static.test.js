@@ -47,6 +47,11 @@ describe('speed test', function() {
     expect(resp2.status()).to.equal(404);
   });
 
+  it("doesn't respond with 304 when not modified and 200 when modified", async () => {
+    await page.goto(`http://localhost:${SPORT}/p/example.json`);
+    expect((await page.reload()).status()).to.equal(200);
+  });
+
   // keep in last because different urls
   it('responds with 304 when not modified and 200 when modified', async () => {
     const filePath = path.join(__dirname, '../public/304.json');
@@ -59,11 +64,6 @@ describe('speed test', function() {
     await timeout(1000);
     fs.writeFileSync(filePath, JSON.stringify({ ok: 'yes' }));
 
-    expect((await page.reload()).status()).to.equal(200);
-  });
-
-  it("doesn't respond with 304 when not modified and 200 when modified", async () => {
-    await page.goto(`http://localhost:${SPORT}/p/example.json`);
     expect((await page.reload()).status()).to.equal(200);
   });
 });

@@ -3494,6 +3494,7 @@ class BaseApp {
         this.get(prefix + url, this._serveStatic);
       }
     });
+    this.watched = this.watched || [];
     if (this.watched.indexOf(folder) < 0) {
       fs.watch(folder, (event, filename) => {
         if (event === 'rename') {
@@ -3581,7 +3582,6 @@ class BaseApp {
     }
   }
 }
-BaseApp.prototype.watched = [];
 var baseapp = BaseApp;
 
 const { extend: extend$1 } = utils;
