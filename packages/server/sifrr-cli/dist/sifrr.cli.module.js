@@ -1,61 +1,6 @@
 /*! Sifrr.Cli v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-import child_process from 'child_process';
-import path from 'path';
 import fs from 'fs';
-
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-}
-
-const exec = child_process.execSync;
-function check(cmnd, err) {
-  let isWorking;
-  try {
-    exec(cmnd, { stdio: 'ignore' });
-    isWorking = true;
-  } catch(e) {
-    isWorking = false;
-  }
-  if (!isWorking) {
-    process.stderr.write(err);
-    process.exit(1);
-    return false;
-  }
-  return true;
-}
-var check_1 = check;
-
-commonjsGlobal.ENV = commonjsGlobal.ENV || process.env.NODE_ENV || process.env.ENV || 'development';
-const configFile = commonjsRequire(path.resolve('./.sequelizerc')).config;
-const config = commonjsRequire(path.resolve(configFile))[ENV];
-var seqconfig = config;
-
-const exec$1 = child_process.execSync;
-const seqCMD = 'PATH=$(npm bin):$PATH sequelize';
-const supportedCmds = ['reset', 'setup'];
-const logs = {
-  reset: (dbName) => `Database ${dbName} dropped and recreated.`,
-  setup: (dbName) => `Database ${dbName} set up.`
-};
-var db = (cmd) => {
-  return () => {
-    if (supportedCmds.indexOf(cmd) < 0) throw Error('This db command not supported. Supported commands: \n', supportedCmds.map(c => `db:${c}`).join('\n'));
-    check_1(`${seqCMD} --version`, 'sequelize-cli is required to run this command. Install it by running `npm i sequelize-cli`');
-    const config = seqconfig;
-    commonjsGlobal.console.log(`Using ${config.dialect} in ${ENV} environment`);
-    const db = commonjsRequire(`./db/${config.dialect}.js`);
-    db(config, cmd, (err) => {
-      if (err) throw err;
-      commonjsGlobal.console.log(logs[cmd](config.database));
-      process.stdout.write(`Running migrations`);
-      exec$1(`${seqCMD} db:migrate`, { stdio: 'inherit' });
-      process.stdout.write(`Done`);
-      process.exit(0);
-    });
-  };
-};
+import path from 'path';
 
 var element = (name, ext) => {
   return `window.Sifrr = window.Sifrr || {};
@@ -178,13 +123,11 @@ var elementgenerate = (argv) => {
 };
 
 var sifrr_cli = {
-  db: db,
   elementGenerate: elementgenerate
 };
-var sifrr_cli_1 = sifrr_cli.db;
-var sifrr_cli_2 = sifrr_cli.elementGenerate;
+var sifrr_cli_1 = sifrr_cli.elementGenerate;
 
 export default sifrr_cli;
-export { sifrr_cli_1 as db, sifrr_cli_2 as elementGenerate };
+export { sifrr_cli_1 as elementGenerate };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.cli.module.js.map
