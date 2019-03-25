@@ -15,8 +15,6 @@ module.exports = {
   EPORT,
   SPORT,
   okTest: async function(url) {
-    return await page.evaluate(async (u) => {
-      return await Sifrr.Fetch.get(u).then(() => true).catch(() => false);
-    }, url);
+    return page.goto(url).then(() => true).catch(() => false);
   }
 };

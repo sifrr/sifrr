@@ -19,7 +19,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
       paths.push(...loadRoutes(app, file, { filter, basePath }));
     } else if (path.extname(file) === '.js') {
       const routes = require(file);
-      let basePaths = routes.basePath || '';
+      let basePaths = routes.basePath || [''];
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
 

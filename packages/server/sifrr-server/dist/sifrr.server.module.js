@@ -3447,7 +3447,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
       paths.push(...loadRoutes(app, file, { filter, basePath }));
     } else if (path$1.extname(file) === '.js') {
       const routes = commonjsRequire(file);
-      let basePaths = routes.basePath || '';
+      let basePaths = routes.basePath || [''];
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
       basePaths.forEach((basep) => {
@@ -3620,6 +3620,6 @@ var sifrr_server_5 = sifrr_server.writeHeaders;
 var sifrr_server_6 = sifrr_server.sendFile;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_5 as writeHeaders, sifrr_server_6 as sendFile };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_6 as sendFile, sifrr_server_5 as writeHeaders };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map
