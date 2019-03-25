@@ -16,7 +16,7 @@ describe('Sifrr.Dom.setup', () => {
     expect(error).to.eq('baseUrl should be a string');
   });
 
-  it.only('sets up sifrr', async () => {
+  it('sets up sifrr', async () => {
     const DOM = await page.evaluate(() => {
       Sifrr.Dom.setup({ baseUrl: '/', useShadowRoot: false });
       return {
