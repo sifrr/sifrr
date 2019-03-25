@@ -16,7 +16,7 @@ describe('Sifrr.Dom.setup', () => {
     expect(error).to.eq('baseUrl should be a string');
   });
 
-  it('sets up sifrr', async () => {
+  it.only('sets up sifrr', async () => {
     const DOM = await page.evaluate(() => {
       Sifrr.Dom.setup({ baseUrl: '/', useShadowRoot: false });
       return {
@@ -29,7 +29,8 @@ describe('Sifrr.Dom.setup', () => {
       // Sets up config
       config: {
         baseUrl: '/',
-        useShadowRoot: false
+        useShadowRoot: false,
+        events: [ 'input', 'change', 'update' ]
       },
       // Adds event listeners
       events: {
@@ -38,7 +39,8 @@ describe('Sifrr.Dom.setup', () => {
         },
         change: {
           document: [{}]
-        }
+        },
+        update: {}
       }
     });
   });

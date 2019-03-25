@@ -46,11 +46,12 @@ SifrrDom.setup = function(config) {
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   SifrrDom.config = Object.assign({
     baseUrl: '',
-    useShadowRoot: true
+    useShadowRoot: true,
+    events: []
   }, config);
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
-  SifrrDom.Event.add('input');
-  SifrrDom.Event.add('change');
+  SifrrDom.config.events.push('input', 'change', 'update');
+  SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
   SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
   SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
 };

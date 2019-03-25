@@ -2,6 +2,7 @@ const { collect, create } = require('./ref');
 const creator = require('./creator');
 const update = require('./update');
 const Loader = require('./loader');
+const { trigger } = require('./event');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -99,6 +100,7 @@ function elementClassFactory(baseClass) {
 
     update() {
       update(this);
+      trigger(this, 'update', { detail: { state: this.state } });
       this.onUpdate();
     }
 
