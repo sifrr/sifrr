@@ -5,7 +5,7 @@ let sapp = require('../public/benchmarks/sifrr');
 
 describe('speed test', function() {
   before(async () => {
-    sapp.listen(SPORT, () => global.console.log('listening sifrr on ', SPORT));
+    sapp.listen('localhost', SPORT, () => global.console.log('listening sifrr on ', SPORT));
     await page.goto(`${PATH}/static.html`);
   });
 
@@ -34,23 +34,25 @@ describe('speed test', function() {
   });
 
   it('serves newly created files and 404 for deleted files', async () => {
-    const filePath = path.join(__dirname, '../public/benchmarks/public/abcd');
+    const filePath = path.join(__dirname, '../public/abcd');
 
     fs.writeFileSync(filePath, '');
     await timeout(200);
-    assert.equal(await okTest(`http://localhost:${SPORT}/p/abcd`), true);
+    const resp = await page.goto(`${PATH}/abcd`);
+    expect(resp.status()).to.equal(200);
 
     fs.unlinkSync(filePath);
     await timeout(200);
-    assert.equal(await okTest(`http://localhost:${SPORT}/p/abcd`), false);
+    const resp2 = await page.goto(`${PATH}/abcd`);
+    expect(resp2.status()).to.equal(404);
   });
 
   // keep in last because different urls
   it('responds with 304 when not modified and 200 when modified', async () => {
-    const filePath = path.join(__dirname, '../public/benchmarks/public/304.json');
+    const filePath = path.join(__dirname, '../public/304.json');
 
     fs.writeFileSync(filePath, JSON.stringify({ ok: 'no' }));
-    await page.goto(`http://localhost:${SPORT}/304.json`);
+    await page.goto(`${PATH}/304.json`);
 
     expect((await page.reload()).status()).to.equal(304);
 
@@ -61,7 +63,7 @@ describe('speed test', function() {
   });
 
   it("doesn't respond with 304 when not modified and 200 when modified", async () => {
-    await page.goto(`http://localhost:${SPORT}/p/304.json`);
+    await page.goto(`http://localhost:${SPORT}/p/example.json`);
     expect((await page.reload()).status()).to.equal(200);
   });
 });

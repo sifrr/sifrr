@@ -23,7 +23,8 @@ function extend(who, from) {
     if (who[prop]) {
       who[`_${prop}`] = who[prop];
     }
-    who[prop] = from.prototype[prop].bind(who);
+    if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);
+    else who[prop] = from.prototype[prop];
   });
 }
 var utils = {
@@ -3427,6 +3428,44 @@ function setRetValue(ret, fieldname, value) {
   }
 }
 
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+}
+
+function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
+  let files;
+  const paths = [];
+  if (fs.statSync(dir).isDirectory()) {
+    files = fs
+      .readdirSync(dir)
+      .filter(filter).map(file => path$1.join(dir, file));
+  } else {
+    files = [dir];
+  }
+  files.forEach((file) => {
+    if (fs.statSync(file).isDirectory()) {
+      paths.push(...loadRoutes(app, file, { filter, basePath }));
+    } else if (path$1.extname(file) === '.js') {
+      const routes = commonjsRequire(file);
+      let basePaths = routes.basePath || '';
+      delete routes.basePath;
+      if (typeof basePaths === 'string') basePaths = [basePaths];
+      basePaths.forEach((basep) => {
+        for (const method in routes) {
+          const methodRoutes = routes[method];
+          for (let r in methodRoutes) {
+            if (!Array.isArray(methodRoutes[r])) methodRoutes[r] = [methodRoutes[r]];
+            app[method](basePath + basep + r, ...methodRoutes[r]);
+            paths.push(basePath + basep + r);
+          }
+        }
+      });
+    }
+  });
+  return paths;
+}
+var loadroutes = loadRoutes;
+
 const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
@@ -3455,19 +3494,22 @@ class BaseApp {
         this.get(prefix + url, this._serveStatic);
       }
     });
-    fs.watch(folder, (event, filename) => {
-      if (event === 'rename') {
-        if (!filename) return;
-        const filePath = path$1.join(folder, filename);
-        const url = '/' + path$1.relative(base, filePath);
-        if (fs.existsSync(filePath)) {
-          this._staticPaths[prefix + url] = [filePath, options];
-          this.get(prefix + url, this._serveStatic);
-        } else {
-          delete this._staticPaths[prefix + url];
+    if (this.watched.indexOf(folder) < 0) {
+      fs.watch(folder, (event, filename) => {
+        if (event === 'rename') {
+          if (!filename) return;
+          const filePath = path$1.join(folder, filename);
+          const url = '/' + path$1.relative(base, filePath);
+          if (fs.existsSync(filePath)) {
+            this._staticPaths[prefix + url] = [filePath, options];
+            this.get(prefix + url, this._serveStatic);
+          } else {
+            delete this._staticPaths[prefix + url];
+          }
         }
-      }
-    });
+      });
+      this.watched.push(folder);
+    }
     return this;
   }
   _serveStatic(res, req) {
@@ -3514,6 +3556,10 @@ class BaseApp {
     });
     return this;
   }
+  load(dir, options) {
+    loadroutes(this, dir, options);
+    return this;
+  }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, (socket) => {
@@ -3535,6 +3581,7 @@ class BaseApp {
     }
   }
 }
+BaseApp.prototype.watched = [];
 var baseapp = BaseApp;
 
 const { extend: extend$1 } = utils;

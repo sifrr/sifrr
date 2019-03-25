@@ -5,6 +5,7 @@ const uWS = require('uWebSockets.js');
 
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
+const loadroutes = require('./loadroutes');
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
@@ -47,19 +48,22 @@ class BaseApp {
       }
     });
 
-    fs.watch(folder, (event, filename) => {
-      if (event === 'rename') {
-        if (!filename) return;
-        const filePath = path.join(folder, filename);
-        const url = '/' + path.relative(base, filePath);
-        if (fs.existsSync(filePath)) {
-          this._staticPaths[prefix + url] = [filePath, options];
-          this.get(prefix + url, this._serveStatic);
-        } else {
-          delete this._staticPaths[prefix + url];
+    if (this.watched.indexOf(folder) < 0) {
+      fs.watch(folder, (event, filename) => {
+        if (event === 'rename') {
+          if (!filename) return;
+          const filePath = path.join(folder, filename);
+          const url = '/' + path.relative(base, filePath);
+          if (fs.existsSync(filePath)) {
+            this._staticPaths[prefix + url] = [filePath, options];
+            this.get(prefix + url, this._serveStatic);
+          } else {
+            delete this._staticPaths[prefix + url];
+          }
         }
-      }
-    });
+      });
+      this.watched.push(folder);
+    }
     return this;
   }
 
@@ -116,6 +120,11 @@ class BaseApp {
     return this;
   }
 
+  load(dir, options) {
+    loadroutes(this, dir, options);
+    return this;
+  }
+
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, (socket) => {
@@ -138,5 +147,7 @@ class BaseApp {
     }
   }
 }
+
+BaseApp.prototype.watched = [];
 
 module.exports = BaseApp;

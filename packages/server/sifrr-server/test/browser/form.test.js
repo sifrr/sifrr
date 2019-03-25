@@ -5,7 +5,7 @@ let sapp = require('../public/benchmarks/sifrr');
 
 describe('form test', function() {
   before(async () => {
-    sapp.listen(SPORT, () => global.console.log('listening sifrr on ', SPORT));
+    sapp.listen(SPORT);
     await page.goto(`${PATH}/multipart.html`);
   });
 

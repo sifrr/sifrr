@@ -15,7 +15,8 @@ function extend(who, from) {
     if (who[prop]) {
       who[`_${prop}`] = who[prop];
     }
-    who[prop] = from.prototype[prop].bind(who);
+    if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);
+    else who[prop] = from.prototype[prop];
   });
 }
 
