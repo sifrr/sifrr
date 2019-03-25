@@ -8,7 +8,7 @@ const compressions = {
 };
 const { writeHeaders } = require('./utils');
 const ext = require('./ext').getExt;
-const bytes = /bytes=/;
+const bytes = 'bytes=';
 
 function sendFile(res, req, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
   priority: [ 'gzip', 'br', 'deflate' ]
