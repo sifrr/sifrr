@@ -134,7 +134,7 @@
     static clickEventListener(e) {
       if (!(window.history && window.history.pushState)) return false;
       const target = e.composedPath ? e.composedPath()[0] : e.target;
-      if (!target.matches('a') || target.host !== window.location.host || e.metaKey || e.ctrlKey || target.target && target.target !== '_self') return false;
+      if (e.metaKey || e.ctrlKey || !target.matches('a') || target.host !== window.location.host || target.target && target.target !== '_self') return false;
       e.preventDefault();
       const title = target.getAttribute('title') || firstTitle;
       const state = {
