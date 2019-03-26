@@ -1,4 +1,5 @@
 const template = require('./template');
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 class Loader {
   constructor(elemName, url) {
@@ -12,7 +13,7 @@ class Loader {
     if (this._html) return this._html;
     Loader.add(this.elementName, this);
     const me = this;
-    this._html = window.fetch(this.htmlUrl)
+    this._html = window.fetch(this.getUrl('html'))
       .then((resp) => resp.text())
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -24,17 +25,13 @@ class Loader {
   get js() {
     if (this._js) return this._js;
     Loader.add(this.elementName, this);
-    this._js = window.fetch(this.jsUrl)
+    this._js = window.fetch(this.getUrl('js'))
       .then((resp) => resp.text());
     return this._js;
   }
 
-  get htmlUrl() {
-    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.html`;
-  }
-
-  get jsUrl() {
-    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
+  getUrl(type = 'js') {
+    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`;
   }
 
   executeScripts(js) {
@@ -44,7 +41,7 @@ class Loader {
       return this.executeHTMLScripts();
     } else {
       return this.js.then((script) => {
-        new Function(script + `\n //# sourceURL=${this.jsUrl}`).call();
+        return new AsyncFunction(script + `\n //# sourceURL=${this.getUrl('js')}`).call();
       }).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
@@ -63,7 +60,7 @@ class Loader {
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          new Function(script.text + `\n //# sourceURL=${this.htmlUrl}`).call({ currentTempate: content.querySelector('template') });
+          return new AsyncFunction(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
         }
       });
     });

@@ -46,13 +46,13 @@ describe('Speed tests', async function() {
   this.timeout(0);
 
   it('passes speed tests', async () => {
-    const suffixes = ['?', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
+    const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
     const url = `${PATH}/speedtest.html`;
     const urls = suffixes.map(s => url + s);
     // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
 
     for(let j = 0; j < urls.length; j++) {
-      let u = urls[j];
+      const u = urls[j];
 
       for (let i = 0; i < benchmarks.length; i++) {
         const bm = benchmarks[i];
@@ -62,9 +62,9 @@ describe('Speed tests', async function() {
 
         assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
 
-        u = u.split('/').pop();
+        const shortu = u.split('/').pop();
         compare[bm] = compare[bm] || {};
-        compare[bm][u] = bmd['TaskDuration'];
+        compare[bm][shortu] = bmd['TaskDuration'];
       }
     }
 

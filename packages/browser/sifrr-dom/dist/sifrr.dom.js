@@ -656,6 +656,44 @@
   }
   var creator_1 = creator;
 
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
+  const AsyncFunction = Object.getPrototypeOf(
+  _asyncToGenerator(function* () {})).constructor;
   class Loader {
     constructor(elemName, url) {
       if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
@@ -667,7 +705,7 @@
       if (this._html) return this._html;
       Loader.add(this.elementName, this);
       const me = this;
-      this._html = window.fetch(this.htmlUrl).then(resp => resp.text()).then(file => template(file).content).then(content => {
+      this._html = window.fetch(this.getUrl('html')).then(resp => resp.text()).then(file => template(file).content).then(content => {
         me.template = content.querySelector('template');
         return content;
       });
@@ -676,14 +714,11 @@
     get js() {
       if (this._js) return this._js;
       Loader.add(this.elementName, this);
-      this._js = window.fetch(this.jsUrl).then(resp => resp.text());
+      this._js = window.fetch(this.getUrl('js')).then(resp => resp.text());
       return this._js;
     }
-    get htmlUrl() {
-      return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".html");
-    }
-    get jsUrl() {
-      return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".js");
+    getUrl(type = 'js') {
+      return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".").concat(type);
     }
     executeScripts(js) {
       if (this._executed) throw Error("'".concat(this.elementName, "' element's javascript was already executed"));
@@ -692,7 +727,7 @@
         return this.executeHTMLScripts();
       } else {
         return this.js.then(script => {
-          new Function(script + "\n //# sourceURL=".concat(this.jsUrl)).call();
+          return new AsyncFunction(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
         }).catch(e => {
           window.console.error(e);
           window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
@@ -709,7 +744,7 @@
             newScript.type = script.type;
             window.document.body.appendChild(newScript);
           } else {
-            new Function(script.text + "\n //# sourceURL=".concat(this.htmlUrl)).call({
+            return new AsyncFunction(script.text + "\n //# sourceURL=".concat(this.getUrl('html'))).call({
               currentTempate: content.querySelector('template')
             });
           }
