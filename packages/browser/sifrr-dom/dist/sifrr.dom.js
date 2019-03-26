@@ -912,6 +912,7 @@
       }
       onStateChange() {}
       update() {
+        this.beforeUpdate();
         update_1(this);
         trigger(this, 'update', {
           detail: {
@@ -920,6 +921,7 @@
         });
         this.onUpdate();
       }
+      beforeUpdate() {}
       onUpdate() {}
       isSifrr(name = null) {
         if (name) return name === this.constructor.elementName;else return true;
@@ -934,10 +936,10 @@
         this.update();
       }
       $(args, sr = true) {
-        if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
+        if (this.shadowRoot && sr) return this.shadowRoot.querySelector(args);else return this.querySelector(args);
       }
       $$(args, sr = true) {
-        if (this.constructor.useShadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
+        if (this.shadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
       }
     };
   }
