@@ -3432,7 +3432,7 @@ function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
 }
 
-function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
+function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   let files;
   const paths = [];
   if (fs.statSync(dir).isDirectory()) {
@@ -3444,7 +3444,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
   }
   files.forEach((file) => {
     if (fs.statSync(file).isDirectory()) {
-      paths.push(...loadRoutes(app, file, { filter, basePath }));
+      paths.push(...loadRoutes(this, file, { filter, basePath }));
     } else if (path$1.extname(file) === '.js') {
       const routes = commonjsRequire(file);
       let basePaths = routes.basePath || [''];
@@ -3455,7 +3455,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
             if (!Array.isArray(methodRoutes[r])) methodRoutes[r] = [methodRoutes[r]];
-            app[method](basePath + basep + r, ...methodRoutes[r]);
+            this[method](basePath + basep + r, ...methodRoutes[r]);
             paths.push(basePath + basep + r);
           }
         }
@@ -3558,7 +3558,7 @@ class BaseApp {
     return this;
   }
   load(dir, options) {
-    loadroutes(this, dir, options);
+    loadroutes.call(this, dir, options);
     return this;
   }
   listen(h, p = noOp, cb) {

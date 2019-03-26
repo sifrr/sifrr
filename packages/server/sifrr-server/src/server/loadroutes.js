@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
+function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   let files;
   const paths = [];
 
@@ -16,7 +16,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
   files.forEach((file) => {
     if (fs.statSync(file).isDirectory()) {
       // Recursive if directory
-      paths.push(...loadRoutes(app, file, { filter, basePath }));
+      paths.push(...loadRoutes(this, file, { filter, basePath }));
     } else if (path.extname(file) === '.js') {
       const routes = require(file);
       let basePaths = routes.basePath || [''];
@@ -28,7 +28,7 @@ function loadRoutes(app, dir, { filter = () => true, basePath = '' } = {}) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
             if (!Array.isArray(methodRoutes[r])) methodRoutes[r] = [methodRoutes[r]];
-            app[method](basePath + basep + r, ...methodRoutes[r]);
+            this[method](basePath + basep + r, ...methodRoutes[r]);
             paths.push(basePath + basep + r);
           }
         }
