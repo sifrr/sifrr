@@ -9,6 +9,7 @@ const cleanup = require('rollup-plugin-cleanup');
 const external = [
   'path',
   'fs',
+  'cache-manager',
   'child_process',
   'graphql',
   'sequelize',
