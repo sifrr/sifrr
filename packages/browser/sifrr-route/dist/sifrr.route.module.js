@@ -129,10 +129,10 @@ class SifrrRoute extends dom.Element {
   static clickEventListener(e) {
     if (!(window.history && window.history.pushState)) return false;
     const target = e.composedPath ? e.composedPath()[0] : e.target;
-    if (e.metaKey || e.ctrlKey) return false;
-    if (!target.matches('a')) return false;
-    if (target.host !== window.location.host) return false;
-    if (target.target && target.target !== '_self') return false;
+    if (!target.matches('a') ||
+      target.host !== window.location.host ||
+      (e.metaKey || e.ctrlKey) ||
+      (target.target && target.target !== '_self')) return false;
     e.preventDefault();
     const title = target.getAttribute('title') || firstTitle;
     const state = {

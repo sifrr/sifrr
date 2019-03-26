@@ -7,14 +7,13 @@
 
   class Json {
     static parse(data) {
-      let ans = {};
+      let ans = data;
       if (typeof data == 'string') {
         try {
-          ans = JSON.parse(data);
+          return this.parse(JSON.parse(data));
         } catch (e) {
           return data;
         }
-        return this.parse(ans);
       } else if (Array.isArray(data)) {
         ans = [];
         data.forEach((v, i) => {
@@ -22,11 +21,10 @@
         });
       } else if (typeof data == 'object') {
         if (data === null) return null;
+        ans = {};
         for (const k in data) {
           ans[k] = this.parse(data[k]);
         }
-      } else {
-        return data;
       }
       return ans;
     }
