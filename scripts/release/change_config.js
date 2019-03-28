@@ -22,8 +22,7 @@ module.exports = function(folder, isBrowser) {
       test: `rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ${folder}`,
       build: './node_modules/.bin/rollup -c',
       'test-build': 'cd test/public && ../../node_modules/.bin/rollup -c',
-      'test-server-only': 'node ./test/public/server.js -p 1111',
-      'test-server': 'yarn test-build; yarn test-server-only'
+      'test-server': `node ../../../scripts/test/run.js ${folder} -s`,
     },
     files: [
       'bin',
@@ -35,7 +34,6 @@ module.exports = function(folder, isBrowser) {
   if (isBrowser) {
     pkgToMerge.browser = `dist/${jsFileName}.js`;
     pkgToMerge.browserslist = pkg.browserslist;
-    pkgToMerge.scripts['test-server-only'] = `node ../../../scripts/test/server.js -d ${folder}/test/public -p 1111`;
   }
 
   try {

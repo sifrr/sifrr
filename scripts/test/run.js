@@ -151,7 +151,7 @@ if (filter > 0) {
         ser = listen(port, pubPath);
       }
 
-      await loadBrowser();
+      if (!serverOnly) await loadBrowser();
     }
 
     if (serverOnly) return;

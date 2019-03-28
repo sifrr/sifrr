@@ -24,8 +24,8 @@
     "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/server/sifrr-server",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ./test/public/server.js -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
+    "test-server-only": "node ../../../scripts/test/run.js ./packages/server/sifrr-server -s",
+    "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-server -s"
   },
   "dependencies": {
     "busboy": "^0.3.0",

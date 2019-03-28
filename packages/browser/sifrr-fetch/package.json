@@ -30,8 +30,8 @@
     "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
-    "test-server-only": "node ../../../scripts/test/server.js -d ./packages/browser/sifrr-fetch/test/public -p 1111",
-    "test-server": "yarn test-build; yarn test-server-only"
+    "test-server-only": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch -s",
+    "test-server": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch -s"
   },
   "dependencies": {},
   "peerDependencies": {},
