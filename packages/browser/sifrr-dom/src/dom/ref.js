@@ -4,14 +4,14 @@ const TREE_WALKER = window.document.createTreeWalker(window.document, window.Nod
 const { TEXT_NODE } = require('./constants');
 
 function collect(element, stateMap) {
-  const refs = [], l = stateMap.length;
+  const l = stateMap.length, refs = new Array(l);
   let node = TREE_WALKER.currentNode = element, n;
   for (let i = 0; i < l; i++) {
     n = stateMap[i].idx;
     while(--n) {
       node = TREE_WALKER.nextNode();
     }
-    refs.push(node);
+    refs[i] = node;
   }
   return refs;
 }

@@ -26,8 +26,8 @@
     TEXT_NODE
   } = constants;
   function collect(element, stateMap) {
-    const refs = [],
-          l = stateMap.length;
+    const l = stateMap.length,
+          refs = new Array(l);
     let node = TREE_WALKER.currentNode = element,
         n;
     for (let i = 0; i < l; i++) {
@@ -35,7 +35,7 @@
       while (--n) {
         node = TREE_WALKER.nextNode();
       }
-      refs.push(node);
+      refs[i] = node;
     }
     return refs;
   }
@@ -458,8 +458,7 @@
       const data = stateMap[i].ref,
             dom = element._refs[i];
       if (data.type === 0) {
-        const newValue = element._state[data.text];
-        if (dom.data != newValue) dom.data = newValue;
+        if (dom.data != element._state[data.text]) dom.data = element._state[data.text];
         continue;
       } else if (data.type === 1) {
         const newValue = evaluateBindings(data.text, element);

@@ -14,8 +14,7 @@ function update(element, stateMap) {
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      const newValue = element._state[data.text];
-      if (dom.data != newValue) dom.data = newValue;
+      if (dom.data != element._state[data.text]) dom.data = element._state[data.text];
       continue;
     } else if (data.type === 1) {
       // text node

@@ -122,7 +122,7 @@ class BaseApp {
   }
 
   load(dir, options) {
-    loadroutes(this, dir, options);
+    loadroutes.call(this, dir, options);
     return this;
   }
 
