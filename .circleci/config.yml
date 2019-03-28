@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Send code climate report
           command: |
-            ./cc-test-reporter after-build --input-type lcov --exit-code $?
+            ./cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
       - run:
           name: New Release
           command: |
