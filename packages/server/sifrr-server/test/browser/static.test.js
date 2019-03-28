@@ -1,36 +1,30 @@
 const fs = require('fs');
 
-const { okTest, SPORT } = require('./utils');
-let sapp = require('../public/benchmarks/sifrr');
+const { okTest } = require('./utils');
 
-describe('speed test', function() {
+describe('static test', function() {
   before(async () => {
-    sapp.listen('localhost', SPORT, () => global.console.log('listening sifrr on ', SPORT));
     await page.goto(`${PATH}/static.html`);
   });
 
-  after(() => {
-    sapp.close();
-  });
-
   it('serves base folder', async () => {
-    assert.equal(await okTest(`http://localhost:${SPORT}/example.json`), true);
+    assert.equal(await okTest(`${PATH}/example.json`), true);
   });
 
   it('serves all subfolder folders recursively', async () => {
-    assert.equal(await okTest(`http://localhost:${SPORT}/compress/compressed.html`), true);
+    assert.equal(await okTest(`${PATH}/compress/compressed.html`), true);
   });
 
   it("doesn't serve non-existent files", async () => {
-    assert.equal(await okTest(`http://localhost:${SPORT}/skjshfdk.html`), false);
+    assert.equal(await okTest(`${PATH}/skjshfdk.html`), false);
   });
 
   it('serves with prefix', async () => {
-    assert.equal(await okTest(`http://localhost:${SPORT}/p/example.json`), true);
+    assert.equal(await okTest(`${PATH}/p/example.json`), true);
   });
 
   it('serves files with pattern', async () => {
-    assert.equal(await okTest(`http://localhost:${SPORT}/random/asdasd`), true);
+    assert.equal(await okTest(`${PATH}/random/asdasd`), true);
   });
 
   it('serves newly created files and 404 for deleted files', async () => {
@@ -63,7 +57,7 @@ describe('speed test', function() {
   });
 
   it("doesn't respond with 304 when not modified and 200 when modified", async () => {
-    await page.goto(`http://localhost:${SPORT}/p/example.json`);
+    await page.goto(`${PATH}/p/example.json`);
     expect((await page.reload()).status()).to.equal(200);
   });
 });

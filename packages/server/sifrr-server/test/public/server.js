@@ -9,12 +9,11 @@ if (index !== -1) {
 global.ENV = port ? 'development' : 'test';
 
 const path = require('path');
-const { App } = require('../../src/sifrr.server');
 // const { App } = require('uWebSockets.js');
 
 function webSocketServer(port) {
   let id = 0;
-  const app = new App();
+  const app = require('./benchmarks/sifrr');
   app.ws('/*', {
     /* Options */
     maxPayloadLength: 16 * 1024 * 1024,
@@ -65,7 +64,8 @@ function webSocketServer(port) {
     .folder('/', path.join(__dirname, '../../../../browser/sifrr-dom/dist'))
     .file('/video', '/Users/aaditya-taparia/Downloads/example.mp4')
     .folder('/', __dirname, {
-      filter: (path) => path.indexOf('node_modules') < 0
+      filter: (path) => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
+      watch: true
     })
     .get('/ok/now', (res) => {
       res.end('ok');

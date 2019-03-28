@@ -1,11 +1,9 @@
 const fs = require('fs');
 
-const { SPORT } = require('./utils');
 let sapp = require('../public/benchmarks/sifrr');
 
-describe('form test', function() {
+describe.skip('form test', function() {
   before(async () => {
-    sapp.listen(SPORT);
     await page.goto(`${PATH}/multipart.html`);
   });
 
@@ -14,9 +12,9 @@ describe('form test', function() {
   });
 
   it('handles input form data', async () => {
-    const resp = await page.evaluate(async (port) => {
-      return await submitForm2(`http://localhost:${port}/stream`);
-    }, SPORT);
+    const resp = await page.evaluate(async (path) => {
+      return await submitForm2(`${path}/stream`);
+    }, PATH);
 
     expect(resp).to.deep.equal({
       firstname: 'Aaditya',
@@ -34,9 +32,9 @@ describe('form test', function() {
     const filesInput = await page.$('#mulfile');
     filesInput.uploadFile(path.join(__dirname, '../public/nocl.json'), path.join(__dirname, '../public/all.js'));
 
-    const resp = await page.evaluate(async (port) => {
-      return await submitForm(`http://localhost:${port}/stream`);
-    }, SPORT);
+    const resp = await page.evaluate(async (path) => {
+      return await submitForm(`${path}/stream`);
+    }, PATH);
 
     // Response doesn't have filePath
     expect(resp).to.deep.equal({
@@ -60,9 +58,9 @@ describe('form test', function() {
       ]
     });
 
-    const resp2 = await page.evaluate(async (port) => {
-      return await submitForm(`http://localhost:${port}/tmpdir`);
-    }, SPORT);
+    const resp2 = await page.evaluate(async (path) => {
+      return await submitForm(`${path}/tmpdir`);
+    }, PATH);
 
     // Response has filePath
     expect(resp2).to.deep.equal({

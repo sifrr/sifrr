@@ -48,22 +48,24 @@ class BaseApp {
       }
     });
 
-    this.watched = this.watched || [];
-    if (this.watched.indexOf(folder) < 0) {
-      fs.watch(folder, (event, filename) => {
-        if (event === 'rename') {
-          if (!filename) return;
-          const filePath = path.join(folder, filename);
-          const url = '/' + path.relative(base, filePath);
-          if (fs.existsSync(filePath)) {
-            this._staticPaths[prefix + url] = [filePath, options];
-            this.get(prefix + url, this._serveStatic);
-          } else {
-            delete this._staticPaths[prefix + url];
+    if (options && options.watch) {
+      this.watched = this.watched || [];
+      if (this.watched.indexOf(folder) < 0) {
+        fs.watch(folder, (event, filename) => {
+          if (event === 'rename') {
+            if (!filename) return;
+            const filePath = path.join(folder, filename);
+            const url = '/' + path.relative(base, filePath);
+            if (fs.existsSync(filePath) && filter(filePath)) {
+              this._staticPaths[prefix + url] = [filePath, options];
+              this.get(prefix + url, this._serveStatic);
+            } else {
+              delete this._staticPaths[prefix + url];
+            }
           }
-        }
-      });
-      this.watched.push(folder);
+        });
+        this.watched.push(folder);
+      }
     }
     return this;
   }

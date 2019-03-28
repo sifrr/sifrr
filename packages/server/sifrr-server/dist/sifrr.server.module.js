@@ -227,7 +227,7 @@ function sendFile(res, req, path, options) {
   res.onAborted(noop);
   sendFileToRes(res, reqHeaders, path, options);
 }
-async function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
+function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
   priority: [ 'gzip', 'br', 'deflate' ]
 } } = {}) {
   let { mtime, size } = fs.statSync(path);
@@ -3499,22 +3499,24 @@ class BaseApp {
         this.get(prefix + url, this._serveStatic);
       }
     });
-    this.watched = this.watched || [];
-    if (this.watched.indexOf(folder) < 0) {
-      fs.watch(folder, (event, filename) => {
-        if (event === 'rename') {
-          if (!filename) return;
-          const filePath = path$1.join(folder, filename);
-          const url = '/' + path$1.relative(base, filePath);
-          if (fs.existsSync(filePath)) {
-            this._staticPaths[prefix + url] = [filePath, options];
-            this.get(prefix + url, this._serveStatic);
-          } else {
-            delete this._staticPaths[prefix + url];
+    if (options && options.watch) {
+      this.watched = this.watched || [];
+      if (this.watched.indexOf(folder) < 0) {
+        fs.watch(folder, (event, filename) => {
+          if (event === 'rename') {
+            if (!filename) return;
+            const filePath = path$1.join(folder, filename);
+            const url = '/' + path$1.relative(base, filePath);
+            if (fs.existsSync(filePath) && filter(filePath)) {
+              this._staticPaths[prefix + url] = [filePath, options];
+              this.get(prefix + url, this._serveStatic);
+            } else {
+              delete this._staticPaths[prefix + url];
+            }
           }
-        }
-      });
-      this.watched.push(folder);
+        });
+        this.watched.push(folder);
+      }
     }
     return this;
   }

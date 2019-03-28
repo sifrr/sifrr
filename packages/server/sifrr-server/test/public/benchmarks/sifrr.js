@@ -2,28 +2,23 @@ const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
 
 const app = new App();
+const headers = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': '*'
+};
 
 app.folder('', path.join(__dirname, 'public/compress'), {
-  headers: {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': '*'
-  },
+  headers,
   compress: true
 });
 
 app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
-  headers: {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': '*'
-  },
+  headers,
   compress: false
 });
 
 app.options('/*', res => {
-  writeHeaders(res, {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': '*'
-  });
+  writeHeaders(res, headers);
   writeHeaders(res, 'access-control-allow-headers', 'content-type');
   res.end();
 });
@@ -31,7 +26,9 @@ app.options('/*', res => {
 app.post('/stream', res => {
   res.onAborted(err => { if (err) throw Error(err); });
 
-  res.writeHeader('access-control-allow-origin', '*');
+  for (let h in headers) {
+    writeHeaders(res, h, headers[h]);
+  }
   res.writeHeader('content-type', 'application/json');
   if (typeof res.formData === 'function') {
     res.formData({
@@ -49,7 +46,9 @@ app.post('/stream', res => {
 app.post('/tmpdir', res => {
   res.onAborted(err => { if (err) throw Error(err); });
 
-  res.writeHeader('access-control-allow-origin', '*');
+  for (let h in headers) {
+    writeHeaders(res, h, headers[h]);
+  }
   res.writeHeader('content-type', 'application/json');
   if (typeof res.formData === 'function') {
     res.formData({

@@ -22,7 +22,7 @@ function sendFile(res, req, path, options) {
   sendFileToRes(res, reqHeaders, path, options);
 }
 
-async function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
+function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
   priority: [ 'gzip', 'br', 'deflate' ]
 } } = {}) {
   let { mtime, size } = fs.statSync(path);

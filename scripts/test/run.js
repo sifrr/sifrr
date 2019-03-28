@@ -79,7 +79,7 @@ const loadBrowser = async function() {
     devtools: false
   });
   let page = await pBrowser.newPage();
-  await page.setViewport( { width: 1280, height: 800} );
+  await page.setViewport( { width: 1280, height: 800 } );
   global.browser = {
     current: pBrowser,
     close: async () => {
@@ -124,15 +124,15 @@ const runUnitTests = process.argv.indexOf('-u') > 0 || process.argv.indexOf('--u
 // check if run only browser tests
 const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
 
+// check if run only browser tests
+const serverOnly = process.argv.indexOf('-s') > 0 || process.argv.indexOf('--server') > 0;
+
 // check if need to filter
 let filterArray;
 const filter = process.argv.indexOf('-f') || process.argv.indexOf('--filter');
 if (filter > 0) {
   filterArray = process.argv[filter + 1].split(',');
 }
-
-// Relative to base requiring
-// global.requireBase = (pt) => require(path.join(dir, pt));
 
 (async function() {
   try {
@@ -153,6 +153,7 @@ if (filter > 0) {
       await loadBrowser();
     }
 
+    if (serverOnly) return;
     mocha.run(async (failures) => {
       // close server if open
       if (ser) {

@@ -1,6 +1,4 @@
-const fs = require('fs');
-
-const { SPORT } = require('./utils');
+const SPORT = 8890;
 let sapp = require('../public/benchmarks/sifrrssl');
 
 describe('ssl app', function() {
