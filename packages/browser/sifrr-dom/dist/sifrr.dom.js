@@ -799,6 +799,7 @@
       return true;
     },
     addListener: (name, css, fxn) => {
+      if (!SYNTHETIC_EVENTS[name]) throw Error("You need to call Sifrr.Event.add('".concat(name, "') before using listeners."));
       const fxns = SYNTHETIC_EVENTS[name][css] || [];
       if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
       SYNTHETIC_EVENTS[name][css] = fxns;
