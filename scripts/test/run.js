@@ -75,6 +75,7 @@ const loadBrowser = async function() {
       '--no-sandbox',
       '--disable-setuid-sandbox'
     ],
+    ignoreHTTPSErrors: true,
     headless: process.env.HEADLESS !== 'false',
     devtools: false
   });

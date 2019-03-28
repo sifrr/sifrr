@@ -17,6 +17,7 @@ describe('static test', function() {
 
   it("doesn't serve non-existent files", async () => {
     assert.equal(await okTest(`${PATH}/skjshfdk.html`), false);
+    await page.waitForNavigation();
   });
 
   it('serves with prefix', async () => {

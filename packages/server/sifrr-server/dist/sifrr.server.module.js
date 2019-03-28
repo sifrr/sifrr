@@ -16,6 +16,15 @@ function writeHeaders(res, headers, other) {
     }
   }
 }
+function clone(obj) {
+  if (typeof obj === 'object') {
+    if (Array.isArray(obj)) return obj.slice(0);
+    if (obj === null) return null;
+    return Object.assign({}, obj);
+  } else {
+    return obj;
+  }
+}
 function extend(who, from) {
   const ownProps = Object.getOwnPropertyNames(from.prototype);
   ownProps.forEach(prop => {
@@ -24,7 +33,7 @@ function extend(who, from) {
       who[`_${prop}`] = who[prop];
     }
     if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);
-    else who[prop] = from.prototype[prop];
+    else who[prop] = clone(from.prototype[prop]);
   });
 }
 var utils = {
@@ -3500,8 +3509,7 @@ class BaseApp {
       }
     });
     if (options && options.watch) {
-      this.watched = this.watched || [];
-      if (this.watched.indexOf(folder) < 0) {
+      if (this._watched.indexOf(folder) < 0) {
         fs.watch(folder, (event, filename) => {
           if (event === 'rename') {
             if (!filename) return;
@@ -3515,7 +3523,7 @@ class BaseApp {
             }
           }
         });
-        this.watched.push(folder);
+        this._watched.push(folder);
       }
     }
     return this;
@@ -3589,13 +3597,14 @@ class BaseApp {
     }
   }
 }
+BaseApp.prototype._staticPaths = {};
+BaseApp.prototype._watched = [];
 var baseapp = BaseApp;
 
 const { extend: extend$1 } = utils;
 class App extends uWebSockets.App {
   constructor(options) {
     super(options);
-    this._staticPaths = {};
     extend$1(this, baseapp);
   }
 }
@@ -3605,7 +3614,6 @@ const { extend: extend$2 } = utils;
 class SSLApp extends uWebSockets.SSLApp {
   constructor(options) {
     super(options);
-    this._staticPaths = {};
     extend$2(this, baseapp);
   }
 }

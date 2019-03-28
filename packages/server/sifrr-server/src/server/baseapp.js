@@ -49,8 +49,7 @@ class BaseApp {
     });
 
     if (options && options.watch) {
-      this.watched = this.watched || [];
-      if (this.watched.indexOf(folder) < 0) {
+      if (this._watched.indexOf(folder) < 0) {
         fs.watch(folder, (event, filename) => {
           if (event === 'rename') {
             if (!filename) return;
@@ -64,7 +63,7 @@ class BaseApp {
             }
           }
         });
-        this.watched.push(folder);
+        this._watched.push(folder);
       }
     }
     return this;
@@ -150,5 +149,8 @@ class BaseApp {
     }
   }
 }
+
+BaseApp.prototype._staticPaths = {};
+BaseApp.prototype._watched = [];
 
 module.exports = BaseApp;
