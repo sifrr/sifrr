@@ -655,44 +655,6 @@
   }
   var creator_1 = creator;
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
-  const AsyncFunction = Object.getPrototypeOf(
-  _asyncToGenerator(function* () {})).constructor;
   class Loader {
     constructor(elemName, url) {
       if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
@@ -726,7 +688,7 @@
         return this.executeHTMLScripts();
       } else {
         return this.js.then(script => {
-          return new AsyncFunction(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
+          return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
         }).catch(e => {
           window.console.error(e);
           window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
@@ -743,7 +705,7 @@
             newScript.type = script.type;
             window.document.body.appendChild(newScript);
           } else {
-            return new AsyncFunction(script.text + "\n //# sourceURL=".concat(this.getUrl('html'))).call({
+            return new Function(script.text + "\n //# sourceURL=".concat(this.getUrl('html'))).call({
               currentTempate: content.querySelector('template')
             });
           }
@@ -962,7 +924,7 @@
 
   let SifrrDom = {};
   SifrrDom.elements = {};
-  SifrrDom.loadingElements = [];
+  SifrrDom.loadingElements = {};
   SifrrDom.Element = element;
   SifrrDom.twoWayBind = twowaybind;
   SifrrDom.Loader = loader;
@@ -972,7 +934,7 @@
   SifrrDom.makeChildrenEqualKeyed = keyed.makeChildrenEqualKeyed;
   SifrrDom.makeEqual = makeequal.makeEqual;
   SifrrDom.template = template;
-  SifrrDom.register = (Element, options) => {
+  SifrrDom.register = (Element, options = {}) => {
     Element.useSR = SifrrDom.config.useShadowRoot;
     const name = Element.elementName;
     if (!name) {
@@ -982,14 +944,21 @@
     } else if (name.indexOf('-') < 1) {
       throw Error("Error creating Element: ".concat(name, " - Custom Element name must have one dash '-'"));
     } else {
-      try {
-        window.customElements.define(name, Element, options);
-        SifrrDom.elements[name] = Element;
-        return true;
-      } catch (error) {
-        window.console.error("Error creating Custom Element: ".concat(name, " - ").concat(error.message), error.trace);
-        return false;
+      let before = Promise.resolve(true);
+      if (Array.isArray(options.dependsOn)) {
+        before = Promise.all(options.dependsOn.map(en => SifrrDom.load(en)));
+      } else if (typeof options.dependsOn === 'string') {
+        before = SifrrDom.load(options.dependsOn);
       }
+      delete options.dependsOn;
+      const loading = before.then(() => window.customElements.define(name, Element, options));
+      SifrrDom.loadingElements[name] = loading;
+      return loading.then(() => {
+        SifrrDom.elements[name] = Element;
+        delete SifrrDom.loadingElements[name];
+      }).catch(error => {
+        throw Error("Error creating Custom Element: ".concat(name, " - ").concat(error.message));
+      });
     }
   };
   SifrrDom.setup = function (config) {
@@ -1014,20 +983,18 @@
       return Promise.resolve(window.console.warn("Error loading Element: ".concat(elemName, " - Custom Element with this name is already defined.")));
     }
     let loader = new SifrrDom.Loader(elemName, url);
-    const wd = customElements.whenDefined(elemName);
-    SifrrDom.loadingElements.push(wd);
-    return loader.executeScripts(js).then(() => {
+    return loader.executeScripts(js).then(() => SifrrDom.loadingElements[elemName]).then(() => {
       if (!window.customElements.get(elemName)) {
-        window.console.warn("Executing '".concat(elemName, "' file didn't register the element. Ignore if you are registering element in a promise or async function."));
-        SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
+        window.console.warn("Executing '".concat(elemName, "' file didn't register the element."));
       }
-    }).catch(e => {
-      SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
-      throw e;
     });
   };
   SifrrDom.loading = () => {
-    return Promise.all(SifrrDom.loadingElements);
+    const promises = [];
+    for (let el in SifrrDom.loadingElements) {
+      promises.push(SifrrDom.loadingElements[el]);
+    }
+    return Promise.all(promises);
   };
   var sifrr_dom = SifrrDom;
 

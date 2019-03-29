@@ -3,7 +3,7 @@ let SifrrDom = {};
 
 // For elements
 SifrrDom.elements = {};
-SifrrDom.loadingElements = [];
+SifrrDom.loadingElements = {};
 
 // Classes
 SifrrDom.Element = require('./dom/element');
@@ -19,7 +19,7 @@ SifrrDom.makeEqual = require('./dom/makeequal').makeEqual;
 SifrrDom.template = require('./dom/template');
 
 // Register Custom Element Function
-SifrrDom.register = (Element, options) => {
+SifrrDom.register = (Element, options = {}) => {
   Element.useSR = SifrrDom.config.useShadowRoot;
   const name = Element.elementName;
   if (!name) {
@@ -29,14 +29,21 @@ SifrrDom.register = (Element, options) => {
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
-    try {
-      window.customElements.define(name, Element, options);
-      SifrrDom.elements[name] = Element;
-      return true;
-    } catch (error) {
-      window.console.error(`Error creating Custom Element: ${name} - ${error.message}`, error.trace);
-      return false;
+    let before = Promise.resolve(true);
+    if (Array.isArray(options.dependsOn)) {
+      before = Promise.all(options.dependsOn.map(en => SifrrDom.load(en)));
+    } else if (typeof options.dependsOn === 'string') {
+      before = SifrrDom.load(options.dependsOn);
     }
+    delete options.dependsOn;
+    const loading = before.then(() => window.customElements.define(name, Element, options));
+    SifrrDom.loadingElements[name] = loading;
+    return loading.then(() => {
+      SifrrDom.elements[name] = Element;
+      delete SifrrDom.loadingElements[name];
+    }).catch(error => {
+      throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
+    });
   }
 };
 
@@ -60,21 +67,19 @@ SifrrDom.setup = function(config) {
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
   if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
   let loader = new SifrrDom.Loader(elemName, url);
-  const wd = customElements.whenDefined(elemName);
-  SifrrDom.loadingElements.push(wd);
-  return loader.executeScripts(js).then(() => {
+  return loader.executeScripts(js).then(() => SifrrDom.loadingElements[elemName]).then(() => {
     if (!window.customElements.get(elemName)) {
-      window.console.warn(`Executing '${elemName}' file didn't register the element. Ignore if you are registering element in a promise or async function.`);
-      SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
+      window.console.warn(`Executing '${elemName}' file didn't register the element.`);
     }
-  }).catch(e => {
-    SifrrDom.loadingElements.splice(SifrrDom.loadingElements.indexOf(wd), 1);
-    throw e;
   });
 };
 
 SifrrDom.loading = () => {
-  return Promise.all(SifrrDom.loadingElements);
+  const promises = [];
+  for (let el in SifrrDom.loadingElements) {
+    promises.push(SifrrDom.loadingElements[el]);
+  }
+  return Promise.all(promises);
 };
 
 module.exports = SifrrDom;
