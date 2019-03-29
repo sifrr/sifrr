@@ -1,7 +1,7 @@
 <h1 align="center"> <img src="./logo/sifrr-logo.svg" width="256" alt="sifrr" name="sifrr"> </h1>
 <p align="center">
   <a href="https://github.com/sifrr/sifrr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="GitHub license" /></a>
-  <a href="https://circleci.com/gh/sifrr/sifrr"><img alt="CircleCI (all branches)" src="https://img.shields.io/circleci/project/github/sifrr/sifrr.svg?logo=circleci&style=flat-square" /></a>
+  <a href="https://circleci.com/gh/sifrr/sifrr"><img alt="CircleCI (all branches)" src="https://img.shields.io/circleci/project/github/sifrr/sifrr/master.svg?logo=circleci&style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@sifrr/dom"><img src="https://img.shields.io/npm/v/@sifrr/dom.svg?style=flat-square" alt="npm version" /></a>
   <a href="./misc/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Not%20yet-red.svg?style=flat-square" alt="No PRs yet" /></a>
   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=small"/></a>
