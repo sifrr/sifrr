@@ -4,7 +4,7 @@ class Benchmark {
   }
 
   static async setup() {
-    await page.waitForFunction(`${this.prototype.main}.isSifrr()`);
+    await page.evaluate(async () => await Sifrr.Dom.loading());
     this.start = await page.evaluate(`window.from - 1`);
   }
 
