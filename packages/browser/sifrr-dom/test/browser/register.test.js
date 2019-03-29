@@ -5,8 +5,8 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   it('registers a custom element with given elementName and adds to Dom.elements', async () => {
-    const el = await page.evaluate(() => {
-      Sifrr.Dom.register(class RandomElement extends HTMLElement { static get elementName() { return 'random-el'; } });
+    const el = await page.evaluate(async () => {
+      await Sifrr.Dom.register(class RandomElement extends HTMLElement { static get elementName() { return 'random-el'; } });
       return {
         windowElement: !!window.customElements.get('random-el'),
         sifrrElement: !!Sifrr.Dom.elements['random-el']
@@ -58,11 +58,12 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   it('consoles error if customElements define throws error', async () => {
-    const error = await page.evaluate(() => {
+    const error = await page.evaluate(async () => {
       let msg;
       window.customElements.define = () => { throw Error('error on define'); };
-      window.console.error = (m) => msg = m;
-      Sifrr.Dom.register({ elementName: 'some-custom' });
+      await Sifrr.Dom.register({ elementName: 'some-custom' }).catch(e => {
+        msg = e.message;
+      });
       return msg;
     });
 

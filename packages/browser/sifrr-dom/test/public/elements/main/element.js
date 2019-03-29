@@ -186,6 +186,4 @@ MainElement.defaultState = {
   data: []
 };
 
-Sifrr.Dom.load('sifrr-row').then(() => {
-  Sifrr.Dom.register(MainElement);
-});
+Sifrr.Dom.register(MainElement, { dependsOn: ['sifrr-row'] });

@@ -75,14 +75,9 @@
     padding: 'padding-top',
     margin: '5px'
   };
-  Promise.all([
-    Sifrr.Dom.load('sifrr-small'),
-    Sifrr.Dom.load('sifrr-row')
-  ]).then(() => {
-    SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
-    SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-row' }));
-    SifrrTest.addArrayToDom('data3', document.createElement('tr', { is: 'sifrr-row' }));
+  SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
+  SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-row' }));
+  SifrrTest.addArrayToDom('data3', document.createElement('tr', { is: 'sifrr-row' }));
 
-    Sifrr.Dom.register(SifrrTest);
-  });
+  Sifrr.Dom.register(SifrrTest, { dependsOn: [ 'sifrr-small', 'sifrr-row' ] });
 </script>

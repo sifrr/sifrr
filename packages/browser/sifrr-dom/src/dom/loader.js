@@ -1,5 +1,4 @@
 const template = require('./template');
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 class Loader {
   constructor(elemName, url) {
@@ -41,7 +40,7 @@ class Loader {
       return this.executeHTMLScripts();
     } else {
       return this.js.then((script) => {
-        return new AsyncFunction(script + `\n //# sourceURL=${this.getUrl('js')}`).call();
+        return new Function(script + `\n //# sourceURL=${this.getUrl('js')}`).call();
       }).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
@@ -60,7 +59,7 @@ class Loader {
           newScript.type = script.type;
           window.document.body.appendChild(newScript);
         } else {
-          return new AsyncFunction(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
+          return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
         }
       });
     });
