@@ -98,18 +98,21 @@ class BaseApp {
 
       res.body = function() {
         return new Promise(resolve => {
-          let buffer;
+          const buffers = [];
           const stream = this.bodyStream();
-          /* Register data cb */
-          stream.on('data', chunk => {
-            if (buffer) {
-              buffer = Buffer.concat([buffer, chunk]);
-            } else {
-              buffer = chunk;
-            }
-          });
+          stream.on('data', buffers.push.bind(buffers));
+
           stream.on('end', () => {
-            resolve(buffer);
+            switch (buffers.length) {
+            case 0:
+              resolve(Buffer.allocUnsafe(0));
+              break;
+            case 1:
+              resolve(buffers[0]);
+              break;
+            default:
+              resolve(Buffer.concat(buffers));
+            }
           });
         });
       };
