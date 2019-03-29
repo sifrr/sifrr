@@ -95,6 +95,6 @@ describe('Sifrr.Dom.load and Loader', () => {
       return message;
     });
 
-    expect(message).to.equal("Executing 'loading-noregister' file didn't register the element. Ignore if you are registering element in a promise or async function.");
+    expect(message).to.equal("Executing 'loading-noregister' file didn't register the element.");
   });
 });

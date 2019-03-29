@@ -226,19 +226,22 @@ const compressions = {
 const { writeHeaders: writeHeaders$1 } = utils;
 const ext$1 = ext.getExt;
 const bytes = 'bytes=';
-const noop = () => true;
 function sendFile(res, req, path, options) {
   const reqHeaders = {
     'if-modified-since': req.getHeader('if-modified-since'),
     range: req.getHeader('range'),
     'accept-encoding': req.getHeader('accept-encoding')
   };
-  res.onAborted(noop);
   sendFileToRes(res, reqHeaders, path, options);
 }
-function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
-  priority: [ 'gzip', 'br', 'deflate' ]
-} } = {}) {
+function sendFileToRes(res, reqHeaders, path, {
+  lastModified = true,
+  headers = {},
+  compress = true,
+  compressionOptions = {
+    priority: [ 'gzip', 'br', 'deflate' ]
+  }
+} = {}) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
   if (lastModified) {

@@ -9,7 +9,6 @@ const compressions = {
 const { writeHeaders } = require('./utils');
 const ext = require('./ext').getExt;
 const bytes = 'bytes=';
-const noop = () => true;
 
 function sendFile(res, req, path, options) {
   const reqHeaders = {
@@ -18,13 +17,17 @@ function sendFile(res, req, path, options) {
     'accept-encoding': req.getHeader('accept-encoding')
   };
 
-  res.onAborted(noop);
   sendFileToRes(res, reqHeaders, path, options);
 }
 
-function sendFileToRes(res, reqHeaders, path, { lastModified = true, headers = {}, compress = true, compressionOptions = {
-  priority: [ 'gzip', 'br', 'deflate' ]
-} } = {}) {
+function sendFileToRes(res, reqHeaders, path, {
+  lastModified = true,
+  headers = {},
+  compress = true,
+  compressionOptions = {
+    priority: [ 'gzip', 'br', 'deflate' ]
+  }
+} = {}) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
 
