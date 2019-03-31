@@ -140,7 +140,7 @@ describe('sifrr-fetch', () => {
       });
     });
 
-    expect(parseInt(resp, 10)).to.be.below(100);
+    expect(parseInt(resp, 10)).to.be.at.most(100);
   });
 
   it('progress works for json', async () => {
