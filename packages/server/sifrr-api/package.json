@@ -34,7 +34,7 @@
     "mkdirp": "^0.5.1"
   },
   "peerDependencies": {
-    "graphql-sequelize": "^9.3.1",
+    "graphql-sequelize": "^9.3.5",
     "sequelize": "^5.2.6"
   },
   "devDependencies": {
