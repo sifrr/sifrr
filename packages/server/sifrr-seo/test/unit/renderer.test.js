@@ -17,16 +17,9 @@ describe('Renderer', () => {
     sinon.restore();
   });
 
-  it('has default options', () => {
-    const r = new Renderer();
-
-    assert.exists(r.options.beforeRender);
-    assert.exists(r.options.afterRender);
-  });
-
   it('launches puppeteer with given options', async () => {
     sinon.stub(puppeteer, 'launch').resolves({ on: () => {} });
-    await renderer.launchBrowser();
+    await renderer.browserAsync();
 
     assert(puppeteer.launch.calledWith({
       headless: process.env.HEADLESS !== 'false',
@@ -43,7 +36,7 @@ describe('Renderer', () => {
 
     assert.notEqual(close.called, true); // Not close if not launched
 
-    await r.launchBrowser();
+    await r.browserAsync();
     r.close();
 
     assert(close.called); // Closed if launched

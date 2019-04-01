@@ -4,7 +4,7 @@ const listen = require('./server');
 const testLoader = require('./testloader');
 const inspector = require('inspector');
 
-global.ENV = process.env.NODE_ENV = 'test';
+global.ENV = process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 global.fs = require('fs');
 global.path = require('path');
 global.chai = require('chai');

@@ -65,7 +65,7 @@ class SifrrSeo {
     return this._cache;
   }
 
-  addShouldRenderCache(req, val) {
+  setShouldRenderCache(req, val) {
     const key = this.options.cacheKey(req);
     this.shouldRenderCache[key] = val;
   }

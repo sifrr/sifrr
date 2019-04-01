@@ -16,9 +16,9 @@ module.exports = function(req, res, next) {
       if (res.hasHeader('content-type')) {
         const contentType = res.getHeader('content-type');
         if (contentType.indexOf('html') >= 0) {
-          this.addShouldRenderCache(renderReq, true);
+          this.setShouldRenderCache(renderReq, true);
         } else {
-          this.addShouldRenderCache(renderReq, false);
+          this.setShouldRenderCache(renderReq, false);
         }
       }
       res._end(resp, encoding);
@@ -29,10 +29,11 @@ module.exports = function(req, res, next) {
     if (html) {
       res.set(headerName, headerValue);
       res.send(html);
-    } else next();
+    } else {
+      next();
+    }
   }).catch((e) => {
     if (e.message === 'No Render') {
-      global.console.log(`Not rendering for ${renderReq.fullUrl}`);
       next();
     } else next(e);
   });

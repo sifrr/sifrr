@@ -53,16 +53,9 @@ class PageRequest {
 }
 var pagerequest = PageRequest;
 
-var constants = {
-  noop: () => {},
-  headerName: 'X-SSR-Powered-By',
-  headerValue: '@sifrr/seo'
-};
-
-const { noop } = constants;
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
-    this.launched = false;
+    this.status = 0;
     this.puppeteerOptions = Object.assign({
       headless: true,
       args: [],
@@ -71,46 +64,46 @@ class Renderer {
       '--no-sandbox',
       '--disable-setuid-sandbox'
     );
-    this.options = Object.assign({
-      beforeRender: noop,
-      afterRender: noop
-    }, options);
+    this.options = options;
   }
-  async launchBrowser() {
-    this.browser = await puppeteer.launch(this.puppeteerOptions);
-    this.launched = true;
+  async browserAsync() {
     const me = this;
-    this.browser.on('disconnected', () => {
-      me.launched = false;
-    });
+    if (this.status === 0) {
+      this.status = 1;
+      this._browser = puppeteer.launch(this.puppeteerOptions).then(b => {
+        this.status = 2;
+        me.browser = b;
+        b.on('disconnected', () => {
+          me.status = 0;
+        });
+        return b;
+      });
+    }
+    return this._browser;
   }
   close() {
-    if (this.launched) return this.browser.close();
+    if (this.status === 2) return this.browser.close();
+    else if (this.status === 1) return this._browser.then(b => b.close());
     else return Promise.resolve(true);
   }
   render(req) {
     const fullUrl = req.fullUrl;
-    let pro = Promise.resolve(true);
     const me = this;
-    if (!this.launched) pro = this.launchBrowser();
-    return pro.then(() => this.browser.newPage()).then(async (newp) => {
+    return this.browserAsync().then(() => this.browser.newPage()).then(async (newp) => {
       const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
       const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
-      await newp.evaluateOnNewDocument(me.options.beforeRender);
+      if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
       const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
       let ret;
       if (sRC) {
         await fetches.all();
-        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
-        await newp.evaluate(me.options.afterRender);
+        if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
         ret = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
-      } else {
-        ret = false;
-      }
+      } else ret = false;
       await newp.close();
       return ret;
     });
@@ -137,7 +130,11 @@ var getcache = (ops) => {
   });
 };
 
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+var constants = {
+  noop: () => {},
+  headerName: 'X-SSR-Powered-By',
+  headerValue: '@sifrr/seo'
+};
 
 const { headerName, headerValue } = constants;
 var middleware = function(req, res, next) {
@@ -152,9 +149,9 @@ var middleware = function(req, res, next) {
       if (res.hasHeader('content-type')) {
         const contentType = res.getHeader('content-type');
         if (contentType.indexOf('html') >= 0) {
-          this.addShouldRenderCache(renderReq, true);
+          this.setShouldRenderCache(renderReq, true);
         } else {
-          this.addShouldRenderCache(renderReq, false);
+          this.setShouldRenderCache(renderReq, false);
         }
       }
       res._end(resp, encoding);
@@ -164,10 +161,11 @@ var middleware = function(req, res, next) {
     if (html) {
       res.set(headerName, headerValue);
       res.send(html);
-    } else next();
+    } else {
+      next();
+    }
   }).catch((e) => {
     if (e.message === 'No Render') {
-      commonjsGlobal.console.log(`Not rendering for ${renderReq.fullUrl}`);
       next();
     } else next(e);
   });
@@ -227,7 +225,7 @@ class SifrrSeo {
     this._cache = this._cache || getcache(this.options);
     return this._cache;
   }
-  addShouldRenderCache(req, val) {
+  setShouldRenderCache(req, val) {
     const key = this.options.cacheKey(req);
     this.shouldRenderCache[key] = val;
   }

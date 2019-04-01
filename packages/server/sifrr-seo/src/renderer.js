@@ -1,10 +1,13 @@
 const puppeteer = require('puppeteer');
 const PageRequest = require('./pagerequest');
-const { noop } = require('./constants');
+// status
+// 0: closed
+// 1: launching
+// 2: launched
 
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
-    this.launched = false;
+    this.status = 0;
     this.puppeteerOptions = Object.assign({
       headless: true,
       args: [],
@@ -13,55 +16,55 @@ class Renderer {
       '--no-sandbox',
       '--disable-setuid-sandbox'
     );
-    this.options = Object.assign({
-      beforeRender: noop,
-      afterRender: noop
-    }, options);
+    this.options = options;
   }
 
-  async launchBrowser() {
-    this.browser = await puppeteer.launch(this.puppeteerOptions);
-    this.launched = true;
+  async browserAsync() {
     const me = this;
-    this.browser.on('disconnected', () => {
-      /* istanbul ignore next */
-      me.launched = false;
-    });
+    if (this.status === 0) {
+      this.status = 1;
+      this._browser = puppeteer.launch(this.puppeteerOptions).then(b => {
+        this.status = 2;
+        me.browser = b;
+        b.on('disconnected', () => {
+          /* istanbul ignore next */
+          me.status = 0;
+        });
+        return b;
+      });
+    }
+    return this._browser;
   }
 
   close() {
-    if (this.launched) return this.browser.close();
+    if (this.status === 2) return this.browser.close();
+    else if (this.status === 1) return this._browser.then(b => b.close());
     else return Promise.resolve(true);
   }
 
   render(req) {
     const fullUrl = req.fullUrl;
-    let pro = Promise.resolve(true);
     const me = this;
 
-    if (!this.launched) pro = this.launchBrowser();
-    return pro.then(() => this.browser.newPage()).then(async (newp) => {
+    return this.browserAsync().then(() => this.browser.newPage()).then(async (newp) => {
       const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
 
       const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
-      await newp.evaluateOnNewDocument(me.options.beforeRender);
+      if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
       const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
       let ret;
 
       if (sRC) {
         await fetches.all();
-        process.stdout.write(`Rendering ${fullUrl} with sifrr-seo \n`);
         /* istanbul ignore next */
-        await newp.evaluate(me.options.afterRender);
+        if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
         /* istanbul ignore next */
         ret = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
-      } else {
-        ret = false;
-      }
+      } else ret = false;
 
       await newp.close();
       return ret;
