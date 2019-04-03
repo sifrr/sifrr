@@ -57,6 +57,7 @@ class Loader {
           const newScript = require('./constants').SCRIPT();
           newScript.src = script.src;
           newScript.type = script.type;
+          newScript.async = false;
           window.document.body.appendChild(newScript);
         } else {
           return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
