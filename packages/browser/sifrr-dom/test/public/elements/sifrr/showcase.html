@@ -1,0 +1,144 @@
+<template>
+  <style media="screen">
+    * {
+      box-sizing: border-box;
+    }
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+    }
+    #sidebar {
+      width: 30%;
+      height: 100%;
+    }
+    #sidebar > * {
+      height: 33.33%;
+    }
+    #main {
+      width: 70%;
+      height: 100%;
+    }
+    .flex-column {
+      height: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: column;
+    }
+    .box {
+      width: 100%;
+      border: 1px solid grey;
+      overflow: scroll;
+    }
+    #element {
+      background-color: grey;
+      padding: 20px;
+      height: 70%;
+    }
+    #element > * {
+      display: block;
+      background-color: white;
+      margin: auto;
+      ${this.state.style}
+    }
+    #code {
+      height: 30%;
+    }
+    label {
+      font-family: Roboto, Ariel;
+      font-size: 16px;
+      line-height: 24px;
+      padding: 4px;
+    }
+    textarea {
+      width: 100%;
+      background-color: #eee;
+      height: calc(100% - 24px);
+      font-size: 14px;
+      padding: 4px;
+    }
+  </style>
+  <div class="container">
+    <div class="flex-column" id="sidebar">
+      <div class="box">
+        <label for="style">CSS Styles</label>
+        <textarea name="style" data-sifrr-bind="style">
+          ${this.state.style}
+        </textarea>
+      </div>
+      <div class="box">
+        <label for="elState">Element State</label>
+        <textarea id="elState" name="elState" _input='${this.update}'>
+          ${this.elState}
+        </textarea>
+      </div>
+      <div class="box">
+        <label for="states">Create new style</label>
+        <button type="button" name="button">Create new style</button>
+      </div>
+    </div>
+    <div class="flex-column" id="main">
+      <div class="box">
+
+      </div>
+      <div class="box" id="element" data-sifrr-html="true">
+        ${this.state.code}
+      </div>
+      <div class="box" id="code">
+        <label for="elementName">Element Name</label>
+        <input type="text" name="elementName" value="${this.state.element}" data-sifrr-bind="element">
+        <label for="elementName">Is JS File</label>
+        <select id="isjs" name="isjs" value="${this.isjs.toString()}" _input='${this.update}'>
+          <option value="true">true</option>
+          <option value="false">false</option>
+        </select>
+        <br>
+        <label for="htmlcode">HTML Code</label>
+        <textarea name="htmlcode" rows="8" data-sifrr-bind="code">
+          ${this.state.code}
+        </textarea>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  Sifrr.Dom.Event.add('input');
+  class SifrrShowcase extends Sifrr.Dom.Element {
+    onUpdate() {
+      if (this._element !== this.state.element || this._js !== this.isjs) {
+        Sifrr.Dom.load(this.state.element, { js: this.isjs });
+        this._js = this.isjs;
+        this._element = this.state.element;
+      }
+      let state;
+      try {
+        state = new Function('return ' + this.$('#elState').value)();
+      } catch (e) {}
+      if (state && this.element().isSifrr && this.element().state !== state) {
+        this.element().state = state;
+      }
+    }
+
+    element() {
+      return this.$('#element').firstElementChild;
+    }
+
+    get elState() {
+      return JSON.stringify(this.state.elState, null, 2);
+    }
+
+    get isjs() {
+      return JSON.parse(this.$('#isjs').value);
+    }
+  }
+
+  SifrrShowcase.defaultState = {
+    element: 'sifrr-test',
+    style: 'width: 400px;',
+    code: '<sifrr-test></sifrr-test>',
+    elState: {}
+  };
+
+  Sifrr.Dom.register(SifrrShowcase);
+</script>

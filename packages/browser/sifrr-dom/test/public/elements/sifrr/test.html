@@ -17,9 +17,7 @@
     } else {
       return 'not ok';
     }
-  }
-  ok</a>
-  <p>${JSON.stringify(state)}</p>
+  }</a>
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
@@ -37,12 +35,9 @@
 
   </div>
   <div data-sifrr-html="true">
-    <!-- ${this.arrayToDom('data')} -->
   </div>
   <div class="">
     <div data-sifrr-html="true">
-      <!-- ${this.arrayToDom('data2', this.state.data)} -->
-      <!-- ${this.arrayToDom('data3', this.state.data)} -->
     </div>
   </div>
   <div class="html" data-sifrr-html="true">
@@ -75,9 +70,6 @@
     padding: 'padding-top',
     margin: '5px'
   };
-  SifrrTest.addArrayToDom('data', document.createElement('sifrr-small'));
-  SifrrTest.addArrayToDom('data2', document.createElement('tr', { is: 'sifrr-row' }));
-  SifrrTest.addArrayToDom('data3', document.createElement('tr', { is: 'sifrr-row' }));
 
   Sifrr.Dom.register(SifrrTest, { dependsOn: [ 'sifrr-small', 'sifrr-row' ] });
 </script>
