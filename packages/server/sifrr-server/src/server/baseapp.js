@@ -87,6 +87,7 @@ class BaseApp {
         stream._read = noOp;
 
         this.onData((ab, isLast) => {
+          // uint and then slicing is bit faster than slice and then uint
           stream.push(new Uint8Array(ab, ab.byteOffset, ab.byteLength).slice(0, ab.byteLength));
           if (isLast) {
             stream.push(null);

@@ -27,7 +27,7 @@ function SimpleElement(content, defaultState = null) {
   const stateProps = {
     get: function() { return this._state; },
     set: function(v) {
-      Object.assign(this._state, v);
+      if (this._state !== v) Object.assign(this._state, v);
       update(this, stateMap);
     }
   };
