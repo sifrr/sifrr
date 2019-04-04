@@ -21,12 +21,12 @@ describe('Sifrr.Dom.load and Loader', () => {
   });
 
   it("doesn't try to register element if it is already loaded", async () => {
-    const error = await page.evaluate(() => {
+    const error = await page.evaluate(async () => {
       try {
         Sifrr.Dom.load('loading-load');
         return false;
       } catch(e) {
-        return e.message;
+        return e;
       }
     });
 
@@ -34,15 +34,7 @@ describe('Sifrr.Dom.load and Loader', () => {
   });
 
   it("doesn't try to run script element if it is already executed", async () => {
-    const mes = await page.evaluate(() => {
-      let mes;
-      try {
-        (new Sifrr.Dom.Loader('loading-load')).executeScripts();
-      } catch (e) {
-        mes = e.message;
-      }
-      return mes;
-    });
+    const mes = await page.evaluate(() => (new Sifrr.Dom.Loader('loading-load')).executeScripts().catch(e => e.message));
 
     assert.equal(mes, "'loading-load' element's javascript was already executed");
   });

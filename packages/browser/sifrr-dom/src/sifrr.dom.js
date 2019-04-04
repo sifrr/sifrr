@@ -67,14 +67,18 @@ SifrrDom.setup = function(config) {
 // Load Element HTML and execute script in it
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
   if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
-  SifrrDom.loadingElements[name] = window.customElements.whenDefined(elemName);
+  SifrrDom.loadingElements[elemName] = window.customElements.whenDefined(elemName);
   let loader = new SifrrDom.Loader(elemName, url);
   return loader.executeScripts(js).then(() => SifrrDom.registering[elemName]).then(() => {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element.`);
     }
     delete SifrrDom.registering[elemName];
-    delete SifrrDom.loadingElements[name];
+    delete SifrrDom.loadingElements[elemName];
+  }).catch(e => {
+    delete SifrrDom.registering[elemName];
+    delete SifrrDom.loadingElements[elemName];
+    throw e;
   });
 };
 

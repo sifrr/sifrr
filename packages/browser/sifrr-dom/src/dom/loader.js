@@ -15,7 +15,9 @@ class Loader {
     this._html = window.fetch(this.getUrl('html'))
       .then((resp) => {
         if (resp.ok) return resp.text();
-        throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
+        else {
+          throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
+        }
       })
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -47,12 +49,11 @@ class Loader {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
         return this.executeHTMLScripts();
-      });
+      }).then(() => this._executed = true);
     }
   }
 
   executeHTMLScripts() {
-    if (this._executed) return Promise.reject(Error(`'${this.elementName}' element's javascript was already executed`));
     return this.html.then((content) => {
       let promise = Promise.resolve(true);
       content.querySelectorAll('script').forEach((script) => {
@@ -66,7 +67,7 @@ class Loader {
         }
       });
       return promise;
-    }).then(() => this._executed = true);
+    });
   }
 
   static add(elemName, instance) {

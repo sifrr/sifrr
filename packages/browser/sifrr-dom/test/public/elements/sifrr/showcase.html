@@ -128,9 +128,9 @@
   const defaultShowcase = {
     id: 0,
     name: 'new',
-    element: 'sifrr-test',
+    element: 'sifrr-placeholder',
     style: 'width: 100%;',
-    code: '<sifrr-test>\n</sifrr-test>',
+    code: '<sifrr-placeholder>\n</sifrr-placeholder>',
     elState: 'return {\n\n}',
     isjs: 'true'
   };
@@ -144,8 +144,10 @@
         this.switchShowcase(res.current || 0);
       });
       Sifrr.Dom.Event.addListener('click', '.showcase', (e, el) => {
-        const id = el.dataset.showcaseId;
-        this.switchShowcase(id);
+        if (el.matches('.showcase')) {
+          const id = el.dataset.showcaseId;
+          this.switchShowcase(id);
+        }
       });
       Sifrr.Dom.Event.addListener('click', '.showcase span', (e, el) => {
         const id = el.parentNode.dataset.showcaseId;
@@ -155,7 +157,7 @@
 
     onUpdate() {
       if (this._element !== this.state.element || this._js !== this.state.isjs) {
-        Sifrr.Dom.load(this.state.element, { js: this.state.isjs === 'true' }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
+        Sifrr.Dom.load(this.state.element, { js: this.state.isjs == 'true' }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
         this._js = this.state.isjs;
         this._element = this.state.element;
       }
@@ -174,21 +176,27 @@
       this.switchShowcase(i);
     }
 
-    deleteShowcase(i) {
-      showcases.splice(i, 1);
+    deleteShowcase(id) {
+      showcases.forEach((s, i) => {
+        if (s.id == id) showcases.splice(i, 1);
+      });
       this.update();
     }
 
     saveShowcase() {
       const i = this.state.id;
-      showcases[i] = Object.assign(showcases[i], this.state);
+      showcases.forEach(s => {
+        if (s.id == i) {
+          Object.assign(s, this.state);
+        }
+      });
       this.update();
       storage.insert('showcases', showcases);
     }
 
-    switchShowcase(i) {
-      this.state = Object.assign({}, showcases.filter(s => s.id == i)[0] || showcases[0]);
-      storage.update('current', i);
+    switchShowcase(id) {
+      this.state = Object.assign({}, showcases.filter(s => s.id == id)[0] || showcases[0]);
+      storage.update('current', id);
     }
 
     updateHtml(e, el) {

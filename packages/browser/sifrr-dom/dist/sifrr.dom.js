@@ -668,8 +668,9 @@
       Loader.add(this.elementName, this);
       const me = this;
       this._html = window.fetch(this.getUrl('html')).then(resp => {
-        if (resp.ok) return resp.text();
-        throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
+        if (resp.ok) return resp.text();else {
+          throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
+        }
       }).then(file => template(file).content).then(content => {
         me.template = content.querySelector('template');
         return content;
@@ -696,11 +697,10 @@
           window.console.error(e);
           window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
           return this.executeHTMLScripts();
-        });
+        }).then(() => this._executed = true);
       }
     }
     executeHTMLScripts() {
-      if (this._executed) return Promise.reject(Error("'".concat(this.elementName, "' element's javascript was already executed")));
       return this.html.then(content => {
         let promise = Promise.resolve(true);
         content.querySelectorAll('script').forEach(script => {
@@ -712,7 +712,7 @@
           }
         });
         return promise;
-      }).then(() => this._executed = true);
+      });
     }
     static add(elemName, instance) {
       Loader._all[elemName] = instance;
@@ -985,14 +985,18 @@
     if (window.customElements.get(elemName)) {
       return Promise.resolve(window.console.warn("Error loading Element: ".concat(elemName, " - Custom Element with this name is already defined.")));
     }
-    SifrrDom.loadingElements[name] = window.customElements.whenDefined(elemName);
+    SifrrDom.loadingElements[elemName] = window.customElements.whenDefined(elemName);
     let loader = new SifrrDom.Loader(elemName, url);
     return loader.executeScripts(js).then(() => SifrrDom.registering[elemName]).then(() => {
       if (!window.customElements.get(elemName)) {
         window.console.warn("Executing '".concat(elemName, "' file didn't register the element."));
       }
       delete SifrrDom.registering[elemName];
-      delete SifrrDom.loadingElements[name];
+      delete SifrrDom.loadingElements[elemName];
+    }).catch(e => {
+      delete SifrrDom.registering[elemName];
+      delete SifrrDom.loadingElements[elemName];
+      throw e;
     });
   };
   SifrrDom.loading = () => {
