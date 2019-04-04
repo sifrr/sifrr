@@ -708,7 +708,7 @@
             window.fetch(script.src);
             promise = promise.then(() => window.fetch(script.src).then(resp => resp.text()).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window)));
           } else {
-            promise = promise.then(new Function(script.text + "\n//# sourceURL=".concat(this.getUrl('html'))).call(window));
+            promise = promise.then(() => new Function(script.text + "\n//# sourceURL=".concat(this.getUrl('html'))).call(window));
           }
         });
         return promise;

@@ -642,7 +642,7 @@ class Loader {
             .then(resp => resp.text())
             .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window)));
         } else {
-          promise = promise.then(new Function(script.text + `\n//# sourceURL=${this.getUrl('html')}`).call(window));
+          promise = promise.then(() => new Function(script.text + `\n//# sourceURL=${this.getUrl('html')}`).call(window));
         }
       });
       return promise;

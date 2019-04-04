@@ -65,6 +65,20 @@
       font-size: 14px;
       padding: 4px;
     }
+    ul {
+      padding: 8px;
+      margin: 0;
+    }
+    .showcase {
+      list-style-type: none;
+    }
+    .showcase span {
+      color: red;
+      float: right;
+    }
+    #showcase${this.state.id} {
+      background: grey;
+    }
   </style>
   <div class="container">
     <div class="flex-column" id="sidebar">
@@ -78,11 +92,12 @@
       </div>
       <div class="box">
         <label for="states">Showcase</label>
-        <button type="button" name="createStyle">Create new Showcase</button>
-        <button type="button" name="saveStyle">Save Showcase</button>
-        <div id="#styles">
-          <ul data-sifrr-repeat="${this.state.styles}">
-            <li>${this.state.name}</li>
+        <input id="showcaseName" type="text" name="showcaseName" value="${this.state.name}" data-sifrr-bind="name">
+        <button type="button" name="createStyle" _click=${this.createNewShowcase}>Create new Showcase</button>
+        <button type="button" name="saveStyle" _click="${this.saveShowcase}">Save Showcase</button>
+        <div id="showcases">
+          <ul data-sifrr-repeat="${this.allShowcases()}">
+            <li class="showcase" data-showcase-id="${this.state.id}" id="showcase${this.state.id}">${this.state.name}<span>X</span></li>
           </ul>
         </div>
       </div>
@@ -95,7 +110,7 @@
         <label for="elementName">Element Name</label>
         <input type="text" name="elementName" _input="${this.updateHtml}" value="${this.state.element}">
         <label for="elementName">Is JS File</label>
-        <select id="isjs" name="isjs" value="${this.isjs.toString()}" _input='${this.update}'>
+        <select id="isjs" name="isjs" value="${this.state.isjs}" data-sifrr-bind="isjs">
           <option value="true">true</option>
           <option value="false">false</option>
         </select>
@@ -109,11 +124,39 @@
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@sifrr/storage@0.0.3/dist/sifrr.storage.min.js" charset="utf-8"></script>
 <script type="text/javascript">
+  Sifrr.Dom.Event.add('click');
+  const defaultShowcase = {
+    id: 0,
+    name: 'new',
+    element: 'sifrr-test',
+    style: 'width: 100%;',
+    code: '<sifrr-test>\n</sifrr-test>',
+    elState: 'return {\n\n}',
+    isjs: 'true'
+  };
+  const storage = new Sifrr.Storage({ name: 'sifrr-showcase', version: 1 });
+  const showcases = [];
+
   class SifrrShowcase extends Sifrr.Dom.Element {
+    onConnect() {
+      storage.select(['showcases', 'current']).then((res) => {
+        showcases.push(...res.showcases);
+        this.switchShowcase(res.current || 0);
+      });
+      Sifrr.Dom.Event.addListener('click', '.showcase', (e, el) => {
+        const id = el.dataset.showcaseId;
+        this.switchShowcase(id);
+      });
+      Sifrr.Dom.Event.addListener('click', '.showcase span', (e, el) => {
+        const id = el.parentNode.dataset.showcaseId;
+        this.deleteShowcase(id);
+      });
+    }
+
     onUpdate() {
-      if (this._element !== this.state.element || this._js !== this.isjs) {
-        Sifrr.Dom.load(this.state.element, { js: this.isjs }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
-        this._js = this.isjs;
+      if (this._element !== this.state.element || this._js !== this.state.isjs) {
+        Sifrr.Dom.load(this.state.element, { js: this.state.isjs === 'true' }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
+        this._js = this.state.isjs;
         this._element = this.state.element;
       }
       let state;
@@ -125,6 +168,29 @@
       }
     }
 
+    createNewShowcase() {
+      const i = showcases.length;
+      showcases[i] = Object.assign({}, this.state, { id: i, name: this.$('#showcaseName').value });
+      this.switchShowcase(i);
+    }
+
+    deleteShowcase(i) {
+      showcases.splice(i, 1);
+      this.update();
+    }
+
+    saveShowcase() {
+      const i = this.state.id;
+      showcases[i] = Object.assign(showcases[i], this.state);
+      this.update();
+      storage.insert('showcases', showcases);
+    }
+
+    switchShowcase(i) {
+      this.state = Object.assign({}, showcases.filter(s => s.id == i)[0] || showcases[0]);
+      storage.update('current', i);
+    }
+
     updateHtml(e, el) {
       const html = `<${el.value}></${el.value}>`;
       this.state = { code: html, element: el.value };
@@ -134,18 +200,12 @@
       return this.$('#element').firstElementChild;
     }
 
-    get isjs() {
-      return JSON.parse(this.$('#isjs').value);
+    allShowcases() {
+      return showcases;
     }
   }
 
-  SifrrShowcase.defaultState = {
-    element: 'sifrr-test',
-    style: 'width: 100%;',
-    code: '<sifrr-test>\n</sifrr-test>',
-    elState: 'return {\n\n}',
-    styles: [{ name: 'new' }]
-  };
+  SifrrShowcase.defaultState = defaultShowcase;
 
   Sifrr.Dom.register(SifrrShowcase, { dependsOn: 'highlight-syntax' });
 </script>
