@@ -21,7 +21,10 @@
     KEY_ATTR: 'data-sifrr-key'
   };
 
-  const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
+  function newTW() {
+    return window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
+  }
+  const TREE_WALKER = newTW();
   const {
     TEXT_NODE
   } = constants;
@@ -40,15 +43,16 @@
     return refs;
   }
   function create(node, fxn, passedArg) {
+    const TW = newTW();
     let indices = [],
         ref,
         idx = 0,
         ntr;
-    TREE_WALKER.currentNode = node;
+    TW.currentNode = node;
     while (node) {
       if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
         ntr = node;
-        node = TREE_WALKER.nextNode(node);
+        node = TW.nextNode(node);
         ntr.remove();
       } else {
         if (ref = fxn(node, passedArg)) {
@@ -60,7 +64,7 @@
         } else {
           idx++;
         }
-        node = TREE_WALKER.nextNode(node);
+        node = TW.nextNode(node);
       }
     }
     return indices;
@@ -525,14 +529,12 @@
     create: create$1
   } = ref;
   function SimpleElement(content, defaultState = null) {
-    if (!content.nodeType && typeof content !== 'string') {
-      if (!content[0] || !content[0].nodeType) {
-        throw TypeError('First argument for SimpleElement should be of type string or DOM element');
-      }
-    }
     const templ = template(content);
     content = templ.content.firstElementChild || templ.content.firstChild;
-    if (content.isSifrr || content.nodeName.indexOf('-') !== -1 || content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1) {
+    if (!content.nodeType) {
+      throw TypeError('First argument for SimpleElement should be of type string or DOM element');
+    }
+    if (content.isSifrr || content.nodeName.indexOf('-') !== -1 || content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') > 0) {
       if (!content.isSifrr) {
         window.document.body.appendChild(content);
         window.document.body.removeChild(content);
@@ -574,7 +576,6 @@
     sm.se = simpleelement(el.childNodes, defaultState);
     sm.text = getBindingFxns(el.getAttribute(attr));
     sm.keyed = el.hasAttribute(KEY_ATTR$1);
-    el.textContent = '';
     el.removeAttribute(attr);
   };
 

@@ -74,8 +74,14 @@
         </textarea>
       </div>
       <div class="box">
-        <label for="states">Create new style</label>
-        <button type="button" name="button">Create new style</button>
+        <label for="states">Styles</label>
+        <button type="button" name="createStyle">Create new style</button>
+        <button type="button" name="saveStyle">Save style</button>
+        <div id="#styles">
+          <ul data-sifrr-repeat="${this.state.styles}">
+            <li>${this.state.name}</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="flex-column" id="main">
@@ -84,7 +90,7 @@
       </div>
       <div class="box" id="code">
         <label for="elementName">Element Name</label>
-        <input type="text" name="elementName" value="${this.state.element}" data-sifrr-bind="element">
+        <input type="text" name="elementName" _input="${this.updateHtml}" value="${this.state.element}">
         <label for="elementName">Is JS File</label>
         <select id="isjs" name="isjs" value="${this.isjs.toString()}" _input='${this.update}'>
           <option value="true">true</option>
@@ -112,9 +118,14 @@
       try {
         state = new Function('return ' + this.$('#elState').value)();
       } catch (e) {}
-      if (state && this.element().isSifrr && this.element().state !== state) {
+      if (state && this.element() && this.element().isSifrr && this.element().state !== state) {
         this.element().state = state;
       }
+    }
+
+    updateHtml(e, el) {
+      const html = `<${el.value}></${el.value}>`;
+      this.state = { code: html, element: el.value };
     }
 
     element() {
@@ -132,9 +143,10 @@
 
   SifrrShowcase.defaultState = {
     element: 'sifrr-test',
-    style: 'width: 400px;',
+    style: 'width: 100%;',
     code: '<sifrr-test></sifrr-test>',
-    elState: {}
+    elState: {},
+    styles: [{ name: 'new' }]
   };
 
   Sifrr.Dom.register(SifrrShowcase);

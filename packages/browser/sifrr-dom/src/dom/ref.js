@@ -1,6 +1,9 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 
-const TREE_WALKER = window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
+function newTW() {
+  return window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
+}
+const TREE_WALKER = newTW();
 const { TEXT_NODE } = require('./constants');
 
 function collect(element, stateMap) {
@@ -17,12 +20,13 @@ function collect(element, stateMap) {
 }
 
 function create(node, fxn, passedArg) {
+  const TW = newTW();
   let indices = [], ref, idx = 0, ntr;
-  TREE_WALKER.currentNode = node;
+  TW.currentNode = node;
   while(node) {
     if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
       ntr = node;
-      node = TREE_WALKER.nextNode(node);
+      node = TW.nextNode(node);
       ntr.remove();
     } else {
       // eslint-disable-next-line no-cond-assign
@@ -32,7 +36,7 @@ function create(node, fxn, passedArg) {
       } else {
         idx++;
       }
-      node = TREE_WALKER.nextNode(node);
+      node = TW.nextNode(node);
     }
   }
   return indices;

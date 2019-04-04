@@ -4,16 +4,14 @@ const { collect, create } = require('./ref');
 const creator = require('./creator');
 
 function SimpleElement(content, defaultState = null) {
-  if (!content.nodeType && typeof content !== 'string') {
-    if (!content[0] || !content[0].nodeType) {
-      throw TypeError('First argument for SimpleElement should be of type string or DOM element');
-    }
-  }
   const templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
+  if (!content.nodeType) {
+    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
+  }
   // Already sifrr element
   if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') !== -1)
+    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') > 0)
   ) {
     if (!content.isSifrr) {
       // Render custom element if not rendered

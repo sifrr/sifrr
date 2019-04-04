@@ -9,6 +9,5 @@ module.exports = (sm, el, attr) => {
   sm.se = simpleElement(el.childNodes, defaultState);
   sm.text = getBindingFxns(el.getAttribute(attr));
   sm.keyed = el.hasAttribute(KEY_ATTR);
-  el.textContent = '';
   el.removeAttribute(attr);
 };
