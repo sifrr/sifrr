@@ -95,6 +95,8 @@
         <input id="showcaseName" type="text" name="showcaseName" value="${this.state.name}" data-sifrr-bind="name">
         <button type="button" name="createStyle" _click=${this.createNewShowcase}>Create new Showcase</button>
         <button type="button" name="saveStyle" _click="${this.saveShowcase}">Save Showcase</button>
+        <button type="button" name="saveFile" _click="${this.saveFile}">Save to File</button>
+        <input type="file" name="file" accept="application/json" _input="${this.loadFile}" />
         <div id="showcases">
           <ul data-sifrr-repeat="${this.allShowcases()}">
             <li class="showcase" data-showcase-id="${this.state.id}" id="showcase${this.state.id}">${this.state.name}<span>X</span></li>
@@ -197,6 +199,31 @@
     switchShowcase(id) {
       this.state = Object.assign({}, showcases.filter(s => s.id == id)[0] || showcases[0]);
       storage.update('current', id);
+    }
+
+    saveFile() {
+      const blob = new Blob([JSON.stringify({
+        current: this.state.id,
+        showcases: showcases
+      })], {
+        type: 'application/json'
+      });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'showcases';
+      a.click();
+    }
+
+    loadFile(e, el) {
+      const file = el.files[0];
+      const fr = new FileReader();
+      fr.onload = () => {
+        const json = JSON.parse(fr.result);
+        showcases.splice(0, showcases.length);
+        showcases.push(...json.showcases);
+        this.switchShowcase(json.current);
+      };
+      fr.readAsText(file);
     }
 
     updateHtml(e, el) {
