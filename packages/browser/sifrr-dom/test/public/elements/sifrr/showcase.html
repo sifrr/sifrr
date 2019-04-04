@@ -56,6 +56,9 @@
       padding: 4px;
       color: #8f9cb3;
     }
+    #error {
+      color: red;
+    }
     highlight-syntax {
       width: 100%;
       height: calc(100% - 24px);
@@ -96,6 +99,7 @@
           <option value="true">true</option>
           <option value="false">false</option>
         </select>
+        <span id="error"></span>
         <br>
         <label for="htmlcode">HTML Code</label>
         <highlight-syntax lang='html' data-sifrr-bind="code" value="${this.state.code}"></highlight-syntax>
@@ -108,16 +112,14 @@
   class SifrrShowcase extends Sifrr.Dom.Element {
     onUpdate() {
       if (this._element !== this.state.element || this._js !== this.isjs) {
-        Sifrr.Dom.load(this.state.element, { js: this.isjs });
+        Sifrr.Dom.load(this.state.element, { js: this.isjs }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
         this._js = this.isjs;
         this._element = this.state.element;
       }
       let state;
       try {
         state = new Function(this.$('#elState').value).call(this.element());
-      } catch (e) {
-        console.warn(e);
-      }
+      } catch (e) {}
       if (state && this.element() && this.element().isSifrr && this.element().state !== state) {
         this.element().state = state;
       }

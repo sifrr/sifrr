@@ -667,7 +667,10 @@
       if (this._html) return this._html;
       Loader.add(this.elementName, this);
       const me = this;
-      this._html = window.fetch(this.getUrl('html')).then(resp => resp.text()).then(file => template(file).content).then(content => {
+      this._html = window.fetch(this.getUrl('html')).then(resp => {
+        if (resp.ok) return resp.text();
+        throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
+      }).then(file => template(file).content).then(content => {
         me.template = content.querySelector('template');
         return content;
       });
@@ -683,14 +686,13 @@
       return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".").concat(type);
     }
     executeScripts(js) {
-      if (this._executed) throw Error("'".concat(this.elementName, "' element's javascript was already executed"));
-      this._executed = true;
+      if (this._executed) return Promise.reject(Error("'".concat(this.elementName, "' element's javascript was already executed")));
       if (!js) {
-        return this.executeHTMLScripts();
+        return this.executeHTMLScripts().then(() => this._executed = true);
       } else {
         return this.js.then(script => {
           return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
-        }).catch(e => {
+        }).then(() => this._executed = true).catch(e => {
           window.console.error(e);
           window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
           return this.executeHTMLScripts();
@@ -698,6 +700,7 @@
       }
     }
     executeHTMLScripts() {
+      if (this._executed) return Promise.reject(Error("'".concat(this.elementName, "' element's javascript was already executed")));
       return this.html.then(content => {
         let promise = Promise.resolve(true);
         content.querySelectorAll('script').forEach(script => {
@@ -709,7 +712,7 @@
           }
         });
         return promise;
-      });
+      }).then(() => this._executed = true);
     }
     static add(elemName, instance) {
       Loader._all[elemName] = instance;

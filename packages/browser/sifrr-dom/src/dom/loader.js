@@ -13,7 +13,10 @@ class Loader {
     Loader.add(this.elementName, this);
     const me = this;
     this._html = window.fetch(this.getUrl('html'))
-      .then((resp) => resp.text())
+      .then((resp) => {
+        if (resp.ok) return resp.text();
+        throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
+      })
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
         return content;
@@ -34,14 +37,13 @@ class Loader {
   }
 
   executeScripts(js) {
-    if (this._executed) throw Error(`'${this.elementName}' element's javascript was already executed`);
-    this._executed = true;
+    if (this._executed) return Promise.reject(Error(`'${this.elementName}' element's javascript was already executed`));
     if (!js) {
-      return this.executeHTMLScripts();
+      return this.executeHTMLScripts().then(() => this._executed = true);
     } else {
       return this.js.then((script) => {
         return new Function(script + `\n //# sourceURL=${this.getUrl('js')}`).call();
-      }).catch((e) => {
+      }).then(() => this._executed = true).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
         return this.executeHTMLScripts();
@@ -50,6 +52,7 @@ class Loader {
   }
 
   executeHTMLScripts() {
+    if (this._executed) return Promise.reject(Error(`'${this.elementName}' element's javascript was already executed`));
     return this.html.then((content) => {
       let promise = Promise.resolve(true);
       content.querySelectorAll('script').forEach((script) => {
@@ -63,7 +66,7 @@ class Loader {
         }
       });
       return promise;
-    });
+    }).then(() => this._executed = true);
   }
 
   static add(elemName, instance) {
