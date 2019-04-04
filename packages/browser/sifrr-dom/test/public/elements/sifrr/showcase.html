@@ -8,6 +8,7 @@
       height: 100%;
       display: flex;
       flex-wrap: nowrap;
+      background-color: #3a3f5a;
     }
     #sidebar {
       width: 30%;
@@ -28,17 +29,17 @@
     }
     .box {
       width: 100%;
-      border: 1px solid grey;
       overflow: scroll;
+      border: 1px solid #5f616d;
     }
     #element {
-      background-color: grey;
       padding: 20px;
       height: 70%;
     }
     #element > * {
       display: block;
       background-color: white;
+      color: default;
       margin: auto;
       ${this.state.style}
     }
@@ -48,11 +49,12 @@
     #code highlight-syntax {
       height: calc(100% - 48px) !important;
     }
-    label {
+    label, li {
       font-family: Roboto, Ariel;
       font-size: 16px;
       line-height: 24px;
       padding: 4px;
+      color: #8f9cb3;
     }
     highlight-syntax {
       width: 100%;
@@ -64,7 +66,7 @@
   <div class="container">
     <div class="flex-column" id="sidebar">
       <div class="box">
-        <label for="style">CSS Styles</label>
+        <label for="style">Element CSS Styles</label>
         <highlight-syntax lang='css' data-sifrr-bind="style" value="${this.state.style}"></highlight-syntax>
       </div>
       <div class="box">
@@ -72,9 +74,9 @@
         <highlight-syntax id="elState" lang='js' data-sifrr-bind="elState" value="${this.state.elState}"></highlight-syntax>
       </div>
       <div class="box">
-        <label for="states">Styles</label>
-        <button type="button" name="createStyle">Create new style</button>
-        <button type="button" name="saveStyle">Save style</button>
+        <label for="states">Showcase</label>
+        <button type="button" name="createStyle">Create new Showcase</button>
+        <button type="button" name="saveStyle">Save Showcase</button>
         <div id="#styles">
           <ul data-sifrr-repeat="${this.state.styles}">
             <li>${this.state.name}</li>
@@ -135,10 +137,10 @@
   }
 
   SifrrShowcase.defaultState = {
-    element: 'highlight-syntax',
-    style: 'width: 100%;\nheight: 500px;',
-    code: '<highlight-syntax>\n</highlight-syntax>',
-    elState: 'return {}',
+    element: 'sifrr-test',
+    style: 'width: 100%;',
+    code: '<sifrr-test>\n</sifrr-test>',
+    elState: 'return {\n\n}',
     styles: [{ name: 'new' }]
   };
 
