@@ -634,9 +634,12 @@ class Loader {
       content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           const newScript = constants.SCRIPT();
-          newScript.src = script.src;
-          newScript.type = script.type;
-          newScript.async = false;
+          ['type', 'src', 'charset', 'async', 'defer', 'noModule', 'referrerPolicy'].forEach(k => {
+            newScript[k] = script[k];
+          });
+          ['onload'].forEach(a => {
+            newScript.setAttribute(a, script.getAttribute(a));
+          });
           window.document.body.appendChild(newScript);
         } else {
           return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
@@ -832,7 +835,7 @@ var twowaybind = (e) => {
   let state = {};
   if (!target._root) {
     let root;
-    root = target;
+    root = target.parentNode;
     while(root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;

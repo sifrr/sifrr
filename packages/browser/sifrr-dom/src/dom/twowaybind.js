@@ -5,7 +5,7 @@ module.exports = (e) => {
   let state = {};
   if (!target._root) {
     let root;
-    root = target;
+    root = target.parentNode;
     while(root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;

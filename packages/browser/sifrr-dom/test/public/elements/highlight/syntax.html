@@ -1,0 +1,104 @@
+<template>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/atom-one-dark.min.css">
+  <style media="screen">
+    :host {
+      display: block;
+      position: relative;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    .hljs {
+      width: 100%;
+      height: 100%;
+      font-family: Consolas,Liberation Mono,Courier,monospace;
+      font-size: 14px;
+      line-height: 18px;
+      padding: 8px;
+      margin: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    textarea {
+      background: transparent !important;
+      z-index: 2;
+      resize: none;
+      text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+      border: none;
+      text-fill-color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+    pre {
+      z-index: 1;
+    }
+  </style>
+  <pre class='hljs'>
+    <code id="highight" data-sifrr-html="true">
+      ${this.htmlValue}
+    </code>
+  </pre>
+  <textarea class='hljs' _input="${this.input}"></textarea>
+</template>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script type="text/javascript">
+  window.initHljs = function() {
+    hljs.initHighlightingOnLoad();
+  };
+  Sifrr.Dom.Event.add('load');
+  class HighlightSyntax extends Sifrr.Dom.Element {
+    onAttributeChange() {
+      this.update();
+    }
+
+    onConnect() {
+      const txtarea = this.$('textarea');
+      this.$('textarea').addEventListener('keydown', (e) => {
+        let keyCode = e.keyCode || e.which;
+        if (keyCode == 9) {
+          e.preventDefault();
+          const start = txtarea.selectionStart;
+          const end = txtarea.selectionEnd;
+
+          const tabCharacter = '  ';
+          const tabOffset = 2;
+
+          // set textarea value to: text before caret + tab + text after caret
+          txtarea.value = txtarea.value.substring(0, start) + tabCharacter + txtarea.value.substring(end);
+
+          // put caret at right position again
+          txtarea.selectionStart = txtarea.selectionEnd = start + tabOffset;
+        }
+      });
+      const init = () => {
+        if (window.hljs) this.update();
+        else window.requestAnimationFrame(init);
+      };
+      window.requestAnimationFrame(init);
+    }
+
+    input() {
+      Sifrr.Dom.Event.trigger(this, 'input');
+      this.update();
+    }
+
+    get htmlValue() {
+      if (window.hljs) return hljs.highlight(this.lang, this.value).value;
+      return this.value;
+    }
+
+    get value() {
+      return this.$('textarea').value;
+    }
+
+    set value(v) {
+      this.$('textarea').value = v;
+      this.update();
+    }
+
+    get lang() {
+      return this.getAttribute('lang') || 'html';
+    }
+  }
+  Sifrr.Dom.register(HighlightSyntax);
+</script>

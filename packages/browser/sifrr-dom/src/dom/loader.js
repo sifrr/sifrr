@@ -55,9 +55,14 @@ class Loader {
         if (script.src) {
           // Appending script node directly doesn't work
           const newScript = require('./constants').SCRIPT();
-          newScript.src = script.src;
-          newScript.type = script.type;
-          newScript.async = false;
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLScriptElement properties except text
+          ['type', 'src', 'charset', 'async', 'defer', 'noModule', 'referrerPolicy'].forEach(k => {
+            newScript[k] = script[k];
+          });
+          // attributes
+          ['onload'].forEach(a => {
+            newScript.setAttribute(a, script.getAttribute(a));
+          });
           window.document.body.appendChild(newScript);
         } else {
           return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
