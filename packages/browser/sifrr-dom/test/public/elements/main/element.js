@@ -4,6 +4,7 @@
 const useAnimation = window.location.href.indexOf('useAnim') >= 0;
 const keyedKey = window.location.href.indexOf('useKey') >= 0 ? 'id' : '';
 const useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
+Sifrr.Dom.Event.add('click');
 
 const css = useAnimation ? `tr {
   animation: slide-up 0.4s ease;
