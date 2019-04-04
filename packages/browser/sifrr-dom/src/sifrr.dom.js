@@ -73,6 +73,7 @@ SifrrDom.load = function(elemName, { url, js = true } = {}) {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element.`);
     }
+    delete SifrrDom.registering[elemName];
     delete SifrrDom.loadingElements[name];
   });
 };

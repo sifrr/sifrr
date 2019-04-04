@@ -14,11 +14,11 @@
     <loading-src></loading-src>
     <loading-separatejs></loading-separatejs>
     <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
-    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script src="/sifrr.dom.min.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup();
       Sifrr.Dom.Event.add('click');
-      Sifrr.Dom.load('loading-load');
+      Sifrr.Dom.load('loading-load', { js: false });
       Sifrr.Dom.load('loading-loadjs');
       Sifrr.Dom.load('loading-separatejs', { js: false });
       Sifrr.Dom.load('loading-custom', { url: '/elements/loading/some-custom-url.html' });

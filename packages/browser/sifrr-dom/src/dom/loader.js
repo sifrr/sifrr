@@ -51,23 +51,18 @@ class Loader {
 
   executeHTMLScripts() {
     return this.html.then((content) => {
+      let promise = Promise.resolve(true);
       content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
-          // Appending script node directly doesn't work
-          const newScript = require('./constants').SCRIPT();
-          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLScriptElement properties except text
-          ['type', 'src', 'charset', 'async', 'defer', 'noModule', 'referrerPolicy'].forEach(k => {
-            newScript[k] = script[k];
-          });
-          // attributes
-          ['onload'].forEach(a => {
-            newScript.setAttribute(a, script.getAttribute(a));
-          });
-          window.document.body.appendChild(newScript);
+          window.fetch(script.src);
+          promise = promise.then(() => window.fetch(script.src)
+            .then(resp => resp.text())
+            .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window)));
         } else {
-          return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
+          promise = promise.then(new Function(script.text + `\n//# sourceURL=${this.getUrl('html')}`).call(window));
         }
       });
+      return promise;
     });
   }
 

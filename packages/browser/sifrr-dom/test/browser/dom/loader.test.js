@@ -1,5 +1,5 @@
 async function testElement(elName, str) {
-  expect(await page.evaluate((el) => typeof Sifrr.Dom.elements[el], elName)).to.eq('function');
+  expect(await page.evaluate((el) => typeof Sifrr.Dom.elements[el], elName)).to.eq('function', elName);
   expect(await page.$eval(elName, el => el.shadowRoot.innerHTML)).to.have.string(str);
 }
 

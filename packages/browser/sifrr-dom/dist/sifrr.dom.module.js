@@ -631,20 +631,18 @@ class Loader {
   }
   executeHTMLScripts() {
     return this.html.then((content) => {
+      let promise = Promise.resolve(true);
       content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
-          const newScript = constants.SCRIPT();
-          ['type', 'src', 'charset', 'async', 'defer', 'noModule', 'referrerPolicy'].forEach(k => {
-            newScript[k] = script[k];
-          });
-          ['onload'].forEach(a => {
-            newScript.setAttribute(a, script.getAttribute(a));
-          });
-          window.document.body.appendChild(newScript);
+          window.fetch(script.src);
+          promise = promise.then(() => window.fetch(script.src)
+            .then(resp => resp.text())
+            .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window)));
         } else {
-          return new Function(script.text + `\n //# sourceURL=${this.getUrl('html')}`).call({ currentTempate: content.querySelector('template') });
+          promise = promise.then(new Function(script.text + `\n//# sourceURL=${this.getUrl('html')}`).call(window));
         }
       });
+      return promise;
     });
   }
   static add(elemName, instance) {
@@ -906,6 +904,7 @@ SifrrDom.load = function(elemName, { url, js = true } = {}) {
     if (!window.customElements.get(elemName)) {
       window.console.warn(`Executing '${elemName}' file didn't register the element.`);
     }
+    delete SifrrDom.registering[elemName];
     delete SifrrDom.loadingElements[name];
   });
 };

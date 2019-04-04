@@ -17,6 +17,7 @@
       padding: 8px;
       margin: 0;
       position: absolute;
+      white-space: pre-wrap;
       top: 0;
       left: 0;
     }
@@ -42,9 +43,6 @@
 </template>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
 <script type="text/javascript">
-  window.initHljs = function() {
-    hljs.initHighlightingOnLoad();
-  };
   Sifrr.Dom.Event.add('load');
   class HighlightSyntax extends Sifrr.Dom.Element {
     onAttributeChange() {
@@ -70,11 +68,6 @@
           txtarea.selectionStart = txtarea.selectionEnd = start + tabOffset;
         }
       });
-      const init = () => {
-        if (window.hljs) this.update();
-        else window.requestAnimationFrame(init);
-      };
-      window.requestAnimationFrame(init);
     }
 
     input() {
@@ -83,8 +76,7 @@
     }
 
     get htmlValue() {
-      if (window.hljs) return hljs.highlight(this.lang, this.value).value;
-      return this.value;
+      return hljs.highlight(this.lang, this.value).value;
     }
 
     get value() {
