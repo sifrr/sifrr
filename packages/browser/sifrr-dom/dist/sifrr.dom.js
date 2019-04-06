@@ -528,6 +528,14 @@
     collect: collect$1,
     create: create$1
   } = ref;
+  function sifrrClone(newState) {
+    const clone = this.cloneNode(true);
+    clone._refs = collect$1(clone, this.stateMap);
+    clone._state = Object.assign({}, this.defaultState, newState);
+    Object.defineProperty(clone, 'state', this.stateProps);
+    update_1(clone, this.stateMap);
+    return clone;
+  }
   function SimpleElement(content, defaultState = null) {
     const templ = template(content);
     if (!templ.content || templ.content.childNodes.length < 1) {
@@ -541,23 +549,17 @@
       }
       return content;
     }
-    const stateMap = create$1(content, creator_1, defaultState);
-    const stateProps = {
+    content.defaultState = defaultState;
+    content.stateMap = create$1(content, creator_1, defaultState);
+    content.sifrrClone = sifrrClone;
+    content.stateProps = {
       get: function () {
         return this._state;
       },
       set: function (v) {
         if (this._state !== v) Object.assign(this._state, v);
-        update_1(this, stateMap);
+        update_1(this, content.stateMap);
       }
-    };
-    content.sifrrClone = function (newState) {
-      const clone = content.cloneNode(true);
-      clone._refs = collect$1(clone, stateMap);
-      clone._state = Object.assign({}, defaultState, newState);
-      Object.defineProperty(clone, 'state', stateProps);
-      update_1(clone, stateMap);
-      return clone;
     };
     return content;
   }
@@ -668,9 +670,7 @@
       Loader.add(this.elementName, this);
       const me = this;
       this._html = window.fetch(this.getUrl('html')).then(resp => {
-        if (resp.ok) return resp.text();else {
-          throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
-        }
+        if (resp.ok) return resp.text();else throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
       }).then(file => template(file).content).then(content => {
         me.template = content.querySelector('template');
         return content;
@@ -706,7 +706,7 @@
         content.querySelectorAll('script').forEach(script => {
           if (script.src) {
             window.fetch(script.src);
-            promise = promise.then(() => window.fetch(script.src).then(resp => resp.text()).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window)));
+            promise = promise.then(() => window.fetch(script.src).then(resp => resp.text())).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window));
           } else {
             promise = promise.then(() => new Function(script.text + "\n//# sourceURL=".concat(this.getUrl('html'))).call(window));
           }

@@ -3,6 +3,15 @@ const update = require('./update');
 const { collect, create } = require('./ref');
 const creator = require('./creator');
 
+function sifrrClone(newState) {
+  const clone = this.cloneNode(true);
+  clone._refs = collect(clone, this.stateMap);
+  clone._state = Object.assign({}, this.defaultState, newState);
+  Object.defineProperty(clone, 'state', this.stateProps);
+  update(clone, this.stateMap);
+  return clone;
+}
+
 function SimpleElement(content, defaultState = null) {
   const templ = template(content);
   if (!templ.content || templ.content.childNodes.length < 1) {
@@ -20,25 +29,16 @@ function SimpleElement(content, defaultState = null) {
     }
     return content;
   }
-  const stateMap = create(content, creator, defaultState);
-
-  const stateProps = {
+  content.defaultState = defaultState;
+  content.stateMap = create(content, creator, defaultState);
+  content.sifrrClone = sifrrClone;
+  content.stateProps = {
     get: function() { return this._state; },
     set: function(v) {
       if (this._state !== v) Object.assign(this._state, v);
-      update(this, stateMap);
+      update(this, content.stateMap);
     }
   };
-
-  content.sifrrClone = function(newState) {
-    const clone = content.cloneNode(true);
-    clone._refs = collect(clone, stateMap);
-    clone._state = Object.assign({}, defaultState, newState);
-    Object.defineProperty(clone, 'state', stateProps);
-    update(clone, stateMap);
-    return clone;
-  };
-
   return content;
 }
 

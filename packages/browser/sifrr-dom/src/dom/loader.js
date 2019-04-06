@@ -15,9 +15,7 @@ class Loader {
     this._html = window.fetch(this.getUrl('html'))
       .then((resp) => {
         if (resp.ok) return resp.text();
-        else {
-          throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
-        }
+        else throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
       })
       .then((file) => template(file).content).then((content) => {
         me.template = content.querySelector('template');
@@ -59,9 +57,9 @@ class Loader {
       content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           window.fetch(script.src);
-          promise = promise.then(() => window.fetch(script.src)
-            .then(resp => resp.text())
-            .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window)));
+          promise = promise
+            .then(() => window.fetch(script.src).then(resp => resp.text()))
+            .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window));
         } else {
           promise = promise.then(() => new Function(script.text + `\n//# sourceURL=${this.getUrl('html')}`).call(window));
         }
