@@ -7,6 +7,8 @@ const commonjs = require('rollup-plugin-commonjs');
 const cleanup = require('rollup-plugin-cleanup');
 
 const external = [
+  'busboy',
+  'mkdirp',
   'path',
   'fs',
   'cache-manager',
