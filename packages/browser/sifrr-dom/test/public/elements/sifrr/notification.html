@@ -38,9 +38,14 @@
       if (this.state.notification && this._notification !== this.state.notification) {
         this._notification = this.state.notification;
         this.show();
-        setTimeout(() => {
-          this.hide();
-        }, this.state.time);
+        if (this._timeout) clearTimeout(this._timeout);
+        this._timeout = setTimeout(() => {
+          this.state.opacity = 0;
+          delete this._timeout;
+          setTimeout(() => {
+            this.hide();
+          }, 1000);
+        }, this.state.time - 1000);
       }
     }
 
@@ -50,10 +55,7 @@
     }
 
     hide() {
-      this.state.opacity = 0;
-      setTimeout(() => {
-        this.state = { display: 'none' };
-      }, 1000);
+      this.state = { display: 'none' };
     }
   }
   SifrrNotification.defaultState = {

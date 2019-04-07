@@ -2298,30 +2298,18 @@ Decoder.prototype.reset = function() {
   this.buffer = undefined;
 };
 var Decoder_1 = Decoder;
-var RE_SPLIT_POSIX =
-      /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/,
-    RE_SPLIT_DEVICE =
-      /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/,
-    RE_SPLIT_WINDOWS =
-      /^([\s\S]*?)((?:\.{1,2}|[^\\\/]+?|)(\.[^.\/\\]*|))(?:[\\\/]*)$/;
-function splitPathPosix(filename) {
-  return RE_SPLIT_POSIX.exec(filename).slice(1);
-}
-function splitPathWindows(filename) {
-  var result = RE_SPLIT_DEVICE.exec(filename),
-      device = (result[1] || '') + (result[2] || ''),
-      tail = result[3] || '';
-  var result2 = RE_SPLIT_WINDOWS.exec(tail),
-      dir = result2[1],
-      basename = result2[2],
-      ext = result2[3];
-  return [device, dir, basename, ext];
-}
 function basename(path) {
-  var f = splitPathPosix(path)[2];
-  if (f === path)
-    f = splitPathWindows(path)[2];
-  return f;
+  if (typeof path !== 'string')
+    return '';
+  for (var i = path.length - 1; i >= 0; --i) {
+    switch (path.charCodeAt(i)) {
+      case 0x2F:
+      case 0x5C:
+        path = path.slice(i + 1);
+        return (path === '..' || path === '.' ? '' : path);
+    }
+  }
+  return (path === '..' || path === '.' ? '' : path);
 }
 var basename_1 = basename;
 var utils$1 = {

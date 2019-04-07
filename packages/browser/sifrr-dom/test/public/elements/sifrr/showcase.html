@@ -2,6 +2,8 @@
   <style media="screen">
     * {
       box-sizing: border-box;
+    }
+    h1, label, li {
       font-family: Roboto, Ariel;
     }
     .container {
@@ -55,6 +57,7 @@
     }
     h1 {
       color: #cccccc;
+      text-align: center;
     }
     label, li {
       color: #8f9cb3;
@@ -83,17 +86,27 @@
       float: right;
     }
     #showcase${this.state.id} {
-      background: grey;
+      background: #5f616d;
     }
-    #saver {
+    #saver, #loader {
       color: green;
+      padding: 4px;
+      margin: 0;
+    }
+    button {
+      background: #cccccc;
+      border: 1px solid grey;
+      color: #3a3f5a;
+      font-size: 14px;
+      padding: 4px;
     }
   </style>
   <div class="container">
     <div class="flex-column" id="sidemenu">
       <div class="box">
         <h1>Sifrr Showcase</h1>
-        <input id="url" type="text" name="url" />
+        <p id="loader"></p>
+        <input id="url" type="text" placeholder="Enter url here..." name="url" />
         <button type="button" name="loadUrl" _click=${this.loadUrl}>Load from url</button>
         <button type="button" name="saveFile" _click="${this.saveFile}">Save to File</button>
         <input type="file" name="file" accept="application/json" _input="${this.loadFile}" />
@@ -113,7 +126,7 @@
         <input id="showcaseName" type="text" name="showcaseName" value="${this.state.name}" data-sifrr-bind="name">
         <button type="button" name="createStyle" _click=${this.createNewShowcase}>Create new Showcase</button>
         <button type="button" name="saveStyle" _click="${this.saveShowcase}">Save Showcase</button>
-        <span id="saver"></span>
+        <p id="saver"></p>
         <div id="showcases">
           <ul data-sifrr-repeat="${this.allShowcases()}">
             <li class="showcase" data-showcase-id="${this.state.id}" id="showcase${this.state.id}">${this.state.name}<span>X</span></li>
@@ -127,7 +140,9 @@
       </div>
       <div class="box" id="code">
         <label for="elementName">Element Name</label>
-        <input type="text" name="elementName" _input="${this.updateHtml}" value="${this.state.element}">
+        <input type="text" name="elementName" placeholder="Enter element name here..." _input="${this.updateHtml}" value="${this.state.element}">
+        <label for="customUrl">Custom Url</label>
+        <input type="text" name="customUrl" placeholder="Enter element url here..." value="${this.state.elementUrl}" data-sifrr-bind="elementUrl">
         <label for="elementName">Is JS File</label>
         <select id="isjs" name="isjs" value="${this.state.isjs}" data-sifrr-bind="isjs">
           <option value="true">true</option>
@@ -149,21 +164,29 @@
     name: 'new',
     element: 'sifrr-placeholder',
     style: `display: block;
-    background-color: white;
-    margin: auto;`,
+background-color: white;
+margin: auto;`,
     code: '<sifrr-placeholder>\n</sifrr-placeholder>',
     elState: 'return {\n\n}',
-    isjs: 'true'
+    isjs: 'true',
+    elementUrl: ''
   };
   const storage = new Sifrr.Storage({ name: 'sifrr-showcase', version: 1 });
   const showcases = [];
 
   class SifrrShowcase extends Sifrr.Dom.Element {
     onConnect() {
-      storage.select(['showcases', 'current']).then((res) => {
-        showcases.push(...res.showcases);
-        this.switchShowcase(res.current || 0);
-      });
+      let url;
+      if (url = (new URL(document.location)).searchParams.get('url')) {
+        this.$('#url').value = url;
+        this.loadUrl();
+      } else {
+        storage.select(['showcases', 'current']).then((res) => {
+          showcases.push(...res.showcases);
+          this.switchShowcase(res.current || 0);
+        });
+        this.$('#loader').textContent = 'loaded from storage!';
+      }
       Sifrr.Dom.Event.addListener('click', '.showcase', (e, el) => {
         if (el.matches('.showcase')) {
           const id = el.dataset.showcaseId;
@@ -178,7 +201,10 @@
 
     onUpdate() {
       if (this._element !== this.state.element || this._js !== this.state.isjs) {
-        Sifrr.Dom.load(this.state.element, { js: this.state.isjs == 'true' }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
+        Sifrr.Dom.load(this.state.element, {
+          js: this.state.isjs == 'true',
+          url: this.state.elementUrl ? this.state.elementUrl : undefined
+        }).then(() => this.$('#error').innerText = '').catch(e => this.$('#error').innerText = e.message);
         this._js = this.state.isjs;
         this._element = this.state.element;
       }
@@ -189,18 +215,19 @@
       if (state && this.element() && this.element().isSifrr && this.element().state !== state) {
         this.element().state = state;
       }
-      this.$('#saver').textContent = 'saving...';
+      this.$('#saver').textContent = 'saving in storage...';
       if (this._autoSaver) clearTimeout(this._autoSaver);
       this._autoSaver = setTimeout(() => {
-        this.saveShowcase();
         delete this._autoSaver;
-        this.$('#saver').textContent = 'saved!';
+        this.saveShowcase().then(() => {
+          this.$('#saver').textContent = 'saved in storage!';
+        });
       }, 1000);
     }
 
     createNewShowcase() {
       const i = showcases.length;
-      showcases[i] = Object.assign({}, this.state, { id: i, name: this.$('#showcaseName').value });
+      showcases[i] = Object.assign({}, defaultShowcase, { id: Math.max(...showcases.map(s => s.id)) + 1, name: this.$('#showcaseName').value });
       this.switchShowcase(i);
     }
 
@@ -219,7 +246,7 @@
         }
       });
       this.update();
-      storage.insert('showcases', showcases);
+      return storage.insert('showcases', showcases);
     }
 
     switchShowcase(id) {
@@ -233,6 +260,7 @@
         showcases.splice(0, showcases.length);
         showcases.push(...json.showcases);
         this.switchShowcase(json.current);
+        this.$('#loader').textContent = 'loaded from url!';
       });
     }
 
@@ -257,6 +285,7 @@
         showcases.splice(0, showcases.length);
         showcases.push(...json.showcases);
         this.switchShowcase(json.current);
+        this.$('#loader').textContent = 'loaded from file!';
       };
       fr.readAsText(file);
     }
