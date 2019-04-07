@@ -22,7 +22,8 @@ const external = [
   'puppeteer',
   'events',
   'uWebSockets.js',
-  'stream'
+  'stream',
+  'zlib'
 ];
 const globals = {
   '@sifrr/dom': 'Sifrr.Dom',

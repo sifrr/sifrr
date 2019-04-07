@@ -52,14 +52,13 @@ jobs:
           name: Run tests
           command: COVERAGE=true LCOV=true yarn test -j
       - run:
-          name: Setup Code Climate test-reporter
+          name: Setup Code Climate & send report
           command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run:
-          name: Send code climate report
-          command: |
-            ./cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+              ./cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
+            fi
       - run:
           name: New Release
           command: |
