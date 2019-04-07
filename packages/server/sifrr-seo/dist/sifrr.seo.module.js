@@ -1,4 +1,4 @@
-/*! Sifrr.Seo v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Seo v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import puppeteer from 'puppeteer';
 import cacheManager from 'cache-manager';
 

@@ -1,4 +1,4 @@
-/*! Sifrr.Server v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Server v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
 import path$1 from 'path';

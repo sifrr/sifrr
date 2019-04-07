@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Dom v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const temp = window.document.createElement('template');
 const script = window.document.createElement('script');
 const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';

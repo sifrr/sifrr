@@ -1,4 +1,4 @@
-/*! Sifrr.Route v0.0.3 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Route v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/dom')) :
   typeof define === 'function' && define.amd ? define(['@sifrr/dom'], factory) :

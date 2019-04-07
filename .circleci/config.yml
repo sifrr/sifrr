@@ -15,12 +15,12 @@ jobs:
             - "22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6"
       - restore_cache:
           keys:
-            - sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
-            - sifrr-v1-source-{{ .Branch }}-
-            - sifrr-v1-source-
+            - sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
+            - sifrr-v2-source-{{ .Branch }}-
+            - sifrr-v2-source-
       - checkout
       - save_cache:
-          key: sifrr-v1-source-{{ .Branch }}-{{ .Revision }}
+          key: sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
       - run:
