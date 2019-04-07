@@ -1,0 +1,68 @@
+<template>
+  <style media="screen">
+    :host {
+      position: fixed;
+      z-index: 10000;
+      bottom: 20px;
+      right: 20px;
+      display: ${this.state.display};
+      opacity: ${this.state.opacity};
+      transition: opacity 1s ease;
+    }
+    #notif {
+      background-color: ${this.state.color};
+      padding: 8px;
+      color: ${this.state.textcolor};
+    }
+    #close {
+      position: absolute;
+      right: 4px;
+      top: 0px;
+      color: ${this.state.textcolor};
+      cursor: pointer;
+    }
+    p {
+      padding: 0 12px 0 0;
+      margin: 0;
+    }
+  </style>
+  <span id="close" _click=${this.hide}>x</span>
+  <div id="notif">
+    <p>${this.state.notification}</p>
+  </div>
+</template>
+<script type="text/javascript">
+  Sifrr.Dom.Event.add('click');
+  class SifrrNotification extends Sifrr.Dom.Element {
+    onUpdate() {
+      if (this.state.notification && this._notification !== this.state.notification) {
+        this._notification = this.state.notification;
+        this.show();
+        setTimeout(() => {
+          this.hide();
+        }, this.state.time);
+      }
+    }
+
+    show() {
+      this.state.opacity = 1;
+      this.state = { display: 'block' };
+    }
+
+    hide() {
+      this.state.opacity = 0;
+      setTimeout(() => {
+        this.state = { display: 'none' };
+      }, 1000);
+    }
+  }
+  SifrrNotification.defaultState = {
+    notification: '',
+    color: 'green',
+    textcolor: 'white',
+    display: 'none',
+    time: 3000,
+    opacity: 1
+  };
+  Sifrr.Dom.register(SifrrNotification);
+</script>

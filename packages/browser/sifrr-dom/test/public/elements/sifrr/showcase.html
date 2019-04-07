@@ -2,6 +2,7 @@
   <style media="screen">
     * {
       box-sizing: border-box;
+      font-family: Roboto, Ariel;
     }
     .container {
       width: 100%;
@@ -10,15 +11,22 @@
       flex-wrap: nowrap;
       background-color: #3a3f5a;
     }
+    #sidemenu {
+      width: 15%;
+      height: 100%;
+    }
+    #sidemenu > * {
+      height: 100%;
+    }
     #sidebar {
-      width: 30%;
+      width: 20%;
       height: 100%;
     }
     #sidebar > * {
       height: 33.33%;
     }
     #main {
-      width: 70%;
+      width: 65%;
       height: 100%;
     }
     .flex-column {
@@ -37,10 +45,6 @@
       height: 70%;
     }
     #element > * {
-      display: block;
-      background-color: white;
-      color: default;
-      margin: auto;
       ${this.state.style}
     }
     #code {
@@ -49,12 +53,14 @@
     #code highlight-syntax {
       height: calc(100% - 48px) !important;
     }
+    h1 {
+      color: #cccccc;
+    }
     label, li {
-      font-family: Roboto, Ariel;
+      color: #8f9cb3;
       font-size: 16px;
       line-height: 24px;
       padding: 4px;
-      color: #8f9cb3;
     }
     #error {
       color: red;
@@ -79,8 +85,20 @@
     #showcase${this.state.id} {
       background: grey;
     }
+    #saver {
+      color: green;
+    }
   </style>
   <div class="container">
+    <div class="flex-column" id="sidemenu">
+      <div class="box">
+        <h1>Sifrr Showcase</h1>
+        <input id="url" type="text" name="url" />
+        <button type="button" name="loadUrl" _click=${this.loadUrl}>Load from url</button>
+        <button type="button" name="saveFile" _click="${this.saveFile}">Save to File</button>
+        <input type="file" name="file" accept="application/json" _input="${this.loadFile}" />
+      </div>
+    </div>
     <div class="flex-column" id="sidebar">
       <div class="box">
         <label for="style">Element CSS Styles</label>
@@ -95,8 +113,7 @@
         <input id="showcaseName" type="text" name="showcaseName" value="${this.state.name}" data-sifrr-bind="name">
         <button type="button" name="createStyle" _click=${this.createNewShowcase}>Create new Showcase</button>
         <button type="button" name="saveStyle" _click="${this.saveShowcase}">Save Showcase</button>
-        <button type="button" name="saveFile" _click="${this.saveFile}">Save to File</button>
-        <input type="file" name="file" accept="application/json" _input="${this.loadFile}" />
+        <span id="saver"></span>
         <div id="showcases">
           <ul data-sifrr-repeat="${this.allShowcases()}">
             <li class="showcase" data-showcase-id="${this.state.id}" id="showcase${this.state.id}">${this.state.name}<span>X</span></li>
@@ -131,7 +148,9 @@
     id: 0,
     name: 'new',
     element: 'sifrr-placeholder',
-    style: 'width: 100%;',
+    style: `display: block;
+    background-color: white;
+    margin: auto;`,
     code: '<sifrr-placeholder>\n</sifrr-placeholder>',
     elState: 'return {\n\n}',
     isjs: 'true'
@@ -170,6 +189,13 @@
       if (state && this.element() && this.element().isSifrr && this.element().state !== state) {
         this.element().state = state;
       }
+      this.$('#saver').textContent = 'saving...';
+      if (this._autoSaver) clearTimeout(this._autoSaver);
+      this._autoSaver = setTimeout(() => {
+        this.saveShowcase();
+        delete this._autoSaver;
+        this.$('#saver').textContent = 'saved!';
+      }, 1000);
     }
 
     createNewShowcase() {
@@ -199,6 +225,15 @@
     switchShowcase(id) {
       this.state = Object.assign({}, showcases.filter(s => s.id == id)[0] || showcases[0]);
       storage.update('current', id);
+    }
+
+    loadUrl() {
+      const url = this.$('#url').value;
+      window.fetch(url).then((resp) => resp.json()).then(json => {
+        showcases.splice(0, showcases.length);
+        showcases.push(...json.showcases);
+        this.switchShowcase(json.current);
+      });
     }
 
     saveFile() {
