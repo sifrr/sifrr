@@ -3,6 +3,8 @@
 set -ex
 
 ./scripts/checktag || exit 0
-./node_modules/.bin/semantic-release
+./node_modules/.bin/conventional-changelog -p angular -i misc/CHANGELOG.md -s -r 0
+git add misc/CHANGELOG.md
+(git commit -m "chore: update changelog" && git push) || echo 'Changelog up to date'
 ./scripts/release/tag
 ./scripts/repeat "./packages/*/*" "npm publish --access=public"
