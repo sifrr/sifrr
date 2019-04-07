@@ -23,37 +23,40 @@ function update(element, stateMap) {
       continue;
     }
 
+    // events
+    if (data.events) {
+      if (!dom._sifrrEventSet) {
+        for(let event in data.events) {
+          dom[event] = evaluateBindings(data.events[event], element);
+        }
+        dom._root = element;
+        dom._sifrrEventSet = true;
+      }
+    }
+
     // update attributes
     if (data.attributes) {
       for(let key in data.attributes) {
-        if (key !== 'events') {
-          let newValue;
-          if (data.attributes[key].type === 0) {
-            newValue = element._state[data.attributes[key].text];
-          } else {
-            newValue = evaluateBindings(data.attributes[key].text, element);
-          }
-          updateAttribute(dom, key, newValue);
+        let newValue;
+        if (data.attributes[key].type === 0) {
+          newValue = element._state[data.attributes[key].text];
         } else {
-          if (!dom._sifrrEventSet) {
-            for(let event in data.attributes.events) {
-              dom[event] = evaluateBindings(data.attributes.events[event], element);
-            }
-            dom._root = element;
-            dom._sifrrEventSet = true;
-          }
+          newValue = evaluateBindings(data.attributes[key].text, element);
         }
+        updateAttribute(dom, key, newValue);
       }
     }
 
     if (data.text === undefined) continue;
 
     // update element
-    const newValue = evaluateBindings(data.text, element);
+    let newValue;
+    if (typeof data.text === 'string') newValue = element._state[data.text];
+    else newValue = evaluateBindings(data.text, element);
 
-    if (!newValue || newValue.length === 0) { dom.textContent = ''; }
-    if (data.type === 3) {
-      // repeat
+    if (!newValue || newValue.length === 0) dom.textContent = '';
+    else if (data.type === 3) {
+      // repeaing node
       let key;
       // eslint-disable-next-line no-inner-declarations
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
@@ -61,6 +64,7 @@ function update(element, stateMap) {
       } else makeChildrenEqual(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
       // html node
+      const newValue = evaluateBindings(data.text, element);
       let children, isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;

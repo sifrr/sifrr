@@ -418,36 +418,38 @@ function update(element, stateMap) {
       if (dom.data != newValue) dom.data = newValue;
       continue;
     }
+    if (data.events) {
+      if (!dom._sifrrEventSet) {
+        for(let event in data.events) {
+          dom[event] = evaluateBindings(data.events[event], element);
+        }
+        dom._root = element;
+        dom._sifrrEventSet = true;
+      }
+    }
     if (data.attributes) {
       for(let key in data.attributes) {
-        if (key !== 'events') {
-          let newValue;
-          if (data.attributes[key].type === 0) {
-            newValue = element._state[data.attributes[key].text];
-          } else {
-            newValue = evaluateBindings(data.attributes[key].text, element);
-          }
-          updateattribute(dom, key, newValue);
+        let newValue;
+        if (data.attributes[key].type === 0) {
+          newValue = element._state[data.attributes[key].text];
         } else {
-          if (!dom._sifrrEventSet) {
-            for(let event in data.attributes.events) {
-              dom[event] = evaluateBindings(data.attributes.events[event], element);
-            }
-            dom._root = element;
-            dom._sifrrEventSet = true;
-          }
+          newValue = evaluateBindings(data.attributes[key].text, element);
         }
+        updateattribute(dom, key, newValue);
       }
     }
     if (data.text === undefined) continue;
-    const newValue = evaluateBindings(data.text, element);
-    if (!newValue || newValue.length === 0) { dom.textContent = ''; }
-    if (data.type === 3) {
+    let newValue;
+    if (typeof data.text === 'string') newValue = element._state[data.text];
+    else newValue = evaluateBindings(data.text, element);
+    if (!newValue || newValue.length === 0) dom.textContent = '';
+    else if (data.type === 3) {
       let key;
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
         makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone.bind(data.se), key);
       } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
+      const newValue = evaluateBindings(data.text, element);
       let children, isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
@@ -508,20 +510,20 @@ function SimpleElement(content, defaultState = null) {
 }
 var simpleelement = SimpleElement;
 
-const { getBindingFxns } = bindings;
+const { getStringBindingFxn } = bindings;
 const { KEY_ATTR: KEY_ATTR$1 } = constants;
 var repeatref = (sm, el, attr) => {
   sm.type = 3;
   let defaultState;
   if (el.hasAttribute('data-sifrr-default-state')) defaultState = JSON.parse(el.getAttribute('data-sifrr-default-state'));
   sm.se = simpleelement(el.childNodes, defaultState);
-  sm.text = getBindingFxns(el.getAttribute(attr));
+  sm.text = getStringBindingFxn(el.getAttribute(attr));
   sm.keyed = el.hasAttribute(KEY_ATTR$1);
   el.removeAttribute(attr);
 };
 
 const { TEXT_NODE: TEXT_NODE$2, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } = constants;
-const { getBindingFxns: getBindingFxns$1, getStringBindingFxn } = bindings;
+const { getBindingFxns, getStringBindingFxn: getStringBindingFxn$1 } = bindings;
 function isHtml(el) {
   return el.hasAttribute && el.hasAttribute(HTML_ATTR);
 }
@@ -529,7 +531,7 @@ function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
     const x = el.data;
     if (x.indexOf('${') > -1) {
-      const binding = getStringBindingFxn(x.trim());
+      const binding = getStringBindingFxn$1(x.trim());
       if (typeof binding !== 'string') {
         return {
           type: 1,
@@ -549,20 +551,21 @@ function creator(el, defaultState) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;
-        sm.text = getBindingFxns$1(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
       el.textContent = '';
     } else if (el.hasAttribute(REPEAT_ATTR)) {
       repeatref(sm, el, REPEAT_ATTR);
     }
     const attrs = el.attributes, l = attrs.length;
-    const attrStateMap = { events: {} };
+    const attrStateMap = {};
+    const eventMap = {};
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
-        attrStateMap.events[attribute.name] = getBindingFxns$1(attribute.value);
+        eventMap[attribute.name] = getBindingFxns(attribute.value);
       } else if (attribute.value.indexOf('${') >= 0) {
-        const binding = getStringBindingFxn(attribute.value);
+        const binding = getStringBindingFxn$1(attribute.value);
         if (typeof binding !== 'string') {
           attrStateMap[attribute.name] = {
             type: 1,
@@ -577,7 +580,7 @@ function creator(el, defaultState) {
         }
       }
     }
-    if (Object.keys(attrStateMap.events).length === 0) delete attrStateMap.events;
+    if (Object.keys(eventMap).length > 0) sm.events = eventMap;
     if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
     if (Object.keys(sm).length > 0) return sm;
   }
