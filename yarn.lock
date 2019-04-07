@@ -7613,9 +7613,9 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-uWebSockets.js@uNetworking/uWebSockets.js#v15.8.0:
-  version "15.8.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/d96159d2ffc1517cdab39fe169d88dd55a2aeba7"
+uWebSockets.js@uNetworking/uWebSockets.js#v15.9.0:
+  version "15.9.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/32749187bfefb94de69f1aa5a8275647c7ccf3aa"
 
 uglify-js@^3.1.4:
   version "3.4.9"
