@@ -5,6 +5,7 @@ const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';
 module.exports = {
   TEMPLATE: () => temp.cloneNode(false),
   SCRIPT: () => script.cloneNode(false),
+  TREE_WALKER: () => window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,

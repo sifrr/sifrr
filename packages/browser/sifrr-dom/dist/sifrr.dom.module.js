@@ -5,6 +5,7 @@ const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';
 var constants = {
   TEMPLATE: () => temp.cloneNode(false),
   SCRIPT: () => script.cloneNode(false),
+  TREE_WALKER: () => window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,
@@ -15,25 +16,22 @@ var constants = {
   KEY_ATTR: 'data-sifrr-key'
 };
 
-function newTW() {
-  return window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false);
-}
-const TREE_WALKER = newTW();
-const { TEXT_NODE } = constants;
+const { TEXT_NODE, TREE_WALKER } = constants;
+const TW_SHARED = TREE_WALKER();
 function collect(element, stateMap) {
   const l = stateMap.length, refs = new Array(l);
-  let node = TREE_WALKER.currentNode = element, n;
-  for (let i = 0; i < l; i++) {
+  TW_SHARED.currentNode = element;
+  for (let i = 0, n; i < l; i++) {
     n = stateMap[i].idx;
     while(--n) {
-      node = TREE_WALKER.nextNode();
+      element = TW_SHARED.nextNode();
     }
-    refs[i] = node;
+    refs[i] = element;
   }
   return refs;
 }
 function create(node, fxn, passedArg) {
-  const TW = newTW();
+  const TW = TREE_WALKER();
   let indices = [], ref, idx = 0, ntr;
   TW.currentNode = node;
   while(node) {
