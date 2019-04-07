@@ -1,8 +1,76 @@
+## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
+
+
+### Bug Fixes
+
+* **sifrr-dom:** fix event error message ([70c510f](https://github.com/sifrr/sifrr/commit/70c510f))
+* **sifrr-dom:** remove dependency on isHtml from nextNode ([2e116d7](https://github.com/sifrr/sifrr/commit/2e116d7))
+* **sifrr-dom:** use diff TW in different creators ([bc05b8f](https://github.com/sifrr/sifrr/commit/bc05b8f))
+* **sifrr-fetch:** don't set content-type if already set ([e9509c8](https://github.com/sifrr/sifrr/commit/e9509c8))
+* tests ([afabbe9](https://github.com/sifrr/sifrr/commit/afabbe9))
+* **sifrr-dom:** fix keyed couldn't add elements in front ([efbced4](https://github.com/sifrr/sifrr/commit/efbced4))
+* **sifrr-dom:** only bind event attribute if it has ${} ([2bc019e](https://github.com/sifrr/sifrr/commit/2bc019e))
+* **sifrr-dom:** treat repeating elements as html bindings ([96103d6](https://github.com/sifrr/sifrr/commit/96103d6))
+* **sifrr-server:** content-length for ranged responses ([6612526](https://github.com/sifrr/sifrr/commit/6612526))
+* **sifrr-server:** don't extend constructor ([9038a1e](https://github.com/sifrr/sifrr/commit/9038a1e))
+* **sifrr-server:** fix serving from basePath ([4d04976](https://github.com/sifrr/sifrr/commit/4d04976))
+* **sifrr-server:** write headers after compression ([fdd4958](https://github.com/sifrr/sifrr/commit/fdd4958))
+
+
+### Features
+
+* **sifrr-cli:** remove db:reset setup tasks ([9bbd829](https://github.com/sifrr/sifrr/commit/9bbd829))
+* **sifrr-dom:** add before update callback ([d136c8f](https://github.com/sifrr/sifrr/commit/d136c8f))
+* **sifrr-dom:** add error if event listener is not added ([6170c73](https://github.com/sifrr/sifrr/commit/6170c73))
+* **sifrr-dom:** don't clear if there are no childnodes ([dec0909](https://github.com/sifrr/sifrr/commit/dec0909))
+* **sifrr-dom:** exec scripts in order ([59247f6](https://github.com/sifrr/sifrr/commit/59247f6))
+* **sifrr-dom:** execute js in order ([f19879e](https://github.com/sifrr/sifrr/commit/f19879e))
+* **sifrr-dom:** expose makeequal fxns ([026821d](https://github.com/sifrr/sifrr/commit/026821d))
+* **sifrr-dom:** improve two-way binding and script loader ([8aa3a2d](https://github.com/sifrr/sifrr/commit/8aa3a2d))
+* **sifrr-dom:** make function execution async ([2eee675](https://github.com/sifrr/sifrr/commit/2eee675))
+* **sifrr-dom:** remove dependency on sifrr-fetch, use fetch ([1c64ec0](https://github.com/sifrr/sifrr/commit/1c64ec0))
+* **sifrr-dom:** simplify sifrrClone and deep clone intelligently ([9819ab3](https://github.com/sifrr/sifrr/commit/9819ab3))
+* **sifrr-dom:** trigger update event on updated element ([ff64ae2](https://github.com/sifrr/sifrr/commit/ff64ae2))
+* **sifrr-fetch:** add close method ([db5578c](https://github.com/sifrr/sifrr/commit/db5578c))
+* **sifrr-fetch:** add fallback for graphql websockets ([ebb9f31](https://github.com/sifrr/sifrr/commit/ebb9f31))
+* **sifrr-fetch:** add graphql websockets ([b68c5a8](https://github.com/sifrr/sifrr/commit/b68c5a8))
+* **sifrr-fetch:** don't set options except redirect ([7bb0c7c](https://github.com/sifrr/sifrr/commit/7bb0c7c))
+* **sifrr-fetch:** only stringify if body is js object ([cdd858b](https://github.com/sifrr/sifrr/commit/cdd858b))
+* **sifrr-seo:** limit browsers to 1 ([29941a1](https://github.com/sifrr/sifrr/commit/29941a1))
+* **sifrr-server:** add capability to serve single file ([6852531](https://github.com/sifrr/sifrr/commit/6852531))
+* **sifrr-server:** add close method ([ea85bfd](https://github.com/sifrr/sifrr/commit/ea85bfd))
+* **sifrr-server:** add compression ([509e1dd](https://github.com/sifrr/sifrr/commit/509e1dd))
+* **sifrr-server:** add load routes function ([7618070](https://github.com/sifrr/sifrr/commit/7618070))
+* **sifrr-server:** add post body parsing (json, form data) ([560244f](https://github.com/sifrr/sifrr/commit/560244f))
+* **sifrr-server:** add static server with last-modified based 304 ([4540e93](https://github.com/sifrr/sifrr/commit/4540e93))
+* **sifrr-server:** delegate to uws app, add static serving method ([8bc9fa6](https://github.com/sifrr/sifrr/commit/8bc9fa6))
+* **sifrr-server:** don't send headers on 304 ([1702009](https://github.com/sifrr/sifrr/commit/1702009))
+* **sifrr-server:** handle connection closing, streaming ([0762cb7](https://github.com/sifrr/sifrr/commit/0762cb7))
+* **sifrr-server:** inherit from uws Apps ([330d85a](https://github.com/sifrr/sifrr/commit/330d85a))
+* **sifrr-server:** make sendFile async ([f26cc9d](https://github.com/sifrr/sifrr/commit/f26cc9d))
+* **sifrr-server:** only use last modified if set to true ([ed39a1a](https://github.com/sifrr/sifrr/commit/ed39a1a))
+* **sifrr-server:** serve in ranges of ranges header present ([3658eab](https://github.com/sifrr/sifrr/commit/3658eab))
+* **sifrr-server:** watch for new files and deleted files ([2752d48](https://github.com/sifrr/sifrr/commit/2752d48))
+* **sifrr-server:** watch only when option given ([5ef7703](https://github.com/sifrr/sifrr/commit/5ef7703))
+
+
+### Performance Improvements
+
+* **sifrr-dom:** directly access _state to avoid function call ([9ba19d2](https://github.com/sifrr/sifrr/commit/9ba19d2))
+* **sifrr-dom:** improve event listeners ([8381454](https://github.com/sifrr/sifrr/commit/8381454))
+* **sifrr-dom:** update property for class,id,value attribute ([215fd7a](https://github.com/sifrr/sifrr/commit/215fd7a))
+* **sifrr-server:** clone from typedarray ([abea750](https://github.com/sifrr/sifrr/commit/abea750))
+* **sifrr-server:** directly use stream in form data and body ([0af7fb9](https://github.com/sifrr/sifrr/commit/0af7fb9))
+* **sifrr-server:** make stream to buffer more efficient ([1d16c9d](https://github.com/sifrr/sifrr/commit/1d16c9d))
+
+
+
 ## [0.0.3](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha2...v0.0.3) (2019-03-05)
 
 
 ### Bug Fixes
 
+* **package:** update yargs to version 13.1.0 ([#39](https://github.com/sifrr/sifrr/issues/39)) ([7789b21](https://github.com/sifrr/sifrr/commit/7789b21))
 * **sifrr-api:** default base path is added before each route ([54b1c8e](https://github.com/sifrr/sifrr/commit/54b1c8e))
 * **sifrr-cli:** Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c8))
 * **sifrr-dom:** Add listener on window instead of document ([bfda60b](https://github.com/sifrr/sifrr/commit/bfda60b))
@@ -39,6 +107,7 @@
 * **sifrr-seo:** Pass rendering error to express's next ([8663605](https://github.com/sifrr/sifrr/commit/8663605))
 * **sifrr-storage:** Check for openDatabase in webSQL ([d92d437](https://github.com/sifrr/sifrr/commit/d92d437))
 * **sifrr-storage:** Replace unnecessary let with const ([5396521](https://github.com/sifrr/sifrr/commit/5396521))
+* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
 * **sifrr-storage:** Return null if null ([aa8e7ba](https://github.com/sifrr/sifrr/commit/aa8e7ba))
 
 
@@ -100,7 +169,7 @@
 
 
 
-## [0.0.1-alpha2](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha...v0.0.1-alpha2) (2019-01-10)
+## 0.0.1-alpha2 (2019-01-10)
 
 
 
