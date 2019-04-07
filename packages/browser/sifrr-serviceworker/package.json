@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/serviceworker",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Service Worker with customizations.",
   "license": "MIT",
   "repository": {

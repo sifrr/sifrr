@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/route",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "History API based Routing library for sifrr in browser.",
   "license": "MIT",
   "repository": {
@@ -35,7 +35,7 @@
     "test-server": "node ../../../scripts/test/run.js ./packages/browser/sifrr-route -s"
   },
   "dependencies": {
-    "@sifrr/dom": "0.0.3"
+    "@sifrr/dom": "0.0.4"
   },
   "peerDependencies": {},
   "devDependencies": {
