@@ -690,7 +690,7 @@
 	    } else {
 	      return this.js.then(script => {
 	        return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
-	      }).then(() => this._executed = true).catch(e => {
+	      }).catch(e => {
 	        window.console.error(e);
 	        window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
 	        return this.executeHTMLScripts();
@@ -716,6 +716,11 @@
 	  }
 	  static get all() {
 	    return Loader._all;
+	  }
+	  static executeJS(url) {
+	    window.fetch(url).then(resp => resp.text()).then(script => {
+	      return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
+	    });
 	  }
 	}
 	Loader._all = {};
