@@ -90,7 +90,8 @@ window.Sifrr.Dom = DOM;
 // Default Setup Config for Sifrr Dom
 const config = {
   baseUrl: '', // base url for sifrr elements, should start with '/' and should not end with '/'
-  useShadowRoot: true // use shadow root by default or not
+  useShadowRoot: true, // use shadow root by default or not
+  events: [] // synthetic event listerners to add, read more in Synthetic Events section
 }
 // Set up Sifrr-Dom
 Sifrr.Dom.setup(config);
@@ -100,7 +101,7 @@ Sifrr.Dom.setup(config);
 
 **Note**: `Sifrr.Dom.load` requires Fetch API to work.
 
-#### HTML Element
+#### HTML Element (recommended for ease of use)
 
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html  -->
@@ -131,11 +132,13 @@ Sifrr.Dom.setup(config);
     id: 1,
     attr: 'abcd'
   }
-  Sifrr.Dom.register(CustomTag);
+  Sifrr.Dom.register(CustomTag, options);
+  // options: `dependsOn` -> Array of custom element tag names to load before registering this element, eg. `custom-tag`
+  // `extends` -> tag name of extended html element
 </script>
 ```
 
-#### JS Element (recommended for ES6 import capabilities)
+#### JS Element (recommended for ES6 import capabilities, making exportable libraries)
 
 ```js
 // ${baseUrl}/elements/custom/tag.js
@@ -156,16 +159,16 @@ class CustomTag extends Sifrr.Dom.Element {
   }
 }
 CustomTag.defaultState = {
-  // default state for this element
+  // default state for this element, recommended to give a default state
   id: 1,
   attr: 'abcd'
 }
-Sifrr.Dom.register(CustomTag);
+Sifrr.Dom.register(CustomTag); // or module.exports = CustomTag;
 ```
 
 #### Loading element
 
-1.  Sifrr.Dom.load() - html elements or js elements
+1.  Sifrr.Dom.load() - html elements or js elements (recommended for programmatic loading)
 
 ```js
 // index.js
@@ -184,10 +187,10 @@ Sifrr.Dom.load('custom-tag', config = { url, js: true });
 
 ```js
 // index.html
+
 <script type="module">
   import '${baseUrl}/elements/custom/tag';
 </script>
-
 <script src="${baseUrl}/elements/custom/tag.js" type="module">
 ```
 
@@ -254,7 +257,9 @@ will render to
 ```js
 const customtag = window.querySelector('custom-tag');
 customtag.state = { id: 2, attr: 'xyz' }
-// Note: doing `customtag.state.id = 2` doesn't work
+// Note: state is functionally immutable, hence doing `customtag.state.id = 2` won't work
+// You need to set state to new value every time you need to change state, but don't
+// worry. Only new values provided are updated, other values remain same as they were.
 ```
 
 This will change custom-tag to
@@ -278,8 +283,6 @@ customtag.update();
 ### Components Without shadow root
 
 #### If you don't want to use shadow root for all elements
-
-Don't use shadow-root if you want to serve server rendered files with sifrr-seo.
 
 ```js
 // index.js
@@ -307,6 +310,8 @@ Sifrr.Dom.setup(config);
       return false; // Set to true if you want to use shadow-root event if default config is false
     }
   }
+  // or
+  CustomTag.useShadowRoot = false;
 </script>
 ```
 
@@ -337,6 +342,10 @@ class CustomTag extends Sifrr.Dom.Element {
     // called when element's state is changed
   }
 
+  beforeUpdate() {
+    // called before updates are rendered
+  }
+
   onUpdate() {
     // called when element is updated
   }
@@ -346,7 +355,7 @@ class CustomTag extends Sifrr.Dom.Element {
 #### Clearing state of element
 
 ```js
-customtag.clearState() // Not recommended to avoid blank bindings
+customtag.clearState() // Not recommended to avoid blank/undefined bindings
 ```
 
 #### Query selectors for custom element content
@@ -359,7 +368,7 @@ customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root
 // If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
 ```
 
-Sifrr adds $ and $$ to all HTMLElements, and works same as querySelector and querySelectorAll.
+Sifrr adds $ and $$ to all HTMLElements, and works same as querySelector and querySelectorAll. eg. `document.body.$`
 
 ### Synthetic events
 
@@ -367,9 +376,10 @@ Sifrr adds $ and $$ to all HTMLElements, and works same as querySelector and que
 // example for adding 'click' event listeners, can be replaced with any type of event (even custom events)
 
 // Add synthetic event listerner (only need to be called once for one type of event)
+// Can be given in options in Sifrr.Dom.Setup
 Sifrr.Dom.Event.add('click');
 
-// Adding event callback on an element (any html element), works inside shadowRoots also
+// Adding event callback on an element (any html element), works inside shadowRoots also (for bubbling events)
 el._click = fxn;
 // fxn will be called with two arguments `fxn(event, target)` and `this` inside function will be it's parent custom element if available, else window.
 
@@ -544,7 +554,7 @@ then, `<custom-tag></custom-tag>` will render:
 <!-- data-sifrr-repeat should be binded to an array data which you want to repeat for inside element
    data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
   <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="${this.state.key}">
-    <div> // data-sifrr-repeat should contain only one element node
+    <div> // data-sifrr-repeat should contain only one node
       <p>${id}</p>
     </div>
   <div>
@@ -575,7 +585,7 @@ then, `<custom-tag></custom-tag>` will render:
 <custom-tag>
 ```
 
-#### Extending another declared html element
+#### Extending another html element
 
 Sifrr element can extend other html elements also, eg:
 CustomTag extends HTMLButtonElement here, note that register call has { extends: 'button' } as second argument

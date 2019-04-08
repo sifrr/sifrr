@@ -45,7 +45,7 @@ class PageRequest {
   onEnd(request) {
     if (request.__allowed) {
       this.pendingRequests--;
-      if (this.pendingRequests === 0)this.pendingResolver();
+      if (this.pendingRequests === 0) this.pendingResolver();
     }
   }
 

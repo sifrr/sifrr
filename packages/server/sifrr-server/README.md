@@ -59,7 +59,7 @@ app.get(uWSRoutingPattern, res => {
     -   `lastModified`: **default: `true`** responds with `304 Not Modified` for non-modified files if this is set to true
     -   `headers`: **default:** `{}` Additional headers to set on response ,
     -   `compress`: **default:** `true` responses are compressed if this is set to true and if `accept-encoding` header has supported compressions (gzip, brotli, deflate)
-    -   `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority
+    -   `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
 
 ### host static files
 
@@ -73,7 +73,7 @@ app.file(uWSRoutingPattern, filepath, options); // options are sendFile options
 
 -   Folder
 
-Whole folder will be server recursively under giver prefix
+Whole folder will be server recursively under given prefix
 
 ```js
 app.folder(prefix, folder, options); // options are sendFile options
@@ -84,14 +84,17 @@ app.folder('/example', folder);
 // will serve example.html if you go to `/example/example.html`
 ```
 
+There is one more option available for `folder` with all the sendFile options:
+`watch`: if it true, it will watch for new Files / deleted files and serve/unserve them as needed.
+
 ### Post requests
 
-for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests):
+for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests), note that as stream can only be used once, only one of these function can be called for one request:
 
 -   `res.body().then(body => /* do something */)`: gives post body as buffer
 -   `res.bodyStream()`: Gives post body stream
 -   `res.json().then(jsonBody => /* do something */)`: gives post body as json if content-type is `application/json` (this method is only set if post body content-type is `application/json`)
--   `res.formData().then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
+-   `res.formData(options).then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
 
 ```js
 res.formData(options).then(data => {
@@ -113,6 +116,7 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 -   if `onFile` is set, then it will be called with `fieldname, file, filename, encoding, mimetype` for every file uploaded, where file is file stream, you need to consume it or the request will never resolve
 -   if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
 -   `onField` (optional): will be called with `fieldname, value` if given
+-   other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
 
 ## Examples
 
