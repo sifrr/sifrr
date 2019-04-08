@@ -26,7 +26,7 @@ SifrrDom.register = (Element, options = {}) => {
   if (!name) {
     throw Error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
-    throw Error(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
+    global.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {

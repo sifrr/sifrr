@@ -1,4 +1,6 @@
 /*! Sifrr.Dom v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
 const temp = window.document.createElement('template');
 const script = window.document.createElement('script');
 const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';
@@ -866,7 +868,7 @@ SifrrDom.register = (Element, options = {}) => {
   if (!name) {
     throw Error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
-    throw Error(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
+    commonjsGlobal.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {

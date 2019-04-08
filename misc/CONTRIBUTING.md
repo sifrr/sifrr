@@ -15,28 +15,28 @@
 -   Clone the repo
 
 
-    git clone https://github.com/${username}/sifrr.git
+          git clone https://github.com/${username}/sifrr.git
 
 -   Install dependencies
 
 
-    yarn install
+          yarn install
 
 -   Build libraries (and watch for updates), works in every package folder as well
 
 
-    yarn build -w
+          yarn build -w
 
 -   Now any change you make will update the `dist` files
 -   Run tests with (works in every package folder as well)
 
 
-    yarn test
+          yarn test
 
 -   Start test server with (works in only package folders)
 
 
-    yarn test-server
+          yarn test-server
 
 ### Guidelines
 
