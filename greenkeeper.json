@@ -10,6 +10,7 @@
         "packages/server/sifrr-api/package.json",
         "packages/server/sifrr-cli/package.json",
         "packages/server/sifrr-seo/package.json",
+        "packages/server/sifrr-server/package.json",
         "package.json"
       ]
     }
