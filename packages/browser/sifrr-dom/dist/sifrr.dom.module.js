@@ -573,20 +573,21 @@ class Loader {
   constructor(elemName, url) {
     if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
-    Loader.add(this.elementName, this);
     this.elementName = elemName;
+    Loader.add(this.elementName, this);
     this.url = url;
   }
   get html() {
-    return this.constructor.getFile(this.getUrl('html'))
+    if (this._html) return this._html;
+    return this._html = this.constructor.getFile(this.getUrl('html'))
       .then((file) => template(file).content).then((content) => {
-        this.template = content.$('template');
+        this.template = content.querySelector('template');
         return content;
-      });
+      }), this._html;
   }
   get js() {
-    this._js = this.constructor.getFile(this.getUrl('js'));
-    return this._js;
+    if (this._js) return this._js;
+    return this._js = this.constructor.getFile(this.getUrl('js')), this._js;
   }
   getUrl(type = 'js') {
     return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`;
@@ -608,7 +609,7 @@ class Loader {
   executeHTMLScripts() {
     return this.html.then((content) => {
       let promise = Promise.resolve(true);
-      content.$$('script').forEach((script) => {
+      content.querySelectorAll('script').forEach((script) => {
         if (script.src) {
           window.fetch(script.src);
           promise = promise
@@ -622,10 +623,7 @@ class Loader {
     });
   }
   static add(elemName, instance) {
-    Loader._all[elemName] = instance;
-  }
-  static get all() {
-    return Loader._all;
+    Loader.all[elemName] = instance;
   }
   static getFile(url) {
     return window.fetch(url)
@@ -641,7 +639,7 @@ class Loader {
       });
   }
 }
-Loader._all = {};
+Loader.all = {};
 var loader = Loader;
 
 const SYNTHETIC_EVENTS = {};
