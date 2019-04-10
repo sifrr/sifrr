@@ -4,6 +4,8 @@ A ~6KB :zap: fast DOM framework for creating web user interfaces using Custom El
 
 Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework.
 
+** Example: ** https://sifrr.github.io/sifrr/docs/speedtest.html
+
 ## Size
 
 | Type                                         |                                                                                                                      Size                                                                                                                      |
@@ -14,10 +16,14 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 
 ## Tradeoffs
 
--   :+1: Use latest web API standards ( :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for))
--   :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM, still [fast(er)](#performance-comparison)
+-   :+1: Small Size
+-   :+1: Use latest web API standards
+-   :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
+-   :+1: Small learning curve, as you use only HTML, CSS, and JS (you can use other things too if you want to though)
+-   :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM,
+-   :+1: still [fast(er)](#performance-comparison) (just ~10-20% slower than vanillaJS)
 -   :-1: No virtual Dom (if that matters to you)
--   :-1: Slower on http/1.x due to one file per component architecture -> :+1: hence good for serving with http/2
+-   :+1: Low memory usage (just ~10-20% more than vanillaJS)
 -   :+1: Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
 -   :+1: has Keyed implementation
 -   :+1: In-built Synthetic event listeners and custom events

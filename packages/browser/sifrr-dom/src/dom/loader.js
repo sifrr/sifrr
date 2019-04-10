@@ -79,7 +79,7 @@ class Loader {
   static executeJS(url) {
     window.fetch(url)
       .then((resp) => resp.text()).then((script) => {
-        return new Function(script + `\n //# sourceURL=${this.getUrl('js')}`).call();
+        return new Function(script + `\n //# sourceURL=${url}`).call();
       });
   }
 }

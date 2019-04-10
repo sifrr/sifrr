@@ -20,7 +20,7 @@ const css = useAnimation ? `tr {
   }
 }` : '';
 
-const template = `<link href="/css/currentStyle.css" rel="stylesheet">
+const template = `<link href="./css/currentStyle.css" rel="stylesheet">
 <style media="screen">
   ${css}
 </style>

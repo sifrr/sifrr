@@ -719,7 +719,7 @@
 	  }
 	  static executeJS(url) {
 	    window.fetch(url).then(resp => resp.text()).then(script => {
-	      return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
+	      return new Function(script + "\n //# sourceURL=".concat(url)).call();
 	    });
 	  }
 	}
