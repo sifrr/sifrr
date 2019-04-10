@@ -40,7 +40,10 @@ global.window = {
     Dom: {
       Element: Object,
       html: sinon.stub(),
-      register: sinon.stub()
+      register: sinon.stub(),
+      Event: {
+        add: sinon.stub()
+      }
     }
   },
   history: { pushState: sinon.stub() },

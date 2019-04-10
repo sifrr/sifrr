@@ -10,15 +10,9 @@ describe('sifrr-route', () => {
     await page.goto(`${PATH}/`);
   });
 
-  it('has `Sifrr.Dom.template`', async () => {
-    const type = await page.evaluate(() => typeof Sifrr.Dom.template);
-
-    expect(type).to.equal('function');
-  });
-
-  it('has Sifrr.Dom.Route', async () => {
-    const element = await page.evaluate(() => typeof Sifrr.Dom.Route.Element);
-    const regex = await page.evaluate(() => typeof Sifrr.Dom.Route.RegexPath);
+  it('has Sifrr.Route', async () => {
+    const element = await page.evaluate(() => typeof Sifrr.Route.Element);
+    const regex = await page.evaluate(() => typeof Sifrr.Route.RegexPath);
 
     expect(element).to.equal('function');
     expect(regex).to.equal('function');

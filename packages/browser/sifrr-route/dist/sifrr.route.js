@@ -57,7 +57,7 @@
   }
   var regexpath = RegexPath;
 
-  dom.Route = {
+  const Route = {
     RegexPath: regexpath
   };
   const firstTitle = window.document.title;
@@ -77,7 +77,7 @@
     }
     onAttributeChange(attrName) {
       if (attrName === 'path') {
-        this._routeRegex = new dom.Route.RegexPath(this.getAttribute('path'));
+        this._routeRegex = new Route.RegexPath(this.getAttribute('path'));
         this.refresh();
       }
     }
@@ -108,11 +108,13 @@
         }
       }
       this.classList.add('active');
+      dom.Event.trigger(this, 'activate');
       this.onActivation();
     }
     onActivation() {}
     deactivate() {
       this.classList.remove('active');
+      dom.Event.trigger(this, 'deactivate');
       this.onDeactivation();
     }
     onDeactivation() {}
@@ -154,11 +156,13 @@
     }
   }
   SifrrRoute.all = [];
-  dom.Route.Element = SifrrRoute;
+  dom.Event.add('activate');
+  dom.Event.add('deactivate');
+  Route.Element = SifrrRoute;
   dom.register(SifrrRoute);
   window.addEventListener('popstate', SifrrRoute.popstateEventListener);
   window.document.addEventListener('click', SifrrRoute.clickEventListener);
-  var sifrr_route = SifrrRoute;
+  var sifrr_route = Route;
 
   return sifrr_route;
 
