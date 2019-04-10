@@ -181,9 +181,12 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
 function longestPositiveIncreasingSubsequence(ns, newStart) {
-  let seq = [], is = [], l = -1, pre = new Array(ns.length);
+  let seq = [],
+    is  = [],
+    l   = -1,
+    pre = new Array(ns.length);
 
-  for (let i = newStart, l = ns.length; i < l; i++) {
+  for (let i = newStart, len = ns.length; i < len; i++) {
     let n = ns[i];
     if (n < 0) continue;
     let j = findGreatestIndexLEQ(seq, n);
@@ -191,13 +194,16 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     if (j === l) {
       l++;
       seq[l] = n;
-      is[l] = i;
+      is[l]  = i;
     } else if (n < seq[j + 1]) {
       seq[j + 1] = n;
       is[j + 1] = i;
     }
   }
-  for (let i = is[l]; l >= 0; i = pre[i], l--) seq[l] = i;
+
+  for (let i = is[l]; l >= 0; i = pre[i], l--) {
+    seq[l] = i;
+  }
 
   return seq;
 }
@@ -205,15 +211,19 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
 function findGreatestIndexLEQ(seq, n) {
   // invariant: lo is guaranteed to be index of a value <= n, hi to be >
   // therefore, they actually start out of range: (-1, last + 1)
-  let lo = -1, hi = seq.length;
+  let lo = -1,
+    hi = seq.length;
 
   // fast path for simple increasing sequences
   if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
 
   while (hi - lo > 1) {
     let mid = Math.floor((lo + hi) / 2);
-    if (seq[mid] > n) hi = mid;
-    else lo = mid;
+    if (seq[mid] > n) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
   }
 
   return lo;

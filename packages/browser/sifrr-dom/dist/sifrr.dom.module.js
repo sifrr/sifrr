@@ -304,8 +304,11 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   }
 }
 function longestPositiveIncreasingSubsequence(ns, newStart) {
-  let seq = [], is = [], l = -1, pre = new Array(ns.length);
-  for (let i = newStart, l = ns.length; i < l; i++) {
+  let seq = [],
+    is  = [],
+    l   = -1,
+    pre = new Array(ns.length);
+  for (let i = newStart, len = ns.length; i < len; i++) {
     let n = ns[i];
     if (n < 0) continue;
     let j = findGreatestIndexLEQ(seq, n);
@@ -313,22 +316,28 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     if (j === l) {
       l++;
       seq[l] = n;
-      is[l] = i;
+      is[l]  = i;
     } else if (n < seq[j + 1]) {
       seq[j + 1] = n;
       is[j + 1] = i;
     }
   }
-  for (let i = is[l]; l >= 0; i = pre[i], l--) seq[l] = i;
+  for (let i = is[l]; l >= 0; i = pre[i], l--) {
+    seq[l] = i;
+  }
   return seq;
 }
 function findGreatestIndexLEQ(seq, n) {
-  let lo = -1, hi = seq.length;
+  let lo = -1,
+    hi = seq.length;
   if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
   while (hi - lo > 1) {
     let mid = Math.floor((lo + hi) / 2);
-    if (seq[mid] > n) hi = mid;
-    else lo = mid;
+    if (seq[mid] > n) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
   }
   return lo;
 }
