@@ -170,5 +170,15 @@ for (let key in SifrrStorage.availableStores) {
       assert.deepEqual(result.after, {});
       assert.deepEqual(result.after2, {});
     });
+
+    it('saves value when it is falsy', async () => {
+      const result = await page.evaluate(async (key) => {
+        const storage = new Sifrr.Storage(key);
+        await storage.set('a', 0);
+        return (await storage.get('a')).a;
+      }, key);
+
+      expect(result).to.equal(0);
+    });
   });
 }
