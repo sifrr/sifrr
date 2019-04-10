@@ -43,7 +43,7 @@ function creator(el, defaultState) {
       }
       el.textContent = '';
     } else if (el.hasAttribute(REPEAT_ATTR)) {
-      repeatref(sm, el, REPEAT_ATTR);
+      repeatref(sm, el);
     }
     // attributes
     const attrs = el.attributes, l = attrs.length;

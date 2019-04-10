@@ -17,8 +17,7 @@ module.exports = (str, ...extra) => {
   } else {
     return str;
   }
-  str = str
-    .replace(/(\\)?\$(\\)?\{/g, '${');
+  str = str.replace(/(\\)?\$(\\)?\{/g, '${');
   tmp.innerHTML = str;
   return tmp;
 };

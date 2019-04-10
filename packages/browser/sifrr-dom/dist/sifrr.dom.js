@@ -35,9 +35,7 @@
 	  TW_SHARED.currentNode = element;
 	  for (let i = 0, n; i < l; i++) {
 	    n = stateMap[i].idx;
-	    while (--n) {
-	      element = TW_SHARED.nextNode();
-	    }
+	    while (--n) element = TW_SHARED.nextNode();
 	    refs[i] = element;
 	  }
 	  return refs;
@@ -52,7 +50,7 @@
 	  while (node) {
 	    if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
 	      ntr = node;
-	      node = TW.nextNode(node);
+	      node = TW.nextNode();
 	      ntr.remove();
 	    } else {
 	      if (ref = fxn(node, passedArg)) {
@@ -64,7 +62,7 @@
 	      } else {
 	        idx++;
 	      }
-	      node = TW.nextNode(node);
+	      node = TW.nextNode();
 	    }
 	  }
 	  return indices;
@@ -98,13 +96,7 @@
 	};
 
 	var updateattribute = (element, name, newValue) => {
-	  if (newValue === false || newValue === null || newValue === undefined) element.hasAttribute(name) && element.removeAttribute(name);else if (name === 'class') {
-	    element.className = newValue;
-	  } else if (name === 'id' || name === 'value') {
-	    element[name] = newValue;
-	  } else if (element.getAttribute(name) !== newValue) {
-	    element.setAttribute(name, newValue);
-	  }
+	  if (newValue === false || newValue === null || newValue === undefined) element.hasAttribute(name) && element.removeAttribute(name);else if (name === 'class') element.className = newValue;else if (name === 'id' || name === 'value') element[name] = newValue;else if (element.getAttribute(name) !== newValue) element.setAttribute(name, newValue);
 	};
 
 	const Json = {
@@ -494,6 +486,7 @@
 	    if (typeof data.text === 'string') newValue = element._state[data.text];else newValue = evaluateBindings(data.text, element);
 	    if (!newValue || newValue.length === 0) dom.textContent = '';else if (data.type === 3) {
 	      let key;
+	      data.se.root = element;
 	      if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
 	        makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone.bind(data.se), key);
 	      } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone.bind(data.se));
@@ -528,6 +521,7 @@
 	} = ref;
 	function sifrrClone(newState) {
 	  const clone = this.cloneNode(true);
+	  clone.root = this.root;
 	  clone._refs = collect$1(clone, this.stateMap);
 	  clone._state = Object.assign({}, this.defaultState, newState);
 	  Object.defineProperty(clone, 'state', this.stateProps);
@@ -567,16 +561,17 @@
 	  getStringBindingFxn
 	} = bindings;
 	const {
-	  KEY_ATTR: KEY_ATTR$1
+	  KEY_ATTR: KEY_ATTR$1,
+	  REPEAT_ATTR
 	} = constants;
-	var repeatref = (sm, el, attr) => {
+	var repeatref = (sm, el) => {
 	  sm.type = 3;
 	  let defaultState;
 	  if (el.hasAttribute('data-sifrr-default-state')) defaultState = JSON.parse(el.getAttribute('data-sifrr-default-state'));
 	  sm.se = simpleelement(el.childNodes, defaultState);
-	  sm.text = getStringBindingFxn(el.getAttribute(attr));
+	  sm.text = getStringBindingFxn(el.getAttribute(REPEAT_ATTR));
 	  sm.keyed = el.hasAttribute(KEY_ATTR$1);
-	  el.removeAttribute(attr);
+	  el.removeAttribute(REPEAT_ATTR);
 	};
 
 	const {
@@ -584,7 +579,7 @@
 	  COMMENT_NODE: COMMENT_NODE$1,
 	  ELEMENT_NODE,
 	  HTML_ATTR,
-	  REPEAT_ATTR
+	  REPEAT_ATTR: REPEAT_ATTR$1
 	} = constants;
 	const {
 	  getBindingFxns,
@@ -620,8 +615,8 @@
 	        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
 	      }
 	      el.textContent = '';
-	    } else if (el.hasAttribute(REPEAT_ATTR)) {
-	      repeatref(sm, el, REPEAT_ATTR);
+	    } else if (el.hasAttribute(REPEAT_ATTR$1)) {
+	      repeatref(sm, el);
 	    }
 	    const attrs = el.attributes,
 	          l = attrs.length;
@@ -777,7 +772,7 @@
 	    return true;
 	  },
 	  trigger: (el, name, options) => {
-	    if (typeof el === 'string') el = document.querySelector(el);
+	    if (typeof el === 'string') el = document.$(el);
 	    const ce = new CustomEvent(name, Object.assign({
 	      bubbles: true,
 	      composed: true
@@ -894,6 +889,7 @@
 	    sifrrClone(state) {
 	      const clone = this.cloneNode(false);
 	      clone._state = state;
+	      clone.root = this.root;
 	      return clone;
 	    }
 	    clearState() {
@@ -968,6 +964,8 @@
 	SifrrDom.setup = function (config) {
 	  HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
 	  HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+	  document.$ = document.querySelector;
+	  document.$$ = document.querySelectorAll;
 	  SifrrDom.config = Object.assign({
 	    baseUrl: '',
 	    useShadowRoot: true,

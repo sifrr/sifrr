@@ -8,9 +8,7 @@ function collect(element, stateMap) {
   TW_SHARED.currentNode = element;
   for (let i = 0, n; i < l; i++) {
     n = stateMap[i].idx;
-    while(--n) {
-      element = TW_SHARED.nextNode();
-    }
+    while(--n) element = TW_SHARED.nextNode();
     refs[i] = element;
   }
   return refs;
@@ -23,7 +21,7 @@ function create(node, fxn, passedArg) {
   while(node) {
     if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
       ntr = node;
-      node = TW.nextNode(node);
+      node = TW.nextNode();
       ntr.remove();
     } else {
       // eslint-disable-next-line no-cond-assign
@@ -33,7 +31,7 @@ function create(node, fxn, passedArg) {
       } else {
         idx++;
       }
-      node = TW.nextNode(node);
+      node = TW.nextNode();
     }
   }
   return indices;

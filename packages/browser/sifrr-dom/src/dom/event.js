@@ -52,7 +52,7 @@ const Event = {
     return true;
   },
   trigger: (el, name, options) => {
-    if (typeof el === 'string') el = document.querySelector(el);
+    if (typeof el === 'string') el = document.$(el);
     const ce = new CustomEvent(name, Object.assign({ bubbles: true, composed: true }, options));
     el.dispatchEvent(ce);
   },

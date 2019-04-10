@@ -59,6 +59,7 @@ function update(element, stateMap) {
       // repeaing node
       let key;
       // eslint-disable-next-line no-inner-declarations
+      data.se.root = element;
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
         makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone.bind(data.se), key);
       } else makeChildrenEqual(dom, newValue, data.se.sifrrClone.bind(data.se));

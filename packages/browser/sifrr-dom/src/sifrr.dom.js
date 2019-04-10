@@ -52,6 +52,8 @@ SifrrDom.register = (Element, options = {}) => {
 SifrrDom.setup = function(config) {
   HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+  document.$ = document.querySelector;
+  document.$$ = document.querySelectorAll;
   SifrrDom.config = Object.assign({
     baseUrl: '',
     useShadowRoot: true,
