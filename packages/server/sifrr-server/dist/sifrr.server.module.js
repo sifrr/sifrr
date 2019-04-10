@@ -25,11 +25,11 @@ function clone(obj) {
     return obj;
   }
 }
-function extend(who, from) {
+function extend(who, from, overwrite = true) {
   const ownProps = Object.getOwnPropertyNames(from.prototype);
   ownProps.forEach(prop => {
     if (prop === 'constructor') return;
-    if (who[prop]) {
+    if (who[prop] && overwrite) {
       who[`_${prop}`] = who[prop];
     }
     if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);

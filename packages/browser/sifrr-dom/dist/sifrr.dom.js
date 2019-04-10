@@ -848,6 +848,7 @@
 	      }
 	    }
 	    connectedCallback() {
+	      this.connected = true;
 	      if (this.__content) {
 	        if (this.childNodes.length !== 0) this.textContent = '';
 	        this.appendChild(this.__content);
