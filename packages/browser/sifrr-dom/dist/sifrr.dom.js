@@ -659,31 +659,24 @@
 	  constructor(elemName, url) {
 	    if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
 	    if (this.constructor.all[elemName]) return this.constructor.all[elemName];
+	    Loader.add(this.elementName, this);
 	    this.elementName = elemName;
 	    this.url = url;
 	  }
 	  get html() {
-	    if (this._html) return this._html;
-	    Loader.add(this.elementName, this);
-	    const me = this;
-	    this._html = window.fetch(this.getUrl('html')).then(resp => {
-	      if (resp.ok) return resp.text();else throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
-	    }).then(file => template(file).content).then(content => {
-	      me.template = content.querySelector('template');
+	    return this.constructor.getFile(this.getUrl('html')).then(file => template(file).content).then(content => {
+	      this.template = content.$('template');
 	      return content;
 	    });
-	    return this._html;
 	  }
 	  get js() {
-	    if (this._js) return this._js;
-	    Loader.add(this.elementName, this);
-	    this._js = window.fetch(this.getUrl('js')).then(resp => resp.text());
+	    this._js = this.constructor.getFile(this.getUrl('js'));
 	    return this._js;
 	  }
 	  getUrl(type = 'js') {
 	    return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".").concat(type);
 	  }
-	  executeScripts(js) {
+	  executeScripts(js = true) {
 	    if (this._executed) return Promise.reject(Error("'".concat(this.elementName, "' element's javascript was already executed")));
 	    if (!js) {
 	      return this.executeHTMLScripts().then(() => this._executed = true);
@@ -700,7 +693,7 @@
 	  executeHTMLScripts() {
 	    return this.html.then(content => {
 	      let promise = Promise.resolve(true);
-	      content.querySelectorAll('script').forEach(script => {
+	      content.$$('script').forEach(script => {
 	        if (script.src) {
 	          window.fetch(script.src);
 	          promise = promise.then(() => window.fetch(script.src).then(resp => resp.text())).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window));
@@ -716,6 +709,11 @@
 	  }
 	  static get all() {
 	    return Loader._all;
+	  }
+	  static getFile(url) {
+	    return window.fetch(url).then(resp => {
+	      if (resp.ok) return resp.text();else throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
+	    });
 	  }
 	  static executeJS(url) {
 	    window.fetch(url).then(resp => resp.text()).then(script => {
