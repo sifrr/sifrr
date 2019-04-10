@@ -415,22 +415,21 @@ function update(element, stateMap) {
     }
     if (data.events) {
       if (!dom._sifrrEventSet) {
-        for(let event in data.events) {
-          dom[event] = evaluateBindings(data.events[event], element);
+        for(let i = 0, l = data.events.length; i < l; i++) {
+          const ev = data.events[i];
+          dom[ev[0]] = evaluateBindings(ev[1], element);
         }
         dom._root = element;
         dom._sifrrEventSet = true;
       }
     }
     if (data.attributes) {
-      for(let key in data.attributes) {
+      for(let i = 0, l = data.attributes.length; i < l; i++) {
+        const attr = data.attributes[i];
         let newValue;
-        if (data.attributes[key].type === 0) {
-          newValue = element._state[data.attributes[key].text];
-        } else {
-          newValue = evaluateBindings(data.attributes[key].text, element);
-        }
-        updateattribute(dom, key, newValue);
+        if (attr[1] === 0) newValue = element._state[attr[2]];
+        else newValue = evaluateBindings(attr[2], element);
+        updateattribute(dom, attr[0], newValue);
       }
     }
     if (data.text === undefined) continue;
@@ -555,30 +554,24 @@ function creator(el, defaultState) {
       repeatref(sm, el);
     }
     const attrs = el.attributes, l = attrs.length;
-    const attrStateMap = {};
-    const eventMap = {};
+    const attrStateMap = [];
+    const eventMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
-        eventMap[attribute.name] = getBindingFxns(attribute.value);
+        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
       } else if (attribute.value.indexOf('${') >= 0) {
         const binding = getStringBindingFxn$1(attribute.value);
         if (typeof binding !== 'string') {
-          attrStateMap[attribute.name] = {
-            type: 1,
-            text: binding
-          };
+          attrStateMap.push([attribute.name, 1, binding]);
         } else {
-          attrStateMap[attribute.name] = {
-            type: 0,
-            text: binding
-          };
+          attrStateMap.push([attribute.name, 0, binding]);
           if (defaultState) updateattribute(el, attribute.name, defaultState[binding]);
         }
       }
     }
-    if (Object.keys(eventMap).length > 0) sm.events = eventMap;
-    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
+    if (eventMap.length > 0) sm.events = eventMap;
+    if (attrStateMap.length > 0) sm.attributes = attrStateMap;
     if (Object.keys(sm).length > 0) return sm;
   }
   return 0;

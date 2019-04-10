@@ -26,8 +26,9 @@ function update(element, stateMap) {
     // events
     if (data.events) {
       if (!dom._sifrrEventSet) {
-        for(let event in data.events) {
-          dom[event] = evaluateBindings(data.events[event], element);
+        for(let i = 0, l = data.events.length; i < l; i++) {
+          const ev = data.events[i];
+          dom[ev[0]] = evaluateBindings(ev[1], element);
         }
         dom._root = element;
         dom._sifrrEventSet = true;
@@ -36,14 +37,12 @@ function update(element, stateMap) {
 
     // update attributes
     if (data.attributes) {
-      for(let key in data.attributes) {
+      for(let i = 0, l = data.attributes.length; i < l; i++) {
+        const attr = data.attributes[i];
         let newValue;
-        if (data.attributes[key].type === 0) {
-          newValue = element._state[data.attributes[key].text];
-        } else {
-          newValue = evaluateBindings(data.attributes[key].text, element);
-        }
-        updateAttribute(dom, key, newValue);
+        if (attr[1] === 0) newValue = element._state[attr[2]];
+        else newValue = evaluateBindings(attr[2], element);
+        updateAttribute(dom, attr[0], newValue);
       }
     }
 

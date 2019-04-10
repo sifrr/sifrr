@@ -47,33 +47,29 @@ function creator(el, defaultState) {
     }
     // attributes
     const attrs = el.attributes, l = attrs.length;
-    const attrStateMap = {};
-    const eventMap = {};
+    const attrStateMap = [];
+    const eventMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
-        eventMap[attribute.name] = getBindingFxns(attribute.value);
+        // Array contents -> 0: name, 1: binding
+        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
       } else if (attribute.value.indexOf('${') >= 0) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
         const binding = getStringBindingFxn(attribute.value);
+        // Array contents -> 0: name, 1: type, 2: binding
         if (typeof binding !== 'string') {
           // text attr
-          attrStateMap[attribute.name] = {
-            type: 1,
-            text: binding
-          };
+          attrStateMap.push([attribute.name, 1, binding]);
         } else {
           // state attr
-          attrStateMap[attribute.name] = {
-            type: 0,
-            text: binding
-          };
+          attrStateMap.push([attribute.name, 0, binding]);
           if (defaultState) updateAttribute(el, attribute.name, defaultState[binding]);
         }
       }
     }
-    if (Object.keys(eventMap).length > 0) sm.events = eventMap;
-    if (Object.keys(attrStateMap).length > 0) sm.attributes = attrStateMap;
+    if (eventMap.length > 0) sm.events = eventMap;
+    if (attrStateMap.length > 0) sm.attributes = attrStateMap;
 
     if (Object.keys(sm).length > 0) return sm;
   }
