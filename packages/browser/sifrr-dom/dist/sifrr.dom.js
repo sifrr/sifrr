@@ -342,7 +342,7 @@
 	      is = [],
 	      l = -1,
 	      pre = new Array(ns.length);
-	  for (let i = newStart, len = ns.length; i < len; i++) {
+	  for (let i = newStart, l = ns.length; i < l; i++) {
 	    let n = ns[i];
 	    if (n < 0) continue;
 	    let j = findGreatestIndexLEQ(seq, n);
@@ -356,9 +356,7 @@
 	      is[j + 1] = i;
 	    }
 	  }
-	  for (let i = is[l]; l >= 0; i = pre[i], l--) {
-	    seq[l] = i;
-	  }
+	  for (let i = is[l]; l >= 0; i = pre[i], l--) seq[l] = i;
 	  return seq;
 	}
 	function findGreatestIndexLEQ(seq, n) {
@@ -367,11 +365,7 @@
 	  if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
 	  while (hi - lo > 1) {
 	    let mid = Math.floor((lo + hi) / 2);
-	    if (seq[mid] > n) {
-	      hi = mid;
-	    } else {
-	      lo = mid;
-	    }
+	    if (seq[mid] > n) hi = mid;else lo = mid;
 	  }
 	  return lo;
 	}

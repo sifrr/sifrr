@@ -15,7 +15,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   const newL = newData.length, oldL = parent.childNodes.length;
 
   if (oldL === 0) {
-    for(let i = 0; i < newL; i++) {
+    for (let i = 0; i < newL; i++) {
       parent.appendChild(createFn(newData[i]));
     }
     return;
@@ -121,7 +121,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 
   const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = new Array(prevEnd - prevStart + 1), toDelete = [];
 
-  for(let i = newStart; i <= newEnd; i++) {
+  for (let i = newStart; i <= newEnd; i++) {
     // Positions for reusing nodes from current DOM state
     oldKeys[i] = -1;
     // Index to resolve position from current to new
@@ -142,13 +142,13 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   }
 
   // Remove extra nodes
-  for(let i = 0; i < toDelete.length; i++) {
+  for (let i = 0; i < toDelete.length; i++) {
     parent.removeChild(toDelete[i]);
   }
 
   // Fast path for full replace
   if (reusingNodes === 0) {
-    for(let i = newStart; i <= newEnd; i++) {
+    for (let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
       parent.insertBefore(createFn(newData[i]), prevStartNode);
     }
@@ -158,7 +158,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   let lisIdx = longestSeq.length - 1, tmpD;
-  for(let i = newEnd; i >= newStart; i--) {
+  for (let i = newEnd; i >= newStart; i--) {
     if(longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
       makeEqual(finalNode, newData[i]);
@@ -181,12 +181,9 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
 function longestPositiveIncreasingSubsequence(ns, newStart) {
-  let seq = [],
-    is  = [],
-    l   = -1,
-    pre = new Array(ns.length);
+  let seq = [], is = [], l = -1, pre = new Array(ns.length);
 
-  for (let i = newStart, len = ns.length; i < len; i++) {
+  for (let i = newStart, l = ns.length; i < l; i++) {
     let n = ns[i];
     if (n < 0) continue;
     let j = findGreatestIndexLEQ(seq, n);
@@ -194,16 +191,13 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     if (j === l) {
       l++;
       seq[l] = n;
-      is[l]  = i;
+      is[l] = i;
     } else if (n < seq[j + 1]) {
       seq[j + 1] = n;
       is[j + 1] = i;
     }
   }
-
-  for (let i = is[l]; l >= 0; i = pre[i], l--) {
-    seq[l] = i;
-  }
+  for (let i = is[l]; l >= 0; i = pre[i], l--) seq[l] = i;
 
   return seq;
 }
@@ -211,19 +205,15 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
 function findGreatestIndexLEQ(seq, n) {
   // invariant: lo is guaranteed to be index of a value <= n, hi to be >
   // therefore, they actually start out of range: (-1, last + 1)
-  let lo = -1,
-    hi = seq.length;
+  let lo = -1, hi = seq.length;
 
   // fast path for simple increasing sequences
   if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
 
   while (hi - lo > 1) {
     let mid = Math.floor((lo + hi) / 2);
-    if (seq[mid] > n) {
-      hi = mid;
-    } else {
-      lo = mid;
-    }
+    if (seq[mid] > n) hi = mid;
+    else lo = mid;
   }
 
   return lo;
