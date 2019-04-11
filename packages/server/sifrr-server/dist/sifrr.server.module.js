@@ -453,6 +453,7 @@ class BaseApp {
         this.folder(prefix, filePath, options, base);
       } else {
         const url = '/' + path$1.relative(base, filePath);
+        if (this._staticPaths[prefix + url]) return;
         this._staticPaths[prefix + url] = [filePath, options ];
         this.get(prefix + url, this._serveStatic);
       }
