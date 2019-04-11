@@ -1,5 +1,6 @@
 const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
+const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
 
 const app = new App();
 const headers = {
@@ -15,6 +16,11 @@ app.folder('', path.join(__dirname, 'public/compress'), {
 app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
   headers,
   compress: false
+});
+
+app.file('/cache/:pattern', path.join(__dirname, 'public/random.html'), {
+  headers,
+  cache: memoryCache
 });
 
 app.options('/*', res => {

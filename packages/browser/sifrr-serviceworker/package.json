@@ -42,6 +42,7 @@
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
     "browserslist": "^4.4.2",
+    "cache-manager": "^2.9.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "commitizen": "^3.0.7",

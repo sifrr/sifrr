@@ -26,10 +26,12 @@ function sendFileToRes(res, reqHeaders, path, {
   compress = true,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
-  }
+  },
+  cache = false
 } = {}) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
+  const mtimeutc = mtime.toUTCString();
 
   // handling last modified
   if (lastModified) {
@@ -40,9 +42,25 @@ function sendFileToRes(res, reqHeaders, path, {
         return res.end();
       }
     }
-    headers['last-modified'] = mtime.toUTCString();
+    headers['last-modified'] = mtimeutc;
   }
   headers['content-type'] = getMime(path);
+
+  // check cache
+  if (cache) {
+    res.onAborted(() => {});
+    return cache.wrap(`${path}_${mtimeutc}`, (cb) => {
+      fs.readFile(path, cb);
+    }, { ttl: 0 }, (err, string) => {
+      if (err) {
+        res.writeStatus('500 Internal server error');
+        res.end();
+        throw err;
+      }
+      writeHeaders(res, headers);
+      res.end(string);
+    });
+  }
 
   // write data
   let start = 0, end = size - 1;
