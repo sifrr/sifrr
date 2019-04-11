@@ -26,4 +26,8 @@ describe('speed test', function() {
   it('faster in static files (big, no-304, compression)', async () => {
     await loadTest((p) => `${p}/compressed.html`, 100, { cache: 'no-store' });
   });
+
+  it('faster in cached files (big, no-304, compression)', async () => {
+    await loadTest((p) => `${p}/cache.html`, 100, { cache: 'no-store' });
+  });
 });

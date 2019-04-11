@@ -18,11 +18,6 @@ app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
   compress: false
 });
 
-app.file('/cache/:pattern', path.join(__dirname, 'public/random.html'), {
-  headers,
-  cache: memoryCache
-});
-
 app.options('/*', res => {
   writeHeaders(res, headers);
   writeHeaders(res, 'access-control-allow-headers', 'content-type');
@@ -66,5 +61,10 @@ app.post('/tmpdir', res => {
 });
 
 app.load(path.join(__dirname, './routes'));
+
+app.file('/cache.html', path.join(__dirname, 'public/cache.html'), {
+  headers,
+  cache: memoryCache
+});
 
 module.exports = app;
