@@ -41,7 +41,7 @@ var utils = {
   extend
 };
 
-const extensions = {
+const mimes = {
   '3gp' : 'video/3gpp',
   a     : 'application/octet-stream',
   ai    : 'application/postscript',
@@ -210,12 +210,12 @@ const extensions = {
   zip   : 'application/zip',
   default: 'text/html'
 };
-var ext = {
-  getExt: (path) => {
+var mime = {
+  getMime: (path) => {
     const i = path.lastIndexOf('.');
-    return extensions[path.substr(i + 1).toLowerCase()] || extensions['default'];
+    return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
   },
-  extensions
+  mimes
 };
 
 const compressions = {
@@ -224,7 +224,7 @@ const compressions = {
   deflate: zlib.createDeflate
 };
 const { writeHeaders: writeHeaders$1 } = utils;
-const ext$1 = ext.getExt;
+const getMime = mime.getMime;
 const bytes = 'bytes=';
 function sendFile(res, req, path, options) {
   const reqHeaders = {
@@ -253,7 +253,7 @@ function sendFileToRes(res, reqHeaders, path, {
     }
     headers['last-modified'] = mtime.toUTCString();
   }
-  headers['content-type'] = ext$1(path);
+  headers['content-type'] = getMime(path);
   let start = 0, end = size - 1;
   if (reqHeaders.range) {
     compress = false;
@@ -558,19 +558,19 @@ var sslapp = SSLApp;
 var sifrr_server = {
   App: app,
   SSLApp: sslapp,
-  extensions: ext.extensions,
-  getExtension: ext.getExt,
+  mimes: mime.mimes,
+  getMime: mime.getMime,
   writeHeaders: utils.writeHeaders,
   sendFile: sendfile
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;
-var sifrr_server_3 = sifrr_server.extensions;
-var sifrr_server_4 = sifrr_server.getExtension;
+var sifrr_server_3 = sifrr_server.mimes;
+var sifrr_server_4 = sifrr_server.getMime;
 var sifrr_server_5 = sifrr_server.writeHeaders;
 var sifrr_server_6 = sifrr_server.sendFile;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_3 as extensions, sifrr_server_4 as getExtension, sifrr_server_6 as sendFile, sifrr_server_5 as writeHeaders };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_4 as getMime, sifrr_server_3 as mimes, sifrr_server_6 as sendFile, sifrr_server_5 as writeHeaders };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map

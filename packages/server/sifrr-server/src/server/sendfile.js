@@ -7,7 +7,7 @@ const compressions = {
   deflate: zlib.createDeflate
 };
 const { writeHeaders } = require('./utils');
-const ext = require('./ext').getExt;
+const getMime = require('./mime').getMime;
 const bytes = 'bytes=';
 
 function sendFile(res, req, path, options) {
@@ -42,7 +42,7 @@ function sendFileToRes(res, reqHeaders, path, {
     }
     headers['last-modified'] = mtime.toUTCString();
   }
-  headers['content-type'] = ext(path);
+  headers['content-type'] = getMime(path);
 
   // write data
   let start = 0, end = size - 1;

@@ -1,4 +1,4 @@
-const extensions = {
+const mimes = {
   '3gp' : 'video/3gpp',
   a     : 'application/octet-stream',
   ai    : 'application/postscript',
@@ -168,9 +168,9 @@ const extensions = {
   default: 'text/html'
 };
 module.exports = {
-  getExt: (path) => {
+  getMime: (path) => {
     const i = path.lastIndexOf('.');
-    return extensions[path.substr(i + 1).toLowerCase()] || extensions['default'];
+    return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
   },
-  extensions
+  mimes
 };

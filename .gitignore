@@ -6,3 +6,4 @@ test-results
 .nyc_output
 coverage
 .*docker*
+**/isolate-*
