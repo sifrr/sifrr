@@ -2,7 +2,8 @@ const path = require('path');
 
 const headers = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': '*'
+  'access-control-allow-methods': '*',
+  Connection: 'keep-alive'
 };
 
 module.exports = {

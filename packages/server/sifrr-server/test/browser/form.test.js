@@ -1,14 +1,8 @@
 const fs = require('fs');
 
-let sapp = require('../public/benchmarks/sifrr');
-
-describe.skip('form test', function() {
+describe('form test', function() {
   before(async () => {
     await page.goto(`${PATH}/multipart.html`);
-  });
-
-  after(() => {
-    sapp.close();
   });
 
   it('handles input form data', async () => {

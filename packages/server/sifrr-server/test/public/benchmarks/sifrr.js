@@ -5,7 +5,8 @@ const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100
 const app = new App();
 const headers = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': '*'
+  'access-control-allow-methods': '*',
+  Connection: 'keep-alive'
 };
 
 app.folder('', path.join(__dirname, 'public/compress'), {
