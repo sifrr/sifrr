@@ -34,7 +34,7 @@
     "graphql-sequelize": "^9.3.1",
     "mkdirp": "^0.5.1",
     "mysql2": "^1.6.4",
-    "sequelize": "^4.42.0",
+    "sequelize": "^5.3.1",
     "sequelize-cli": "^5.4.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.2.0"
   },
