@@ -23,7 +23,7 @@ function sendFile(res, req, path, options) {
 function sendFileToRes(res, reqHeaders, path, {
   lastModified = true,
   headers = {},
-  compress = true,
+  compress = false,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
   },
@@ -101,7 +101,9 @@ function sendFileToRes(res, reqHeaders, path, {
   writeHeaders(res, headers);
   if (compressed) {
     readStream.on('data', (buffer) => {
+      readStream.pause();
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
+      readStream.resume();
     });
   } else {
     readStream.on('data', (buffer) => {

@@ -2,6 +2,8 @@ const { loadTest, EPORT } = require('./utils');
 let eapp = require('../public/benchmarks/express');
 
 describe('speed test', function() {
+  this.retries(3);
+
   before(async () => {
     eapp = eapp.listen(EPORT, () => global.console.log('listening express on ', EPORT));
     await page.goto(`${PATH}/static.html`);

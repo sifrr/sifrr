@@ -237,7 +237,7 @@ function sendFile(res, req, path, options) {
 function sendFileToRes(res, reqHeaders, path, {
   lastModified = true,
   headers = {},
-  compress = true,
+  compress = false,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
   },
@@ -302,7 +302,9 @@ function sendFileToRes(res, reqHeaders, path, {
   writeHeaders$1(res, headers);
   if (compressed) {
     readStream.on('data', (buffer) => {
+      readStream.pause();
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
+      readStream.resume();
     });
   } else {
     readStream.on('data', (buffer) => {
@@ -493,7 +495,7 @@ class BaseApp {
         const stream = new Readable();
         stream._read = noOp;
         this.onData((ab, isLast) => {
-          stream.push(new Uint8Array(ab, ab.byteOffset, ab.byteLength).slice(0, ab.byteLength));
+          stream.push(new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)));
           if (isLast) {
             stream.push(null);
           }

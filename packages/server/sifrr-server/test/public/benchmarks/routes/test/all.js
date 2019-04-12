@@ -7,7 +7,7 @@ const headers = {
 
 module.exports = {
   folder: {
-    '/': [path.join(__dirname, '../../public'), { headers, compress: false }]
+    '/': [path.join(__dirname, '../../public'), { headers }]
   },
   post: {
     '/json': res => {

@@ -14,8 +14,7 @@ app.folder('', path.join(__dirname, 'public/compress'), {
 });
 
 app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
-  headers,
-  compress: false
+  headers
 });
 
 app.options('/*', res => {
