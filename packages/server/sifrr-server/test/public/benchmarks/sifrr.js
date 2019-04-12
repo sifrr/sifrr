@@ -1,5 +1,6 @@
 const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
+const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
 
 const app = new App();
 const headers = {
@@ -60,5 +61,10 @@ app.post('/tmpdir', res => {
 });
 
 app.load(path.join(__dirname, './routes'));
+
+app.file('/cache.html', path.join(__dirname, 'public/cache.html'), {
+  headers,
+  cache: memoryCache
+});
 
 module.exports = app;

@@ -3,7 +3,7 @@ const BaseApp = require('./baseapp');
 const { extend } = require('./utils');
 
 class App extends uWS.App {
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
     extend(this, BaseApp);
   }

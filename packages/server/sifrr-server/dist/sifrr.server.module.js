@@ -240,10 +240,12 @@ function sendFileToRes(res, reqHeaders, path, {
   compress = true,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
-  }
+  },
+  cache = false
 } = {}) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
+  const mtimeutc = mtime.toUTCString();
   if (lastModified) {
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
@@ -251,9 +253,23 @@ function sendFileToRes(res, reqHeaders, path, {
         return res.end();
       }
     }
-    headers['last-modified'] = mtime.toUTCString();
+    headers['last-modified'] = mtimeutc;
   }
   headers['content-type'] = getMime(path);
+  if (cache) {
+    res.onAborted(() => {});
+    return cache.wrap(`${path}_${mtimeutc}`, (cb) => {
+      fs.readFile(path, cb);
+    }, { ttl: 0 }, (err, string) => {
+      if (err) {
+        res.writeStatus('500 Internal server error');
+        res.end();
+        throw err;
+      }
+      writeHeaders$1(res, headers);
+      res.end(string);
+    });
+  }
   let start = 0, end = size - 1;
   if (reqHeaders.range) {
     compress = false;
@@ -437,6 +453,7 @@ class BaseApp {
         this.folder(prefix, filePath, options, base);
       } else {
         const url = '/' + path$1.relative(base, filePath);
+        if (this._staticPaths[prefix + url]) return;
         this._staticPaths[prefix + url] = [filePath, options ];
         this.get(prefix + url, this._serveStatic);
       }
@@ -539,7 +556,7 @@ var baseapp = BaseApp;
 
 const { extend: extend$1 } = utils;
 class App extends uWebSockets.App {
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
     extend$1(this, baseapp);
   }

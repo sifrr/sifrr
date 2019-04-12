@@ -43,6 +43,9 @@ class BaseApp {
       } else {
         // serve from this folder
         const url = '/' + path.relative(base, filePath);
+        // don't add if route already present
+        if (this._staticPaths[prefix + url]) return;
+
         this._staticPaths[prefix + url] = [filePath, options ];
         this.get(prefix + url, this._serveStatic);
       }
