@@ -24,7 +24,6 @@ class Pet extends SequelizeModel {
   }
 
   static onInit() {
-    const me = this;
     // Add description
     this.graphqlModel.description = 'A pet';
 
@@ -49,8 +48,8 @@ class Pet extends SequelizeModel {
     // Query Resolvers
     this.addQuery('getPet', {
       args: this.gqArgs(),
-      resolver: this.customResolver.bind(me),
-      returnType: `[${me.graphqlModel.type}]`,
+      resolver: this.customResolver.bind(this),
+      returnType: `[${this.graphqlModel.type}]`,
       description: 'Get one Pet.'
     });
 

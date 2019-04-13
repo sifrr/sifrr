@@ -67,7 +67,7 @@ class User extends Model {
   // This will be called in init, to add resolvers to graphql schema generated
   static addResolvers() {
     // Resolvers - need to bind resolvers with this class if they are class function, else it won't work
-    const me = this;
+
     // Add description
     this.graphqlModel.description = 'A pet';
 
@@ -92,8 +92,8 @@ class User extends Model {
     // Query Resolvers
     this.addQuery('getPet', {
       args: this.gqArgs(),
-      resolver: this.customResolver.bind(me),
-      returnType: `[${me.graphqlModel.type}]`,
+      resolver: this.customResolver.bind(this),
+      returnType: `[${this.graphqlModel.type}]`,
       description: 'Get one Pet.'
     });
 
