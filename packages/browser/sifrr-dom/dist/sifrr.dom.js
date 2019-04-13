@@ -650,47 +650,23 @@
 	    Loader.add(this.elementName, this);
 	    this.url = url;
 	  }
-	  get html() {
-	    if (this._html) return this._html;
-	    return this._html = this.constructor.getFile(this.getUrl('html')).then(file => template(file).content).then(content => {
-	      this.template = content.querySelector('template');
-	      return content;
-	    }), this._html;
-	  }
-	  get js() {
-	    if (this._js) return this._js;
-	    return this._js = this.constructor.getFile(this.getUrl('js')), this._js;
-	  }
-	  getUrl(type = 'js') {
-	    return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".").concat(type);
-	  }
 	  executeScripts(js = true) {
-	    if (this._executed) return Promise.reject(Error("'".concat(this.elementName, "' element's javascript was already executed")));
+	    if (this._exec) return this._exec;
 	    if (!js) {
-	      return this.executeHTMLScripts().then(() => this._executed = true);
+	      return this._exec = this.executeHTMLScripts(), this._exec;
 	    } else {
-	      return this.js.then(script => {
-	        return new Function(script + "\n //# sourceURL=".concat(this.getUrl('js'))).call();
-	      }).catch(e => {
+	      return this._exec = this.constructor.executeJS(this.getUrl('js')).catch(e => {
 	        window.console.error(e);
 	        window.console.log("JS file for '".concat(this.elementName, "' gave error. Trying to get html file."));
 	        return this.executeHTMLScripts();
-	      }).then(() => this._executed = true);
+	      }), this._exec;
 	    }
 	  }
 	  executeHTMLScripts() {
-	    return this.html.then(content => {
-	      let promise = Promise.resolve(true);
-	      content.querySelectorAll('script').forEach(script => {
-	        if (script.src) {
-	          window.fetch(script.src);
-	          promise = promise.then(() => window.fetch(script.src).then(resp => resp.text())).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window));
-	        } else {
-	          promise = promise.then(() => new Function(script.text + "\n//# sourceURL=".concat(this.getUrl('html'))).call(window));
-	        }
-	      });
-	      return promise;
-	    });
+	    return this.constructor.executeHTML(this.getUrl('html'), this);
+	  }
+	  getUrl(type = 'js') {
+	    return this.url || "".concat(window.Sifrr.Dom.config.baseUrl + '/', "elements/").concat(this.elementName.split('-').join('/'), ".").concat(type);
 	  }
 	  static add(elemName, instance) {
 	    Loader.all[elemName] = instance;
@@ -700,8 +676,23 @@
 	      if (resp.ok) return resp.text();else throw Error("".concat(this.getUrl('html'), " - ").concat(resp.status, " ").concat(resp.statusText));
 	    });
 	  }
+	  static executeHTML(url, me) {
+	    return this.getFile(url).then(file => template(file).content).then(content => {
+	      let promise = Promise.resolve(true);
+	      me.template = content.querySelector('template');
+	      content.querySelectorAll('script').forEach(script => {
+	        if (script.src) {
+	          window.fetch(script.src);
+	          promise = promise.then(() => window.fetch(script.src).then(resp => resp.text())).then(text => new Function(text + "\n//# sourceURL=".concat(script.src)).call(window));
+	        } else {
+	          promise = promise.then(() => new Function(script.text + "\n//# sourceURL=".concat(url)).call(window));
+	        }
+	      });
+	      return promise;
+	    });
+	  }
 	  static executeJS(url) {
-	    window.fetch(url).then(resp => resp.text()).then(script => {
+	    return this.getFile(url).then(script => {
 	      return new Function(script + "\n //# sourceURL=".concat(url)).call();
 	    });
 	  }

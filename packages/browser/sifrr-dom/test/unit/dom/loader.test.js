@@ -6,7 +6,7 @@ describe('Loader', () => {
     sinon.restore();
   });
 
-  it('throws error if sifrr-fetch is not present', () => {
+  it('throws error if fetch is not present', () => {
     const fetch = window.fetch;
     window.fetch = undefined;
     const Loader = require('../../../src/dom/loader');
@@ -23,21 +23,20 @@ describe('Loader', () => {
     expect(new Loader('random')).to.eq(a);
   });
 
-  it('returns html and js if already present', () => {
+  it('returns exec promise if already present', () => {
     const Loader = require('../../../src/dom/loader');
     const l = new Loader('random', 'ok');
-    const html = {}, js = {};
-    l._html = html, l._js = js;
+    const exec = {};
+    l._exec = exec;
 
-    expect(l.html).to.eq(html);
-    expect(l.js).to.eq(js);
+    expect(l.executeScripts()).to.eq(exec);
   });
 
-  it('throws error on html execute script fail', async () => {
+  it('throws error on execute script fail', async () => {
     const Loader = require('../../../src/dom/loader');
     const l = new Loader('random', 'ok');
-    l._html = Promise.reject('err');
+    l._exec = Promise.reject('err');
 
-    l.executeHTMLScripts().should.be.rejectedWith('err');
+    l.executeScripts().should.be.rejectedWith('err');
   });
 });

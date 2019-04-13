@@ -36,7 +36,7 @@ describe('Sifrr.Dom.load and Loader', () => {
   it("doesn't try to run script element if it is already executed", async () => {
     const mes = await page.evaluate(() => (new Sifrr.Dom.Loader('loading-load')).executeScripts().catch(e => e.message));
 
-    assert.equal(mes, "'loading-load' element's javascript was already executed");
+    assert(!mes);
   });
 
   it('throws error from html scripts', async () => {
