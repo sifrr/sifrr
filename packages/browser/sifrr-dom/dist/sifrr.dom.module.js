@@ -785,6 +785,7 @@ function elementClassFactory(baseClass) {
       return this._state;
     }
     set state(v) {
+      if (!this._state) return;
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
       this.onStateChange();

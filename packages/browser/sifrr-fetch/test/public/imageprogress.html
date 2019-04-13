@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <img data-src="https://fetch-progress.anthum.com/30kbps/images/sunrise-baseline.jpg" alt="">
+    <p id="progress"></p>
+    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      const image = document.querySelector('img');
+      const progress = document.querySelector('#progress');
+      const src = image.dataset.src;
+      Sifrr.Fetch.get(src, {
+        onProgress: (p) => {
+          progress.textContent = p;
+        }
+      });
+      image.src = src;
+    </script>
+  </body>
+</html>
