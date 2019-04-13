@@ -4,7 +4,7 @@ A ~6KB :zap: fast DOM framework for creating web user interfaces using Custom El
 
 Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework.
 
-** Example: ** https://sifrr.github.io/sifrr/docs/speedtest.html
+__Example:__ https://sifrr.github.io/sifrr/docs/speedtest.html
 
 ## Size
 

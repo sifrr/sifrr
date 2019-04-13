@@ -6,6 +6,7 @@ type Query {
 
 type Mutation {
   createPet(name: String!, ownerId: Int!): Pet
+  createPetAndOwner(name: String!, owner__name: String!): Pet
   updatePet(id: Int!): Pet
   upsertPet(id: Int!): Pet
   deletePet(id: Int!): Int
@@ -16,7 +17,7 @@ scalar SequelizeJSON
 scalar Date
 scalar Random
 
-""" A pet """ 
+""" A pet """
 type Pet {
   id: Int!
   name: String!

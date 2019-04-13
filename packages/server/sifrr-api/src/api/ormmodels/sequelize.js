@@ -67,12 +67,12 @@ class SequelizeModel extends Sequelize.Model {
 
   // Default Resolvers - getQuery, createMutation, updateMutation, upsertMutation, deleteMutation
   static getQueryResolver(_, args, ctx, info) {
-    let include;
+    const include = [];
     for (let arg in args.where) {
       if (arg.indexOf('__') >= 0) {
         const assocs = arg.split('__');
         args.where['$' + assocs.join('.') + '$'] = args.where[arg];
-        include = this._assocsToInclude(assocs);
+        include.push(...this._assocsToInclude(assocs));
         delete args.where[arg];
       }
     }
@@ -85,7 +85,17 @@ class SequelizeModel extends Sequelize.Model {
   }
 
   static createMutationResolver(_, args) {
-    return this.create(args);
+    const include = [];
+    for (let arg in args) {
+      if (arg.indexOf('__') >= 0) {
+        const assocs = arg.split('__');
+        args[assocs[0]] = args[assocs[0]] || {};
+        args[assocs[0]][assocs[1]] = args[arg];
+        include.push(...this._assocsToInclude(assocs));
+        delete args[arg];
+      }
+    }
+    return this.create(args, { include });
   }
 
   static updateMutationResolver(_, args) {

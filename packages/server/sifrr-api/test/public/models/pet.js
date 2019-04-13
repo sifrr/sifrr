@@ -63,6 +63,14 @@ class Pet extends SequelizeModel {
       resolver: this.createMutationResolver.bind(this),
       returnType: this.graphqlModel.type
     });
+    this.addMutation(`createPetAndOwner`, {
+      args: {
+        name: { type: 'String!' },
+        owner__name: { type: 'String!' }
+      },
+      resolver: this.createMutationResolver.bind(this),
+      returnType: this.graphqlModel.type
+    });
     this.addMutation(`update${this.graphqlModel.type}`, {
       args: this.gqAttrs({ allowed: ['id'], required: ['id'] }),
       resolver: this.updateMutationResolver.bind(this),

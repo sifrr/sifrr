@@ -19,6 +19,20 @@ module.exports = {
           }
         }
       `, reqToVariables(req, { allowed: ['name', 'ownerId'] }), { random: 1 }).then(data => res.json(data));
+    },
+    '/petAndOwner': (req, res) => {
+      etg.resolve(`
+        mutation($name: String!, $owner__name: String!) {
+          createPetAndOwner(name: $name, owner__name: $owner__name) {
+            id
+            name
+            owner {
+              id
+              name
+            }
+          }
+        }
+      `, reqToVariables(req, { allowed: ['name', 'owner__name'] }), { random: 1 }).then(data => res.json(data));
     }
   },
   get: {

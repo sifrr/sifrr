@@ -5,7 +5,7 @@
   "description": "Sifrr-Api Example",
   "main": "index.js",
   "scripts": {
-    "start": "node server",
+    "start": "node server -p 1111",
     "build": "yarn sequelize db:drop; yarn sequelize db:create; yarn sequelize db:migrate && yarn sequelize db:seed:all"
   },
   "repository": {
