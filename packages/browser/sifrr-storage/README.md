@@ -89,6 +89,8 @@ let options = {
 storage = new Sifrr.Storage(options)
 ```
 
+**Initializing with same priority, name and version will give same instance.**
+
 ### Details
 
 ```js
@@ -138,6 +140,12 @@ storage.del(['a', 'c']).then(() => {/* Do something here */});
 
 ```js
 storage.all().then((data) => console.log(data)); // > { key: { value: 'value' }, a: 'b', c: { d: 'e' } }
+```
+
+### Get all keys in table
+
+```js
+storage.keys().then((keys) => console.log(data)); // > ['key', 'a', 'c']
 ```
 
 ### Clear table

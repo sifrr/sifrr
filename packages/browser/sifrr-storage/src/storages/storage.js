@@ -83,6 +83,10 @@ class Storage {
     else { return false; }
   }
 
+  keys() {
+    return this.all().then(d => Object.keys(d));
+  }
+
   all() {
     return Promise.resolve(this._parsedData());
   }

@@ -171,6 +171,17 @@ for (let key in SifrrStorage.availableStores) {
       assert.deepEqual(result.after2, {});
     });
 
+    it('gives all keys', async () => {
+      const result = await page.evaluate(async (key) => {
+        const storage = new Sifrr.Storage(key);
+        await storage.set('a', 1);
+        await storage.set('b', 2);
+        return await storage.keys();
+      }, key);
+
+      expect(result).to.deep.equal(['a', 'b']);
+    });
+
     it('saves value when it is falsy', async () => {
       const result = await page.evaluate(async (key) => {
         const storage = new Sifrr.Storage(key);

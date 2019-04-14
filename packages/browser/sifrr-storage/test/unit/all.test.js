@@ -44,7 +44,7 @@ describe('SifrrStorage', () => {
 
   describe('#all', () => {
     it('should return all instances there are', () => {
-      SifrrStorage._all = [];
+      SifrrStorage.all = [];
       new SifrrStorage({ priority: ['cookies'] });
       new SifrrStorage({ priority: ['indexeddb'] });
       assert.equal(SifrrStorage.all.length, 2);

@@ -41,12 +41,7 @@ class SifrrStorage {
   }
 
   static _add(instance) {
-    this._all = this._all || [];
-    this._all.push(instance);
-  }
-
-  static get availableStores() {
-    return storages;
+    this.all.push(instance);
   }
 
   static get defaultOptions() {
@@ -59,13 +54,12 @@ class SifrrStorage {
     };
   }
 
-  static get all() {
-    return this._all || [];
-  }
-
   static json(data) {
     return new JsonStorage({}, data);
   }
 }
+
+SifrrStorage.availableStores = storages;
+SifrrStorage.all = [];
 
 module.exports = SifrrStorage;

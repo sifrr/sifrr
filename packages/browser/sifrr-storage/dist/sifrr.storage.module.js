@@ -102,6 +102,9 @@ class Storage {
     else if (window && typeof this.store !== 'undefined') { return true; }
     else { return false; }
   }
+  keys() {
+    return this.all().then(d => Object.keys(d));
+  }
   all() {
     return Promise.resolve(this._parsedData());
   }
@@ -390,11 +393,7 @@ class SifrrStorage {
     return false;
   }
   static _add(instance) {
-    this._all = this._all || [];
-    this._all.push(instance);
-  }
-  static get availableStores() {
-    return storages_1;
+    this.all.push(instance);
   }
   static get defaultOptions() {
     return {
@@ -405,13 +404,12 @@ class SifrrStorage {
       size: 5 * 1024 * 1024
     };
   }
-  static get all() {
-    return this._all || [];
-  }
   static json(data) {
     return new jsonstorage({}, data);
   }
 }
+SifrrStorage.availableStores = storages_1;
+SifrrStorage.all = [];
 var sifrr_storage = SifrrStorage;
 
 export default sifrr_storage;
