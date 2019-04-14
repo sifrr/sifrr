@@ -31,6 +31,20 @@ describe('Sifrr.Dom.Element', () => {
     });
   });
 
+  it('works with string template', async () => {
+    const res = await page.$eval('element-string', (el) => {
+      return {
+        isSifrr: el.isSifrr(),
+        content: el.shadowRoot.innerHTML
+      };
+    });
+
+    expect(res).to.deep.equal({
+      isSifrr: true,
+      content: '<p>string</p>'
+    });
+  });
+
   describe('connect', () => {
     it('calls onConnect', async () => {
       const res = await page.evaluate(() => {

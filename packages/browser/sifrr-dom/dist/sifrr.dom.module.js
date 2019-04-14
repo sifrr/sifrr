@@ -722,6 +722,7 @@ function elementClassFactory(baseClass) {
       if (this._ctemp) return this._ctemp;
       this._ctemp = this.template;
       if (this._ctemp) {
+        if (typeof this._ctemp === 'string') this._ctemp = template(this._ctemp);
         if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
