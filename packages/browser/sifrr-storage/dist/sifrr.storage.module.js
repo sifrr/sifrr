@@ -32,12 +32,12 @@ class Json {
 }
 var json = Json;
 
+const jsonConstructor = {}.constructor;
 class Storage {
   constructor(options = {}) {
     this._options = options;
   }
   _parseKeyValue(key, value) {
-    let jsonConstructor = {}.constructor;
     if (typeof value === 'undefined') {
       if (Array.isArray(key)) {
         return key;
@@ -166,7 +166,8 @@ class IndexedDB extends storage {
   }
   _tx(scope, fn, params) {
     const me = this;
-    return this.createStore(me.tableName).then((db) => {
+    this._store = this._store || this.createStore(me.tableName);
+    return this._store.then((db) => {
       return new Promise((resolve, reject) => {
         const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
         const request = tx[fn].call(tx, params);
@@ -330,19 +331,18 @@ var cookies = Cookies;
 class JsonStorage extends storage {
   constructor(options, data = {}) {
     super(options);
-    this._upsert(this.constructor.parse(data));
+    this.table = data;
   }
   _parsedData() {
-    return this._table;
+    return this.table;
+  }
+  _upsert(data) {
+    for (let key in data) {
+      this.table[key] = data[key];
+    }
   }
   get store() {
-    return this._table;
-  }
-  get table() {
-    return this._table || {};
-  }
-  set table(value) {
-    this._table = value;
+    return this.table;
   }
   static get type() {
     return 'jsonstorage';

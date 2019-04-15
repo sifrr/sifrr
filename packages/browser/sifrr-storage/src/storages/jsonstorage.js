@@ -3,23 +3,21 @@ const Storage = require('./storage');
 class JsonStorage extends Storage {
   constructor(options, data = {}) {
     super(options);
-    this._upsert(this.constructor.parse(data));
+    this.table = data;
   }
 
   _parsedData() {
-    return this._table;
+    return this.table;
+  }
+
+  _upsert(data) {
+    for (let key in data) {
+      this.table[key] = data[key];
+    }
   }
 
   get store() {
-    return this._table;
-  }
-
-  get table() {
-    return this._table || {};
-  }
-
-  set table(value) {
-    this._table = value;
+    return this.table;
   }
 
   static get type() {

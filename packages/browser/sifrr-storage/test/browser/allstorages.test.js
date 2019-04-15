@@ -191,5 +191,13 @@ for (let key in SifrrStorage.availableStores) {
 
       expect(result).to.equal(0);
     });
+
+    it('speed test', async () => {
+      const result = await page.evaluate(async (key) => {
+        return await bulkInsert(key, 'a', 0);
+      }, key);
+
+      global.console.log(key, result);
+    });
   });
 }

@@ -8,5 +8,21 @@
     <h1>OK</h1>
     <script src="/sifrr.storage.js" charset="utf-8"></script>
     <script src="/support.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      async function bulkInsert(storage, key, value, num = 100) {
+        if (typeof storage === 'string') storage = new Sifrr.Storage(storage);
+        await storage.set(key, value);
+        let runs = 0;
+        return new Promise(res => {
+          const start = performance.now();
+          for (let i = 0; i < num; i++) {
+            storage.set(key + i, value).then(() => {
+              runs++;
+              if (runs >= num) res(performance.now() - start);
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>

@@ -10,5 +10,7 @@ set -ex
 git ls-files '*/dist/*.js*' | xargs git add
 git ls-files 'packages/*/package.json' | xargs git add
 git ls-files 'packages/*/rollup.config.js' | xargs git add
+git ls-files 'yarn.lock' | xargs git add
 git ls-files 'misc/*' | xargs git add
-(git commit -m "chore: add auto generated files" && git push && exit 1) || echo 'Files up to date'
+(git commit -m "chore: add auto generated files" && git push && exit 1) || exit 0
+echo 'Files up to date'

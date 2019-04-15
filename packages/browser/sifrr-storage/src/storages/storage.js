@@ -1,4 +1,5 @@
 const JsonExt = require('../utils/json');
+const jsonConstructor = {}.constructor;
 
 class Storage {
   constructor(options = {}) {
@@ -6,7 +7,6 @@ class Storage {
   }
 
   _parseKeyValue(key, value) {
-    let jsonConstructor = {}.constructor;
     if (typeof value === 'undefined') {
       if (Array.isArray(key)) {
         return key;
