@@ -12,7 +12,11 @@ function elementClassFactory(baseClass) {
     }
 
     static get observedAttributes() {
-      return ['data-sifrr-state'].concat(this.observedAttrs());
+      return ['data-sifrr-state'].concat(this.observedAttrs()).concat(this.syncedAttrs());
+    }
+
+    static syncedAttrs() {
+      return [];
     }
 
     static observedAttrs() {
@@ -83,6 +87,9 @@ function elementClassFactory(baseClass) {
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
         this.state = JSON.parse(newVal);
+      }
+      if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {
+        this[attrName] = newVal;
       }
       this.onAttributeChange(attrName, oldVal, newVal);
     }

@@ -583,29 +583,23 @@ class Loader {
     if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
-    Loader.add(this.elementName, this);
+    Loader.all[this.elementName] = this;
     this.url = url;
   }
   executeScripts(js = true) {
     if (this._exec) return this._exec;
     if (!js) {
-      return this._exec = this.executeHTMLScripts(), this._exec;
+      return this._exec = this.constructor.executeHTML(this.getUrl('html'), this), this._exec;
     } else {
       return this._exec = this.constructor.executeJS(this.getUrl('js')).catch((e) => {
         window.console.error(e);
         window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
-        return this.executeHTMLScripts();
+        return this.constructor.executeHTML(this.getUrl('html'), this);
       }), this._exec;
     }
   }
-  executeHTMLScripts() {
-    return this.constructor.executeHTML(this.getUrl('html'), this);
-  }
   getUrl(type = 'js') {
     return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`;
-  }
-  static add(elemName, instance) {
-    Loader.all[elemName] = instance;
   }
   static getFile(url) {
     return window.fetch(url)
@@ -710,7 +704,10 @@ function elementClassFactory(baseClass) {
       return elementClassFactory(htmlElementClass);
     }
     static get observedAttributes() {
-      return ['data-sifrr-state'].concat(this.observedAttrs());
+      return ['data-sifrr-state'].concat(this.observedAttrs()).concat(this.syncedAttrs());
+    }
+    static syncedAttrs() {
+      return [];
     }
     static observedAttrs() {
       return [];
@@ -770,6 +767,9 @@ function elementClassFactory(baseClass) {
     attributeChangedCallback(attrName, oldVal, newVal) {
       if (attrName === 'data-sifrr-state') {
         this.state = JSON.parse(newVal);
+      }
+      if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {
+        this[attrName] = newVal;
       }
       this.onAttributeChange(attrName, oldVal, newVal);
     }

@@ -2,6 +2,10 @@
   <p>Loading Load</p>
 </template>
 <script type="text/javascript">
-  class LoadingLoad extends Sifrr.Dom.Element {}
+  class LoadingLoad extends Sifrr.Dom.Element {
+    static syncedAttrs() {
+      return ['ok'];
+    }
+  }
   Sifrr.Dom.register(LoadingLoad);
 </script>
