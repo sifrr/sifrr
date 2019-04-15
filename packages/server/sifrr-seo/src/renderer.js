@@ -63,7 +63,7 @@ class Renderer {
         /* istanbul ignore next */
         if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
         /* istanbul ignore next */
-        ret = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
+        ret = await newp.content();
       } else ret = false;
 
       await newp.close();

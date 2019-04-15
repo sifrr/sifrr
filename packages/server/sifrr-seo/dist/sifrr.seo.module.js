@@ -102,7 +102,7 @@ class Renderer {
       if (sRC) {
         await fetches.all();
         if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
-        ret = await newp.evaluate(() => new XMLSerializer().serializeToString(document));
+        ret = await newp.content();
       } else ret = false;
       await newp.close();
       return ret;
