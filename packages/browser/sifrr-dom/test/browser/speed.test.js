@@ -44,19 +44,19 @@ const ExpectedLayoutCounts = {
 
 describe('Speed tests', async function() {
   this.timeout(0);
+  this.retries(2);
 
-  it('passes speed tests', async () => {
-    const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
-    const url = `${PATH}/speedtest.html`;
-    const urls = suffixes.map(s => url + s);
-    // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
+  const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
+  const url = `${PATH}/speedtest.html`;
+  const urls = suffixes.map(s => url + s);
+  // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
 
-    for(let j = 0; j < urls.length; j++) {
-      const u = urls[j];
+  for(let j = 0; j < urls.length; j++) {
+    const u = urls[j];
 
-      for (let i = 0; i < benchmarks.length; i++) {
-        const bm = benchmarks[i];
-
+    for (let i = 0; i < benchmarks.length; i++) {
+      const bm = benchmarks[i];
+      it(`passes speed test for ${u} - ${bm}`, async () => {
         const results = await new BenchmarkRunner([bm], { port, runs: runs, warmups: warmups, url: u }, false).run();
         const bmd = results[bm];
 
@@ -65,9 +65,11 @@ describe('Speed tests', async function() {
         const shortu = u.split('/').pop();
         compare[bm] = compare[bm] || {};
         compare[bm][shortu] = bmd['TaskDuration'];
-      }
+      });
     }
+  }
 
+  after(() => {
     global.console.table(compare);
   });
 });
