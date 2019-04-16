@@ -354,7 +354,7 @@
   class JsonStorage extends storage {
     constructor(options, data = {}) {
       super(options);
-      this.table = data;
+      this.table = storage.parse(data);
     }
     _parsedData() {
       return this.table;
