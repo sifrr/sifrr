@@ -9,6 +9,7 @@ const loadroutes = require('./loadroutes');
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
+const strToBuf = require('./streamtobuffer');
 
 class BaseApp {
   file(pattern, path, options) {
@@ -100,26 +101,7 @@ class BaseApp {
         return stream;
       };
 
-      res.body = function() {
-        return new Promise(resolve => {
-          const buffers = [];
-          const stream = this.bodyStream();
-          stream.on('data', buffers.push.bind(buffers));
-
-          stream.on('end', () => {
-            switch (buffers.length) {
-            case 0:
-              resolve(Buffer.allocUnsafe(0));
-              break;
-            case 1:
-              resolve(buffers[0]);
-              break;
-            default:
-              resolve(Buffer.concat(buffers));
-            }
-          });
-        });
-      };
+      res.body = () => strToBuf(res.bodyStream());
 
       if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
       if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formData.bind(res, contType);
