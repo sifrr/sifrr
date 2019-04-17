@@ -44,7 +44,7 @@ app.get('/', res => {
 
 ### sendFile
 
-respond with file from filepath. sets content-type based on file name extensions, supports responding 304 based on if-modified-since headers, compression(gzip, brotli, deflate), range requests (videos, music etc.)
+respond with file from filepath. sets content-type based on [file name extensions](./src/server/mime.js), supports responding 304 based on if-modified-since headers, compression(gzip, brotli, deflate), range requests (videos, music etc.)
 
 ```js
 const { sendFile } = require('@sifrr/server');
@@ -61,6 +61,13 @@ app.get(uWSRoutingPattern, res => {
     -   `compress`: **default:** `false` responses are compressed if this is set to true and if `accept-encoding` header has supported compressions (gzip, brotli, deflate)
     -   `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
     -   `cache`: **default:** `false`, if given a [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) instance, it will cache the files in given cache (doesn't work with compression). Also, it might not be needed at all, check for performance improvement before using it blindly.
+
+#### Add additional mime type:
+
+```js
+const { mimes } = require('@sifrr/server');
+mimes['extension'] = 'mime/type';
+```
 
 ### host static files
 
