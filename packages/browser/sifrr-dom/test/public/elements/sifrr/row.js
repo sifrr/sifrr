@@ -11,13 +11,13 @@ class SifrrRow extends Sifrr.Dom.Element.extends(HTMLTableRowElement) {
   }
 
   static get template() {
-    return Sifrr.Dom.template(template);
+    return template;
   }
 
   onUpdate() {
-    if (!this.state.class) {
+    if (!this._state.class) {
       if (this.className) this.removeAttribute('class');
-    } else if (this.className !== this.state.class) {
+    } else if (this.className !== this._state.class) {
       this.className = this.state.class;
     }
   }

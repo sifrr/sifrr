@@ -789,7 +789,7 @@
 	      if (this._ctemp) return this._ctemp;
 	      this._ctemp = this.template;
 	      if (this._ctemp) {
-	        if (typeof this._ctemp === 'string') this._ctemp = template(this._ctemp);
+	        if (!this._ctemp.tagName || this._ctemp.tagName !== 'TEMPLATE') this._ctemp = template(this._ctemp);
 	        if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
 	          window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
 	        }
@@ -857,11 +857,13 @@
 	    update() {
 	      this.beforeUpdate();
 	      update_1(this);
-	      trigger(this, 'update', {
-	        detail: {
-	          state: this.state
-	        }
-	      });
+	      if (this._update || this.hasAttribute('_update')) {
+	        trigger(this, 'update', {
+	          detail: {
+	            state: this.state
+	          }
+	        });
+	      }
 	      this.onUpdate();
 	    }
 	    beforeUpdate() {}
