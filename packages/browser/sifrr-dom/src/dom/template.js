@@ -1,6 +1,9 @@
 const { TEMPLATE } = require('./constants');
 
 module.exports = (str, ...extra) => {
+  if (str.tagName && str.tagName === 'TEMPLATE') {
+    return str;
+  }
   const tmp = TEMPLATE();
   if (typeof str === 'string') {
     // nothing
@@ -11,7 +14,7 @@ module.exports = (str, ...extra) => {
       tmp.content.appendChild(s);
     });
     return tmp;
-  } else if (str.nodeType && !str.content) {
+  } else if (str.nodeType) {
     tmp.content.appendChild(str);
     return tmp;
   } else {

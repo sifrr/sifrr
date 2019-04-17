@@ -76,6 +76,9 @@
 	  TEMPLATE
 	} = constants;
 	var template = (str, ...extra) => {
+	  if (str.tagName && str.tagName === 'TEMPLATE') {
+	    return str;
+	  }
 	  const tmp = TEMPLATE();
 	  if (typeof str === 'string') ; else if (Array.isArray(str) && typeof str[0] === 'string') {
 	    str = String.raw(str, ...extra);
@@ -84,7 +87,7 @@
 	      tmp.content.appendChild(s);
 	    });
 	    return tmp;
-	  } else if (str.nodeType && !str.content) {
+	  } else if (str.nodeType) {
 	    tmp.content.appendChild(str);
 	    return tmp;
 	  } else {
@@ -787,9 +790,8 @@
 	    }
 	    static get ctemp() {
 	      if (this._ctemp) return this._ctemp;
-	      this._ctemp = this.template;
+	      this._ctemp = template(this.template);
 	      if (this._ctemp) {
-	        if (!this._ctemp.tagName || this._ctemp.tagName !== 'TEMPLATE') this._ctemp = template(this._ctemp);
 	        if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
 	          window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
 	        }
