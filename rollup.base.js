@@ -84,6 +84,7 @@ module.exports = (name, __dirname, isBrowser = true) => {
     ];
   }
   ret.push(moduleConfig(name, __dirname, false, true));
+  ret.push(moduleConfig(name, __dirname, true, true));
 
   return ret;
 };
