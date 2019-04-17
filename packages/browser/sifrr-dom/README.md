@@ -64,15 +64,15 @@ Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `packa
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
 
-**Note**: Do not set `sifrr-dom` to any other global variable than `window.Sifrr.Dom`.
+**Note**: setup will set `sifrr-dom` to global variable `window.Sifrr.Dom`.
 
 #### Commonjs
 
 ```js
 // index.js
 
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Dom = require('@sifrr/dom');
+const SifrrDom = require('@sifrr/dom');
+SifrrDom.setup();
 ```
 
 #### ES modules
@@ -80,9 +80,8 @@ window.Sifrr.Dom = require('@sifrr/dom');
 ```js
 // index.js
 
-import DOM from '@sifrr/dom';
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Dom = DOM;
+import SifrrDom from '@sifrr/dom';
+SifrrDom.setup();
 ```
 
 ## Basic API usage
@@ -590,7 +589,7 @@ then, `<custom-tag></custom-tag>` will render:
 <custom-tag>
 ```
 
-#### Extending another html element
+#### Extending another html element (doesn't work in safari)
 
 Sifrr element can extend other html elements also, eg:
 CustomTag extends HTMLButtonElement here, note that register call has { extends: 'button' } as second argument

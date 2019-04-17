@@ -959,6 +959,8 @@
 	  SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
 	  SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
 	  SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
+	  window.Sifrr = window.Sifrr || {};
+	  window.Sifrr.Dom = window.Sifrr.Dom || SifrrDom;
 	};
 	SifrrDom.load = function (elemName, {
 	  url,

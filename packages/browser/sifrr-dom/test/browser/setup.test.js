@@ -44,4 +44,13 @@ describe('Sifrr.Dom.setup', () => {
       }
     });
   });
+
+  it('sets up global Sifrr.Dom on setup', async () => {
+    await page.goto(`${PATH}/module.html`);
+    const dom = await page.evaluate(() => {
+      return !!window.Sifrr.Dom;
+    });
+
+    expect(dom).to.eq(true);
+  });
 });

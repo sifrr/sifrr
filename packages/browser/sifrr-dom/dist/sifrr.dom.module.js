@@ -889,6 +889,8 @@ SifrrDom.setup = function(config) {
   SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
   SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
   SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
+  window.Sifrr = window.Sifrr || {};
+  window.Sifrr.Dom = window.Sifrr.Dom || SifrrDom;
 };
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
   if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
