@@ -9,6 +9,7 @@ const compressions = {
 const { writeHeaders } = require('./utils');
 const getMime = require('./mime').getMime;
 const bytes = 'bytes=';
+const strToBuf = require('./streamtobuffer');
 
 function sendFile(res, req, path, options) {
   const reqHeaders = {
@@ -22,7 +23,7 @@ function sendFile(res, req, path, options) {
 
 function sendFileToRes(res, reqHeaders, path, {
   lastModified = true,
-  headers = {},
+  headers,
   compress = false,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
@@ -33,6 +34,7 @@ function sendFileToRes(res, reqHeaders, path, {
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
 
+  headers = Object.assign({}, headers);
   // handling last modified
   if (lastModified) {
     // Return 304 if last-modified
@@ -45,22 +47,6 @@ function sendFileToRes(res, reqHeaders, path, {
     headers['last-modified'] = mtimeutc;
   }
   headers['content-type'] = getMime(path);
-
-  // check cache
-  if (cache) {
-    res.onAborted(() => {});
-    return cache.wrap(`${path}_${mtimeutc}`, (cb) => {
-      fs.readFile(path, cb);
-    }, { ttl: 0 }, (err, string) => {
-      if (err) {
-        res.writeStatus('500 Internal server error');
-        res.end();
-        throw err;
-      }
-      writeHeaders(res, headers);
-      res.end(string);
-    });
-  }
 
   // write data
   let start = 0, end = size - 1;
@@ -99,7 +85,19 @@ function sendFileToRes(res, reqHeaders, path, {
 
   res.onAborted(() => readStream.destroy());
   writeHeaders(res, headers);
-  if (compressed) {
+  // check cache
+  if (cache && !compressed) {
+    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}`, (cb) => {
+      strToBuf(readStream).then(b => cb(null, b.toString('utf-8'))).catch(cb);
+    }, { ttl: 0 }, (err, string) => {
+      if (err) {
+        res.writeStatus('500 Internal server error');
+        res.end();
+        throw err;
+      }
+      res.end(string);
+    });
+  } else if (compressed) {
     readStream.on('data', (buffer) => {
       readStream.pause();
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));

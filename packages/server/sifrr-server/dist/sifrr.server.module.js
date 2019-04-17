@@ -218,6 +218,26 @@ var mime = {
   mimes
 };
 
+function stob(stream) {
+  return new Promise(resolve => {
+    const buffers = [];
+    stream.on('data', buffers.push.bind(buffers));
+    stream.on('end', () => {
+      switch (buffers.length) {
+      case 0:
+        resolve(Buffer.allocUnsafe(0));
+        break;
+      case 1:
+        resolve(buffers[0]);
+        break;
+      default:
+        resolve(Buffer.concat(buffers));
+      }
+    });
+  });
+}
+var streamtobuffer = stob;
+
 const compressions = {
   br: zlib.createBrotliCompress,
   gzip: zlib.createGzip,
@@ -236,7 +256,7 @@ function sendFile(res, req, path, options) {
 }
 function sendFileToRes(res, reqHeaders, path, {
   lastModified = true,
-  headers = {},
+  headers,
   compress = false,
   compressionOptions = {
     priority: [ 'gzip', 'br', 'deflate' ]
@@ -246,6 +266,7 @@ function sendFileToRes(res, reqHeaders, path, {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
+  headers = Object.assign({}, headers);
   if (lastModified) {
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
@@ -256,20 +277,6 @@ function sendFileToRes(res, reqHeaders, path, {
     headers['last-modified'] = mtimeutc;
   }
   headers['content-type'] = getMime(path);
-  if (cache) {
-    res.onAborted(() => {});
-    return cache.wrap(`${path}_${mtimeutc}`, (cb) => {
-      fs.readFile(path, cb);
-    }, { ttl: 0 }, (err, string) => {
-      if (err) {
-        res.writeStatus('500 Internal server error');
-        res.end();
-        throw err;
-      }
-      writeHeaders$1(res, headers);
-      res.end(string);
-    });
-  }
   let start = 0, end = size - 1;
   if (reqHeaders.range) {
     compress = false;
@@ -300,7 +307,18 @@ function sendFileToRes(res, reqHeaders, path, {
   }
   res.onAborted(() => readStream.destroy());
   writeHeaders$1(res, headers);
-  if (compressed) {
+  if (cache && !compressed) {
+    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}`, (cb) => {
+      streamtobuffer(readStream).then(b => cb(null, b.toString('utf-8'))).catch(cb);
+    }, { ttl: 0 }, (err, string) => {
+      if (err) {
+        res.writeStatus('500 Internal server error');
+        res.end();
+        throw err;
+      }
+      res.end(string);
+    });
+  } else if (compressed) {
     readStream.on('data', (buffer) => {
       readStream.pause();
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
@@ -430,26 +448,6 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   return paths;
 }
 var loadroutes = loadRoutes;
-
-function stob(stream) {
-  return new Promise(resolve => {
-    const buffers = [];
-    stream.on('data', buffers.push.bind(buffers));
-    stream.on('end', () => {
-      switch (buffers.length) {
-      case 0:
-        resolve(Buffer.allocUnsafe(0));
-        break;
-      case 1:
-        resolve(buffers[0]);
-        break;
-      default:
-        resolve(Buffer.concat(buffers));
-      }
-    });
-  });
-}
-var streamtobuffer = stob;
 
 const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];

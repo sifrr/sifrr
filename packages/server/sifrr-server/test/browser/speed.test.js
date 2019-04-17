@@ -30,6 +30,9 @@ describe('speed test', function() {
   });
 
   it('faster in cached files (big, no-304)', async () => {
+    await page.evaluate((p) => {
+      return Sifrr.Fetch.get(`${p}/cache.html`).then(r => r.text());
+    }, PATH);
     await loadTest((p) => `${p}/cache.html`, 50, { cache: 'no-store', text: true });
   });
 });
