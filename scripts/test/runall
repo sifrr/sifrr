@@ -8,7 +8,13 @@ if [[ $COVERAGE == 'true' ]]; then
   rm -rf ./.nyc_output
 fi
 
-for dir in ./packages/*/*
+if [ -z ${CIRCLE_NODE_TOTAL} ]; then
+  FOLDERS="./packages/*/*"
+else
+  FOLDERS=`circleci tests glob "packages/*/*" | circleci tests split --split-by=timings`
+fi
+
+for dir in $FOLDERS
 do
   echo "Running test in ${dir}:"
   node ./scripts/test/run.js "${dir}" "$@"

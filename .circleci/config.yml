@@ -47,7 +47,10 @@ jobs:
             git config --global user.name "Aaditya Taparia"
       - run:
           name: Update dist files
-          command: ./scripts/distribute
+          command: |
+            if [ "${CIRCLE_NODE_INDEX}" == "0" ]; then
+              ./scripts/distribute
+            fi
       - run:
           name: Run tests
           command: COVERAGE=true LCOV=true yarn test -j
