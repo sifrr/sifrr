@@ -2,9 +2,9 @@
 
 A ~6KB :zap: fast DOM framework for creating web user interfaces using Custom Elements with state management, one way/two way data bindings etc.
 
-Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework.
+Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework like css scoping (shadow root), events, reconciliation etc.
 
-__Example:__ https://sifrr.github.io/sifrr/docs/speedtest.html
+**Example:** <https://sifrr.github.io/sifrr/docs/speedtest.html>
 
 ## Size
 
@@ -17,7 +17,8 @@ __Example:__ https://sifrr.github.io/sifrr/docs/speedtest.html
 ## Tradeoffs
 
 -   :+1: Small Size
--   :+1: Use latest web API standards
+-   :+1: Use latest web API standards (custom elements v1)
+-   :+1: CSS scoping with shadow root
 -   :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
 -   :+1: Small learning curve, as you use only HTML, CSS, and JS (you can use other things too if you want to though)
 -   :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM,
@@ -35,8 +36,6 @@ __Example:__ https://sifrr.github.io/sifrr/docs/speedtest.html
 **Note**: These might not be exact and should only be taken as a reference.
 
 ## How to use
-
-Sifrr recommends to build webapps without any transpiling
 
 ### Directly in Browser using standalone distribution
 
