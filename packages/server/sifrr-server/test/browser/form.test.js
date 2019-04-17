@@ -19,7 +19,7 @@ describe('form test', function() {
     });
   });
 
-  it('gives uploaded files', async () => {
+  it.only('gives uploaded files', async () => {
     const fileInput = await page.$('#onefile');
     fileInput.uploadFile(path.join(__dirname, '../public/nocl.json'));
 
@@ -52,9 +52,16 @@ describe('form test', function() {
       ]
     });
 
-    const resp2 = await page.evaluate(async (path) => {
-      return await submitForm(`${path}/tmpdir`);
+    const { resp2, time } = await page.evaluate(async (path) => {
+      const start = performance.now();
+      let resp;
+      for (let i = 0; i < 100; i++) {
+        resp = await submitForm(`${path}/tmpdir`);
+      }
+      return { resp2: resp, time: performance.now() - start };
     }, PATH);
+
+    console.log(`100 file uploads took: ${time}ms`);
 
     // Response has filePath
     expect(resp2).to.deep.equal({
