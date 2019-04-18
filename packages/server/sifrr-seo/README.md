@@ -93,7 +93,7 @@ Change `sifrrSeo.shouldRender`, by default it returns `this.isUserAgent(req)` ([
 sifrrSeo.shouldRender = (req) => {
   // req is request argument given by server (express/connect)
   // return true to render it server-side, return false to not render it.
-  return this.isUserAgent(req) && req.url.indexOf('html') >= 0
+  return this.isUserAgent(req) && req.fullUrl.indexOf('html') >= 0
 }
 ```
 
@@ -150,7 +150,7 @@ return options that will be used to launch puppeteer instance.
 sifrrSeo.puppeteerOptions;
 ```
 
-**Note**: Note that first server render will be slow (depending on server machine), but subsequent requests will be really fast because of caching.
+**Note**: Note that first server render will be slow (depending on server machine), but subsequent requests will be really fast because of caching (depending on efficiency of cache key).
 
 ## Tips
 

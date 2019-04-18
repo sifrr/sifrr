@@ -22,6 +22,9 @@ function sss(p) {
   });
   seo.addUserAgent('Opera Mini');
   seo.setPuppeteerOption('headless', process.env.HEADLESS !== 'false');
+  seo.shouldRender = (req) => {
+    return seo.isUserAgent(req) && req.fullUrl.indexOf('elements') === -1;
+  };
   // Middleware
 
   const express = require('express'),
