@@ -111,7 +111,7 @@ function elementClassFactory(baseClass) {
     update() {
       this.beforeUpdate();
       update(this);
-      if (this._update || this.hasAttribute('_update')) {
+      if (this._update || this.triggerUpdate) {
         trigger(this, 'update', { detail: { state: this.state } });
       }
       this.onUpdate();

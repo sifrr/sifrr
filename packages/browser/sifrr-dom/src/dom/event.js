@@ -47,15 +47,12 @@ const Event = {
       fxn.__dom = css;
       css = 'element';
     }
-    const fxns = SYNTHETIC_EVENTS[name][css] || [];
-    if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
-    SYNTHETIC_EVENTS[name][css] = fxns;
+    SYNTHETIC_EVENTS[name][css] = SYNTHETIC_EVENTS[name][css] || new Set();
+    SYNTHETIC_EVENTS[name][css].add(fxn);
     return true;
   },
   removeListener: (name, css, fxn) => {
-    const fxns = SYNTHETIC_EVENTS[name][css] || [], i = fxns.indexOf(fxn);
-    if (i >= 0) fxns.splice(i, 1);
-    SYNTHETIC_EVENTS[name][css] = fxns;
+    if (SYNTHETIC_EVENTS[name][css]) SYNTHETIC_EVENTS[name][css].delete(fxn);
     return true;
   },
   trigger: (el, name, options) => {
