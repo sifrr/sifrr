@@ -19,7 +19,7 @@ describe('form test', function() {
     });
   });
 
-  it.only('gives uploaded files', async () => {
+  it('gives uploaded files', async () => {
     const fileInput = await page.$('#onefile');
     fileInput.uploadFile(path.join(__dirname, '../public/nocl.json'));
 
