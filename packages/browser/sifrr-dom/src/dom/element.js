@@ -29,14 +29,14 @@ function elementClassFactory(baseClass) {
 
     static get ctemp() {
       if (this._ctemp) return this._ctemp;
-      this._ctemp = template(this.template);
-      if (this._ctemp) {
+      if (this.template) {
+        this._ctemp = template(this.template);
         if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
         this.stateMap = create(this._ctemp.content, creator, this.defaultState);
       }
-      return this._ctemp;
+      return this._ctemp || false;
     }
 
     static get elementName() {

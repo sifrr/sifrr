@@ -720,14 +720,14 @@ function elementClassFactory(baseClass) {
     }
     static get ctemp() {
       if (this._ctemp) return this._ctemp;
-      this._ctemp = template(this.template);
-      if (this._ctemp) {
+      if (this.template) {
+        this._ctemp = template(this.template);
         if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
         this.stateMap = create$2(this._ctemp.content, creator_1, this.defaultState);
       }
-      return this._ctemp;
+      return this._ctemp || false;
     }
     static get elementName() {
       return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
