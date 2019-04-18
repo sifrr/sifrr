@@ -719,11 +719,13 @@
 	  };
 	};
 	const cssMatchEvent = (e, name, dom, target) => {
-	  function callEach(fxns) {
-	    fxns.forEach(fxn => fxn(e, target, dom));
+	  function callEach(fxns, isElement) {
+	    fxns.forEach(fxn => {
+	      if (!isElement || fxn.__dom === dom) fxn(e, target, dom);
+	    });
 	  }
 	  for (let css in SYNTHETIC_EVENTS[name]) {
-	    if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document') callEach(SYNTHETIC_EVENTS[name][css]);
+	    if (typeof dom.matches === 'function' && dom.matches(css) || dom.nodeType === 9 && css === 'document' || css === 'element') callEach(SYNTHETIC_EVENTS[name][css], css === 'element');
 	  }
 	};
 	const Event = {
@@ -737,6 +739,10 @@
 	  },
 	  addListener: (name, css, fxn) => {
 	    if (!SYNTHETIC_EVENTS[name]) throw Error("You need to call Sifrr.Dom.Event.add('".concat(name, "') before using listeners."));
+	    if (typeof css !== 'string') {
+	      fxn.__dom = css;
+	      css = 'element';
+	    }
 	    const fxns = SYNTHETIC_EVENTS[name][css] || [];
 	    if (fxns.indexOf(fxn) < 0) fxns.push(fxn);
 	    SYNTHETIC_EVENTS[name][css] = fxns;

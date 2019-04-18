@@ -77,6 +77,24 @@ describe('Sifrr.Dom.Event', () => {
     assert.equal(ret[1], 1);
   });
 
+  it('works with addListener on element', async () => {
+    await page.reload();
+    const ret = await page.evaluate(() => {
+      Sifrr.Dom.Event.add('click');
+      document.querySelector('a.ok').i = 0;
+      document.querySelector('div.ok').i = 0;
+      Sifrr.Dom.Event.addListener('click', document.querySelector('a.ok'), (event, target) => {
+        target.i += 1;
+      });
+      document.querySelector('a.ok').click();
+      document.querySelector('div.ok').click();
+      return [document.querySelector('a.ok').i, document.querySelector('div.ok').i];
+    });
+
+    assert.equal(ret[0], 1);
+    assert.equal(ret[1], 0);
+  });
+
   it("doesn't add two same listeners", async () => {
     const ret = await page.evaluate(() => {
       let i = 0;
