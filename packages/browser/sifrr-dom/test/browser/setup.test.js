@@ -35,10 +35,10 @@ describe('Sifrr.Dom.setup', () => {
       // Adds event listeners
       events: {
         input: {
-          document: [{}]
+          document: {}
         },
         change: {
-          document: [{}]
+          document: {}
         },
         update: {}
       }

@@ -405,8 +405,7 @@ const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
-  const l = element._refs ? element._refs.length : 0;
-  for (let i = 0; i < l; i++) {
+  for (let i = element._refs ? element._refs.length -1 : -1; i >= 0; --i) {
     const data = stateMap[i].ref, dom = element._refs[i];
     if (data.type === 0) {
       if (dom.data != element._state[data.text]) dom.data = element._state[data.text];
@@ -418,7 +417,7 @@ function update(element, stateMap) {
     }
     if (data.events) {
       if (!dom._sifrrEventSet) {
-        for (let i = 0, l = data.events.length; i < l; i++) {
+        for (let i = data.events.length - 1; i >= 0; --i) {
           const ev = data.events[i];
           dom[ev[0]] = evaluateBindings(ev[1], element);
         }
@@ -427,7 +426,7 @@ function update(element, stateMap) {
       }
     }
     if (data.attributes) {
-      for (let i = 0, l = data.attributes.length; i < l; i++) {
+      for (let i = data.attributes.length - 1; i >= 0; --i) {
         const attr = data.attributes[i];
         let newValue;
         if (attr[1] === 0) newValue = element._state[attr[2]];
