@@ -24,6 +24,10 @@ app.options('/*', res => {
   res.end();
 });
 
+app.get('/empty', res => {
+  res.end();
+});
+
 app.post('/stream', res => {
   res.onAborted(err => { if (err) throw Error(err); });
 
