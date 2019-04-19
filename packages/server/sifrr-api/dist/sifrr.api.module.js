@@ -78,7 +78,7 @@ class BaseType {
     return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
   }
   get schemaPrefix() {
-    return `${this.description ? `""" ${this.description} """\n` : '' }`;
+    return `${this.description ? `"""${this.description}"""\n` : '' }`;
   }
 }
 var basetype = BaseType;
@@ -677,27 +677,26 @@ class SequelizeModel extends sequelize$1.Model {
     return ret;
   }
   static belongsToMany(model, options) {
-    const name = options.as || model.graphqlModel.type + 's';
-    this[name] = super.belongsToMany(model, options);
-    this.graphqlModel.addConnection(name, model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection));
-    return this[name];
+    return this.graphqlAssoc('belongsToMany', model, options, true);
   }
   static belongsTo(model, options) {
-    const name = options.as || model.graphqlModel.type;
-    this[name] = super.belongsTo(model, options);
-    this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: `${name} of ${this.name}` });
-    return this[name];
+    return this.graphqlAssoc('belongsTo', model, options, false);
   }
   static hasMany(model, options) {
-    const name = options.as || model.graphqlModel.type + 's';
-    this[name] = super.hasMany(model, options);
-    this.graphqlModel.addConnection(name, model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection));
-    return this[name];
+    return this.graphqlAssoc('hasMany', model, options, true);
   }
   static hasOne(model, options) {
-    const name = options.as || model.graphqlModel.type;
-    this[name] = super.hasOne(model, options);
-    this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: `${this.name}'s ${name}` });
+    return this.graphqlAssoc('hasOne', model, options, false);
+  }
+  static graphqlAssoc(type, model, options, multiple) {
+    const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
+    this[name] = super[type](model, options);
+    if (options.useConnection) {
+      const conn = model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection);
+      conn.description = options.description;
+      this.graphqlModel.addConnection(name, conn);
+    } else
+      this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: options.description });
     return this[name];
   }
   static addAttr(name, options) {

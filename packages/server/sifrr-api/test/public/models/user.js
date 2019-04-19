@@ -19,7 +19,9 @@ class User extends SequelizeModel {
   static associate(models) {
     this.hasMany(models.Pet, {
       as: 'pets',
-      foreignKey: 'ownerId'
+      foreignKey: 'ownerId',
+      description: 'pets of user',
+      useConnection: true
     });
   }
 

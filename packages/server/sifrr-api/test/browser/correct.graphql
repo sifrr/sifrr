@@ -17,14 +17,13 @@ scalar SequelizeJSON
 scalar Date
 scalar Random
 
-""" A pet """
+"""A pet"""
 type Pet {
   id: Int!
   name: String!
   ownerId: Int!
   """Random attribute"""
   type(type: String): String
-  """owner of Pet"""
   owner: User
 }
 
@@ -33,9 +32,11 @@ type User {
   name: String
   createdAt: Date!
   updatedAt: Date!
+  """pets of user"""
   pets(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
 }
 
+"""pets of user"""
 type PetConnection {
   edges: [PetConnectionEdge]
   """Total pets"""

@@ -22,10 +22,10 @@ You should know basics of graphql and sequelize to use this.
 
 ### Model
 
--   Sifrr Api Model extends Sequelize.model but has more added features
+-   Sifrr Api SequelizeModel extends Sequelize.model but has more added features that creates type definition automatically, and adds easier way to add query/mutation resolvers. Your graphql condig is fully customizable.
 
 ```js
-const { Model } = require('@sifrr/api')
+const { SequelizeModel } = require('@sifrr/api')
 
 // A sequelize model using sifrr/api model will look like
 const Sequelize = require('sequelize');
@@ -71,10 +71,11 @@ class User extends Model {
     // Add description
     this.graphqlModel.description = 'A pet';
 
+    // filter attributes, if they are not null they will be required
     // don't add createdAt, updatedAt to schema, and allow extra field 'type'
     this.graphqlModel.filterAttributes({
-      required: ['name', 'ownerId'],
-      allowed: ['id', 'name', 'ownerId', 'owner', 'type']
+      required: ['name'],
+      allowed: ['id', 'name']
     });
 
     // Add resolvers for extra fields (type)
@@ -90,8 +91,8 @@ class User extends Model {
     // It's better to add a query/mutation resolver which does something before and then calls predefined resolvers. like customResolver
     // Need to bind static functions resolvers with this class, else it won't work
     // Query Resolvers
-    this.addQuery('getPet', {
-      args: this.gqArgs(),
+    this.addQuery('getUser', {
+      args: this.gqArgs(), // default graphql-sequelize arguments (keys, limit, order, where, etc.)
       resolver: this.customResolver.bind(this),
       returnType: `[${this.graphqlModel.type}]`,
       description: 'Get one Pet.'
@@ -142,7 +143,7 @@ class User extends Model {
     // Throw error and graphql will automatically convert it to json
     if (ctx.random !== 1) throw Error('Random context should be equal to 1');
     // resolve using predefined resolvers
-    return this.getQueryResolver(_, args, ctx, info);
+    return this.getQueryResolver(_, args, ctx, info); // resolve with default queryResolver
   }
 }
 

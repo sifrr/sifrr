@@ -31,7 +31,7 @@ class BaseType {
   }
 
   get schemaPrefix() {
-    return `${this.description ? `""" ${this.description} """\n` : '' }`;
+    return `${this.description ? `"""${this.description}"""\n` : '' }`;
   }
 }
 
