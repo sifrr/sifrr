@@ -98,6 +98,8 @@ class Pet extends SequelizeModel {
 
     // Add extra arguments to pet connection
     this.graphqlConnection.addArgument('orderBy', '[[String]] = [["name", "ASC"]]');
+
+    this.graphqlConnection.description = 'Pet connection';
   }
 
   // example custom resolver

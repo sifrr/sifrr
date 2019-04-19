@@ -15,6 +15,7 @@ class Connection extends BaseType {
     const conn = new Connection(this.type, this.args, resolver, this.nodeType);
     conn._attributes = this._attributes;
     conn.description = this.description;
+    conn.base = this;
     return conn;
   }
 

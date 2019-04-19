@@ -36,7 +36,7 @@ type User {
   pets(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
 }
 
-"""pets of user"""
+"""Pet connection"""
 type PetConnection {
   edges: [PetConnectionEdge]
   """Total pets"""

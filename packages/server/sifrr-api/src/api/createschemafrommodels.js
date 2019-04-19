@@ -24,7 +24,7 @@ function createSchemaFromModels(models, { extra = '', queries = {}, mutations = 
     resolvers[model.type] = resolvers[model.type] || {};
     Object.assign(resolvers[model.type], model.getResolvers());
     model.connections.forEach(conn => {
-      connections[conn.type] = conn;
+      connections[conn.type] = conn.base || conn;
     });
   }
 

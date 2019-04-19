@@ -125,6 +125,7 @@ class Connection extends basetype {
     const conn = new Connection(this.type, this.args, resolver, this.nodeType);
     conn._attributes = this._attributes;
     conn.description = this.description;
+    conn.base = this;
     return conn;
   }
   addArgument(name, type) {
@@ -839,7 +840,7 @@ function createSchemaFromModels(models, { extra = '', queries = {}, mutations = 
     resolvers[model.type] = resolvers[model.type] || {};
     Object.assign(resolvers[model.type], model.getResolvers());
     model.connections.forEach(conn => {
-      connections[conn.type] = conn;
+      connections[conn.type] = conn.base || conn;
     });
   }
   for (let name in connections) {
