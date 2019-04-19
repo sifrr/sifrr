@@ -18,6 +18,11 @@ class Model extends BaseType {
     this._attributes[name] = connection;
   }
 
+  addConnectionQuery(name, connection) {
+    this.connections.push(connection);
+    this.queries[name] = connection;
+  }
+
   addQuery(name, query) {
     this.queries[name] = query;
   }

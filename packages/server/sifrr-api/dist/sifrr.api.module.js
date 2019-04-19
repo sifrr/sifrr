@@ -98,6 +98,10 @@ class Model extends basetype {
     this.connections.push(connection);
     this._attributes[name] = connection;
   }
+  addConnectionQuery(name, connection) {
+    this.connections.push(connection);
+    this.queries[name] = connection;
+  }
   addQuery(name, query) {
     this.queries[name] = query;
   }
@@ -708,6 +712,9 @@ class SequelizeModel extends sequelize$1.Model {
   }
   static addQuery(name, options) {
     this.graphqlModel.addQuery(name, options);
+  }
+  static addConnectionQuery(name) {
+    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
   }
   static addMutation(name, options) {
     this.graphqlModel.addMutation(name, options);

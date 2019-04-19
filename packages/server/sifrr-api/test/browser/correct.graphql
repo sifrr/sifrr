@@ -1,6 +1,8 @@
 type Query {
   """Get one Pet."""
   getPet(id: Int, where: SequelizeJSON, limit: Int, order: String, offset: Int): [Pet]
+  """Pet connection"""
+  petConn(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
   User(id: Int, where: SequelizeJSON, limit: Int, order: String, offset: Int): [User]
 }
 

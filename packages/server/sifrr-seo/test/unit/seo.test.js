@@ -98,7 +98,7 @@ describe('SifrrSeo', () => {
         assert.equal(res, 'b');
       });
 
-      await delay(0.002);
+      await delay(0.01);
 
       seo.cache.get('a', (err, res) => {
         assert.notExists(res);

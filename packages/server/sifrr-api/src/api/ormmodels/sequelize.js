@@ -57,6 +57,10 @@ class SequelizeModel extends Sequelize.Model {
     this.graphqlModel.addQuery(name, options);
   }
 
+  static addConnectionQuery(name) {
+    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
+  }
+
   static addMutation(name, options) {
     this.graphqlModel.addMutation(name, options);
   }
