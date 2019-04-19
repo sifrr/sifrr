@@ -67,14 +67,10 @@ class Renderer {
     this.options = options;
   }
   async browserAsync() {
-    const me = this;
-    if (this.status === 0) {
-      this.status = 1;
+    if (!this._browser) {
       this._browser = puppeteer.launch(this.puppeteerOptions).then(b => {
-        this.status = 2;
-        me.browser = b;
         b.on('disconnected', () => {
-          me.status = 0;
+          this._browser = null;
         });
         return b;
       });
@@ -82,14 +78,13 @@ class Renderer {
     return this._browser;
   }
   close() {
-    if (this.status === 2) return this.browser.close();
-    else if (this.status === 1) return this._browser.then(b => b.close());
+    if (this._browser) return this.browserAsync().then(b => b.close());
     else return Promise.resolve(true);
   }
   render(req) {
     const fullUrl = req.fullUrl;
     const me = this;
-    return this.browserAsync().then(() => this.browser.newPage()).then(async (newp) => {
+    return this.browserAsync().then((b) => b.newPage()).then(async (newp) => {
       const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
       const headers = req.headers || {};

@@ -37,7 +37,7 @@ describe('Renderer', () => {
     assert.notEqual(close.called, true); // Not close if not launched
 
     await r.browserAsync();
-    r.close();
+    await r.close();
 
     assert(close.called); // Closed if launched
   });
