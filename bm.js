@@ -1,35 +1,39 @@
-const fs = require('fs');
+const { Readable } = require('stream');
 
 const times = 1000;
-const ab = Buffer.concat([fs.readFileSync('yarn.lock'), fs.readFileSync('yarn.lock'), fs.readFileSync('yarn.lock'), fs.readFileSync('yarn.lock')]).buffer;
 
 function test1() {
-  return new Uint8Array(ab, ab.byteOffset, ab.byteLength).slice(0, ab.byteLength).length;
+  new Readable();
+  return 0;
 }
 
 function test2() {
-  return new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)).length;
+  new Readable();
+  return 0;
 }
 
 (async function runBM() {
-  let timing1 = 0;
+  // warmup
+  test1();
+  test2();
+  // warmup -end
+  let timing1, timing2, from, to;
   let r1, r2;
+  from = process.hrtime();
   for (let i = 0; i < times; i++) {
-    const from = process.hrtime();
     r1 = test1();
-    const to = process.hrtime(from);
-    timing1 += to[0] * 1000000 + to[1] / 1000;
   }
+  to = process.hrtime(from);
+  timing1 = to[0] * 1000000 + to[1] / 1000;
   global.console.log(`1st bm is ${ 1000000 * times / timing1} ops/s`);
 
-  let timing2 = 0;
+  from = process.hrtime();
   for (let i = 0; i < times; i++) {
-    const from = process.hrtime();
     r2 = test2();
-    const to = process.hrtime(from);
-    timing2 += to[0] * 1000000 + to[1] / 1000;
   }
+  to = process.hrtime(from);
+  timing2 = to[0] * 1000000 + to[1] / 1000;
   global.console.log(`2nd bm is ${ 1000000 * times / timing2} ops/s`);
   global.console.log(r1, r1, r1 === r2);
-  global.console.log('total timing', timing1, timing2);
+  global.console.log('total timings (in us)', timing1, timing2);
 })();
