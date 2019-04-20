@@ -19,14 +19,15 @@ class Request {
           let loaded = 0;
           resp = new Response(new ReadableStream({
             start(controller) {
+              const start = performance.now();
               function read() {
                 return reader.read().then(({ done, value }) => {
                   if (done) {
-                    me._options.onProgress(100);
+                    me._options.onProgress(100, 0);
                     controller.close();
                   } else {
                     loaded += value.byteLength;
-                    me._options.onProgress(loaded / total * 100);
+                    me._options.onProgress(loaded / total * 100, loaded / (performance.now() - start));
                     controller.enqueue(value);
                     return read();
                   }

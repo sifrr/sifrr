@@ -55,6 +55,8 @@ window.Sifrr.Fetch = Fetch;
 **options** are Fetch API options with some extra keys:
 
 -   **params** `json object` key, value pairs will be added to url as ?key=value
+-   **body** body to send with post requests (can be serializable object)
+-   **onProgress** if response has content-length, this function will be called with `progress in percentage` and `speed in kbps`
 
 #### GET request
 
