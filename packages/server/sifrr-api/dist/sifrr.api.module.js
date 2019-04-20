@@ -125,7 +125,7 @@ class Connection extends basetype {
     this.nodeType = nodeType;
     this.description;
   }
-  clone(resolver) {
+  clone(resolver = this.resolver) {
     const conn = new Connection(this.type, this.args, resolver, this.nodeType);
     conn._attributes = this._attributes;
     conn.description = this.description;

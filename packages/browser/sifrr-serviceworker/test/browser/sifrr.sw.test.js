@@ -10,7 +10,9 @@ function stubRequests() {
   });
 }
 
-describe('sifrr-serviceworker', () => {
+describe('sifrr-serviceworker', function() {
+  this.retries(3);
+
   before(async () => {
     // Doesn't work because of https://github.com/GoogleChrome/puppeteer/issues/3715
     // await page.setRequestInterception(true);
