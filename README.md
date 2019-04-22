@@ -70,6 +70,7 @@ For eg.
 <script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
 // for v0.0.3
 <script src="https://unpkg.com/@sifrr/dom@0.0.3/dist/sifrr.dom.min.js"></script>
+// this sets window.Sifrr.Dom as sifrr-dom, same for other packages
 ```
 
 ### Packages that have tests have a working example of that package in `test/public` folder
