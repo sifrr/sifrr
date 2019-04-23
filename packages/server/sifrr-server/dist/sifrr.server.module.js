@@ -320,9 +320,7 @@ function sendFileToRes(res, reqHeaders, path, {
     });
   } else if (compressed) {
     readStream.on('data', (buffer) => {
-      readStream.pause();
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
-      readStream.resume();
     });
   } else {
     readStream.on('data', (buffer) => {
