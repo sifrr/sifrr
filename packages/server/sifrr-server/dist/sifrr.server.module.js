@@ -346,7 +346,10 @@ function sendFileToRes(res, reqHeaders, path, {
     });
   }
   readStream
-    .on('error', res.close)
+    .on('error', () => {
+      res.close();
+      readStream.destroy();
+    })
     .on('end', () => {
       res.end();
     });
