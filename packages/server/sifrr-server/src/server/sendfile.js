@@ -134,7 +134,8 @@ function sendFileToRes(res, reqHeaders, path, {
   }
   readStream
     .on('error', () => {
-      res.close();
+      res.writeStatus('500 Internal server error');
+      res.end();
       readStream.destroy();
     })
     .on('end', () => {
