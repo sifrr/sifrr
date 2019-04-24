@@ -210,7 +210,7 @@
     }
     static socket(url, protocol, fallback) {
       return new websocket(url, protocol, fallback ? message => {
-        const options = {},
+        const options = fallback.options || {},
               method = fallback.method.toLowerCase();
         options.headers = options.headers || {};
         options.headers['content-type'] = options.headers['content-type'] || 'application/json';
