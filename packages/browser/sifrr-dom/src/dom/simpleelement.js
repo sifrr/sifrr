@@ -4,6 +4,7 @@ const { collect, create } = require('./ref');
 const creator = require('./creator');
 
 function sifrrClone(newState) {
+  // this = content
   const clone = this.cloneNode(true);
   clone.root = this.root;
   clone._refs = collect(clone, this.stateMap);
