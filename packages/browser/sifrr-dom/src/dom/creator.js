@@ -8,10 +8,6 @@ const repeatref = require('./repeatref');
 const { getBindingFxns, getStringBindingFxn } = require('./bindings');
 const updateAttribute = require('./updateattribute');
 
-function isHtml(el) {
-  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
-}
-
 function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
@@ -35,7 +31,7 @@ function creator(el, defaultState) {
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
     // Html ?
-    if (isHtml(el)) {
+    if (el.hasAttribute(HTML_ATTR)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;

@@ -518,9 +518,6 @@ var repeatref = (sm, el) => {
 
 const { TEXT_NODE: TEXT_NODE$2, COMMENT_NODE: COMMENT_NODE$1, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR: REPEAT_ATTR$1 } = constants;
 const { getBindingFxns, getStringBindingFxn: getStringBindingFxn$1 } = bindings;
-function isHtml(el) {
-  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
-}
 function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
     const x = el.data;
@@ -541,7 +538,7 @@ function creator(el, defaultState) {
     }
   } else if (el.nodeType === ELEMENT_NODE) {
     const sm = {};
-    if (isHtml(el)) {
+    if (el.hasAttribute(HTML_ATTR)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;

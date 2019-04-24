@@ -581,9 +581,6 @@
 	  getBindingFxns,
 	  getStringBindingFxn: getStringBindingFxn$1
 	} = bindings;
-	function isHtml(el) {
-	  return el.hasAttribute && el.hasAttribute(HTML_ATTR);
-	}
 	function creator(el, defaultState) {
 	  if (el.nodeType === TEXT_NODE$2 || el.nodeType === COMMENT_NODE$1) {
 	    const x = el.data;
@@ -604,7 +601,7 @@
 	    }
 	  } else if (el.nodeType === ELEMENT_NODE) {
 	    const sm = {};
-	    if (isHtml(el)) {
+	    if (el.hasAttribute(HTML_ATTR)) {
 	      const innerHTML = el.innerHTML;
 	      if (innerHTML.indexOf('${') > -1) {
 	        sm.type = 2;
