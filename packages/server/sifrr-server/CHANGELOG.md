@@ -3,7 +3,6 @@
 
 ### Bug Fixes
 
-* **sifrr-fetch:** don't set content-type if already set ([e9509c8](https://github.com/sifrr/sifrr/commit/e9509c8))
 * **sifrr-server:** content-length for ranged responses ([6612526](https://github.com/sifrr/sifrr/commit/6612526))
 * **sifrr-server:** don't extend constructor ([9038a1e](https://github.com/sifrr/sifrr/commit/9038a1e))
 * **sifrr-server:** fix serving from basePath ([4d04976](https://github.com/sifrr/sifrr/commit/4d04976))
@@ -12,10 +11,6 @@
 
 ### Features
 
-* **sifrr-dom:** execute js in order ([f19879e](https://github.com/sifrr/sifrr/commit/f19879e))
-* **sifrr-dom:** trigger update event on updated element ([ff64ae2](https://github.com/sifrr/sifrr/commit/ff64ae2))
-* **sifrr-fetch:** add close method ([db5578c](https://github.com/sifrr/sifrr/commit/db5578c))
-* **sifrr-seo:** limit browsers to 1 ([29941a1](https://github.com/sifrr/sifrr/commit/29941a1))
 * **sifrr-server:** add capability to serve single file ([6852531](https://github.com/sifrr/sifrr/commit/6852531))
 * **sifrr-server:** add close method ([ea85bfd](https://github.com/sifrr/sifrr/commit/ea85bfd))
 * **sifrr-server:** add compression ([509e1dd](https://github.com/sifrr/sifrr/commit/509e1dd))

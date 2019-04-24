@@ -611,6 +611,10 @@ then you can use custom-tag as button in html like:
 
 -   Slots work same as it would in web components, but note that bindings in slot elements won't work
 
+## Example elements
+
+-   <https://github.com/sifrr/sifrr-elements>
+
 ## More readings
 
 -   <https://developers.google.com/web/fundamentals/web-components/customelements>

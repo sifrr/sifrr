@@ -3,7 +3,6 @@
 
 ### Bug Fixes
 
-* **sifrr-cli:** Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c8))
 * **sifrr-dom:** Add listener on window instead of document ([bfda60b](https://github.com/sifrr/sifrr/commit/bfda60b))
 * **sifrr-dom:** Don't add script to body except src ones ([638c53b](https://github.com/sifrr/sifrr/commit/638c53b))
 * **sifrr-dom:** Don't make text content empty when disconnecting ([f1e3b1e](https://github.com/sifrr/sifrr/commit/f1e3b1e))
@@ -32,12 +31,10 @@
 * Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
 * **sifrr-dom:** Throw error on register element error ([bdfdac5](https://github.com/sifrr/sifrr/commit/bdfdac5))
 * **sifrr-dom:** Use shadyCSS if available, and don't use use-shadow-root attribute ([4db2e10](https://github.com/sifrr/sifrr/commit/4db2e10))
-* **sifrr-seo:** don't set footer in render ([938bba7](https://github.com/sifrr/sifrr/commit/938bba7))
 
 
 ### Features
 
-* **sifrr-cli:** Update element:generate to create js ([cebe29a](https://github.com/sifrr/sifrr/commit/cebe29a))
 * **sifrr-dom:** Add $ & $$ to all elements, fix make equal call ([b7c21b3](https://github.com/sifrr/sifrr/commit/b7c21b3))
 * **sifrr-dom:** Add awesome event handling and use _ instead of $ in attribute name ([166f48c](https://github.com/sifrr/sifrr/commit/166f48c))
 * **sifrr-dom:** add before update callback ([d136c8f](https://github.com/sifrr/sifrr/commit/d136c8f))
@@ -67,11 +64,6 @@
 * **sifrr-dom:** Take template as data-html ([0bbebbf](https://github.com/sifrr/sifrr/commit/0bbebbf))
 * **sifrr-dom:** trigger update event on updated element ([ff64ae2](https://github.com/sifrr/sifrr/commit/ff64ae2))
 * **sifrr-dom:** Warn when element is not registered after executing scripts ([d6307ef](https://github.com/sifrr/sifrr/commit/d6307ef))
-* **sifrr-fetch:** Add progress option ([ce2bb64](https://github.com/sifrr/sifrr/commit/ce2bb64))
-* **sifrr-route:** Add onactivation and ondeactivation callbacks ([9596993](https://github.com/sifrr/sifrr/commit/9596993))
-* **sifrr-seo:** Add beforeRender/afterRender functions ([7697596](https://github.com/sifrr/sifrr/commit/7697596))
-* **sifrr-seo:** Add better caching, and way to use other caches like memcache/redis/etc ([b50fa18](https://github.com/sifrr/sifrr/commit/b50fa18))
-* **sifrr-seo:** Add footer to ssr html ([33d8783](https://github.com/sifrr/sifrr/commit/33d8783))
 
 
 ### Performance Improvements

@@ -6,8 +6,6 @@
 * **sifrr-seo:** Fix error on node 8 ([7db1ab2](https://github.com/sifrr/sifrr/commit/7db1ab2))
 * **sifrr-seo:** Fix pending resolver bug ([1db1e95](https://github.com/sifrr/sifrr/commit/1db1e95))
 * Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
-* **sifrr-cli:** Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c8))
-* **sifrr-dom:** Add listener on window instead of document ([bfda60b](https://github.com/sifrr/sifrr/commit/bfda60b))
 * **sifrr-seo:** Don't return from cache if there is no cache ([68099e1](https://github.com/sifrr/sifrr/commit/68099e1))
 * **sifrr-seo:** don't set footer in render ([938bba7](https://github.com/sifrr/sifrr/commit/938bba7))
 * **sifrr-seo:** Move puppeteer config to renderer ([59276a6](https://github.com/sifrr/sifrr/commit/59276a6))
@@ -16,9 +14,6 @@
 
 ### Features
 
-* **sifrr-dom:** Add option to have element without any content ([f28fcea](https://github.com/sifrr/sifrr/commit/f28fcea))
-* **sifrr-dom:** execute js in order ([f19879e](https://github.com/sifrr/sifrr/commit/f19879e))
-* **sifrr-dom:** trigger update event on updated element ([ff64ae2](https://github.com/sifrr/sifrr/commit/ff64ae2))
 * **sifrr-seo:** Add beforeRender/afterRender functions ([7697596](https://github.com/sifrr/sifrr/commit/7697596))
 * **sifrr-seo:** Add better caching, and way to use other caches like memcache/redis/etc ([b50fa18](https://github.com/sifrr/sifrr/commit/b50fa18))
 * **sifrr-seo:** Add capability to add puppeteer launch options ([dc56561](https://github.com/sifrr/sifrr/commit/dc56561))
