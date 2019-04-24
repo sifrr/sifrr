@@ -70,10 +70,10 @@
     }
     onConnect() {
       this.loaded = false;
-      this.constructor.all.push(this);
+      this.constructor.all.add(this);
     }
     onDisconnect() {
-      this.constructor.all.splice(this.constructor.all.indexOf(this), 1);
+      this.constructor.all.delete(this);
     }
     onAttributeChange(attrName) {
       if (attrName === 'path') {
@@ -101,8 +101,7 @@
       if (!this.loaded) {
         this.loaded = true;
         if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
-          const tags = this.dataset.sifrrElements.split(',');
-          tags.filter((value, index, self) => self.indexOf(value) === index).forEach(tag => {
+          this.dataset.sifrrElements.split(',').forEach(tag => {
             dom.load(tag);
           });
         }
@@ -155,7 +154,7 @@
       SifrrRoute.refreshAll();
     }
   }
-  SifrrRoute.all = [];
+  SifrrRoute.all = new Set();
   dom.Event.add('activate');
   dom.Event.add('deactivate');
   Route.Element = SifrrRoute;

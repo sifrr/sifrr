@@ -16,11 +16,11 @@ class SifrrRoute extends SifrrDom.Element {
 
   onConnect() {
     this.loaded = false;
-    this.constructor.all.push(this);
+    this.constructor.all.add(this);
   }
 
   onDisconnect() {
-    this.constructor.all.splice(this.constructor.all.indexOf(this), 1);
+    this.constructor.all.delete(this);
   }
 
   onAttributeChange(attrName) {
@@ -50,12 +50,9 @@ class SifrrRoute extends SifrrDom.Element {
     if (!this.loaded) {
       this.loaded = true;
       if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
-        const tags = this.dataset.sifrrElements.split(',');
-        tags
-          .filter((value, index, self) => self.indexOf(value) === index)
-          .forEach((tag) => {
-            SifrrDom.load(tag);
-          });
+        this.dataset.sifrrElements.split(',').forEach((tag) => {
+          SifrrDom.load(tag);
+        });
       }
     }
     this.classList.add('active');
@@ -124,7 +121,7 @@ class SifrrRoute extends SifrrDom.Element {
   }
 }
 
-SifrrRoute.all = [];
+SifrrRoute.all = new Set();
 
 SifrrDom.Event.add('activate');
 SifrrDom.Event.add('deactivate');

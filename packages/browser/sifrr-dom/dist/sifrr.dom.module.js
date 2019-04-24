@@ -480,9 +480,6 @@ function sifrrClone(newState) {
 }
 function SimpleElement(content, defaultState = null) {
   const templ = template(content);
-  if (!templ.content || templ.content.childNodes.length < 1) {
-    throw TypeError('First argument for SimpleElement should be of type string or DOM element');
-  }
   content = templ.content.firstElementChild || templ.content.firstChild;
   if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
     (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') > 0)

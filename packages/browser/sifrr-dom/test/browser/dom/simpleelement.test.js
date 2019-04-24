@@ -100,7 +100,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
       }
     });
 
-    expect(error).to.eq('First argument for SimpleElement should be of type string or DOM element');
+    expect(error).to.eq('Argument must be of type string | template literal | Node | [Node] | NodeList');
   });
 
   it("doesn't do anything with customElements", async () => {

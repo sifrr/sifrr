@@ -18,10 +18,10 @@ describe('Route', () => {
     const route = new Route();
 
     route.onConnect();
-    expect(Route.all.indexOf(route)).to.be.above(-1);
+    expect(Route.all.has(route)).to.be.true;
 
     route.onDisconnect();
-    expect(Route.all.indexOf(route)).to.equal(-1);
+    expect(Route.all.has(route)).to.be.false;
   });
 
   it('on attributechange', () => {
