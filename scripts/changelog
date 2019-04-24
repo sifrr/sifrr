@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+for dir in ./packages/*/*
+do
+  cd "$dir"
+  echo "Running changelog in $PWD"
+  ./node_modules/.bin/conventional-changelog -p angular -i "CHANGELOG.md" -s --commit-path . -k $OLDPWD "${@:1}"
+  cd "$OLDPWD"
+done
+
+echo "Running changelog in $PWD"
+./node_modules/.bin/conventional-changelog -p angular -i "misc/CHANGELOG.md" -s "${@:1}"
