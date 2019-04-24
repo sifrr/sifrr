@@ -25,21 +25,23 @@ class WebSocket {
     return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
   }
 
-  async sendRaw(message, id, original = message) {
+  sendRaw(message, id, original = message) {
     if (this._fallback) return this.fallback(original);
-    const sock = await this._openSocket();
-    if (!sock) return this.fallback(original);
-    this.ws.send(message);
-    const ret = new Promise((res) => {
-      this._requests[id] = {
-        res: (v) => {
-          delete this._requests[id];
-          res(v);
-        },
-        original
-      };
+    return this._openSocket().then(ws => {
+      ws.send(message);
+      return new Promise((res) => {
+        this._requests[id] = {
+          res: (v) => {
+            delete this._requests[id];
+            res(v);
+          },
+          original
+        };
+      });
+    }).catch((e) => {
+      window.console.error(e);
+      return this.fallback(original);
     });
-    return ret;
   }
 
   _openSocket() {
@@ -50,21 +52,20 @@ class WebSocket {
       this.ws.onclose = this.onclose.bind(this);
       this.ws.onmessage = this._onmessage.bind(this);
     } else if (this.ws.readyState === this.ws.OPEN) {
-      return Promise.resolve(true);
+      return Promise.resolve(this.ws);
     } else if (this.ws.readyState !== this.ws.CONNECTING) {
       this.ws = null;
       return this._openSocket();
     }
     const me = this;
-    return new Promise(res => {
+    return new Promise((res, rej) => {
       function waiting() {
         if (me.ws.readyState === me.ws.CONNECTING) {
           window.requestAnimationFrame(waiting);
         } else if (me.ws.readyState !== me.ws.OPEN) {
-          window.console.error(`Failed to open socket on ${me.url}`);
-          res(false);
+          rej(Error(`Failed to open socket on ${me.url}`));
         } else {
-          res(true);
+          res(me.ws);
         }
       }
       window.requestAnimationFrame(waiting);

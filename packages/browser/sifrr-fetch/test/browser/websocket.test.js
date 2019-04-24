@@ -50,7 +50,7 @@ describe('websockets', () => {
   it('connections to ws', async () => {
     const state = await page.evaluate(async (port) => {
       const sock = Sifrr.Fetch.socket(`ws://localhost:${port}/`);
-      return await sock._openSocket();
+      return await sock._openSocket().then(ws => !!ws).catch(() => false);
     }, wsport);
 
     assert.equal(state, true);

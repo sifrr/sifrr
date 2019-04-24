@@ -88,42 +88,6 @@
   }
   var request = Request;
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   class WebSocket {
     constructor(url, protocol, fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))) {
       this.url = url;
@@ -149,23 +113,22 @@
       return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
     }
     sendRaw(message, id, original = message) {
-      var _this = this;
-      return _asyncToGenerator(function* () {
-        if (_this._fallback) return _this.fallback(original);
-        const sock = yield _this._openSocket();
-        if (!sock) return _this.fallback(original);
-        _this.ws.send(message);
-        const ret = new Promise(res => {
-          _this._requests[id] = {
+      if (this._fallback) return this.fallback(original);
+      return this._openSocket().then(ws => {
+        ws.send(message);
+        return new Promise(res => {
+          this._requests[id] = {
             res: v => {
-              delete _this._requests[id];
+              delete this._requests[id];
               res(v);
             },
             original
           };
         });
-        return ret;
-      })();
+      }).catch(e => {
+        window.console.error(e);
+        return this.fallback(original);
+      });
     }
     _openSocket() {
       if (!this.ws) {
@@ -175,21 +138,20 @@
         this.ws.onclose = this.onclose.bind(this);
         this.ws.onmessage = this._onmessage.bind(this);
       } else if (this.ws.readyState === this.ws.OPEN) {
-        return Promise.resolve(true);
+        return Promise.resolve(this.ws);
       } else if (this.ws.readyState !== this.ws.CONNECTING) {
         this.ws = null;
         return this._openSocket();
       }
       const me = this;
-      return new Promise(res => {
+      return new Promise((res, rej) => {
         function waiting() {
           if (me.ws.readyState === me.ws.CONNECTING) {
             window.requestAnimationFrame(waiting);
           } else if (me.ws.readyState !== me.ws.OPEN) {
-            window.console.error("Failed to open socket on ".concat(me.url));
-            res(false);
+            rej(Error("Failed to open socket on ".concat(me.url)));
           } else {
-            res(true);
+            res(me.ws);
           }
         }
         window.requestAnimationFrame(waiting);
