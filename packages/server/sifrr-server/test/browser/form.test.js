@@ -24,7 +24,7 @@ describe('form test', function() {
     fileInput.uploadFile(path.join(__dirname, '../public/nocl.json'));
 
     const filesInput = await page.$('#mulfile');
-    filesInput.uploadFile(path.join(__dirname, '../public/nocl.json'), path.join(__dirname, '../public/all.js'));
+    filesInput.uploadFile(path.join(__dirname, '../public/static.html'), path.join(__dirname, '../public/all.js'));
 
     const resp = await page.evaluate(async (path) => {
       return await submitForm(`${path}/stream`);
@@ -40,9 +40,9 @@ describe('form test', function() {
       },
       file2: [
         {
-          filename: 'nocl.json',
+          filename: 'static.html',
           encoding: '7bit',
-          mimetype: 'application/json'
+          mimetype: 'text/html'
         },
         {
           filename: 'all.js',
@@ -74,10 +74,10 @@ describe('form test', function() {
       },
       file2: [
         {
-          filename: 'nocl.json',
+          filename: 'static.html',
           encoding: '7bit',
-          mimetype: 'application/json',
-          filePath: path.join(__dirname, '../public/benchmarks/public/tmp/nocl.json')
+          mimetype: 'text/html',
+          filePath: path.join(__dirname, '../public/benchmarks/public/tmp/static.html')
         },
         {
           filename: 'all.js',
