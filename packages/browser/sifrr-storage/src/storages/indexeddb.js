@@ -76,7 +76,7 @@ class IndexedDB extends Storage {
       data.forEach((row) => {
         ans[row.key] = row.value;
       });
-    } else if (data && data.value !== 'undefined') {
+    } else if (data) {
       return data.value;
     } else {
       return undefined;

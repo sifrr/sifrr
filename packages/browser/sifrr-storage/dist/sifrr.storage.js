@@ -42,6 +42,11 @@
   class Storage {
     constructor(options = {}) {
       this._options = options;
+      this.name = this._options.name;
+      this.version = this._options.version;
+      this.tableName = this.name + this.version;
+      this.description = this._options.description;
+      this.type = this.constructor.type;
     }
     _parseKeyValue(key, value) {
       if (typeof value === 'undefined') {
@@ -91,21 +96,6 @@
       } else {
         return false;
       }
-    }
-    get tableName() {
-      return this.name + this.version;
-    }
-    get name() {
-      return this._options.name;
-    }
-    get version() {
-      return this._options.version;
-    }
-    get description() {
-      return this._options.description;
-    }
-    get type() {
-      return this.constructor.type;
     }
     isSupported(force = true) {
       if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
@@ -218,7 +208,7 @@
         data.forEach(row => {
           ans[row.key] = row.value;
         });
-      } else if (data && data.value !== 'undefined') {
+      } else if (data) {
         return data.value;
       } else {
         return undefined;

@@ -4,6 +4,11 @@ const jsonConstructor = {}.constructor;
 class Storage {
   constructor(options = {}) {
     this._options = options;
+    this.name = this._options.name;
+    this.version = this._options.version;
+    this.tableName = this.name + this.version;
+    this.description = this._options.description;
+    this.type = this.constructor.type;
   }
 
   _parseKeyValue(key, value) {
@@ -55,26 +60,6 @@ class Storage {
   _isEqual(options, type) {
     if (this.tableName == options.name + options.version && this.type == type) { return true; }
     else { return false; }
-  }
-
-  get tableName() {
-    return this.name + this.version;
-  }
-
-  get name() {
-    return this._options.name;
-  }
-
-  get version() {
-    return this._options.version;
-  }
-
-  get description() {
-    return this._options.description;
-  }
-
-  get type() {
-    return this.constructor.type;
   }
 
   isSupported(force = true) {
