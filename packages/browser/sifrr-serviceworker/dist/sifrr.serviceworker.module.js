@@ -98,17 +98,14 @@ class SW {
       break;
     case 'CACHE_FIRST':
     case 'CACHE_ONLY':
-      resp = this.responseFromCache(req1, cacheName)
-        .catch(() => this.responseFromNetwork(request, cacheName));
+      resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
       break;
     case 'CACHE_AND_UPDATE':
-      resp = this.responseFromCache(req1, cacheName)
-        .catch(() => this.responseFromNetwork(request, cacheName));
+      resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
       this.responseFromNetwork(req2, cacheName);
       break;
     default:
-      resp = this.responseFromNetwork(req1, cacheName)
-        .catch(() => this.responseFromCache(request, cacheName));
+      resp = this.responseFromNetwork(req1, cacheName).catch(() => this.responseFromCache(request, cacheName));
       break;
     }
     return resp;
