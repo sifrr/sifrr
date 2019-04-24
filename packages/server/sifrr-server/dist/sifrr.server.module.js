@@ -357,7 +357,7 @@ function sendFileToRes(res, reqHeaders, path, {
 }
 var sendfile = sendFile;
 
-var formdata = function(contType, options = {}) {
+function formData(contType, options = {}) {
   options.headers = {
     'content-type': contType
   };
@@ -393,7 +393,7 @@ var formdata = function(contType, options = {}) {
     });
     busb.on('error', reject);
   });
-};
+}
 function setRetValue(ret, fieldname, value) {
   if (fieldname.slice(-2) === '[]') {
     fieldname = fieldname.slice(0, fieldname.length - 2);
@@ -412,6 +412,7 @@ function setRetValue(ret, fieldname, value) {
     }
   }
 }
+var formdata = formData;
 
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');

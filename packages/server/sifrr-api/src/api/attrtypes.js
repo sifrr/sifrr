@@ -3,10 +3,9 @@ const filter = require('../utils/filterobject');
 
 module.exports = (attrs, required = [], allowed = []) => {
   if (allowed.length > 0) attrs = filter(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
-  let ret = {};
+  let ret = {}, type;
   for (let attr in attrs) {
     let bang = required.indexOf(attr) >= 0 ? true : false;
-    let type;
     if (attrs[attr].returnType) {
       type = attrs[attr].returnType;
     } else if (!attrs[attr].type) {

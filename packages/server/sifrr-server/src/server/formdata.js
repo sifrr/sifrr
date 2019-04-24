@@ -2,10 +2,11 @@ const fs = require('fs');
 const Busboy = require('busboy');
 const mkdirp = require('mkdirp');
 
-module.exports = function(contType, options = {}) {
+function formData(contType, options = {}) {
   options.headers = {
     'content-type': contType
   };
+
   return new Promise((resolve, reject) => {
     const busb = new Busboy(options);
     const ret = {};
@@ -48,7 +49,7 @@ module.exports = function(contType, options = {}) {
 
     busb.on('error', reject);
   });
-};
+}
 
 function setRetValue(ret, fieldname, value) {
   if (fieldname.slice(-2) === '[]') {
@@ -68,3 +69,5 @@ function setRetValue(ret, fieldname, value) {
     }
   }
 }
+
+module.exports = formData;

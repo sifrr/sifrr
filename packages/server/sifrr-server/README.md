@@ -88,7 +88,7 @@ app.folder(prefix, folder, options); // options are sendFile options
 
 // Example
 // if you have a file named `example.html` in folder `folder`, then doing this
-app.folder('/example', folder);
+app.folder('/example', folder, options);
 // will serve example.html if you go to `/example/example.html`
 ```
 
@@ -125,6 +125,11 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 -   if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
 -   `onField` (optional): will be called with `fieldname, value` if given
 -   other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
+
+Array fields:
+
+-  if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
+-  if fieldname is `something[]` then `data.something` will always be an array with >=1 values. 
 
 ## Examples
 
