@@ -76,25 +76,24 @@
 	  TEMPLATE
 	} = constants;
 	var template = (str, ...extra) => {
-	  if (str.tagName && str.tagName === 'TEMPLATE') {
-	    return str;
-	  }
+	  if (str.tagName && str.tagName === 'TEMPLATE') return str;
+	  let isString = false;
 	  const tmp = TEMPLATE();
-	  if (typeof str === 'string') ; else if (Array.isArray(str) && typeof str[0] === 'string') {
+	  if (typeof str === 'string') {
+	    isString = true;
+	  } else if (Array.isArray(str) && typeof str[0] === 'string') {
+	    isString = true;
 	    str = String.raw(str, ...extra);
 	  } else if (str instanceof NodeList || Array.isArray(str) && str[0].nodeType) {
 	    Array.from(str).forEach(s => {
 	      tmp.content.appendChild(s);
 	    });
-	    return tmp;
 	  } else if (str.nodeType) {
 	    tmp.content.appendChild(str);
-	    return tmp;
 	  } else {
-	    return str;
+	    throw Error('Argument must be of type string | template literal | Node | [Node] | NodeList');
 	  }
-	  str = str.replace(/(\\)?\$(\\)?\{/g, '${');
-	  tmp.innerHTML = str;
+	  if (isString) tmp.innerHTML = str.replace(/(\\)?\$(\\)?\{/g, '${');
 	  return tmp;
 	};
 
