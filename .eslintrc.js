@@ -65,7 +65,7 @@ module.exports = {
     ],
     'max-lines': [
       'error',
-      220 // Change to 200 after refactoring API.Model
+      200
     ],
     'mocha/no-exclusive-tests': 'error'
   },
