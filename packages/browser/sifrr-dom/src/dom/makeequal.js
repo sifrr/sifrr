@@ -65,12 +65,12 @@ function makeEqual(oldNode, newNode) {
 
   // copy Attributes
   const oldAttrs = oldNode.attributes, newAttrs = newNode.attributes;
-  for (let i = newAttrs.length - 1; i >= 0; --i) {
+  for (let i = newAttrs.length - 1; i > -1; --i) {
     updateAttribute(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
 
   // Remove any extra attributes
-  for (let j = oldAttrs.length - 1; j >= 0; --j) {
+  for (let j = oldAttrs.length - 1; j > -1; --j) {
     if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
   }
 

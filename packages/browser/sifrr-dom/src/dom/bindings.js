@@ -2,7 +2,7 @@ const { OUTER_REGEX, STATE_REGEX } = require('./constants');
 
 function replacer(match) {
   let f;
-  if (match.indexOf('return ') >= 0) {
+  if (match.indexOf('return ') > -1) {
     f = match;
   } else {
     f = 'return ' + match;

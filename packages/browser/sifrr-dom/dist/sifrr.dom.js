@@ -178,10 +178,10 @@
 	  if (newNode.state) oldNode.state = newNode.state;
 	  const oldAttrs = oldNode.attributes,
 	        newAttrs = newNode.attributes;
-	  for (let i = newAttrs.length - 1; i >= 0; --i) {
+	  for (let i = newAttrs.length - 1; i > -1; --i) {
 	    updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
 	  }
-	  for (let j = oldAttrs.length - 1; j >= 0; --j) {
+	  for (let j = oldAttrs.length - 1; j > -1; --j) {
 	    if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
 	  }
 	  makeChildrenEqual(oldNode, newNode.childNodes, undefined, true);
@@ -358,7 +358,7 @@
 	      is[j + 1] = i;
 	    }
 	  }
-	  for (let i = is[l]; l >= 0; i = pre[i], l--) {
+	  for (let i = is[l]; l > -1; i = pre[i], l--) {
 	    seq[l] = i;
 	  }
 	  return seq;
@@ -388,7 +388,7 @@
 	} = constants;
 	function replacer(match) {
 	  let f;
-	  if (match.indexOf('return ') >= 0) {
+	  if (match.indexOf('return ') > -1) {
 	    f = match;
 	  } else {
 	    f = 'return ' + match;
@@ -451,7 +451,7 @@
 	} = constants;
 	function update(element, stateMap) {
 	  stateMap = stateMap || element.constructor.stateMap;
-	  for (let i = element._refs ? element._refs.length - 1 : -1; i >= 0; --i) {
+	  for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
 	    const data = stateMap[i].ref,
 	          dom = element._refs[i];
 	    if (data.type === 0) {
@@ -464,7 +464,7 @@
 	    }
 	    if (data.events) {
 	      if (!dom._sifrrEventSet) {
-	        for (let i = data.events.length - 1; i >= 0; --i) {
+	        for (let i = data.events.length - 1; i > -1; --i) {
 	          const ev = data.events[i];
 	          dom[ev[0]] = evaluateBindings(ev[1], element);
 	        }
@@ -473,7 +473,7 @@
 	      }
 	    }
 	    if (data.attributes) {
-	      for (let i = data.attributes.length - 1; i >= 0; --i) {
+	      for (let i = data.attributes.length - 1; i > -1; --i) {
 	        const attr = data.attributes[i];
 	        let newValue;
 	        if (attr[1] === 0) newValue = element._state[attr[2]];else newValue = evaluateBindings(attr[2], element);
@@ -617,9 +617,9 @@
 	    const eventMap = [];
 	    for (let i = 0; i < l; i++) {
 	      const attribute = attrs[i];
-	      if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
+	      if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
 	        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-	      } else if (attribute.value.indexOf('${') >= 0) {
+	      } else if (attribute.value.indexOf('${') > -1) {
 	        const binding = getStringBindingFxn$1(attribute.value);
 	        if (typeof binding !== 'string') {
 	          attrStateMap.push([attribute.name, 1, binding]);

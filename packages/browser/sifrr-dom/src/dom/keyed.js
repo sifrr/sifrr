@@ -201,7 +201,7 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     }
   }
 
-  for (let i = is[l]; l >= 0; i = pre[i], l--) {
+  for (let i = is[l]; l > -1; i = pre[i], l--) {
     seq[l] = i;
   }
 

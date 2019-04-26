@@ -47,10 +47,10 @@ function creator(el, defaultState) {
     const eventMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.name[0] === '_' && attribute.value.indexOf('${') >= 0) {
+      if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
         // Array contents -> 0: name, 1: binding
         eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-      } else if (attribute.value.indexOf('${') >= 0) {
+      } else if (attribute.value.indexOf('${') > -1) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
         const binding = getStringBindingFxn(attribute.value);
         // Array contents -> 0: name, 1: type, 2: binding

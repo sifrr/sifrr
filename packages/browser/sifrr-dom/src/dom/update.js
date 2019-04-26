@@ -7,7 +7,7 @@ const { TEMPLATE, KEY_ATTR } = require('./constants');
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
-  for (let i = element._refs ? element._refs.length -1 : -1; i >= 0; --i) {
+  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
     const data = stateMap[i].ref, dom = element._refs[i];
 
     // Fast path for text nodes
@@ -25,7 +25,7 @@ function update(element, stateMap) {
     // events
     if (data.events) {
       if (!dom._sifrrEventSet) {
-        for (let i = data.events.length - 1; i >= 0; --i) {
+        for (let i = data.events.length - 1; i > -1; --i) {
           const ev = data.events[i];
           dom[ev[0]] = evaluateBindings(ev[1], element);
         }
@@ -36,7 +36,7 @@ function update(element, stateMap) {
 
     // update attributes
     if (data.attributes) {
-      for (let i = data.attributes.length - 1; i >= 0; --i) {
+      for (let i = data.attributes.length - 1; i > -1; --i) {
         const attr = data.attributes[i];
         let newValue;
         if (attr[1] === 0) newValue = element._state[attr[2]];
