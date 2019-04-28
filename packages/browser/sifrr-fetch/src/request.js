@@ -1,3 +1,5 @@
+const ObjConst = ({}).constructor;
+
 class Request {
   constructor(url, options) {
     this._options = options;
@@ -71,7 +73,7 @@ class Request {
     options.headers = Object.assign({
       accept: 'application/json'
     }, this._options.headers || {});
-    if (options.body && options.body.constructor === ({}).constructor) {
+    if (options.body && options.body.constructor === ObjConst) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
       options.body = JSON.stringify(options.body);
     }

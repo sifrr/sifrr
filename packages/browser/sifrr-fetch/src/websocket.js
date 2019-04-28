@@ -18,10 +18,11 @@ class WebSocket {
   }
 
   sendJSON(data, type = 'JSON') {
-    const message = {};
-    message.sifrrQueryType = type;
-    message.sifrrQueryId = this.id++;
-    message.data = data;
+    const message = {
+      data,
+      sifrrQueryType: type,
+      sifrrQueryId: this.id++
+    };
     return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
   }
 
