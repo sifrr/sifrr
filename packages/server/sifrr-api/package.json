@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "graphql-sequelize": "^9.3.5",
-    "sequelize": "^5.7.1"
+    "sequelize": "^5.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
