@@ -48,27 +48,26 @@ class SifrrRoute extends SifrrDom.Element {
 
   activate() {
     if (!this.loaded) {
-      this.loaded = true;
       if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
-        this.dataset.sifrrElements.split(',').forEach((tag) => {
-          SifrrDom.load(tag);
-        });
+        this.loaded = Promise.all(this.dataset.sifrrElements.split(',').map(SifrrDom.load));
+      } else {
+        this.loaded = Promise.resolve(true);
       }
     }
     this.classList.add('active');
+    this.onActivate();
     SifrrDom.Event.trigger(this, 'activate');
-    this.onActivation();
   }
 
-  onActivation() {}
+  onActivate() {}
 
   deactivate() {
     this.classList.remove('active');
+    this.onDeactivate();
     SifrrDom.Event.trigger(this, 'deactivate');
-    this.onDeactivation();
   }
 
-  onDeactivation() {}
+  onDeactivate() {}
 
   static get currentUrl() {
     return this._curl;

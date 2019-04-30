@@ -92,24 +92,23 @@ class SifrrRoute extends dom.Element {
   }
   activate() {
     if (!this.loaded) {
-      this.loaded = true;
       if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
-        this.dataset.sifrrElements.split(',').forEach((tag) => {
-          dom.load(tag);
-        });
+        this.loaded = Promise.all(this.dataset.sifrrElements.split(',').map(dom.load));
+      } else {
+        this.loaded = Promise.resolve(true);
       }
     }
     this.classList.add('active');
+    this.onActivate();
     dom.Event.trigger(this, 'activate');
-    this.onActivation();
   }
-  onActivation() {}
+  onActivate() {}
   deactivate() {
     this.classList.remove('active');
+    this.onDeactivate();
     dom.Event.trigger(this, 'deactivate');
-    this.onDeactivation();
   }
-  onDeactivation() {}
+  onDeactivate() {}
   static get currentUrl() {
     return this._curl;
   }

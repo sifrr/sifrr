@@ -1,7 +1,10 @@
 const ACTIVE_CLASS = 'active';
 
 async function isActive(selector) {
-  const className = await page.$eval(selector, el => el.className);
+  const className = await page.$eval(selector, async el => {
+    await el.loaded;
+    return el.className;
+  });
   return className.indexOf(ACTIVE_CLASS) >= 0;
 }
 
@@ -41,7 +44,6 @@ describe('sifrr-route', () => {
 
   it('refreshes at start (active at start when route matches)', async () => {
     await page.goto(`${PATH}/abcd`);
-
     expect(await isActive('#abcd')).to.be.true;
   });
 
