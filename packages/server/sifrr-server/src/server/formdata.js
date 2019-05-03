@@ -27,6 +27,7 @@ function formData(contType, options = {}) {
       };
 
       if (typeof options.tmpDir === 'string') {
+        if (typeof options.filename === 'function') filename = options.filename(filename);
         const fileToSave = path.join(options.tmpDir, filename);
         mkdirp(path.dirname(fileToSave));
 

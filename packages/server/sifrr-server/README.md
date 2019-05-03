@@ -123,6 +123,7 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 
 -   if `onFile` is set, then it will be called with `fieldname, file, filename, encoding, mimetype` for every file uploaded, where file is file stream, you need to consume it or the request will never resolve
 -   if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
+    if `filename` function is given, it will be called with original filename, and name returned will be used when saving in tmpDir.
 -   `onField` (optional): will be called with `fieldname, value` if given
 -   other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
 
