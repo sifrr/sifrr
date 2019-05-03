@@ -81,8 +81,8 @@ Sifrr officially supports node v10 (LTS), v11 (current). Other versions might wo
 
 | Node Version | CI Status                                                                                                                |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
-| v11.9.0      | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
-| v10.15.0     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
+| v11.15.0     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
+| v10.15.3     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
 
 ## Browser Support (browser packages)
 

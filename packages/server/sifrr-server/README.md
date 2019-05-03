@@ -6,7 +6,7 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 
 -   Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
 -   Simple static file serving with conditional last-modified, compression, cache support
--   Simple post request data, json data and form data handling
+-   Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
 
 ## How to use
 
@@ -129,7 +129,7 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 Array fields:
 
 -  if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
--  if fieldname is `something[]` then `data.something` will always be an array with >=1 values. 
+-  if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
 
 ## Examples
 
