@@ -45,6 +45,7 @@ jobs:
           command: |
             git config --global user.email "aadityataparia@gmail.com"
             git config --global user.name "Aaditya Taparia"
+            git push --set-upstream origin $CIRCLE_BRANCH
       - run:
           name: Update dist files
           command: |
