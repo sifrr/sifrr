@@ -15,7 +15,7 @@
 
 * * *
 
-> sifrr is a set of tiny, customizable, independent libraries for creating modern and fast webapps.
+> sifrr is a set of tiny, customizable, independent libraries for creating modern and fast webapps using JavaScript.
 
 ## Repository Info
 

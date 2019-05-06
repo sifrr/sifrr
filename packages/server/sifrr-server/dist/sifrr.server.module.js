@@ -554,6 +554,7 @@ class BaseApp {
       uWebSockets.us_listen_socket_close(this._socket);
       this._socket = null;
     }
+    return this;
   }
 }
 BaseApp.prototype._staticPaths = {};
