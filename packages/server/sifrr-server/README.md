@@ -129,8 +129,52 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 
 Array fields:
 
--  if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
--  if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
+-   if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
+-   if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
+
+### Load routes
+
+An example route file:
+
+```js
+const path = require('path');
+
+const headers = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': '*',
+  Connection: 'keep-alive'
+};
+
+module.exports = {
+  basePath: '/p', // this preffix will be added to all the routes in this file
+  folder: {
+    '': [path.join(__dirname, '../public'), { headers, lastModified: false }],
+  },
+  get: {
+    '/some': (res, req) => res.send('ABD');
+  }
+};
+```
+
+You can have multiple route files in a folder, and then you can call
+
+```js
+app.load(dirPath, { filter: (filepath) => true, basePath: '' });
+```
+
+And all the routes from the route files in this directory will be added to your app server.
+
+for example the above route file will add following routes:
+
+```js
+app.folder('/p', path.join(__dirname, '../public'), { headers, lastModified: false });
+app.get('/p/some', (res, req) => res.send('ABD'));
+```
+
+`Options`:
+
+-   `filter` - this function will be called with all filepaths in directory, and if this returns `true` that route file will be added, else it will be not.
+-   `basePath` - base path preffix to add for all the routes
 
 ## Examples
 
