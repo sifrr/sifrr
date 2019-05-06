@@ -19,7 +19,7 @@ describe('form test', function() {
     });
   });
 
-  it('gives uploaded files', async () => {
+  it('gives uploaded files as stream', async () => {
     const fileInput = await page.$('#onefile');
     fileInput.uploadFile(path.join(__dirname, '../public/nocl.json'));
 
@@ -51,7 +51,9 @@ describe('form test', function() {
         }
       ]
     });
+  });
 
+  it('gives uploaded file and saves in tmpDir', async () => {
     const { resp2, time } = await page.evaluate(async (path) => {
       const start = performance.now();
       let resp;
@@ -61,7 +63,7 @@ describe('form test', function() {
       return { resp2: resp, time: performance.now() - start };
     }, PATH);
 
-    console.log(`100 file uploads took: ${time}ms`);
+    global.console.log(`100 file uploads took: ${time}ms`);
 
     // Response has filePath
     expect(resp2).to.deep.equal({
@@ -83,7 +85,7 @@ describe('form test', function() {
           filename: 'all.js',
           encoding: '7bit',
           mimetype: 'text/javascript',
-          filePath: path.join(__dirname, '../public/benchmarks/public/tmp/all.js')
+          filePath: path.join(__dirname, '../public/benchmarks/public/tmp/some.js')
         }
       ]
     });

@@ -57,7 +57,8 @@ app.post('/tmpdir', res => {
   res.writeHeader('content-type', 'application/json');
   if (typeof res.formData === 'function') {
     res.formData({
-      tmpDir: path.join(__dirname, './public/tmp')
+      tmpDir: path.join(__dirname, './public/tmp'),
+      filename: (f) => f.indexOf('all.js') > -1 ? 'some.js' : f
     }).then(resp => {
       res.end(JSON.stringify(resp));
     });
