@@ -183,16 +183,20 @@ Are available in [test/public/benchmarks/sifrr.js](./test/public/benchmarks/sifr
 ### graphql server
 
 ```js
-app.post('/graphql', res => {
-  res.onAborted(err => { throw err; });
+function handleError(res, err) {
+  res.writeStatus('500 Internal Server Error');
+  res.end(JSON.stringify({ name: err.name, message: err.message }));
+}
 
-  res.json().then(({ query, variables }) => {
-    res.end(JSON.stringify(graphql({
+app.post('/graphql', res => {
+  res.onAborted(err => handleError(res, err));
+
+  res.json().then(({ query, variables }) =>
+    graphql({
       schema: executableSchema,
       source: query,
       variableValues: variables,
       context: { /* set context */ }
-    })));
-  });
+    })).then(data => res.end(JSON.stringify(data))).catch(err => handleError(res, err));
 });
 ```

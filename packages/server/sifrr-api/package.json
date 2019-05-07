@@ -28,7 +28,7 @@
     "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-api -s"
   },
   "dependencies": {
-    "graphql": "^14.0.2",
+    "graphql": "^14.3.0",
     "graphql-relay": "^0.6.0",
     "graphql-tools": "^4.0.3",
     "mkdirp": "^0.5.1"
