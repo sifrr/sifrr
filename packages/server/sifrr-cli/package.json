@@ -70,7 +70,7 @@
     "rollup-plugin-babel": "^4.0.1",
     "rollup-plugin-cleanup": "^3.0.0",
     "rollup-plugin-commonjs": "^9.3.3",
-    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-node-resolve": "^4.2.4",
     "rollup-plugin-terser": "^4.0.4",
     "sinon": "^7.3.2"
   },
