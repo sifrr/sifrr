@@ -3,7 +3,7 @@ describe('twowaybind', () => {
     const twoWayBind = require('../../../src/dom/twowaybind');
 
     const target = {
-      _root: { state: {} },
+      _root: { state: {}, update: () => {} },
       hasAttribute: () => true,
       getAttribute: () => 'stt',
       value: 'value'

@@ -3,13 +3,12 @@ module.exports = (e) => {
   if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
   const value = target.value || target.textContent;
   if (target.firstChild) target.firstChild.__data = value;
-  let state = {};
+  target.__twoWay = target.__twoWay || new Function('value', `this._root.state.${target.getAttribute('data-sifrr-bind')} = value; this._root.update();`);
   if (!target._root) {
     let root = target.parentNode;
     while(root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;
   }
-  state[target.getAttribute('data-sifrr-bind')] = value;
-  if (target._root) target._root.state = state;
+  if (target._root) target.__twoWay(value);
 };
