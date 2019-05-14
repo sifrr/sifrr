@@ -20,7 +20,7 @@ function creator(el, defaultState) {
           text: binding
         };
       } else {
-        if (defaultState) el.data = defaultState[binding];
+        if (defaultState) el.data = el.__data = defaultState[binding];
         // state node
         return {
           type: 0,

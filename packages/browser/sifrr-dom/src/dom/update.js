@@ -13,7 +13,7 @@ function update(element, stateMap) {
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      if (dom.data != element._state[data.text]) dom.data = element._state[data.text];
+      if (dom.__data != element._state[data.text]) dom.data = dom.__data = element._state[data.text];
       continue;
     } else if (data.type === 1) {
       // text node
