@@ -105,7 +105,7 @@ Sifrr.Dom.setup(config);
 
 **Note**: `Sifrr.Dom.load` requires Fetch API to work.
 
-#### HTML Element (recommended for ease of use)
+#### HTML Element (can be used as static files)
 
 ```html
 <!-- ${baseUrl}/elements/custom/tag.html  -->
@@ -142,7 +142,7 @@ Sifrr.Dom.setup(config);
 </script>
 ```
 
-#### JS Element (recommended for ES6 import capabilities, making exportable libraries)
+#### JS Element (If you are bundling or making exportable libraries)
 
 ```js
 // ${baseUrl}/elements/custom/tag.js
@@ -167,7 +167,8 @@ CustomTag.defaultState = {
   id: 1,
   attr: 'abcd'
 }
-Sifrr.Dom.register(CustomTag); // or module.exports = CustomTag;
+Sifrr.Dom.register(CustomTag);
+module.exports = CustomTag;
 ```
 
 #### Loading element
@@ -329,6 +330,10 @@ class CustomTag extends Sifrr.Dom.Element {
     return ['custom-attr']; // these attributes will be observed for changes
   }
 
+  static syncedAttrs() {
+    return ['custom-attr']; // these attributes will be synced as object properties (like value attribute of input tag)
+  }
+
   onConnect() {
     // called when element is connected to dom
     // A good place to manipulate dom inside the custom element like adding event listeners, etc.
@@ -372,7 +377,7 @@ customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root
 // If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
 ```
 
-Sifrr adds $ and $$ to all HTMLElements, and works same as querySelector and querySelectorAll. eg. `document.body.$`
+Sifrr adds $ and $$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
 
 ### Synthetic events
 
@@ -456,7 +461,7 @@ this will render
 </custom-tag>
 ```
 
-#### input/select/textarea/contenteditable one way, two way bindings
+#### Two way bindings
 
 ```html
 <!-- inside template -->
@@ -559,7 +564,7 @@ then, `<custom-tag></custom-tag>` will render:
    data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
   <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="${this.state.key}">
     <div> // data-sifrr-repeat should contain only one node
-      <p>${id}</p>
+      <p>${this.state.id}</p>
     </div>
   <div>
 </template>
