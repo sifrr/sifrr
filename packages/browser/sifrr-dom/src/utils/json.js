@@ -1,5 +1,6 @@
 const Json = {
   shallowEqual: (a, b) => {
+    if (typeof a !== 'object') return a === b;
     for(const key in a) {
       if(!(key in b) || a[key] !== b[key]) {
         return false;

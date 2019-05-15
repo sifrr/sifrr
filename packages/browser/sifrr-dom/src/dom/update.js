@@ -3,6 +3,7 @@ const { makeChildrenEqualKeyed } = require('./keyed');
 const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
+const { shallowEqual } = require('../utils/json');
 
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
@@ -31,6 +32,10 @@ function update(element, stateMap) {
         }
         dom._root = element;
         dom._sifrrEventSet = true;
+      }
+      if (data.events.__sb) {
+        const newState = evaluateBindings(data.events.__sb, element);
+        if (!shallowEqual(newState, dom._state)) dom.state = newState;
       }
     }
 

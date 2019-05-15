@@ -48,8 +48,10 @@ function creator(el, defaultState) {
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
+        // state binding
+        if (attribute.name === '_state') eventMap.__sb = getBindingFxns(attribute.value);
         // Array contents -> 0: name, 1: binding
-        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
+        else eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
       } else if (attribute.value.indexOf('${') > -1) {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
         const binding = getStringBindingFxn(attribute.value);
@@ -64,7 +66,7 @@ function creator(el, defaultState) {
         }
       }
     }
-    if (eventMap.length > 0) sm.events = eventMap;
+    if (eventMap.length > 0 || eventMap.__sb) sm.events = eventMap;
     if (attrStateMap.length > 0) sm.attributes = attrStateMap;
 
     if (Object.keys(sm).length > 0) return sm;

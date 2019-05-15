@@ -134,6 +134,46 @@ describe('Two way bind', () => {
     });
   });
 
+  describe('sifrr element and state two way', () => {
+    it('has parents state passed down', async () => {
+      const val = await page.$eval(`twoway-sifrr`, el => {
+        return {
+          child: el.$('sifrr-small').state,
+          parent: el.state.small
+        };
+      });
+
+      assert.deepEqual(val.child, val.parent);
+      assert.deepEqual(val.child, { a: 'b' });
+    });
+
+    it('updates child state when parent is updated', async () => {
+      const val = await page.$eval(`twoway-sifrr`, el => {
+        el.state = { small: { a: 'new' } };
+        return {
+          child: el.$('sifrr-small').state,
+          parent: el.state.small
+        };
+      });
+
+      assert.deepEqual(val.child, val.parent);
+      assert.deepEqual(val.child, { a: 'new' });
+    });
+
+    it('updates parent state when child is updated', async () => {
+      const val = await page.$eval(`twoway-sifrr`, el => {
+        el.$('sifrr-small').state = { a: 'again' };
+        return {
+          child: el.$('sifrr-small').state,
+          parent: el.state.small
+        };
+      });
+
+      assert.deepEqual(val.child, val.parent);
+      assert.deepEqual(val.child, { a: 'again' });
+    });
+  });
+
   it("doesn't do anything for no binding input", async () => {
     let e;
     page.on('pageerror', err => e = err.message);

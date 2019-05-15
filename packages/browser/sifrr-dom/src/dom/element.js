@@ -4,6 +4,7 @@ const update = require('./update');
 const Loader = require('./loader');
 const { trigger } = require('./event');
 const template = require('./template');
+const { BIND_ATTR } = require('./constants');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -111,7 +112,7 @@ function elementClassFactory(baseClass) {
     update() {
       this.beforeUpdate();
       update(this);
-      if (this._update || this.triggerUpdate) {
+      if (this._update || this.triggerUpdate || this.hasAttribute(BIND_ATTR)) {
         trigger(this, 'update', { detail: { state: this.state } });
       }
       this.onUpdate();

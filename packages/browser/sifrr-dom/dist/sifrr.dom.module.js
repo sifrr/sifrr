@@ -15,7 +15,8 @@ var constants = {
   STATE_REGEX: /^\$\{this\.state\.([a-zA-Z0-9_$]+)\}$/,
   HTML_ATTR: 'data-sifrr-html',
   REPEAT_ATTR: 'data-sifrr-repeat',
-  KEY_ATTR: 'data-sifrr-key'
+  KEY_ATTR: 'data-sifrr-key',
+  BIND_ATTR: 'data-sifrr-bind'
 };
 
 const { TEXT_NODE, TREE_WALKER } = constants;
@@ -88,6 +89,7 @@ var updateattribute = (element, name, newValue) => {
 
 const Json = {
   shallowEqual: (a, b) => {
+    if (typeof a !== 'object') return a === b;
     for(const key in a) {
       if(!(key in b) || a[key] !== b[key]) {
         return false;
@@ -402,6 +404,7 @@ const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
+const { shallowEqual: shallowEqual$1 } = json;
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
@@ -422,6 +425,10 @@ function update(element, stateMap) {
         }
         dom._root = element;
         dom._sifrrEventSet = true;
+      }
+      if (data.events.__sb) {
+        const newState = evaluateBindings(data.events.__sb, element);
+        if (!shallowEqual$1(newState, dom._state)) dom.state = newState;
       }
     }
     if (data.attributes) {
@@ -554,7 +561,8 @@ function creator(el, defaultState) {
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
       if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
-        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
+        if (attribute.name === '_state') eventMap.__sb = getBindingFxns(attribute.value);
+        else eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
       } else if (attribute.value.indexOf('${') > -1) {
         const binding = getStringBindingFxn$1(attribute.value);
         if (typeof binding !== 'string') {
@@ -565,7 +573,7 @@ function creator(el, defaultState) {
         }
       }
     }
-    if (eventMap.length > 0) sm.events = eventMap;
+    if (eventMap.length > 0 || eventMap.__sb) sm.events = eventMap;
     if (attrStateMap.length > 0) sm.attributes = attrStateMap;
     if (Object.keys(sm).length > 0) return sm;
   }
@@ -697,6 +705,7 @@ var event_1 = Event;
 
 const { collect: collect$2, create: create$2 } = ref;
 const { trigger } = event_1;
+const { BIND_ATTR } = constants;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
     static extends(htmlElementClass) {
@@ -785,7 +794,7 @@ function elementClassFactory(baseClass) {
     update() {
       this.beforeUpdate();
       update_1(this);
-      if (this._update || this.triggerUpdate) {
+      if (this._update || this.triggerUpdate || this.hasAttribute(BIND_ATTR)) {
         trigger(this, 'update', { detail: { state: this.state } });
       }
       this.onUpdate();
@@ -818,22 +827,28 @@ function elementClassFactory(baseClass) {
 }
 var element = elementClassFactory(window.HTMLElement);
 
+const { BIND_ATTR: BIND_ATTR$1 } = constants;
+const { shallowEqual: shallowEqual$2 } = json;
 var twowaybind = (e) => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
-  if (!target.hasAttribute('data-sifrr-bind') || target._root === null) return;
-  const value = target.value || target.textContent;
+  if (!target.hasAttribute(BIND_ATTR$1) || target._root === null) return;
+  const value = target.value || target._state || target.textContent;
   if (target.firstChild) target.firstChild.__data = value;
-  let state = {};
   if (!target._root) {
     let root = target.parentNode;
     while(root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;
   }
-  state[target.getAttribute('data-sifrr-bind')] = value;
-  if (target._root) target._root.state = state;
+  const prop = target.getAttribute(BIND_ATTR$1);
+  if ((e.type !== 'update' || target._sifrrEventSet) && target._root && !shallowEqual$2(value, target._root._state[prop])) {
+    target._root._state[prop] = value;
+    target._root.update();
+  }
 };
 
+const { BIND_ATTR: BIND_ATTR$2 } = constants;
+const bindSelector = '[' + BIND_ATTR$2 + ']';
 let SifrrDom = {};
 SifrrDom.elements = {};
 SifrrDom.loadingElements = {};
@@ -887,8 +902,9 @@ SifrrDom.setup = function(config) {
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.config.events.push('input', 'change', 'update');
   SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
-  SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
-  SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('input', bindSelector, SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('change', bindSelector, SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('update', bindSelector, SifrrDom.twoWayBind);
   window.Sifrr = window.Sifrr || {};
   window.Sifrr.Dom = window.Sifrr.Dom || SifrrDom;
 };

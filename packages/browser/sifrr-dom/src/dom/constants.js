@@ -13,5 +13,6 @@ module.exports = {
   STATE_REGEX: /^\$\{this\.state\.([a-zA-Z0-9_$]+)\}$/,
   HTML_ATTR: 'data-sifrr-html',
   REPEAT_ATTR: 'data-sifrr-repeat',
-  KEY_ATTR: 'data-sifrr-key'
+  KEY_ATTR: 'data-sifrr-key',
+  BIND_ATTR: 'data-sifrr-bind'
 };

@@ -1,3 +1,6 @@
+const { BIND_ATTR } = require('./dom/constants');
+const bindSelector = '[' + BIND_ATTR + ']';
+
 // Empty SifrrDom
 let SifrrDom = {};
 
@@ -62,8 +65,9 @@ SifrrDom.setup = function(config) {
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.config.events.push('input', 'change', 'update');
   SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
-  SifrrDom.Event.addListener('input', 'document', SifrrDom.twoWayBind);
-  SifrrDom.Event.addListener('change', 'document', SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('input', bindSelector, SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('change', bindSelector, SifrrDom.twoWayBind);
+  SifrrDom.Event.addListener('update', bindSelector, SifrrDom.twoWayBind);
   window.Sifrr = window.Sifrr || {};
   window.Sifrr.Dom = window.Sifrr.Dom || SifrrDom;
 };
