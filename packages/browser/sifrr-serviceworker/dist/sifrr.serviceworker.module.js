@@ -136,5 +136,6 @@ class SW {
 var sifrr_serviceworker = SW;
 
 export default sifrr_serviceworker;
+export { sifrr_serviceworker as __moduleExports };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.serviceworker.module.js.map
