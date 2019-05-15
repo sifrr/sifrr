@@ -495,6 +495,24 @@ this will render
 </div>
 ```
 
+#### Two way state binding
+
+```html
+<!-- inside template -->
+<!-- One Way bindings to `some-element`'s state, updates state of `some-element` when parent's state is changed -->
+<some-element _state=${this.state.someElementState}><some-element>
+
+
+<!-- One Way bindings from `some-element`'s state, updates parent's state when state of `some-element` is changed -->
+<some-element data-sifrr-bind="someElementState"><some-element>
+
+
+<!-- Both together -->
+<!-- This automatically syncs parent's state.someElementState and `some-element`'s state' -->
+<some-element _state=${this.state.someElementState} data-sifrr-bind="someElementState"><some-element>
+```
+
+
 #### Repeating a dom for Array
 
 parses array to dom nodes in bindings
