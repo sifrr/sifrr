@@ -67,6 +67,10 @@ server.get('/sifrr.fetch.js', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../../browser/sifrr-fetch/dist/sifrr.fetch.min.js'));
 });
 
+server.get('/graphiql', (req, res) => {
+  res.sendFile(path.join(__dirname, './graphiql.html'));
+});
+
 if (ENV === 'development' || ENV === 'test') {
   server.use(function(req, res){
     res.status(404);
