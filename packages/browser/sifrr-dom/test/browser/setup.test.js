@@ -1,3 +1,6 @@
+const { BIND_ATTR } = require('../../src/dom/constants');
+const bindSelector = '[' + BIND_ATTR + ']';
+
 describe('Sifrr.Dom.setup', () => {
   before(async () => {
     await page.goto(`${PATH}/nosifrrsetup.html`);
@@ -35,12 +38,14 @@ describe('Sifrr.Dom.setup', () => {
       // Adds event listeners
       events: {
         input: {
-          document: {}
+          [bindSelector]: {}
         },
         change: {
-          document: {}
+          [bindSelector]: {}
         },
-        update: {}
+        update: {
+          [bindSelector]: {}
+        }
       }
     });
   });
