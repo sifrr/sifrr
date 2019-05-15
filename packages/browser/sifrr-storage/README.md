@@ -1,4 +1,4 @@
-# sifrr-storage · [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage)
+# sifrr-storage · [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-storage/)
 
 Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [localForage](https://github.com/localForage/localForage)
 

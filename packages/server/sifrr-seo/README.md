@@ -1,4 +1,4 @@
-# sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)
+# sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)
 
 Server Side Pre-Redering for any js based app using puppeteer (headless chrome) with caching. Mainly focused on serving rendered content to crawlers/bots.
 

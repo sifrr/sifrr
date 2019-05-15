@@ -1,4 +1,4 @@
-# sifrr-route
+# sifrr-route · [![npm version](https://img.shields.io/npm/v/@sifrr/route.svg)](https://www.npmjs.com/package/@sifrr/route) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-route/)
 
 History API based Routing library for building One Page Applications with sifrr.
 

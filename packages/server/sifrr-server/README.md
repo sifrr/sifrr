@@ -1,4 +1,4 @@
-# sifrr-server · [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server)
+# sifrr-server · [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-server/)
 
 NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js) with extended API to create static/api server.
 

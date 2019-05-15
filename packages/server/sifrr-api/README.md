@@ -1,4 +1,4 @@
-# sifrr-api · [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)
+# sifrr-api · [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-api/)
 
 Opinionated way of creating normal apis or GraphQL apis using these amazing libraries:
 
@@ -22,7 +22,7 @@ You should know basics of graphql and sequelize to use this.
 
 ### Model
 
--   Sifrr Api SequelizeModel extends Sequelize.model but has more added features that creates type definition automatically, and adds easier way to add query/mutation resolvers. Your graphql condig is fully customizable.
+-   Sifrr Api SequelizeModel extends Sequelize.model but has more added features that creates type definition automatically, and adds easier way to add query/mutation resolvers. Your graphql config is fully customizable.
 
 ```js
 const { SequelizeModel } = require('@sifrr/api')
