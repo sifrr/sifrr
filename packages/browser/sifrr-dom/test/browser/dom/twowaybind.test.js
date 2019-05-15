@@ -138,39 +138,47 @@ describe('Two way bind', () => {
     it('has parents state passed down', async () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
         return {
-          child: el.$('sifrr-small').state,
+          child: el.$('twoway-input').state,
           parent: el.state.small
         };
       });
 
       assert.deepEqual(val.child, val.parent);
-      assert.deepEqual(val.child, { a: 'b' });
+      assert.deepEqual(val.child, { input: 'abcd' });
     });
 
     it('updates child state when parent is updated', async () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
-        el.state = { small: { a: 'new' } };
+        el.state = { small: { input: 'new' } };
         return {
-          child: el.$('sifrr-small').state,
+          child: el.$('twoway-input').state,
           parent: el.state.small
         };
       });
 
       assert.deepEqual(val.child, val.parent);
-      assert.deepEqual(val.child, { a: 'new' });
+      assert.deepEqual(val.child, { input: 'new' });
     });
 
     it('updates parent state when child is updated', async () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
-        el.$('sifrr-small').state = { a: 'again' };
+        el.$('twoway-input').state = { input: 'again' };
         return {
-          child: el.$('sifrr-small').state,
+          child: el.$('twoway-input').state,
           parent: el.state.small
         };
       });
 
       assert.deepEqual(val.child, val.parent);
-      assert.deepEqual(val.child, { a: 'again' });
+      assert.deepEqual(val.child, { input: 'again' });
+
+      // check for immutability
+      const exactEqual = await page.$eval(`twoway-sifrr`, el => {
+        el.$('twoway-input').state = { input: 'again2' };
+        return el.$('twoway-input').state === el.state.small;
+      });
+
+      assert(!exactEqual);
     });
   });
 

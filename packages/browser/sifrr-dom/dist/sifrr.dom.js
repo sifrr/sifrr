@@ -909,6 +909,7 @@
 	var twowaybind = e => {
 	  const target = e.composedPath ? e.composedPath()[0] : e.target;
 	  if (!target.hasAttribute(BIND_ATTR$1) || target._root === null) return;
+	  if (e.type === 'update' && !target._sifrrEventSet) return;
 	  const value = target.value || target._state || target.textContent;
 	  if (target.firstChild) target.firstChild.__data = value;
 	  if (!target._root) {
@@ -917,9 +918,12 @@
 	    if (root) target._root = root;else target._root = null;
 	  }
 	  const prop = target.getAttribute(BIND_ATTR$1);
-	  if ((e.type !== 'update' || target._sifrrEventSet) && target._root && !shallowEqual$2(value, target._root._state[prop])) {
-	    target._root._state[prop] = value;
-	    target._root.update();
+	  if (target._root && !shallowEqual$2(value, target._root._state[prop])) {
+	    if (e.type === 'update') target._root.state = {
+	      [prop]: Object.assign({}, value)
+	    };else target._root.state = {
+	      [prop]: value
+	    };
 	  }
 	};
 

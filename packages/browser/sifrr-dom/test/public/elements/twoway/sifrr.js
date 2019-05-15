@@ -1,7 +1,8 @@
 class TwowaySifrr extends Sifrr.Dom.Element {
   static get template() {
-    return `<sifrr-small _state="\${this.state.small}" data-sifrr-bind="small"></sifrr-small>`;
+    return `<twoway-input _state="\${this.state.small}" data-sifrr-bind="small"></twoway-input>
+    <p>\${this.state.small.input}</p>`;
   }
 }
-TwowaySifrr.defaultState = { small: { a: 'b' } };
-Sifrr.Dom.register(TwowaySifrr, { dependsOn: 'sifrr-small' });
+TwowaySifrr.defaultState = { small: { input: 'abcd' } };
+Sifrr.Dom.register(TwowaySifrr, { dependsOn: 'twoway-input' });
