@@ -1,9 +1,9 @@
 /*! Sifrr.Serviceworker v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory((global.Sifrr = global.Sifrr || {}, global.Sifrr.Serviceworker = {})));
-}(this, function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Serviceworker = factory()));
+}(this, function () { 'use strict';
 
   class SW {
     constructor(options) {
@@ -143,10 +143,7 @@
   }
   var sifrr_serviceworker = SW;
 
-  exports.__moduleExports = sifrr_serviceworker;
-  exports.default = sifrr_serviceworker;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return sifrr_serviceworker;
 
 }));
 /*! (c) @aadityataparia */
