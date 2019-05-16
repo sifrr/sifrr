@@ -162,3 +162,31 @@ storage.clear().then(() => {
 ```js
 Sifrr.Storage.all;
 ```
+
+## Types of data supported
+
+### key
+
+should be `string`
+
+### value
+
+can be any of these types:
+
+- `Array`,
+- `ArrayBuffer`,
+- `Blob`,
+- `Float32Array`,
+- `Float64Array`,
+- `Int8Array`,
+- `Int16Array`,
+- `Int32Array`,
+- `Number`,
+- `Object`,
+- `Uint8Array`,
+- `Uint16Array`,
+- `Uint32Array`,
+- `Uint8ClampedArray`,
+- `String`
+
+**Note**: When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.

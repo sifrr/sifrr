@@ -31,3 +31,32 @@ function save_jsonstorage() {
   let storage = new Sifrr.Storage('jsonstorage');
   storage.set('a', 'b');
 }
+
+function arrayEqual(buf1, buf2) {
+  if (buf1.byteLength != buf2.byteLength) return false;
+  let dv1 = new Int8Array(buf1);
+  let dv2 = new Int8Array(buf2);
+  for (let i = 0 ; i < buf1.byteLength ; i++) {
+    if (dv1[i] != dv2[i]) return false;
+  }
+  return true;
+}
+
+const ab = new ArrayBuffer(16);
+window.AllDataTypes = {
+  Array: [ 1, 2, 3 ],
+  ArrayBuffer: ab,
+  Blob: new Blob(['abcd']),
+  Float32Array: new Float32Array(ab),
+  Float64Array: new Float64Array(ab),
+  Int8Array: new Int8Array(ab),
+  Int16Array: new Int16Array(ab),
+  Int32Array: new Int32Array(ab),
+  Number: new Number(1234),
+  Object: { a: 'b' },
+  Uint8Array: new Uint8Array(ab),
+  Uint8ClampedArray: new Uint8ClampedArray(ab),
+  Uint16Array: new Uint16Array(ab),
+  Uint32Array: new Uint32Array(ab),
+  String: new String('string')
+};

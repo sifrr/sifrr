@@ -192,6 +192,38 @@ for (let key in SifrrStorage.availableStores) {
       expect(result).to.equal(0);
     });
 
+    describe('works with all types of data', async () => {
+      const types = [
+        'Array',
+        'ArrayBuffer',
+        'Blob',
+        'Float32Array',
+        'Float64Array',
+        'Int8Array',
+        'Int16Array',
+        'Int32Array',
+        'Number',
+        'Object',
+        'Uint8Array',
+        'Uint16Array',
+        'Uint32Array',
+        'Uint8ClampedArray',
+        'String'
+      ];
+      types.forEach(type => {
+        it(`works with ${type}`, async () => {
+          const result = await page.evaluate(async (key, type) => {
+            const s = new Sifrr.Storage(key);
+            await s.set(type, window.AllDataTypes[type]);
+            const value = (await s.get(type))[type];
+            return (value instanceof window[type] && arrayEqual(value, window.AllDataTypes[type])) || typeof value === type.toLowerCase();
+          }, key, type);
+
+          assert(result);
+        });
+      });
+    });
+
     it('speed test', async () => {
       const result = await page.evaluate(async (key) => {
         return await bulkInsert(key, 'a', 0);
