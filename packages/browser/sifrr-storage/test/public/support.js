@@ -1,5 +1,5 @@
 function save_localstorage() {
-  window.localStorage.setItem('SifrrStorage1', '{"a": "b"}');
+  window.localStorage.setItem('SifrrStorage1/a', 'b');
 }
 
 function save_cookies() {
