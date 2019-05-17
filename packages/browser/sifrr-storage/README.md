@@ -26,6 +26,7 @@ Add script tag in your website.
 
 ```html
 <script src="https://unpkg.com/@sifrr/storage@{version}/dist/sifrr.storage.min.js"></script>
+// Adds window.Sifrr.Storage
 ```
 
 #### Browser API support needed
@@ -47,16 +48,15 @@ example, put in your frontend js module (compatible with webpack/rollup/etc):
 #### Commonjs
 
 ```js
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Storage = require('@sifrr/storage');
+const Storage = require('@sifrr/storage');
+// use Storage instead of Sifrr.Storage in examples if you are using this
 ```
 
 #### ES modules
 
 ```js
 import Storage from '@sifrr/storage';
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Storage = Storage;
+// use Storage instead of Sifrr.Storage in examples if you are using this
 ```
 
 ## API
@@ -115,10 +115,10 @@ storage.set(data).then(() => {/* Do something here */});
 ### Getting value
 
 ```js
-// select single key-value
+// get single key-value
 storage.get('key').then((value) => console.log(value)); // > { key: { value: 'value' } }
 
-// select multiple key-values
+// get multiple key-values
 storage.get(['a', 'c']).then((value) => console.log(value)); // > { a: 'b', c: { d: 'e' } }
 ```
 
@@ -145,7 +145,7 @@ storage.all().then((data) => console.log(data)); // > { key: { value: 'value' },
 ### Get all keys in table
 
 ```js
-storage.keys().then((keys) => console.log(data)); // > ['key', 'a', 'c']
+storage.keys().then((keys) => console.log(keys)); // > ['key', 'a', 'c']
 ```
 
 ### Clear table

@@ -19,10 +19,10 @@ function save_indexeddb() {
   let request = indexedDB.open('SifrrStorage1', 1);
   request.onupgradeneeded = function(event) {
     let db = event.target.result;
-    let table = db.createObjectStore('SifrrStorage1', { keyPath: 'key' });
-    table.transaction.oncomplete = async function(event) {
+    let table = db.createObjectStore('SifrrStorage1');
+    table.transaction.oncomplete = async function() {
       let store = db.transaction('SifrrStorage1', 'readwrite').objectStore('SifrrStorage1');
-      store.add({key: 'a', value: 'b'});
+      store.add('b', 'a');
     };
   };
 }

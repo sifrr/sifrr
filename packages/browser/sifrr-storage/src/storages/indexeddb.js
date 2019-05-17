@@ -6,13 +6,13 @@ class IndexedDB extends Storage {
   }
 
   _parsedData() {
-    return this._tx('readonly', 'getAll').then((result) => this.parse(result));
+    return this._tx('readonly', 'getAllKeys').then(this._select.bind(this));
   }
 
   _select(keys) {
     const ans = {};
     const promises = [];
-    keys.forEach((key) => promises.push(this._tx('readonly', 'get', key).then((r) => ans[key] = this.parse(r))));
+    keys.forEach((key) => promises.push(this._tx('readonly', 'get', key).then((r) => ans[key] = r)));
     return Promise.all(promises).then(() => ans);
   }
 
@@ -20,10 +20,10 @@ class IndexedDB extends Storage {
     const promises = [];
     for (let key in data) {
       const promise = this._tx('readonly', 'get', key).then((oldResult) => {
-        if (oldResult && oldResult.key == key) {
-          return this._tx('readwrite', 'put', { key: key, value: data[key] });
+        if (typeof oldResult !== 'undefined' && oldResult !== data[key]) {
+          return this._tx('readwrite', 'put', data[key], key);
         } else {
-          return this._tx('readwrite', 'add', { key: key, value: data[key] });
+          return this._tx('readwrite', 'add', data[key], key);
         }
       });
       promises.push(promise);
@@ -41,13 +41,13 @@ class IndexedDB extends Storage {
     return this._tx('readwrite', 'clear');
   }
 
-  _tx(scope, fn, params) {
+  _tx(scope, fn, param1, param2) {
     const me = this;
     this._store = this._store || this.createStore(me.tableName);
     return this._store.then((db) => {
       return new Promise((resolve, reject) => {
         const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
-        const request = tx[fn].call(tx, params);
+        const request = tx[fn].call(tx, param1, param2);
         request.onsuccess = (event) =>  resolve(event.target.result);
         request.onerror = (event) => reject(event.error);
       });
@@ -63,25 +63,11 @@ class IndexedDB extends Storage {
       const request = this.store.open(table, 1);
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        db.createObjectStore(table, { keyPath: 'key' });
+        db.createObjectStore(table);
       };
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
-  }
-
-  parse(data) {
-    const ans = {};
-    if (Array.isArray(data)) {
-      data.forEach((row) => {
-        ans[row.key] = row.value;
-      });
-    } else if (data) {
-      return data.value;
-    } else {
-      return undefined;
-    }
-    return ans;
   }
 
   static get type() {

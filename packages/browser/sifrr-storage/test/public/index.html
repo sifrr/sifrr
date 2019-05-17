@@ -15,13 +15,17 @@
         await storage[setting](key, value);
         let runs = 0;
         return new Promise(res => {
-          const start = performance.now();
+          const start = performance.now(), data = {};
           for (let i = 0; i < num; i++) {
-            storage[setting](key + i, value).then(() => {
-              runs++;
-              if (runs >= num) res(performance.now() - start);
-            });
+            data[key + i] = value;
+            if (setting !== 'set') {
+              storage[setting](key + i, value).then(() => {
+                runs++;
+                if (runs >= num) res(performance.now() - start);
+              });
+            }
           }
+          if (setting === 'set') res(storage.set(data).then(() => performance.now() - start));
         });
       }
     </script>
