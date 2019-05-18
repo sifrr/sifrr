@@ -149,21 +149,17 @@ for (let key in SifrrStorage.availableStores) {
 
     it(`${key}.clear clears the storage`, async () => {
       const result = await page.evaluate(async (key) => {
-        try {
-          let storage = new Sifrr.Storage(key), ans = {};
-          await storage.set('a', 'b');
-          ans.before = await storage.get('a');
-          await storage.clear();
-          ans.after = await storage.get('a');
+        let storage = new Sifrr.Storage(key), ans = {};
+        await storage.set('a', 'b');
+        ans.before = await storage.get('a');
+        await storage.clear();
+        ans.after = await storage.get('a');
 
-          await storage.set('a', 'b');
-          ans.before2 = await storage.get('a');
-          await storage.clear();
-          ans.after2 = await storage.get('a');
-          return ans;
-        } catch(e) {
-          return e.message;
-        }
+        await storage.set('a', 'b');
+        ans.before2 = await storage.get('a');
+        await storage.clear();
+        ans.after2 = await storage.get('a');
+        return ans;
       }, key);
       assert.equal(result.before.a, 'b');
       assert.equal(result.before2.a, 'b');

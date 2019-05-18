@@ -20,11 +20,8 @@ class IndexedDB extends Storage {
     const promises = [];
     for (let key in data) {
       const promise = this._tx('readonly', 'get', key).then((oldResult) => {
-        if (typeof oldResult !== 'undefined' && oldResult !== data[key]) {
-          return this._tx('readwrite', 'put', data[key], key);
-        } else {
-          return this._tx('readwrite', 'add', data[key], key);
-        }
+        if (typeof oldResult !== 'undefined') return this._tx('readwrite', 'put', data[key], key);
+        else return this._tx('readwrite', 'add', data[key], key);
       });
       promises.push(promise);
     }
