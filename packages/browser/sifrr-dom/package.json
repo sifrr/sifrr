@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/dom",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Sifrr's DOM library for creating user interfaces for websites.",
   "license": "MIT",
   "repository": {
