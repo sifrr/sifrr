@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Dom v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 const temp = window.document.createElement('template');

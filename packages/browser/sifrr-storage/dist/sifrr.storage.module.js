@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Storage v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const toS = Object.prototype.toString;
 const l = 6, uId = Math.random().toString(36).slice(-1 * l);
 class Json {

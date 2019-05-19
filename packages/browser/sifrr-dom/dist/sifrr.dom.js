@@ -1,4 +1,4 @@
-/*! Sifrr.Dom v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Dom v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :

@@ -1,4 +1,4 @@
-/*! Sifrr.Route v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Route v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import dom from '@sifrr/dom';
 
 class RegexPath {

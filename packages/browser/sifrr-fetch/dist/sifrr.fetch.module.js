@@ -1,4 +1,4 @@
-/*! Sifrr.Fetch v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Fetch v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const ObjConst = ({}).constructor;
 class Request {
   constructor(url, options) {

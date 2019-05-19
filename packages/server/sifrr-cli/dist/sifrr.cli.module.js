@@ -1,4 +1,4 @@
-/*! Sifrr.Cli v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Cli v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import fs from 'fs';
 import path from 'path';
 import mkdirp from 'mkdirp';
