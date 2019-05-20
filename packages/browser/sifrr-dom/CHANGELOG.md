@@ -1,3 +1,30 @@
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+
+
+### Features
+
+* **sifrr-dom:** add js execution function ([0186437](https://github.com/sifrr/sifrr/commit/0186437))
+* **sifrr-dom:** add Listener can take element as well ([e7662d4](https://github.com/sifrr/sifrr/commit/e7662d4))
+* **sifrr-dom:** add root reference in repeated refs ([d5fbd62](https://github.com/sifrr/sifrr/commit/d5fbd62))
+* **sifrr-dom:** add syncedAttrs ([d9dc170](https://github.com/sifrr/sifrr/commit/d9dc170))
+* **sifrr-dom:** add two way binding between element states ([bd20eab](https://github.com/sifrr/sifrr/commit/bd20eab))
+* **sifrr-dom:** don't give error if element has no state ([e99e5ea](https://github.com/sifrr/sifrr/commit/e99e5ea))
+* **sifrr-dom:** make deep twoway binding work ([d9ba844](https://github.com/sifrr/sifrr/commit/d9ba844))
+* **sifrr-dom:** set connected status for element ([014df65](https://github.com/sifrr/sifrr/commit/014df65))
+* **sifrr-dom:** set global sifrr.dom on setup ([4335bbd](https://github.com/sifrr/sifrr/commit/4335bbd))
+* **sifrr-dom:** strings also work as element template ([bf96a41](https://github.com/sifrr/sifrr/commit/bf96a41))
+* **sifrr-dom:** warn if name already taken ([098d54e](https://github.com/sifrr/sifrr/commit/098d54e))
+
+
+### Performance Improvements
+
+* **sifrr-dom:** cache text node values ([45e6531](https://github.com/sifrr/sifrr/commit/45e6531))
+* **sifrr-dom:** iterate backwards in arrays ([fe5efa5](https://github.com/sifrr/sifrr/commit/fe5efa5))
+* **sifrr-dom:** trigger update only when there is listener ([6a736d9](https://github.com/sifrr/sifrr/commit/6a736d9))
+* **sifrr-dom:** use array state maps for events and attributes ([cfdd514](https://github.com/sifrr/sifrr/commit/cfdd514))
+
+
+
 ## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 

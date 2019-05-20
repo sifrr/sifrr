@@ -1,3 +1,13 @@
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+
+
+### Features
+
+* **sifrr-api:** association works in sequelize create resolver ([b1e354e](https://github.com/sifrr/sifrr/commit/b1e354e))
+* **sifrr-api:** make connection query work ([4f753c0](https://github.com/sifrr/sifrr/commit/4f753c0))
+
+
+
 ## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 

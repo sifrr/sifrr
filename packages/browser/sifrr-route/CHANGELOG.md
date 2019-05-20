@@ -1,3 +1,13 @@
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+
+
+### Features
+
+* **sifrr-route:** add events on activation and deactivation ([16a8911](https://github.com/sifrr/sifrr/commit/16a8911))
+* **sifrr-route:** don't add Route to Dom, add to Sifrr.Route ([8bde333](https://github.com/sifrr/sifrr/commit/8bde333))
+
+
+
 ## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 

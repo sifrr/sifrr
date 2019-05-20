@@ -1,3 +1,13 @@
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+
+
+### Features
+
+* **sifrr-fetch:** add speed as second parameter in onProgress fxn ([10d0419](https://github.com/sifrr/sifrr/commit/10d0419))
+* **sifrr-fetch:** take options in fallback paramete in ws ([b0d76e2](https://github.com/sifrr/sifrr/commit/b0d76e2))
+
+
+
 ## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 

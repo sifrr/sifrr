@@ -1,3 +1,22 @@
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+
+
+### Bug Fixes
+
+* **sifrr-server:** abort passing stream when compressed ([7462264](https://github.com/sifrr/sifrr/commit/7462264))
+* **sifrr-server:** fix mutable headers issue ([026c675](https://github.com/sifrr/sifrr/commit/026c675))
+* **sifrr-server:** return this after close ([e992c38](https://github.com/sifrr/sifrr/commit/e992c38))
+
+
+### Features
+
+* **sifrr-server:** add option to change filename for tmpdir ([c2a9330](https://github.com/sifrr/sifrr/commit/c2a9330))
+* **sifrr-server:** add optional caching  ([#106](https://github.com/sifrr/sifrr/issues/106)) ([cf74306](https://github.com/sifrr/sifrr/commit/cf74306))
+* **sifrr-server:** change ext methods to mimes/getMime ([724ecb5](https://github.com/sifrr/sifrr/commit/724ecb5))
+* **sifrr-server:** make compress: false as default ([af95e82](https://github.com/sifrr/sifrr/commit/af95e82))
+
+
+
 ## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 
