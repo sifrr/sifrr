@@ -35,6 +35,7 @@ class Json {
 
   static stringify(data) {
     if (typeof data !== 'object') return data;
+    if (data === null) return null;
     let ans;
     const type = toS.call(data).slice(8, -1);
     switch (type) {

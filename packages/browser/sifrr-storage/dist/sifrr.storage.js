@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Storage v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -39,6 +39,7 @@
     }
     static stringify(data) {
       if (typeof data !== 'object') return data;
+      if (data === null) return null;
       let ans;
       const type = toS.call(data).slice(8, -1);
       switch (type) {
@@ -241,7 +242,7 @@
       const table = this.tableName;
       this.store.transaction(tx => {
         for (let key in data) {
-          tx.executeSql("INSERT OR REPLACE INTO ".concat(table, "(key, value) VALUES (?, ?)"), [key, data[key]]);
+          tx.executeSql("INSERT OR REPLACE INTO ".concat(table, "(key, value) VALUES (?, ?)"), [key, this.constructor.stringify(data[key])]);
         }
       });
     }

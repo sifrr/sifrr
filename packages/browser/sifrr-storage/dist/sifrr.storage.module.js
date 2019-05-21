@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Storage v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const toS = Object.prototype.toString;
 const l = 6, uId = Math.random().toString(36).slice(-1 * l);
 class Json {
@@ -33,6 +33,7 @@ class Json {
   }
   static stringify(data) {
     if (typeof data !== 'object') return data;
+    if (data === null) return null;
     let ans;
     const type = toS.call(data).slice(8, -1);
     switch (type) {
@@ -227,7 +228,7 @@ class WebSQL extends storage {
     const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
       }
     });
   }

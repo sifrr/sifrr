@@ -28,7 +28,7 @@ class WebSQL extends Storage {
     const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
       }
     });
   }

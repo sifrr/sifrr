@@ -189,4 +189,8 @@ can be any of these types:
 - `Uint8ClampedArray`,
 - `String`
 
-**Note**: When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
+### Gotchas
+- When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
+- Since object[key] is `undefined` when key is not present in the object, `undefined` is not supported as a value.
+- `null` value has buggy behaviour in localstorage, as it returns `null` when value is not present.
+- If you want to save falsy values, you can save `false` or `0` which are supported by all storages.

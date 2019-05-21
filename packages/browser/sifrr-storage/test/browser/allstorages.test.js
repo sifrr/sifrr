@@ -182,10 +182,15 @@ for (let key in SifrrStorage.availableStores) {
       const result = await page.evaluate(async (key) => {
         const storage = new Sifrr.Storage(key);
         await storage.set('a', 0);
-        return (await storage.get('a')).a;
+        await storage.set('f', false);
+        return {
+          0: (await storage.get('a')).a,
+          false: (await storage.get('f')).f
+        };
       }, key);
 
-      expect(result).to.equal(0);
+      expect(result['0']).to.equal(0);
+      expect(result['false']).to.equal(false);
     });
 
     describe('works with all types of data', async () => {
