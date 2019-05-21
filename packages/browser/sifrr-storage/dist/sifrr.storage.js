@@ -172,10 +172,7 @@
     }
     _upsert(data) {
       const promises = [];
-      for (let key in data) {
-        const promise = this._tx('readwrite', 'put', data[key], key);
-        promises.push(promise);
-      }
+      for (let key in data) promises.push(this._tx('readwrite', 'put', data[key], key));
       return Promise.all(promises);
     }
     _delete(keys) {
