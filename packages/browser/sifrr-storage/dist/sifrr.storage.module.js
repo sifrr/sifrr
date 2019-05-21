@@ -1,4 +1,4 @@
-/*! Sifrr.Storage v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
+/*! Sifrr.Storage v0.0.4 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const toS = Object.prototype.toString;
 const l = 6, uId = Math.random().toString(36).slice(-1 * l);
 class Json {
@@ -158,10 +158,7 @@ class IndexedDB extends storage {
   _upsert(data) {
     const promises = [];
     for (let key in data) {
-      const promise = this._tx('readonly', 'get', key).then((oldResult) => {
-        if (typeof oldResult !== 'undefined') return this._tx('readwrite', 'put', data[key], key);
-        else return this._tx('readwrite', 'add', data[key], key);
-      });
+      const promise = this._tx('readwrite', 'put', data[key], key);
       promises.push(promise);
     }
     return Promise.all(promises);
@@ -230,8 +227,7 @@ class WebSQL extends storage {
     const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR IGNORE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
-        tx.executeSql(`UPDATE ${table} SET value = ? WHERE key = ?`, [this.constructor.stringify(data[key]), key]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, data[key]]);
       }
     });
   }

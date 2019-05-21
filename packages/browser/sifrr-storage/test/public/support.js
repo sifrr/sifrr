@@ -60,3 +60,9 @@ window.AllDataTypes = {
   Uint32Array: new Uint32Array(ab),
   String: new String('string')
 };
+
+window.LF = {
+  websql: window.localforage.createInstance({ driver: window.localforage.WEBSQL }),
+  indexeddb: window.localforage.createInstance({ driver: window.localforage.INDEXEDDB }),
+  localstorage: window.localforage.createInstance({ driver: window.localforage.LOCALSTORAGE })
+};

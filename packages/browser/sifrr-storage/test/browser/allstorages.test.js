@@ -220,12 +220,20 @@ for (let key in SifrrStorage.availableStores) {
       });
     });
 
-    it('speed test', async () => {
+    it('speed test', async function() {
+      this.timeout(0);
+
       const result = await page.evaluate(async (key) => {
-        return await bulkInsert(key, 'a', 0);
+        return {
+          ss: await bulkInsert(key, 'a', 0, 100),
+          lf: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available',
+          ssUpdate: await bulkInsert(key, 'a', 0, 100),
+          lfUpdate: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available'
+        };
       }, key);
 
-      global.console.log(key, result);
+      global.console.log(key);
+      global.console.table(result);
     });
   });
 }
