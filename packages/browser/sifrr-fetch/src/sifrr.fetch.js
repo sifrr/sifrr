@@ -33,14 +33,7 @@ class SifrrFetch {
   }
 
   static socket(url, protocol, fallback) {
-    return new WebSocket(url, protocol, fallback ? (message) => {
-      const options = fallback.options || {}, method = fallback.method.toLowerCase();
-      options.headers = options.headers || {};
-      options.headers['content-type'] = options.headers['content-type'] || 'application/json';
-      if (method === 'post') options.body = message;
-      else options.query = message;
-      return this[method](fallback.url, options);
-    } : undefined);
+    return new WebSocket(url, protocol, fallback);
   }
 
   static file(url, options = {}) {

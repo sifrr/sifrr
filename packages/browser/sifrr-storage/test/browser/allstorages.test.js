@@ -219,7 +219,7 @@ for (let key in SifrrStorage.availableStores) {
             await new Promise(res => setTimeout(res, 30));
           }, key, type);
 
-          await page.reload();
+          await page.goto(`${PATH}/index.html`);
           const result = await page.evaluate(async (key, type) => {
             const s = new Sifrr.Storage(key);
             const value = (await s.get(type))[type];

@@ -4,11 +4,8 @@ describe('websocket', function() {
   });
 
   it('works with fallback', async () => {
-    const message = await page.evaluate(async (path) => {
-      const sock = Sifrr.Fetch.socket(`ws://localhost:0909/`, undefined, {
-        url: `${path}/ok.json`,
-        method: 'get'
-      });
+    const message = await page.evaluate(async () => {
+      const sock = Sifrr.Fetch.socket(`ws://localhost:0909/`, undefined, () => 'hahaha');
       const first = await sock.send({ ok: true });
       const fb = sock._fallback;
       return {
@@ -16,11 +13,11 @@ describe('websocket', function() {
         fb,
         second: await sock.send({ ok: true })
       };
-    }, PATH);
+    });
 
-    expect(message.first).to.deep.equal({ from: 'file' });
+    expect(message.first).to.deep.equal('hahaha');
     expect(message.fb).to.equal(true);
-    expect(message.second).to.deep.equal({ from: 'file' });
+    expect(message.second).to.deep.equal('hahaha');
   });
 
   it('throws error without fallback', async () => {

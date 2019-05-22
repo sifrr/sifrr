@@ -133,7 +133,7 @@ Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' },
 
 ```js
 // Open a socket
-const socket = Sifrr.Fetch.socket(url, protocols, fallback /* { url: 'fallback url', method: 'fallback method' } */);
+const socket = Sifrr.Fetch.socket(url, protocols, fallback /* (message) => 'fallback response' */);
 // send a message
 socket.send(message).then(resp => {
   // do something
@@ -152,7 +152,7 @@ socket.send(message).then(resp => {
 // then resp will be equal to response sent above
 //
 // If socket connection fails
-// it will send fetch request with message as body to url and method given in fallback parameter
+// It will call fallback function with message and resolves with its return value
 
 ```
 
