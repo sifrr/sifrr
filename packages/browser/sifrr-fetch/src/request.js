@@ -70,9 +70,7 @@ class Request {
     const options = Object.assign({
       redirect: 'follow'
     }, this._options);
-    options.headers = Object.assign({
-      accept: 'application/json'
-    }, this._options.headers || {});
+    options.headers = this._options.headers || {};
     if (options.body && options.body.constructor === ObjConst) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
       options.body = JSON.stringify(options.body);
