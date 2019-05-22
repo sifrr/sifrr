@@ -187,12 +187,31 @@ describe('sifrr-fetch', () => {
           options.body = 'hijacked body';
           return { url, options, method };
         },
+        use: () => ({ a: 'hijack part 2' }),
         after: (resp) => {
-          resp.b = 'hijack part 2';
+          resp.b = 'hijack part 3';
           return resp;
         }
       });
     });
-    expect(resp).to.deep.equal({ a: 'hijacked body', b: 'hijack part 2' });
+    expect(resp).to.deep.equal({ a: 'hijack part 2', b: 'hijack part 3' });
+
+    const resp2 = await page.evaluate(async () => {
+      return await Sifrr.Fetch.post('/test', {
+        body: 'post body',
+        before: ({ url, options, method }) => {
+          options.body = 'hijacked body';
+          return { url, options, method };
+        },
+        use: () => {
+          throw Error('bang');
+        },
+        after: (resp) => {
+          resp.b = 'hijack part 3';
+          return resp;
+        }
+      });
+    });
+    expect(resp2).to.deep.equal({ a: 'hijacked body', b: 'hijack part 3' });
   });
 });

@@ -55,8 +55,11 @@ window.Sifrr.Fetch = Fetch;
 **options** are Fetch API options with some extra keys:
 
 -   **params** `json object` key, value pairs will be added to url as ?key=value
--   **body** body to send with post requests (can be serializable object)
--   **onProgress** if response has content-length, this function will be called with `progress in percentage` and `speed in kbps`
+-   **body** `json object | string` body to send with post requests
+-   **onProgress** `function` if response has content-length, this function will be called with `progress in percentage` and `speed in kbps`
+-   **before** `function` this function will be called with `{ url, options, method }` and should return modified `{ url, options, method }` which will be used to send requests
+-   **after** `function` this function will be called with `response` and should return modified `response`
+-   **use** `function` this function will be called with `{ url, options, method }` and resolve/return with response which will be returned, if this function errors, response will be fetched normally (use case: use it as a middleware for cache)
 
 #### GET request
 
@@ -147,6 +150,9 @@ socket.send(message).then(resp => {
 //   data: response
 // }
 // then resp will be equal to response sent above
+//
+// If socket connection fails
+// it will send fetch request with message as body to url and method given in fallback parameter
 
 ```
 
