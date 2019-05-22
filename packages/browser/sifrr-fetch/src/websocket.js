@@ -9,15 +9,7 @@ class WebSocket {
     this._openSocket();
   }
 
-  send(data, type) {
-    if (data.constructor === ({}).constructor) {
-      return this.sendJSON(data, type);
-    } else {
-      return this.sendRaw(data, this.id++);
-    }
-  }
-
-  sendJSON(data, type = 'JSON') {
+  send(data, type = 'JSON') {
     const message = {
       data,
       sifrrQueryType: type,
@@ -73,13 +65,7 @@ class WebSocket {
     });
   }
 
-  onerror() {
-    this._fallback = !!this.fallback;
-    for (let r in this._requests) {
-      const req = this._requests[r];
-      this.fallback(req.data).then(result => req.res(result));
-    }
-  }
+  onerror() {}
 
   onopen() {}
 

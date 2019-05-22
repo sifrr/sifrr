@@ -127,7 +127,11 @@ Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' },
   });
 ```
 
-## Sockets
+## WebSockets
+
+Automatic connection retries, calls fallback on message sending failure/error
+
+### WebSocket fetch
 
 **Note**: Only works with JSON messages/responses
 
@@ -135,25 +139,43 @@ Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' },
 // Open a socket
 const socket = Sifrr.Fetch.socket(url, protocols, fallback /* (message) => 'fallback response' */);
 // send a message
-socket.send(message).then(resp => {
+socket.send(message [, type]).then(resp => {
   // do something
 });
 
 // Server will receive data as:
 // {
-//   sifrrRequestId: Int,
+//   sifrrQueryId: Int,
+//   sifrrQueryType: type, (default: 'JSON')
 //   data: message
 // },
 // and should send back
 // {
-//   sifrrRequestId: same id as received
+//   sifrrQueryId: same id as received
 //   data: response
 // }
 // then resp will be equal to response sent above
 //
 // If socket connection fails
 // It will call fallback function with message and resolves with its return value
+```
 
+### Traditional WebSocket messaging
+
+```js
+// Open a socket
+const socket = Sifrr.Fetch.socket(url, protocols, fallback /* (message) => 'fallback response' */);
+// send a message
+socket.sendRaw(message);
+```
+
+### Hooks
+```js
+// same as websocket's hooks
+socket.onmessage = (event) => {}
+socker.onopen = () => {};
+socker.onclose = () => {};
+socker.onerror = (e) => {};
 ```
 
 ## References
