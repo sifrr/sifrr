@@ -2,34 +2,34 @@ const Request = require('./request');
 const WebSocket = require('./websocket');
 
 class SifrrFetch {
-  static get(purl, poptions) {
-    return this.request(purl, poptions, 'GET');
+  static get(url, options) {
+    return this.request(url, options, 'GET');
   }
 
-  static post(purl, poptions) {
-    return this.request(purl, poptions, 'POST');
+  static post(url, options) {
+    return this.request(url, options, 'POST');
   }
 
-  static put(purl, poptions) {
-    return this.request(purl, poptions, 'PUT');
+  static put(url, options) {
+    return this.request(url, options, 'PUT');
   }
 
-  static delete(purl, poptions) {
-    return this.request(purl, poptions, 'DELETE');
+  static delete(url, options) {
+    return this.request(url, options, 'DELETE');
   }
 
-  static graphql(purl, poptions) {
-    const { query, variables = {} } = poptions;
-    delete poptions.query;
-    delete poptions.variables;
-    poptions.headers = poptions.headers || {};
-    poptions.headers['Content-Type'] = 'application/json';
-    poptions.headers['Accept'] = 'application/json';
-    poptions.body = {
+  static graphql(url, options) {
+    const { query, variables = {} } = options;
+    delete options.query;
+    delete options.variables;
+    options.headers = options.headers || {};
+    options.headers['Content-Type'] = 'application/json';
+    options.headers['Accept'] = 'application/json';
+    options.body = {
       query,
       variables
     };
-    return this.request(purl, poptions, 'POST');
+    return this.request(url, options, 'POST');
   }
 
   static socket(url, protocol, fallback) {
@@ -43,29 +43,21 @@ class SifrrFetch {
     } : undefined);
   }
 
-  static file(purl, poptions = {}) {
-    poptions.headers = poptions.headers || {};
-    poptions.headers.accept = poptions.headers.accept || '*/*';
-    return this.request(purl, poptions, 'GET');
+  static file(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers.accept = options.headers.accept || '*/*';
+    return this.request(url, options);
   }
 
-  static request(purl, poptions, method) {
-    const { url, options } = this.afterUse(purl, poptions, method);
-    return new Request(url, options).response;
-  }
-
-  static use(fxn) {
-    SifrrFetch._middlewares.push(fxn);
-  }
-
-  static afterUse(url, options = {}, method) {
-    options.method = (options.method  || method).toUpperCase();
-    SifrrFetch._middlewares.forEach((fxn) => {
-      const res = fxn(url, options);
-      url = res.url;
-      options = res.options;
+  static request(u, o = {}, m = 'GET') {
+    let promise = Promise.resolve({ url: u, options: o, method: m });
+    if (typeof o.before === 'function') (promise = promise.then(o.before)) && delete o.before;
+    promise = promise.then(({ url, options, method }) => {
+      options.method = method;
+      return new Request(url, options).response();
     });
-    return { url, options };
+    if (typeof o.after === 'function') (promise = promise.then(o.after)) && delete o.after;
+    return promise;
   }
 }
 

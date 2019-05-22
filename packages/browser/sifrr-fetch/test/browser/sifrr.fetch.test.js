@@ -179,15 +179,20 @@ describe('sifrr-fetch', () => {
     expect(parseInt(resp2, 10)).to.equal(100);
   });
 
-  // Keep this test in the end
   it('middlewares work', async () => {
-    await page.evaluate(() => {
-      Sifrr.Fetch.use((url, options) => {
-        options.body = 'hijacked body';
-        return { url, options };
+    const resp = await page.evaluate(async () => {
+      return await Sifrr.Fetch.post('/test', {
+        body: 'post body',
+        before: ({ url, options, method }) => {
+          options.body = 'hijacked body';
+          return { url, options, method };
+        },
+        after: (resp) => {
+          resp.b = 'hijack part 2';
+          return resp;
+        }
       });
     });
-    const resp = await getResponse('post', '/test', { body: 'post body' });
-    expect(resp).to.deep.equal({ a: 'hijacked body' });
+    expect(resp).to.deep.equal({ a: 'hijacked body', b: 'hijack part 2' });
   });
 });

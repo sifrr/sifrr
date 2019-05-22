@@ -6,7 +6,7 @@ class Request {
     this._url = url;
   }
 
-  get response() {
+  response() {
     const me = this;
     return window.fetch(this.url, this.options).then(resp => {
       const contentType = resp.headers.get('content-type');

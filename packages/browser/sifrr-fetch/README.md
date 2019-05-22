@@ -143,8 +143,8 @@ socket.send(message).then(resp => {
 // },
 // and should send back
 // {
-// sifrrRequestId: same id as received
-// data: response
+//   sifrrRequestId: same id as received
+//   data: response
 // }
 // then resp will be equal to response sent above
 
