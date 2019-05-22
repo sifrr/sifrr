@@ -33,20 +33,30 @@ function save_jsonstorage() {
 }
 
 function arrayEqual(buf1, buf2) {
+  if (typeof buf1 !== 'object') return buf1 === buf2;
+  if (buf1 instanceof window.Blob) {
+    return buf1.type === buf2.type && buf1.size === buf2.size;
+  }
+  if (Array.isArray(buf1)) {
+    for (let i = 0 ; i < buf1.length ; i++) {
+      if (buf1[i] !== buf2[i]) return false;
+    }
+    return true;
+  }
   if (buf1.byteLength != buf2.byteLength) return false;
   let dv1 = new Int8Array(buf1);
   let dv2 = new Int8Array(buf2);
   for (let i = 0 ; i < buf1.byteLength ; i++) {
-    if (dv1[i] != dv2[i]) return false;
+    if (dv1[i] !== dv2[i]) return false;
   }
   return true;
 }
 
 const ab = new ArrayBuffer(16);
 window.AllDataTypes = {
-  Array: [ 1, 2, 3 ],
+  Array: [ 1, 2, 3, 'a', 'b', '1234' ],
   ArrayBuffer: ab,
-  Blob: new Blob(['abcd']),
+  Blob: new Blob(['abcd'], { type: 'text/html' }),
   Float32Array: new Float32Array(ab),
   Float64Array: new Float64Array(ab),
   Int8Array: new Int8Array(ab),

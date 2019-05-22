@@ -6,22 +6,38 @@
 }(this, function () { 'use strict';
 
   const toS = Object.prototype.toString;
-  const l = 6,
-        uId = Math.random().toString(36).slice(-1 * l);
+  const uId = '~~SifrrStorage84l23g5k34~~';
+  function decodeBlob(str, type) {
+    return new Blob([new window.Uint8Array(str.split(',')).buffer], {
+      type
+    });
+  }
+  function encodeBlob(blob) {
+    const uri = URL.createObjectURL(blob),
+          xhr = new XMLHttpRequest();
+    xhr.open('GET', uri, false);
+    xhr.send();
+    URL.revokeObjectURL(uri);
+    const ui8 = new Uint8Array(xhr.response.length);
+    for (let i = 0; i < xhr.response.length; ++i) {
+      ui8[i] = xhr.response.charCodeAt(i);
+    }
+    return ui8.toString();
+  }
   class Json {
     static parse(data) {
       let ans = data;
       if (typeof data === 'string') {
         try {
-          ans = this.parse(JSON.parse(data));
+          ans = data = JSON.parse(data);
         } catch (e) {
         }
-        if (typeof ans === 'string') {
-          const i = ans.indexOf(uId);
-          if (i > 0) {
-            const [type, av] = ans.split(uId);
-            if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;else ans = new window[type](av.split(','));
-          }
+      }
+      if (typeof data === 'string') {
+        const i = data.indexOf(uId);
+        if (i > 0) {
+          const [type, av, av2] = data.split(uId);
+          if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;else if (type === 'Blob') ans = decodeBlob(av2, av);else ans = new window[type](av.split(','));
         }
       } else if (Array.isArray(data)) {
         ans = [];
@@ -38,26 +54,22 @@
       return ans;
     }
     static stringify(data) {
-      if (typeof data !== 'object') return data;
-      if (data === null) return null;
-      let ans;
+      if (typeof data !== 'object') return JSON.stringify(data);
+      if (data === null) return 'null';
+      if (Array.isArray(data)) return JSON.stringify(data.map(d => this.stringify(d)));
       const type = toS.call(data).slice(8, -1);
-      switch (type) {
-        case 'Object':
-          ans = {};
-          for (let k in data) {
-            ans[k] = this.stringify(data[k]);
-          }
-          ans = JSON.stringify(ans);
-          break;
-        case 'ArrayBuffer':
-          ans = type + uId + new window.Uint8Array(data).toString();
-          break;
-        default:
-          ans = type + uId + data.toString();
-          break;
+      if (type === 'Object') {
+        let ans = {};
+        for (let k in data) {
+          ans[k] = this.stringify(data[k]);
+        }
+        return JSON.stringify(ans);
+      } else if (type === 'ArrayBuffer') {
+        data = new window.Uint8Array(data);
+      } else if (type === 'Blob') {
+        data = data.type + uId + encodeBlob(data);
       }
-      return ans;
+      return type + uId + data.toString();
     }
   }
   var json = Json;

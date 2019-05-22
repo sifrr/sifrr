@@ -213,32 +213,47 @@ for (let key in SifrrStorage.availableStores) {
       ];
       types.forEach(type => {
         it(`works with ${type}`, async () => {
-          const result = await page.evaluate(async (key, type) => {
+          await page.evaluate(async (key, type) => {
             const s = new Sifrr.Storage(key);
             await s.set(type, window.AllDataTypes[type]);
-            const value = (await s.get(type))[type];
-            return (value instanceof window[type] && arrayEqual(value, window.AllDataTypes[type])) || typeof value === type.toLowerCase();
+            await new Promise(res => setTimeout(res, 30));
           }, key, type);
 
-          assert(result);
+          await page.reload();
+          const result = await page.evaluate(async (key, type) => {
+            const s = new Sifrr.Storage(key);
+            const value = (await s.get(type))[type];
+            return {
+              sameInstance: value instanceof window[type],
+              arrayEqual: arrayEqual(value, window.AllDataTypes[type]),
+              exact: value === window.AllDataTypes[type],
+              value,
+              correctValue: window.AllDataTypes[type]
+            };
+          }, key, type);
+
+          if (key !== 'jsonstorage') {
+            assert(result.exact || (result.sameInstance && result.arrayEqual));
+          }
         });
       });
     });
 
-    it('speed test', async function() {
-      this.timeout(0);
+    describe('speedtest', () => {
+      it(key, async function() {
+        this.timeout(0);
 
-      const result = await page.evaluate(async (key) => {
-        return {
-          ss: await bulkInsert(key, 'a', 0, 100),
-          lf: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available',
-          ssUpdate: await bulkInsert(key, 'a', 0, 100),
-          lfUpdate: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available'
-        };
-      }, key);
+        const result = await page.evaluate(async (key) => {
+          return {
+            ss: await bulkInsert(key, 'a', 0, 10),
+            lf: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available',
+            ssUpdate: await bulkInsert(key, 'a', 0, 100),
+            lfUpdate: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available'
+          };
+        }, key);
 
-      global.console.log(key);
-      global.console.table(result);
+        global.console.table(result);
+      });
     });
   });
 }
