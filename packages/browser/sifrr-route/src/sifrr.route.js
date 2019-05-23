@@ -48,8 +48,14 @@ class SifrrRoute extends SifrrDom.Element {
 
   activate() {
     if (!this.loaded) {
-      if (this.dataset.sifrrElements && this.dataset.sifrrElements.indexOf('-') > 0) {
-        this.loaded = Promise.all(this.dataset.sifrrElements.split(',').map(SifrrDom.load));
+      const sifrrElements = this.dataset.sifrrElements;
+      if (sifrrElements && sifrrElements.indexOf('-') > 0) {
+        try {
+          const elements = JSON.parse(sifrrElements);
+          this.loaded = Promise.all(Object.keys(elements).map(k => SifrrDom.load(k, elements[k])));
+        } catch (e) {
+          this.loaded = Promise.all(sifrrElements.split(',').map(k => SifrrDom.load(k)));
+        }
       } else {
         this.loaded = Promise.resolve(true);
       }

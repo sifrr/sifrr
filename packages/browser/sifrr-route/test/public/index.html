@@ -63,6 +63,8 @@
   <a href="/efgh#hash_random" title="efgh">/efgh hash</a>
   <a href="/notitle">/notitle</a>
   <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
+  <a id="elementSimple" href="/els/simple" title="Elements">Load simple elements</a>
+  <a id="elementJson" href="/els/json" title="Elements">Load JSON elements</a>
   <sifrr-route id='test' path='/'>
     <p>test</p>
   </sifrr-route>
@@ -81,6 +83,10 @@
   <sifrr-route id="complex" path='/:x/*/**/mnop/*/:k' data-sifrr-elements='sifrr-test'>
     Route state check
     <sifrr-test data-sifrr-route-state="true"></sifrr-test>
+  </sifrr-route>
+  <sifrr-route path='/els/simple' data-sifrr-elements='sifrr-a,sifrr-b'>
+  </sifrr-route>
+  <sifrr-route path='/els/json' data-sifrr-elements='{"sifrr-a": {}, "sifrr-b": { "js": true }}'>
   </sifrr-route>
   <script src="/sifrr.dom.min.js" charset="utf-8"></script>
   <script src="/index.bundled.js" charset="utf-8"></script>

@@ -213,4 +213,18 @@ describe('sifrr-route', () => {
 
     expect(childState.route).to.deep.equal(routeState);
   });
+
+  // keep in end
+  it('loads sifrr elements required', async () => {
+    await page.evaluate(() => {
+      window.loadedEls = {};
+      Sifrr.Dom.load = (k, o = {}) => window.loadedEls[k] = o;
+    });
+    await page.click('#elementSimple');
+    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({'sifrr-a': {}, 'sifrr-b': {}});
+
+    await page.evaluate(() => window.loadedEls = {});
+    await page.click('#elementJson');
+    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({'sifrr-a': {}, 'sifrr-b': { js: true }});
+  });
 });
