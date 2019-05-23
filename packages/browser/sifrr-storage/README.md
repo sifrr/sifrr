@@ -112,6 +112,13 @@ let data = { a: 'b', c: { d: 'e' } }
 storage.set(data).then(() => {/* Do something here */});
 ```
 
+**Note** Cookies are trucated after ~628 characters in chrome (total of key + value characters), other browsers may tructae at other values as well. Use cookies for small data only
+
+Set cookie that can be sent
+```js
+storage.store = `key=value; expires=...; path=/`;
+```
+
 ### Getting value
 
 ```js

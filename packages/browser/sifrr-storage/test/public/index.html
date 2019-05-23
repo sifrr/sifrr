@@ -28,7 +28,7 @@
       }
       // wrapping something with storage
       let getCached = (url) => {
-        const storage = new Sifrr.Storage({ name: 'SifrrFetchGet', version: 1, priority: ['cookies'] });
+        const storage = new Sifrr.Storage({ name: 'SifrrFetchGet', version: 1 });
         return Sifrr.Fetch.get(url, {
           use: ({ url }) => {
             return storage.get(url).then(v => {
