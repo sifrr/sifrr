@@ -84,6 +84,7 @@
 	  const tmp = TEMPLATE();
 	  if (typeof str === 'string') {
 	    isString = true;
+	    if (typeof extra[0] === 'string') str = "<style>".concat(extra.join(''), "</style>").concat(str);
 	  } else if (Array.isArray(str) && typeof str[0] === 'string') {
 	    isString = true;
 	    str = String.raw(str, ...extra);

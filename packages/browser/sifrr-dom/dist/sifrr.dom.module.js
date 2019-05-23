@@ -66,6 +66,7 @@ var template = (str, ...extra) => {
   const tmp = TEMPLATE();
   if (typeof str === 'string') {
     isString = true;
+    if (typeof extra[0] === 'string') str = `<style>${extra.join('')}</style>${str}`;
   } else if (Array.isArray(str) && typeof str[0] === 'string') {
     isString = true;
     str = String.raw(str, ...extra);

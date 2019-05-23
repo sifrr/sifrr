@@ -408,6 +408,42 @@ Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 
 ### More complex apis
 
+#### `Sifrr.Dom.template` function
+
+```js
+// template function can take html string
+Sifrr.Dom.template('<p></p>')
+// <template>
+//   <p></p>
+// </template>
+
+// template function can take template html string
+Sifrr.Dom.template`<p></p>`
+// <template>
+//   <p></p>
+// </template>
+
+// template function can take html element or array of elements
+Sifrr.Dom.template(document.createElement('p'))
+// <template>
+//   <p></p>
+// </template>
+Sifrr.Dom.template([document.createElement('p'), document.createElement('p')])
+// <template>
+//   <p></p>
+//   <p></p>
+// </template>
+
+// template function can take html string and style string
+Sifrr.Dom.template('<p></p>', 'div { width: 100% }')
+// <template>
+//   <style>
+//     div { width: 100% }
+//   </style>
+//   <p></p>
+// </template>
+```
+
 #### html in bindings
 
 ```html

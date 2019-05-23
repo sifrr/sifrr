@@ -10,7 +10,7 @@ async function getValue(fxn) {
     const node = new Function(`return (${fxx}).call()`)();
     return {
       name: node.nodeName,
-      content: node.content.childNodes[0].textContent
+      content: node.innerHTML
     };
   }, fxn.toString());
 }
@@ -46,5 +46,8 @@ describe('Sifrr.Dom.template', () => {
     expect((await getValue(() => Sifrr.Dom.template`abcd\${ok}mnop`)).content).to.eq('abcd${ok}mnop');
     expect((await getValue(() => Sifrr.Dom.template`abcd\$\{ok}mnop`)).content).to.eq('abcd${ok}mnop');
     expect((await getValue(() => Sifrr.Dom.template`abcd$\{ok}mnop`)).content).to.eq('abcd${ok}mnop');
+    expect((await getValue(() => Sifrr.Dom.template(`abcd$\{ok}mnop`, 'div { width: 100% }'))).content).to.eq('<style>div { width: 100% }</style>abcd${ok}mnop');
+    expect((await getValue(() => Sifrr.Dom.template(document.createElement('p')))).content).to.eq('<p></p>');
+    expect((await getValue(() => Sifrr.Dom.template([document.createElement('p'), document.createElement('p')]))).content).to.eq('<p></p><p></p>');
   });
 });
