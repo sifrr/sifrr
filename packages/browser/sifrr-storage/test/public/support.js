@@ -3,7 +3,7 @@ function save_localstorage() {
 }
 
 function save_cookies() {
-  document.cookie = 'SifrrStorage1={"a": "b"}';
+  document.cookie = 'SifrrStorage1/a=b';
 }
 
 function save_websql() {

@@ -326,26 +326,39 @@ class LocalStorage extends storage {
 }
 var localstorage = LocalStorage;
 
+const date = new Date(0).toUTCString();
 class Cookies extends storage {
   constructor(options) {
     super(options);
   }
   _parsedData() {
-    return this.table;
-  }
-  get table() {
     let result = this.store, ans = {};
     result.split('; ').forEach((value) => {
       let [k, v] = value.split('=');
-      ans[k] = this.constructor.parse(v);
+      if (k.indexOf(this.tableName) === 0) ans[k.slice(this.tableName.length + 1)] = this.constructor.parse(v);
     });
-    return ans[this.tableName] || {};
+    return ans;
   }
-  set table(value) {
-    document.cookie = `${this.tableName}=${storage.stringify(value)}; path=/`;
+  _upsert(data) {
+    for (let key in data) {
+      this.store = `${this.tableName}/${key}=${this.constructor.stringify(data[key])}; path=/`;
+    }
+    return true;
+  }
+  _clear() {
+    let result = this.store;
+    result.split('; ').forEach((value) => {
+      const k = value.split('=')[0];
+      if (k.indexOf(this.tableName) === 0) {
+        this.store = `${k}=; expires=${date}; path=/`;
+      }
+    });
   }
   get store() {
     return document.cookie;
+  }
+  set store(v) {
+    document.cookie = v;
   }
   static get type() {
     return 'cookies';
