@@ -375,11 +375,6 @@ class JsonStorage extends storage {
   _parsedData() {
     return this.table;
   }
-  _upsert(data) {
-    for (let key in data) {
-      this.table[key] = data[key];
-    }
-  }
   get store() {
     return this.table;
   }
