@@ -110,7 +110,7 @@ When window location path is `/test/1`, sifrr-route's state will be `{ id: 1 }` 
 
 ## Animating
 
-Example:
+### CSS
 
 ```css
 sifrr-route {
@@ -128,4 +128,35 @@ sifrr-route.active {
     opacity: 1;
   }
 }
+```
+
+### JS
+
+using [sifrr-animate](https://github.com/sifrr/sifrr-animate)
+
+```js
+// all sifrr-routes
+Sifrr.Dom.Event.addListener('activate', 'sifrr-route', (e, t) => {
+  Sifrr.animate({
+    target: t,
+    to: {
+      style: {
+        opacity: ['0', '1'],
+        transform: ['scale3d(0.5,0.5,0.5)', 'scale3d(1,1,1)']
+      }
+    }
+  });
+});
+// particular sifrr-route
+Sifrr.Dom.Event.addListener('activate', document.$('sifrr-route#animated'), (e, t) => {
+  Sifrr.animate({
+    target: t,
+    to: {
+      style: {
+        opacity: ['0', '1'],
+        transform: ['scale3d(0.5,0.5,0.5)', 'scale3d(1,1,1)']
+      }
+    }
+  });
+});
 ```
