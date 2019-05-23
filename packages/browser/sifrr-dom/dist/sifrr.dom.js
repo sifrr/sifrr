@@ -22,7 +22,9 @@
 	  HTML_ATTR: 'data-sifrr-html',
 	  REPEAT_ATTR: 'data-sifrr-repeat',
 	  KEY_ATTR: 'data-sifrr-key',
-	  BIND_ATTR: 'data-sifrr-bind'
+	  BIND_ATTR: 'data-sifrr-bind',
+	  DEFAULT_STATE_ATTR: 'data-sifrr-default-state',
+	  STATE_ATTR: 'data-sifrr-state'
 	};
 
 	const {
@@ -567,12 +569,13 @@
 	} = bindings;
 	const {
 	  KEY_ATTR: KEY_ATTR$1,
-	  REPEAT_ATTR
+	  REPEAT_ATTR,
+	  DEFAULT_STATE_ATTR
 	} = constants;
 	var repeatref = (sm, el) => {
 	  sm.type = 3;
 	  let defaultState;
-	  if (el.hasAttribute('data-sifrr-default-state')) defaultState = JSON.parse(el.getAttribute('data-sifrr-default-state'));
+	  if (el.hasAttribute(DEFAULT_STATE_ATTR)) defaultState = JSON.parse(el.getAttribute(DEFAULT_STATE_ATTR));
 	  sm.se = simpleelement(el.childNodes, defaultState);
 	  sm.text = getStringBindingFxn(el.getAttribute(REPEAT_ATTR));
 	  sm.keyed = el.hasAttribute(KEY_ATTR$1);
@@ -774,7 +777,8 @@
 	  trigger
 	} = event_1;
 	const {
-	  BIND_ATTR
+	  BIND_ATTR,
+	  STATE_ATTR
 	} = constants;
 	function elementClassFactory(baseClass) {
 	  return class extends baseClass {
@@ -782,7 +786,7 @@
 	      return elementClassFactory(htmlElementClass);
 	    }
 	    static get observedAttributes() {
-	      return ['data-sifrr-state'].concat(this.observedAttrs()).concat(this.syncedAttrs());
+	      return [STATE_ATTR].concat(this.observedAttrs()).concat(this.syncedAttrs());
 	    }
 	    static syncedAttrs() {
 	      return [];
@@ -835,7 +839,7 @@
 	        this.appendChild(this.__content);
 	        delete this.__content;
 	      }
-	      if (!this.hasAttribute('data-sifrr-state')) this.update();
+	      if (!this.hasAttribute(STATE_ATTR)) this.update();
 	      this.onConnect();
 	    }
 	    onConnect() {}
@@ -844,7 +848,7 @@
 	    }
 	    onDisconnect() {}
 	    attributeChangedCallback(attrName, oldVal, newVal) {
-	      if (attrName === 'data-sifrr-state') {
+	      if (attrName === STATE_ATTR) {
 	        this.state = JSON.parse(newVal);
 	      }
 	      if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {

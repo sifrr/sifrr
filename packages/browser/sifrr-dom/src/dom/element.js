@@ -4,7 +4,7 @@ const update = require('./update');
 const Loader = require('./loader');
 const { trigger } = require('./event');
 const template = require('./template');
-const { BIND_ATTR } = require('./constants');
+const { BIND_ATTR , STATE_ATTR} = require('./constants');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -13,7 +13,7 @@ function elementClassFactory(baseClass) {
     }
 
     static get observedAttributes() {
-      return ['data-sifrr-state'].concat(this.observedAttrs()).concat(this.syncedAttrs());
+      return [STATE_ATTR].concat(this.observedAttrs()).concat(this.syncedAttrs());
     }
 
     static syncedAttrs() {
@@ -72,7 +72,7 @@ function elementClassFactory(baseClass) {
         this.appendChild(this.__content);
         delete this.__content;
       }
-      if (!this.hasAttribute('data-sifrr-state')) this.update();
+      if (!this.hasAttribute(STATE_ATTR)) this.update();
       this.onConnect();
     }
 
@@ -85,7 +85,7 @@ function elementClassFactory(baseClass) {
     onDisconnect() {}
 
     attributeChangedCallback(attrName, oldVal, newVal) {
-      if (attrName === 'data-sifrr-state') {
+      if (attrName === STATE_ATTR) {
         this.state = JSON.parse(newVal);
       }
       if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {

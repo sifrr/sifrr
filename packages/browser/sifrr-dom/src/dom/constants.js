@@ -14,5 +14,7 @@ module.exports = {
   HTML_ATTR: 'data-sifrr-html',
   REPEAT_ATTR: 'data-sifrr-repeat',
   KEY_ATTR: 'data-sifrr-key',
-  BIND_ATTR: 'data-sifrr-bind'
+  BIND_ATTR: 'data-sifrr-bind',
+  DEFAULT_STATE_ATTR: 'data-sifrr-default-state',
+  STATE_ATTR: 'data-sifrr-state'
 };
