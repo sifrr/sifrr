@@ -3,14 +3,15 @@
 set -ex
 
 ./scripts/release/config
+./scripts/yarn install
 ./scripts/yarn build
 ./scripts/contributors
 
 # Add dist files not generated before
 git ls-files '*/dist/*.js*' | xargs git add
-git ls-files 'packages/*/package.json' | xargs git add
-git ls-files 'packages/*/rollup.config.js' | xargs git add
-git ls-files 'yarn.lock' | xargs git add
+git ls-files '*package.json' | xargs git add
+git ls-files '*yarn.lock' | xargs git add
+git ls-files '*rollup.config.js' | xargs git add
 git ls-files 'misc/*' | xargs git add
 (git commit -m "chore: add auto generated files" && git push && exit 1) || exit 0
 echo 'Files up to date'
