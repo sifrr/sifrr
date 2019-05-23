@@ -233,7 +233,6 @@ for (let key in SifrrStorage.availableStores) {
           }, key, type);
 
           if (key !== 'jsonstorage') {
-            if (key === 'cookies' && type === 'String') console.log(result);
             assert(result.exact || (result.sameInstance && result.arrayEqual));
           }
         });
