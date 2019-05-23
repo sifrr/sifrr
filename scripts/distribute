@@ -3,7 +3,6 @@
 set -ex
 
 ./scripts/release/config
-./scripts/yarn install
 ./scripts/yarn build
 ./scripts/contributors
 
