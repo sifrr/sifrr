@@ -216,7 +216,7 @@ for (let key in SifrrStorage.availableStores) {
           await page.evaluate(async (key, type) => {
             const s = new Sifrr.Storage(key);
             await s.set(type, window.AllDataTypes[type]);
-            await new Promise(res => setTimeout(res, 30));
+            await new Promise(res => setTimeout(res, 20));
           }, key, type);
 
           await page.goto(`${PATH}/index.html`);
@@ -233,6 +233,7 @@ for (let key in SifrrStorage.availableStores) {
           }, key, type);
 
           if (key !== 'jsonstorage') {
+            if (key === 'cookies' && type === 'String') console.log(result);
             assert(result.exact || (result.sameInstance && result.arrayEqual));
           }
         });

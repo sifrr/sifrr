@@ -327,6 +327,7 @@ class LocalStorage extends storage {
 var localstorage = LocalStorage;
 
 const date = new Date(0).toUTCString();
+const equal = '%3D', equalRegex = new RegExp(equal, 'g');
 class Cookies extends storage {
   constructor(options) {
     super(options);
@@ -335,13 +336,13 @@ class Cookies extends storage {
     let result = this.store, ans = {};
     result.split('; ').forEach((value) => {
       let [k, v] = value.split('=');
-      if (k.indexOf(this.tableName) === 0) ans[k.slice(this.tableName.length + 1)] = this.constructor.parse(v);
+      if (k.indexOf(this.tableName) === 0) ans[k.slice(this.tableName.length + 1)] = this.constructor.parse(v.replace(equalRegex, '='));
     });
     return ans;
   }
   _upsert(data) {
     for (let key in data) {
-      this.store = `${this.tableName}/${key}=${this.constructor.stringify(data[key])}; path=/`;
+      this.store = `${this.tableName}/${key}=${this.constructor.stringify(data[key]).replace(/=/g, equal)}; path=/`;
     }
     return true;
   }

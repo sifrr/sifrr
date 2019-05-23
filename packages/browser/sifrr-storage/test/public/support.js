@@ -62,13 +62,14 @@ window.AllDataTypes = {
   Int8Array: new Int8Array(ab),
   Int16Array: new Int16Array(ab),
   Int32Array: new Int32Array(ab),
-  Number: new Number(1234),
+  Number: 1234,
   Object: { a: 'b' },
   Uint8Array: new Uint8Array(ab),
   Uint8ClampedArray: new Uint8ClampedArray(ab),
   Uint16Array: new Uint16Array(ab),
   Uint32Array: new Uint32Array(ab),
-  String: new String('string')
+  String: `<html lang="en" dir="ltr"><head>
+    <meta charset="utf-8">`
 };
 
 window.LF = {
