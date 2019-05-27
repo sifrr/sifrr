@@ -22,7 +22,7 @@ function sss(p) {
   seo.addUserAgent('Opera Mini');
   seo.setPuppeteerOption('headless', process.env.HEADLESS !== 'false');
   seo.shouldRender = (url, headers) => {
-    return seo.isUserAgent(headers) && url.indexOf('elements') === -1;
+    return seo._isUserAgent(headers) && url.indexOf('elements') === -1;
   };
   // Middleware
   const express = require('express'),

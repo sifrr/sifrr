@@ -175,3 +175,22 @@ seoOptions = {
   }
 }
 ```
+
+-   Pre-render a bunch of urls
+
+```js
+const fs = require('fs');
+
+const seo = new SifrrSeo();
+seo.shouldRender = () => true;
+
+async function renderUrls(urls = [/* array of urls */]) {
+  for (let i = 0; i < urls.length; i++) {
+    const html = seo.render(urls[i]);
+    await new Promise((res, rej) => fs.writeFile(path, html, (err) => {
+      if (err) rej(err);
+      res('The file has been saved!');
+    }));
+  }
+}
+```
