@@ -37,19 +37,17 @@ class Renderer {
     else return Promise.resolve(true);
   }
 
-  render(req) {
-    const fullUrl = req.fullUrl;
+  render(url, headers = {}) {
     const me = this;
 
     return this.browserAsync().then((b) => b.newPage()).then(async (newp) => {
       const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
 
-      const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
       if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
+      const resp = await newp.goto(url, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
       let ret;
 

@@ -3,12 +3,6 @@ const seo = new SifrrSeo(undefined, {
   ttl: 0.001,
   maxCacheSize: 0.000010 // In MB, 10 Bytes
 });
-const req = {
-  fullUrl: '/index.html',
-  headers: {
-    'user-agent': 'Googlebot',
-  }
-};
 const req2 = {
   fullUrl: '/index2.html',
   headers: {
@@ -19,10 +13,6 @@ const req2 = {
 describe('SifrrSeo', () => {
   afterEach(() => {
     sinon.restore();
-  });
-
-  it('has default options', () => {
-    assert.equal(seo.options.fullUrl({ originalUrl: '/index.html' }), 'http://127.0.0.1:80/index.html');
   });
 
   describe('calling renderer', () => {
@@ -40,12 +30,11 @@ describe('SifrrSeo', () => {
     });
 
     it('calls next() if shouldRenderCache is false', async () => {
-      const m = seo.middleware;
+      const m = SifrrSeo.getMiddleware(seo, () => 'http://');
       sinon.stub(seo, 'render').resolves(false);
       sinon.stub(seo, 'getShouldRenderCache').returns(true);
-      sinon.stub(seo.options, 'fullUrl').returns('http://');
       const next = sinon.spy();
-      seo.shouldRenderCache[seo.options.cacheKey(req)] = false;
+      seo.shouldRenderCache['http://'] = false;
 
       await m({
         method: 'GET',
@@ -69,10 +58,11 @@ describe('SifrrSeo', () => {
     });
 
     it('returns from cache if there is a response', async () => {
-      const seo2 = new SifrrSeo();
-      seo2.cache.set(seo2.options.cacheKey(req2), 'v');
+      const seo2 = new SifrrSeo(undefined, { cacheKey: () => '/key' });
+      seo2.cache.set('/key', 'v');
+      sinon.stub(seo2, 'shouldRender').returns(true);
 
-      assert.equal(await seo2.render(req2), 'v');
+      assert.equal(await seo2.render('http://url'), 'v');
     });
 
     it('clears cache', async () => {

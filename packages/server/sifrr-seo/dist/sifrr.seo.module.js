@@ -81,17 +81,15 @@ class Renderer {
     if (this._browser) return this.browserAsync().then(b => b.close());
     else return Promise.resolve(true);
   }
-  render(req) {
-    const fullUrl = req.fullUrl;
+  render(url, headers = {}) {
     const me = this;
     return this.browserAsync().then((b) => b.newPage()).then(async (newp) => {
       const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
-      const headers = req.headers || {};
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
       if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(fullUrl, { waitUntil: 'load' });
+      const resp = await newp.goto(url, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
       let ret;
       if (sRC) {
@@ -132,38 +130,38 @@ var constants = {
 };
 
 const { headerName, headerValue } = constants;
-var middleware = function(req, res, next) {
-  if (req.method !== 'GET') return next();
-  const renderReq = {
-    fullUrl: this.renderer.options.fullUrl(req),
-    headers: req.headers
-  };
-  if (this.getShouldRenderCache(renderReq) === null) {
-    res._end = res.end;
-    res.end = (resp, encoding) => {
-      if (res.hasHeader('content-type')) {
-        const contentType = res.getHeader('content-type');
-        if (contentType.indexOf('html') >= 0) {
-          this.setShouldRenderCache(renderReq, true);
-        } else {
-          this.setShouldRenderCache(renderReq, false);
+var middleware = (getUrl) => {
+  return function(req, res, next) {
+    if (req.method !== 'GET') return next();
+    const url = getUrl(req);
+    const headers = req.headers;
+    if (this.getShouldRenderCache(url, headers) === null) {
+      res._end = res.end;
+      res.end = (resp, encoding) => {
+        if (res.hasHeader('content-type')) {
+          const contentType = res.getHeader('content-type');
+          if (contentType.indexOf('html') >= 0) {
+            this.setShouldRenderCache(url, headers, true);
+          } else {
+            this.setShouldRenderCache(url, headers, false);
+          }
         }
-      }
-      res._end(resp, encoding);
-    };
-  }
-  return this.render(renderReq).then((html) => {
-    if (html) {
-      res.set(headerName, headerValue);
-      res.send(html);
-    } else {
-      next();
+        res._end(resp, encoding);
+      };
     }
-  }).catch((e) => {
-    if (e.message === 'No Render') {
-      next();
-    } else next(e);
-  });
+    return this.render(url, headers).then((html) => {
+      if (html) {
+        res.set(headerName, headerValue);
+        res.send(html);
+      } else {
+        next();
+      }
+    }).catch((e) => {
+      if (e.message === 'No Render') {
+        next();
+      } else next(e);
+    });
+  };
 };
 
 const isHeadless = new RegExp('(headless|Headless)');
@@ -181,65 +179,53 @@ class SifrrSeo {
     this._uas = userAgents.map((ua) => new RegExp(ua));
     this.shouldRenderCache = {};
     this.options = Object.assign({
-      cacheKey: (req) => req.fullUrl,
-      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`
+      cacheKey: (url) => url,
     }, options);
   }
-  get middleware() {
-    return middleware.bind(this);
-  }
-  isHeadless(req) {
-    const ua = req.headers['user-agent'];
-    return !!isHeadless.test(ua);
-  }
-  shouldRender(req) {
-    return this.isUserAgent(req);
-  }
-  isUserAgent(req) {
-    const ua = req.headers['user-agent'];
-    let ret = false;
-    this._uas.forEach((b) => {
-      if (b.test(ua)) ret = true;
-    });
-    return ret;
-  }
-  addUserAgent(userAgent) {
-    this._uas.push(new RegExp(userAgent));
-  }
-  clearCache() {
-    this.cache.reset();
-  }
-  close() {
-    return this.renderer.close();
-  }
-  setPuppeteerOption(name, value) {
-    this._poptions = this._poptions || {};
-    this._poptions[name] = value;
+  get renderer() {
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
+    return this._renderer;
   }
   get cache() {
     this._cache = this._cache || getcache(this.options);
     return this._cache;
   }
-  setShouldRenderCache(req, val) {
-    const key = this.options.cacheKey(req);
+  addUserAgent(userAgent) {
+    this._uas.push(new RegExp(userAgent));
+  }
+  setPuppeteerOption(name, value) {
+    this._poptions = this._poptions || {};
+    this._poptions[name] = value;
+  }
+  close() {
+    return this.renderer.close();
+  }
+  shouldRender(url, headers) {
+    return this._isUserAgent(headers);
+  }
+  setShouldRenderCache(url, headers, val) {
+    const key = this.options.cacheKey(url, headers);
     this.shouldRenderCache[key] = val;
   }
-  getShouldRenderCache(req) {
-    const key = this.options.cacheKey(req);
+  getShouldRenderCache(url, headers) {
+    const key = this.options.cacheKey(url, headers);
     if (this.shouldRenderCache[key] === undefined) return null;
     return this.shouldRenderCache[key];
   }
-  async render(req) {
-    if (this.getShouldRenderCache(req) === false) {
+  clearCache() {
+    this.cache.reset();
+  }
+  async render(url, headers) {
+    if (this.getShouldRenderCache(url, headers) === false) {
       throw Error(`No Render`);
-    } else if (this.shouldRender(req) && !this.isHeadless(req)) {
-      const key = this.options.cacheKey(req);
+    } else if (this.shouldRender(url, headers) && !this._isHeadless(headers)) {
+      const key = this.options.cacheKey(url, headers);
       return new Promise((res, rej) => {
         this.cache.get(key, (err, val) => {
           if (err) {
             rej(err);
           } else if (!val) {
-            this.renderer.render(req).then((resp) => {
+            this.renderer.render(url, headers).then((resp) => {
               this.cache.set(key, resp);
               res(resp);
             }).catch( err => {
@@ -254,9 +240,19 @@ class SifrrSeo {
       throw Error(`No Render`);
     }
   }
-  get renderer() {
-    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
-    return this._renderer;
+  _isHeadless(headers = {}) {
+    return !!isHeadless.test(headers['user-agent']);
+  }
+  _isUserAgent(headers = {}) {
+    const ua = headers['user-agent'];
+    let ret = false;
+    this._uas.forEach((b) => {
+      if (b.test(ua)) ret = true;
+    });
+    return ret;
+  }
+  static getMiddleware(seo, getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+    return middleware(getUrl).bind(seo);
   }
 }
 SifrrSeo.Renderer = renderer;

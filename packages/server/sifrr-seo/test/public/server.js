@@ -8,8 +8,7 @@ function sss(p) {
   const Seo = require('../../src/sifrr.seo');
   // Middleware
   const seo = new Seo(['UC Browser'], {
-    cacheKey: (req) => req.fullUrl + (req.headers['x-user'] ? req.headers['x-user'] : ''),
-    fullUrl: (expressReq) => `http://127.0.0.1:${p}${expressReq.originalUrl}`,
+    cacheKey: (url, headers) => url + (headers['x-user'] ? headers['x-user'] : ''),
     beforeRender: () => {
       // Force shadyDom (no shadow root)
       ShadyDOM = { force: true };
@@ -22,11 +21,10 @@ function sss(p) {
   });
   seo.addUserAgent('Opera Mini');
   seo.setPuppeteerOption('headless', process.env.HEADLESS !== 'false');
-  seo.shouldRender = (req) => {
-    return seo.isUserAgent(req) && req.fullUrl.indexOf('elements') === -1;
+  seo.shouldRender = (url, headers) => {
+    return seo.isUserAgent(headers) && url.indexOf('elements') === -1;
   };
   // Middleware
-
   const express = require('express'),
     compression = require('compression'),
     serveStatic = require('serve-static'),
@@ -66,7 +64,7 @@ function sss(p) {
   process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
   // export server for importing
-  server.use(seo.middleware);
+  server.use(Seo.getMiddleware(seo, (expressReq) => `http://127.0.0.1:${p}${expressReq.originalUrl}`));
   server.use(compression());
   server.get('/xuser', (req, res) => {
     res.set('content-type', 'text/html');

@@ -16,48 +16,13 @@ class SifrrSeo {
     this._uas = userAgents.map((ua) => new RegExp(ua));
     this.shouldRenderCache = {};
     this.options = Object.assign({
-      cacheKey: (req) => req.fullUrl,
-      fullUrl: (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`
+      cacheKey: (url) => url,
     }, options);
   }
 
-  get middleware() {
-    return require('./middleware').bind(this);
-  }
-
-  isHeadless(req) {
-    const ua = req.headers['user-agent'];
-    return !!isHeadless.test(ua);
-  }
-
-  shouldRender(req) {
-    return this.isUserAgent(req);
-  }
-
-  isUserAgent(req) {
-    const ua = req.headers['user-agent'];
-    let ret = false;
-    this._uas.forEach((b) => {
-      if (b.test(ua)) ret = true;
-    });
-    return ret;
-  }
-
-  addUserAgent(userAgent) {
-    this._uas.push(new RegExp(userAgent));
-  }
-
-  clearCache() {
-    this.cache.reset();
-  }
-
-  close() {
-    return this.renderer.close();
-  }
-
-  setPuppeteerOption(name, value) {
-    this._poptions = this._poptions || {};
-    this._poptions[name] = value;
+  get renderer() {
+    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
+    return this._renderer;
   }
 
   get cache() {
@@ -65,29 +30,50 @@ class SifrrSeo {
     return this._cache;
   }
 
-  setShouldRenderCache(req, val) {
-    const key = this.options.cacheKey(req);
+  addUserAgent(userAgent) {
+    this._uas.push(new RegExp(userAgent));
+  }
+
+  setPuppeteerOption(name, value) {
+    this._poptions = this._poptions || {};
+    this._poptions[name] = value;
+  }
+
+  close() {
+    return this.renderer.close();
+  }
+
+  shouldRender(url, headers) {
+    return this._isUserAgent(headers);
+  }
+
+  setShouldRenderCache(url, headers, val) {
+    const key = this.options.cacheKey(url, headers);
     this.shouldRenderCache[key] = val;
   }
 
-  getShouldRenderCache(req) {
-    const key = this.options.cacheKey(req);
+  getShouldRenderCache(url, headers) {
+    const key = this.options.cacheKey(url, headers);
     if (this.shouldRenderCache[key] === undefined) return null;
     return this.shouldRenderCache[key];
   }
 
-  async render(req) {
-    if (this.getShouldRenderCache(req) === false) {
+  clearCache() {
+    this.cache.reset();
+  }
+
+  async render(url, headers) {
+    if (this.getShouldRenderCache(url, headers) === false) {
       throw Error(`No Render`);
-    } else if (this.shouldRender(req) && !this.isHeadless(req)) {
-      const key = this.options.cacheKey(req);
+    } else if (this.shouldRender(url, headers) && !this._isHeadless(headers)) {
+      const key = this.options.cacheKey(url, headers);
       return new Promise((res, rej) => {
         this.cache.get(key, (err, val) => {
           /* istanbul ignore if */
           if (err) {
             rej(err);
           } else if (!val) {
-            this.renderer.render(req).then((resp) => {
+            this.renderer.render(url, headers).then((resp) => {
               this.cache.set(key, resp);
               res(resp);
             }).catch(/* istanbul ignore next */ err => {
@@ -103,9 +89,21 @@ class SifrrSeo {
     }
   }
 
-  get renderer() {
-    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
-    return this._renderer;
+  _isHeadless(headers = {}) {
+    return !!isHeadless.test(headers['user-agent']);
+  }
+
+  _isUserAgent(headers = {}) {
+    const ua = headers['user-agent'];
+    let ret = false;
+    this._uas.forEach((b) => {
+      if (b.test(ua)) ret = true;
+    });
+    return ret;
+  }
+
+  static getMiddleware(seo, getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+    return require('./middleware')(getUrl).bind(seo);
   }
 }
 

@@ -51,14 +51,11 @@ describe('Renderer', () => {
     const r = new Renderer({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     }, {
-      cacheKey: (req) => req.fullUrl
+      cacheKey: (url) => url
     });
     r.isHTML = () => false;
-    const reqq = {
-      fullUrl: 'about:blank'
-    };
 
-    const res = await r.render(reqq);
+    const res = await r.render('about:blank');
     assert.equal(res, false);
     await r.close();
   });
