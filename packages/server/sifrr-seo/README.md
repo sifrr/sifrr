@@ -6,7 +6,7 @@ Server Side Pre-Redering for any js based app using puppeteer (headless chrome) 
 
 -   Works with Custom Elements, Shadow DOM
 -   Add custom JS to execute before or after rendering
--   Time, key based Caching
+-   key based Caching
 
 ## How to use
 
@@ -22,7 +22,7 @@ SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request 
 const SifrrSeo = require('@sifrr/seo');
 
 // options
-// `cacheStore`: same as store in [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) options
+// `cacheStore`: same as store in [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) options, default: memory store with 100MB storage
 // `maxCacheSize`: Maximum in-memory cache size (in MegaBytes)
 // `ttl`: time to live for a cache request (in Seconds) 0 means infinity
 // `cacheKey`: function that returns cache key for given req object
@@ -36,8 +36,7 @@ const options = {
   cacheStore: 'memory', // default in memory caching
   maxCacheSize: 100,
   ttl: 0,
-  cacheKey: (req) => req.fullUrl,
-  fullUrl: expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`
+  cacheKey: (url, headers) => url,
   beforeRender: () => {},
   afterRender: () => {},
   filterOutgoingRequests: (url) => true
@@ -64,16 +63,17 @@ const express = require('express');
 const server = express();
 
 // Only use for GET requests as a express middleware
-server.get(sifrrSeo.middleware);
+server.get(SifrrSeo.getMiddleware(sifrrSeo, /* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
 server.listen(8080);
 
-// Use it programatically - Only renders get requets
-sifrrSeo.render({
-  fullUrl: /* Full url of page to render with protocol, domain, port, etc. */,
-  headers: {
+// Use it programatically - Only renders get urls
+// these url, headers are passed to other functions
+sifrrSeo.render(
+  url, /* Full url of page to render with protocol, domain, port, etc. */,
+  headers = {
     /* Headers to send with GET request */
   }
-}).then(html => ...).catch((e) => {
+).then(html => ...).catch((e) => {
   // It won't render the page if [rendering logic](#rendering-logic) is not satisfied and will throw error.
   // e.message === 'No Render' when it doesn't render
 });
@@ -87,10 +87,10 @@ sifrr-seo only renders a request if it has no `Referer` header (i.e. direct brow
 
 #### Changing shouldRender()
 
-Change `sifrrSeo.shouldRender`, by default it returns `this.isUserAgent(req)` ([details](#isUserAgent)). eg:
+Change `sifrrSeo.shouldRender`, by default it returns `this._isUserAgent(headers)` ([details](#isUserAgent)). eg:
 
 ```js
-sifrrSeo.shouldRender = (req) => {
+sifrrSeo.shouldRender = (url, headers) => {
   // req is request argument given by server (express/connect)
   // return true to render it server-side, return false to not render it.
   return this.isUserAgent(req) && req.fullUrl.indexOf('html') >= 0
@@ -112,17 +112,17 @@ sifrrSeo.clearCache();
 returns `Promise` which resolves in server rendered `html` if url response has content-type html, else resolves in `false`.
 
 ```js
-sifrrSeo.render({
-  fullUrl: /* Full url of page to render with protocol, domain, port, etc. */,
-  headers: {
+sifrrSeo.render(
+  url, /* Full url of page to render with protocol, domain, port, etc. */,
+  headers = {
     /* Headers to send with GET request */
   }
-});
+);
 ```
 
-#### isUserAgent()
+#### \_isUserAgent(headers)
 
-Returns true if req.headers['user-agent'] matches any of user-agents given in initialization
+Returns true if headers['user-agent'] matches any of user-agents given in initialization
 
 #### close()
 
