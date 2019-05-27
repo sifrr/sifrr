@@ -5,6 +5,7 @@ set -ex
 ./scripts/release/config
 ./scripts/yarn build
 ./scripts/contributors
+yarn install
 
 # Add dist files not generated before
 git ls-files '*/dist/*.js*' | xargs git add
