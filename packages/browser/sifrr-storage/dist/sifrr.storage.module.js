@@ -1,6 +1,6 @@
 /*! Sifrr.Storage v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 const toS = Object.prototype.toString;
-const uId = '~~SifrrStorage84l23g5k34~~';
+const uId = '~SS%l3g5k3~';
 function decodeBlob(str, type) {
   return new Blob([new window.Uint8Array(str.split(',')).buffer], { type });
 }
@@ -25,14 +25,11 @@ class Json {
       } catch(e) {
       }
     }
-    if (typeof data === 'string') {
-      const i = data.indexOf(uId);
-      if (i > 0) {
-        const [type, av, av2] = data.split(uId);
-        if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
-        else if (type === 'Blob') ans = decodeBlob(av2, av);
-        else ans = new window[type](av.split(','));
-      }
+    if (typeof data === 'string' && data.indexOf(uId) > 0) {
+      const [type, av, av2] = data.split(uId);
+      if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
+      else if (type === 'Blob') ans = decodeBlob(av2, av);
+      else ans = new window[type](av.split(','));
     } else if (Array.isArray(data)) {
       ans = [];
       data.forEach((v, i) => {
@@ -219,44 +216,32 @@ class WebSQL extends storage {
     this.createStore();
   }
   _parsedData() {
-    const me = this;
-    return new Promise((resolve) => {
-      this.store.transaction(function (tx) {
-        tx.executeSql(`SELECT * FROM ${me.tableName}`, [], (txn, results) => {
-          resolve(me.parse(results));
-        });
-      });
-    });
+    return this.execSql(`SELECT key, value FROM ${this.tableName}`);
   }
   _select(keys) {
-    const me = this;
     const q = keys.map(() => '?').join(', ');
-    return this.execSql(`SELECT key, value FROM ${me.tableName} WHERE key in (${q})`, keys);
+    return this.execSql(`SELECT key, value FROM ${this.tableName} WHERE key in (${q})`, keys);
   }
   _upsert(data) {
-    const table = this.tableName;
     this.store.transaction((tx) => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR REPLACE INTO ${table}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${this.tableName}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
       }
     });
   }
   _delete(keys) {
-    const table = this.tableName;
     const q = keys.map(() => '?').join(', ');
-    return this.execSql(`DELETE FROM ${table} WHERE key in (${q})`, keys);
+    return this.execSql(`DELETE FROM ${this.tableName} WHERE key in (${q})`, keys);
   }
   _clear() {
-    const table = this.tableName;
-    return this.execSql(`DELETE FROM ${table}`);
+    return this.execSql(`DELETE FROM ${this.tableName}`);
   }
   get store() {
-    return window.openDatabase('bs', 1, this._options.description, this._options.size);
+    return window.openDatabase('ss', 1, this._options.description, this._options.size);
   }
   createStore() {
-    const table = this.tableName;
     if (!window || typeof window.openDatabase !== 'function') return;
-    return this.execSql(`CREATE TABLE IF NOT EXISTS ${table} (key unique, value)`);
+    return this.execSql(`CREATE TABLE IF NOT EXISTS ${this.tableName} (key unique, value)`);
   }
   execSql(query, args = []) {
     const me = this;
@@ -287,7 +272,9 @@ class LocalStorage extends storage {
     super(options);
   }
   _parsedData() {
-    return this.table;
+    return this._select(Object.keys(this.store).map(k => {
+      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
+    }).filter(k => typeof k !== 'undefined'));
   }
   _select(keys) {
     const table = {};
@@ -311,11 +298,6 @@ class LocalStorage extends storage {
       if (k.indexOf(this.tableName) === 0) this.store.removeItem(k);
     });
     return true;
-  }
-  get table() {
-    return this._select(Object.keys(this.store).map(k => {
-      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
-    }).filter(k => typeof k !== 'undefined'));
   }
   get store() {
     return window.localStorage;

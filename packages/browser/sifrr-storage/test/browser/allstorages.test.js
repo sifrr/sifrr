@@ -216,7 +216,7 @@ for (let key in SifrrStorage.availableStores) {
           await page.evaluate(async (key, type) => {
             const s = new Sifrr.Storage(key);
             await s.set(type, window.AllDataTypes[type]);
-            await new Promise(res => setTimeout(res, 20));
+            await new Promise(res => setTimeout(res, 10));
           }, key, type);
 
           await page.goto(`${PATH}/index.html`);
@@ -245,10 +245,10 @@ for (let key in SifrrStorage.availableStores) {
 
         const result = await page.evaluate(async (key) => {
           return {
-            ss: await bulkInsert(key, 'a', 0, 10),
-            lf: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available',
-            ssUpdate: await bulkInsert(key, 'a', 0, 100),
-            lfUpdate: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 100, 'setItem') : 'not available'
+            ss: await bulkInsert(key, 'a', 0, 50),
+            lf: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 50, 'setItem') : 'not available',
+            ssUpdate: await bulkInsert(key, 'a', 0, 50),
+            lfUpdate: window.LF[key] ? await bulkInsert(window.LF[key], 'a', 0, 50, 'setItem') : 'not available'
           };
         }, key);
 

@@ -1,5 +1,5 @@
 const toS = Object.prototype.toString;
-const uId = '~~SifrrStorage84l23g5k34~~';
+const uId = '~SS%l3g5k3~';
 
 function decodeBlob(str, type) {
   return new Blob([new window.Uint8Array(str.split(',')).buffer], { type });
@@ -32,14 +32,13 @@ class Json {
       }
     }
 
-    if (typeof data === 'string') {
-      const i = data.indexOf(uId);
-      if (i > 0) {
-        const [type, av, av2] = data.split(uId);
-        if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
-        else if (type === 'Blob') ans = decodeBlob(av2, av);
-        else ans = new window[type](av.split(','));
-      }
+    if (typeof data === 'string' && data.indexOf(uId) > 0) {
+      const [type, av, av2] = data.split(uId);
+      
+      if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
+      else if (type === 'Blob') ans = decodeBlob(av2, av);
+      else ans = new window[type](av.split(','));
+
     } else if (Array.isArray(data)) {
       ans = [];
       data.forEach((v, i) => {

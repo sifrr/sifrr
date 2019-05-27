@@ -6,7 +6,9 @@ class LocalStorage extends Storage {
   }
 
   _parsedData() {
-    return this.table;
+    return this._select(Object.keys(this.store).map(k => {
+      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
+    }).filter(k => typeof k !== 'undefined'));
   }
 
   _select(keys) {
@@ -34,12 +36,6 @@ class LocalStorage extends Storage {
       if (k.indexOf(this.tableName) === 0) this.store.removeItem(k);
     });
     return true;
-  }
-
-  get table() {
-    return this._select(Object.keys(this.store).map(k => {
-      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
-    }).filter(k => typeof k !== 'undefined'));
   }
 
   get store() {

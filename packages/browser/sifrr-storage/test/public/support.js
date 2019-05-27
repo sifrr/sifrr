@@ -7,7 +7,7 @@ function save_cookies() {
 }
 
 function save_websql() {
-  let webSQL = window.openDatabase('bs', 1, 'whatever', 1 * 1024 * 1024);
+  let webSQL = window.openDatabase('ss', 1, 'whatever', 1 * 1024 * 1024);
   webSQL.transaction(function (tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS SifrrStorage1 (key unique, value)');
     tx.executeSql('INSERT INTO SifrrStorage1(key, value) VALUES ("a", "b")');
