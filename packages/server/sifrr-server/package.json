@@ -52,7 +52,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-html": "^5.0.5",
     "eslint-plugin-mocha": "^5.3.0",
-    "express": "^4.17.0",
+    "express": "^4.17.1",
     "file-url": "^3.0.0",
     "husky": "^2.3.0",
     "istanbul-api": "^3.0.0",
