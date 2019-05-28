@@ -190,6 +190,9 @@ class SifrrSeo {
     this._cache = this._cache || getcache(this.options);
     return this._cache;
   }
+  getExpressMiddleware(getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+    return middleware(getUrl).bind(this);
+  }
   addUserAgent(userAgent) {
     this._uas.push(new RegExp(userAgent));
   }
@@ -250,9 +253,6 @@ class SifrrSeo {
       if (b.test(ua)) ret = true;
     });
     return ret;
-  }
-  static getMiddleware(seo, getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
-    return middleware(getUrl).bind(seo);
   }
 }
 SifrrSeo.Renderer = renderer;

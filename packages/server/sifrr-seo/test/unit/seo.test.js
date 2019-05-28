@@ -30,7 +30,7 @@ describe('SifrrSeo', () => {
     });
 
     it('calls next() if shouldRenderCache is false', async () => {
-      const m = SifrrSeo.getMiddleware(seo, () => 'http://');
+      const m = seo.getExpressMiddleware(() => 'http://');
       sinon.stub(seo, 'render').resolves(false);
       sinon.stub(seo, 'getShouldRenderCache').returns(true);
       const next = sinon.spy();

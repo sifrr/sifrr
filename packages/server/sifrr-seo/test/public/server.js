@@ -64,7 +64,7 @@ function sss(p) {
   process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
   // export server for importing
-  server.use(Seo.getMiddleware(seo, (expressReq) => `http://127.0.0.1:${p}${expressReq.originalUrl}`));
+  server.use(seo.getExpressMiddleware((expressReq) => `http://127.0.0.1:${p}${expressReq.originalUrl}`));
   server.use(compression());
   server.get('/xuser', (req, res) => {
     res.set('content-type', 'text/html');

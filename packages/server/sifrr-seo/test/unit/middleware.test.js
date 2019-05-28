@@ -3,7 +3,7 @@ const SifrrSeo = require('../../src/sifrr.seo');
 describe('middleware', () => {
   it('calls next() if render is false', async () => {
     const seo = new SifrrSeo();
-    const m = SifrrSeo.getMiddleware(seo, () => 'http://');
+    const m = seo.getExpressMiddleware(() => 'http://');
     sinon.stub(seo, 'render').resolves(false);
     sinon.stub(seo, 'getShouldRenderCache').returns(true);
     const next = sinon.spy();
@@ -18,7 +18,7 @@ describe('middleware', () => {
 
   it('calls next() if render gives error', async () => {
     const seo = new SifrrSeo();
-    const m = SifrrSeo.getMiddleware(seo, () => 'http://');
+    const m = seo.getExpressMiddleware(() => 'http://');
     const err = Error('error');
     sinon.stub(seo, 'render').rejects(err);
     sinon.stub(seo, 'getShouldRenderCache').returns(true);
@@ -34,7 +34,7 @@ describe('middleware', () => {
 
   it('doesn\'t set shouldRenderCache when res has no content-type', async () => {
     const seo = new SifrrSeo();
-    const m = SifrrSeo.getMiddleware(seo, () => 'http://');
+    const m = seo.getExpressMiddleware(() => 'http://');
     sinon.stub(seo, 'render').resolves(false);
     const next = sinon.spy();
     const req = {

@@ -63,7 +63,7 @@ const express = require('express');
 const server = express();
 
 // Only use for GET requests as a express middleware
-server.get(SifrrSeo.getMiddleware(sifrrSeo, /* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
+server.get(sifrrSeo.getExpressMiddleware(/* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
 server.listen(8080);
 
 // Use it programatically - Only renders get urls

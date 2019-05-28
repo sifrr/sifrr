@@ -30,6 +30,10 @@ class SifrrSeo {
     return this._cache;
   }
 
+  getExpressMiddleware(getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+    return require('./middleware')(getUrl).bind(this);
+  }
+
   addUserAgent(userAgent) {
     this._uas.push(new RegExp(userAgent));
   }
@@ -100,10 +104,6 @@ class SifrrSeo {
       if (b.test(ua)) ret = true;
     });
     return ret;
-  }
-
-  static getMiddleware(seo, getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
-    return require('./middleware')(getUrl).bind(seo);
   }
 }
 
