@@ -56,7 +56,16 @@ window.Sifrr.Fetch = Fetch;
 
 -   **params** `json object` key, value pairs will be added to url as ?key=value
 -   **body** `json object | string` body to send with post requests
--   **onProgress** `function` if response has content-length, this function will be called with `progress in percentage` and `speed in kbps`
+-   **onProgress** `function` if response has content-length, this function will be called with
+```js
+{
+  loaded, // loaded bytes
+  total, // total bytes (0 if response doesn't have content length)
+  percent, // progress precentage
+  speed, // speed in kbps
+  value // chunk value
+}
+```
 -   **before** `function` this function will be called with `{ url, options, method }` and should return modified `{ url, options, method }` which will be used to send requests
 -   **after** `function` this function will be called with `response` and should return modified `response`
 -   **use** `function` this function will be called with `{ url, options, method }` and resolve/return with response which will be returned, if this function errors, response will be fetched normally (use case: use it as a middleware for cache)
@@ -71,6 +80,8 @@ Sifrr.Fetch.get(url, options).then((response) => {
   // This will send request to url?key=value
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
+}).catch(e => {
+  // handle error, same for other type of requests
 });
 ```
 

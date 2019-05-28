@@ -14,7 +14,10 @@ class Request {
         const contentLength = resp.headers.get('content-length');
         const total = parseInt(contentLength,10);
         if (!total || !resp.body || !ReadableStream) {
-          me._options.onProgress(100);
+          me._options.onProgress({
+            total: 0,
+            percent: 100
+          });
         } else {
           const reader = resp.body.getReader();
           let loaded = 0;
@@ -24,11 +27,16 @@ class Request {
               function read() {
                 return reader.read().then(({ done, value }) => {
                   if (done) {
-                    me._options.onProgress(100, 0);
                     controller.close();
                   } else {
                     loaded += value.byteLength;
-                    me._options.onProgress(loaded / total * 100, loaded / (performance.now() - start));
+                    me._options.onProgress({
+                      loaded: loaded,
+                      total: total,
+                      percent: loaded / total * 100,
+                      speed: loaded / (performance.now() - start),
+                      value
+                    });
                     controller.enqueue(value);
                     return read();
                   }
@@ -39,7 +47,7 @@ class Request {
           }));
         }
       } else if (!resp.ok) {
-        if (typeof me._options.onProgress === 'function') me._options.onProgress(100);
+        if (typeof me._options.onProgress === 'function') me._options.onProgress({ percent: 100 });
         let error = Error(resp.statusText);
         error.response = resp;
         throw error;
