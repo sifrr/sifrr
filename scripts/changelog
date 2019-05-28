@@ -9,4 +9,4 @@ do
 done
 
 echo "Running changelog in $PWD"
-./node_modules/.bin/conventional-changelog -p angular -i "misc/CHANGELOG.md" -s "${@:1}"
+./node_modules/.bin/conventional-changelog -p angular -i "CHANGELOG.md" -s "${@:1}"
