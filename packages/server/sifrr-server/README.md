@@ -92,8 +92,13 @@ app.folder('/example', folder, options);
 // will serve example.html if you go to `/example/example.html`
 ```
 
+**Extra options**
+`overwriteRoute`: if set to `true`, it will overwrite old pattern if same patter is added.
+`failOnDuplicateRoute`: if set to `true`, it will throw error if you try add same pattern again.
+by default, it will serve the file you added with this pattern
+
 There is one more option available for `folder` with all the sendFile options:
-`watch`: if it true, it will watch for new Files / deleted files and serve/unserve them as needed.
+`watch`: if it is `true`, it will watch for new Files / deleted files and serve/unserve them as needed.
 
 ### Post requests
 

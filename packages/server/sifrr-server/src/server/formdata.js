@@ -16,7 +16,7 @@ function formData(contType, options = {}) {
 
     busb.on('limit', () => {
       if (options.abortOnLimit) {
-        reject('limit');
+        reject(Error('limit'));
       }
     });
 

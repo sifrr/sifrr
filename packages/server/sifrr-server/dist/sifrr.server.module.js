@@ -367,7 +367,7 @@ function formData(contType, options = {}) {
     this.bodyStream().pipe(busb);
     busb.on('limit', () => {
       if (options.abortOnLimit) {
-        reject('limit');
+        reject(Error('limit'));
       }
     });
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
@@ -457,10 +457,13 @@ const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
 class BaseApp {
-  file(pattern, path, options) {
-    this.get(pattern, (res, req) => {
-      sendfile(res, req, path, options);
-    });
+  file(pattern, path, options = {}) {
+    if (this._staticPaths[pattern]) {
+      if (options.failOnDuplicateRoute) throw Error(`Error serving '${path}' for '${pattern}', already serving '${this._staticPaths[pattern][0]}' file for this patter.`);
+      else if (!options.overwriteRoute) return;
+    }
+    this._staticPaths[pattern] = [path, options];
+    this.get(pattern, this._serveStatic);
     return this;
   }
   folder(prefix, folder, options, base = folder) {
@@ -476,10 +479,7 @@ class BaseApp {
       if (fs.statSync(filePath).isDirectory()) {
         this.folder(prefix, filePath, options, base);
       } else {
-        const url = '/' + path.relative(base, filePath);
-        if (this._staticPaths[prefix + url]) return;
-        this._staticPaths[prefix + url] = [filePath, options ];
-        this.get(prefix + url, this._serveStatic);
+        this.file(prefix + '/' + path.relative(base, filePath), filePath, options);
       }
     });
     if (options && options.watch) {
@@ -490,8 +490,7 @@ class BaseApp {
             const filePath = path.join(folder, filename);
             const url = '/' + path.relative(base, filePath);
             if (fs.existsSync(filePath) && filter(filePath)) {
-              this._staticPaths[prefix + url] = [filePath, options];
-              this.get(prefix + url, this._serveStatic);
+              this.file(prefix + url, filePath, options);
             } else {
               delete this._staticPaths[prefix + url];
             }

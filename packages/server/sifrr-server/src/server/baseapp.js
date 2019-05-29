@@ -12,10 +12,14 @@ const noOp = () => true;
 const strToBuf = require('./streamtobuffer');
 
 class BaseApp {
-  file(pattern, path, options) {
-    this.get(pattern, (res, req) => {
-      sendFile(res, req, path, options);
-    });
+  file(pattern, path, options = {}) {
+    if (this._staticPaths[pattern]) {
+      if (options.failOnDuplicateRoute) throw Error(`Error serving '${path}' for '${pattern}', already serving '${this._staticPaths[pattern][0]}' file for this patter.`);
+      else if (!options.overwriteRoute) return;
+    }
+
+    this._staticPaths[pattern] = [path, options];
+    this.get(pattern, this._serveStatic);
     return this;
   }
 
@@ -34,7 +38,6 @@ class BaseApp {
     fs.readdirSync(folder).forEach(file => {
       // Absolute path
       const filePath = path.join(folder, file);
-
       // Return if filtered
       if (!filter(filePath)) return;
 
@@ -42,13 +45,7 @@ class BaseApp {
         // Recursive if directory
         this.folder(prefix, filePath, options, base);
       } else {
-        // serve from this folder
-        const url = '/' + path.relative(base, filePath);
-        // don't add if route already present
-        if (this._staticPaths[prefix + url]) return;
-
-        this._staticPaths[prefix + url] = [filePath, options ];
-        this.get(prefix + url, this._serveStatic);
+        this.file(prefix + '/' + path.relative(base, filePath), filePath, options);
       }
     });
 
@@ -60,8 +57,7 @@ class BaseApp {
             const filePath = path.join(folder, filename);
             const url = '/' + path.relative(base, filePath);
             if (fs.existsSync(filePath) && filter(filePath)) {
-              this._staticPaths[prefix + url] = [filePath, options];
-              this.get(prefix + url, this._serveStatic);
+              this.file(prefix + url, filePath, options);
             } else {
               delete this._staticPaths[prefix + url];
             }

@@ -66,10 +66,12 @@ app.post('/tmpdir', res => {
 });
 
 app.load(path.join(__dirname, './routes'));
+app.load(path.join(__dirname, './routes/prefix.js'));
 
 app.file('/cache.html', path.join(__dirname, 'public/cache.html'), {
   headers,
-  cache: memoryCache
+  cache: memoryCache,
+  overwriteRoute: true
 });
 
 module.exports = app;
