@@ -74,4 +74,10 @@ app.file('/cache.html', path.join(__dirname, 'public/cache.html'), {
   overwriteRoute: true
 });
 
+app.file('/cache_compress', path.join(__dirname, 'public/cache.html'), {
+  headers,
+  cache: memoryCache,
+  compress: true
+});
+
 module.exports = app;

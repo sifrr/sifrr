@@ -13,26 +13,35 @@ describe('speed test', function() {
     eapp.close();
   });
 
-  it('faster in static files (no-304)', async () => {
-    await loadTest((p) => `${p}/example.json`, 100, { cache: 'no-store' });
+  it('faster in static files', async () => {
+    await loadTest((p) => `${p}/example.json`);
   });
 
-  it('faster in static files (with-304)', async () => {
-    await loadTest((p) => `${p}/example.json`, 100, { cache: 'no-cache' });
+  it('faster in static files (big)', async () => {
+    await loadTest((p) => `${p}/random.html`, 50);
   });
 
-  it('faster in static files (big, no-304)', async () => {
-    await loadTest((p) => `${p}/random.html`, 50, { cache: 'no-store', text: true });
+  it('faster in static files (big, compression)', async () => {
+    await loadTest((p) => `${p}/compressed.html`);
   });
 
-  it('faster in static files (big, no-304, compression)', async () => {
-    await loadTest((p) => `${p}/compressed.html`, 50, { cache: 'no-store', text: true });
-  });
-
-  it('faster in cached files (big, no-304)', async () => {
+  it('faster in cached files (big)', async () => {
     await page.evaluate((p) => {
       return Sifrr.Fetch.get(`${p}/cache.html`).then(r => r.text());
     }, PATH);
-    await loadTest((p) => `${p}/cache.html`, 50, { cache: 'no-store', text: true });
+    await loadTest((p) => `${p}/cache.html`);
+  });
+
+  it('faster in cached compressed files (big)', async () => {
+    await page.evaluate((p) => {
+      return Sifrr.Fetch.get(`${p}/cache_compress`).then(r => r.text());
+    }, PATH);
+    await loadTest((p) => {
+      if (p.indexOf(EPORT) > 0) {
+        return `${p}/compressed.html`;
+      } else {
+        return `${p}/cache_compress`;
+      }
+    });
   });
 });

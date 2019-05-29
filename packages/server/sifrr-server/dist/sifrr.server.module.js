@@ -296,7 +296,7 @@ function sendFileToRes(res, reqHeaders, path, {
     for (let i = 0; i < l; i++) {
       const type = compressionOptions.priority[i];
       if (reqHeaders['accept-encoding'].indexOf(type) > -1) {
-        compressed = true;
+        compressed = type;
         const compressor = compressions[type](compressionOptions);
         readStream.pipe(compressor);
         readStream = compressor;
@@ -307,16 +307,16 @@ function sendFileToRes(res, reqHeaders, path, {
   }
   res.onAborted(() => readStream.destroy());
   writeHeaders$1(res, headers);
-  if (cache && !compressed) {
-    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}`, (cb) => {
-      streamtobuffer(readStream).then(b => cb(null, b.toString('utf-8'))).catch(cb);
-    }, { ttl: 0 }, (err, string) => {
+  if (cache) {
+    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}_${compressed}`, (cb) => {
+      streamtobuffer(readStream).then(b => cb(null, b)).catch(cb);
+    }, { ttl: 0 }, (err, buffer) => {
       if (err) {
         res.writeStatus('500 Internal server error');
         res.end();
         throw err;
       }
-      res.end(string);
+      res.end(buffer);
     });
   } else if (compressed) {
     readStream.on('data', (buffer) => {
