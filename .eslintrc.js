@@ -8,8 +8,6 @@ module.exports = {
   // for tests
   globals: {
     ENV: true,
-    fs: false,
-    path: false,
     chai: false,
     sinon: false,
     assert: false,

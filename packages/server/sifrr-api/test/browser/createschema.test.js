@@ -1,5 +1,6 @@
 const exec = require('child_process').execSync;
 const fs = require('fs');
+const path = require('path');
 const schemaPath = path.join(__dirname, '../public/db/schema.graphql');
 const { fileSeparator } = require('../../src/api/constants');
 

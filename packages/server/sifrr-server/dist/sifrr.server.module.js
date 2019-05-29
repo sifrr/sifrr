@@ -1,7 +1,7 @@
 /*! Sifrr.Server v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
 import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
-import path$1 from 'path';
+import path from 'path';
 import stream from 'stream';
 import zlib from 'zlib';
 import busboy from 'busboy';
@@ -425,14 +425,14 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   if (fs.statSync(dir).isDirectory()) {
     files = fs
       .readdirSync(dir)
-      .filter(filter).map(file => path$1.join(dir, file));
+      .filter(filter).map(file => path.join(dir, file));
   } else {
     files = [dir];
   }
   files.forEach((file) => {
     if (fs.statSync(file).isDirectory()) {
       paths.push(...loadRoutes.call(this, file, { filter, basePath }));
-    } else if (path$1.extname(file) === '.js') {
+    } else if (path.extname(file) === '.js') {
       const routes = commonjsRequire(file);
       let basePaths = routes.basePath || [''];
       delete routes.basePath;
@@ -471,12 +471,12 @@ class BaseApp {
     if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
     const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
-      const filePath = path$1.join(folder, file);
+      const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
       if (fs.statSync(filePath).isDirectory()) {
         this.folder(prefix, filePath, options, base);
       } else {
-        const url = '/' + path$1.relative(base, filePath);
+        const url = '/' + path.relative(base, filePath);
         if (this._staticPaths[prefix + url]) return;
         this._staticPaths[prefix + url] = [filePath, options ];
         this.get(prefix + url, this._serveStatic);
@@ -487,8 +487,8 @@ class BaseApp {
         fs.watch(folder, (event, filename) => {
           if (event === 'rename') {
             if (!filename) return;
-            const filePath = path$1.join(folder, filename);
-            const url = '/' + path$1.relative(base, filePath);
+            const filePath = path.join(folder, filename);
+            const url = '/' + path.relative(base, filePath);
             if (fs.existsSync(filePath) && filter(filePath)) {
               this._staticPaths[prefix + url] = [filePath, options];
               this.get(prefix + url, this._serveStatic);

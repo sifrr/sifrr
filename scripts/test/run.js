@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Mocha = require('mocha');
 const mkdirp = require('mkdirp');
 const listen = require('./server');
@@ -5,8 +7,6 @@ const testLoader = require('./testloader');
 const inspector = require('inspector');
 
 global.ENV = process.env.NODE_ENV = process.env.NODE_ENV || 'test';
-global.fs = require('fs');
-global.path = require('path');
 global.chai = require('chai');
 global.sinon = require('sinon').createSandbox();
 global.assert = chai.assert;

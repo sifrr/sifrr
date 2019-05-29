@@ -48,6 +48,7 @@
       const version = '-v' + this.options.version; // remove old version caches
 
       caches.keys().then(cacheNames => {
+        // [FIX] -v1 won't delete -v10
         return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
       }).then(cachesToDelete => {
         return Promise.all(cachesToDelete.map(cacheToDelete => {
