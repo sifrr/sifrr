@@ -4,9 +4,9 @@ Sifrr Command line interface.
 
 ## How to use
 
-Do `npm i @sifrr/fetch` or `yarn add @sifrr/fetch` or add the package to your `package.json` file.
+Do `npm i @sifrr/cli` or `yarn add @sifrr/cli` or add the package to your `package.json` file.
 
-Run `sifrr [command]` or `node_modules/.bin/sifrr [command]`
+Run `npm run sifrr [command]` or `node_modules/.bin/sifrr [command]`
 
 ```terminal
 # sifrr --help
