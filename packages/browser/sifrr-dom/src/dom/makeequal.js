@@ -1,5 +1,5 @@
 const updateAttribute = require('./updateattribute');
-const { shallowEqual } = require('../utils/json');
+const shouldMerge = require('../utils/shouldmerge');
 const { TEXT_NODE, COMMENT_NODE } = require('./constants');
 
 function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
@@ -45,7 +45,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
+    if (!shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
 

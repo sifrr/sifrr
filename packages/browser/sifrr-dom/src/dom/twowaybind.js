@@ -1,5 +1,5 @@
 const { BIND_ATTR } = require('./constants');
-const { shallowEqual } = require('../utils/json');
+const shouldMerge = require('../utils/shouldmerge');
 
 module.exports = (e) => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
@@ -16,7 +16,7 @@ module.exports = (e) => {
     else target._root = null;
   }
   const prop = target.getAttribute(BIND_ATTR);
-  if (target._root && !shallowEqual(value, target._root._state[prop])) {
+  if (target._root && !shouldMerge(value, target._root._state[prop])) {
     if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
     else target._root.state = { [prop]: value };
   }

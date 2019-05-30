@@ -90,25 +90,14 @@ var updateattribute = (element, name, newValue) => {
   else if (element.getAttribute(name) !== newValue) element.setAttribute(name, newValue);
 };
 
-const Json = {
-  shallowEqual: (a, b) => {
-    if (typeof a !== 'object') return a === b;
-    for(const key in a) {
-      if(!(key in b) || a[key] !== b[key]) {
-        return false;
-      }
-    }
-    for(const key in b) {
-      if(!(key in a) || a[key] !== b[key]) {
-        return false;
-      }
-    }
-    return true;
+var shouldmerge = (a, b) => {
+  if (typeof a !== 'object') return a === b;
+  for(const key in b) {
+    if(!(key in a) || a[key] !== b[key]) return false;
   }
+  return true;
 };
-var json = Json;
 
-const { shallowEqual } = json;
 const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE } = constants;
 function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
   const newL = newChildren.length, oldL = parent.childNodes.length;
@@ -146,7 +135,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 }
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shallowEqual(oldNode._state, newNode)) oldNode.state = newNode;
+    if (!shouldmerge(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
   if (oldNode.nodeName !== newNode.nodeName) {
@@ -407,7 +396,6 @@ const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
-const { shallowEqual: shallowEqual$1 } = json;
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
@@ -431,7 +419,7 @@ function update(element, stateMap) {
       }
       if (data.events.__sb) {
         const newState = evaluateBindings(data.events.__sb, element);
-        if (!shallowEqual$1(newState, dom._state)) dom.state = newState;
+        if (!shouldmerge(newState, dom._state)) dom.state = newState;
       }
     }
     if (data.attributes) {
@@ -831,7 +819,6 @@ function elementClassFactory(baseClass) {
 var element = elementClassFactory(window.HTMLElement);
 
 const { BIND_ATTR: BIND_ATTR$1 } = constants;
-const { shallowEqual: shallowEqual$2 } = json;
 var twowaybind = (e) => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (!target.hasAttribute(BIND_ATTR$1) || target._root === null) return;
@@ -845,7 +832,7 @@ var twowaybind = (e) => {
     else target._root = null;
   }
   const prop = target.getAttribute(BIND_ATTR$1);
-  if (target._root && !shallowEqual$2(value, target._root._state[prop])) {
+  if (target._root && !shouldmerge(value, target._root._state[prop])) {
     if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
     else target._root.state = { [prop]: value };
   }
