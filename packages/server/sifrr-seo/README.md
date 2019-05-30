@@ -132,11 +132,11 @@ closes puppeteer browser instance
 sifrrSeo.close();
 ```
 
-#### addPuppeteerOption()
+#### setPuppeteerOption()
 
 adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
 
-Example: `sifrrSeo.addPuppeteerOption('headless', false)` to run it without headless mode
+Example: `sifrrSeo.setPuppeteerOption('headless', false)` to run it without headless mode
 
 ```js
 sifrrSeo.addPuppeteerOption('headless', false);
@@ -180,17 +180,21 @@ seoOptions = {
 
 ```js
 const fs = require('fs');
+const joinPath = require('path').join;
 
 const seo = new SifrrSeo();
 seo.shouldRender = () => true;
 
-async function renderUrls(urls = [/* array of urls */]) {
+async function renderUrls(urls = [/* array of urls */], path = (url) => url) {
   for (let i = 0; i < urls.length; i++) {
-    const html = seo.render(urls[i]);
-    await new Promise((res, rej) => fs.writeFile(path, html, (err) => {
+    const html = await seo.render(urls[i]);
+    await new Promise((res, rej) => fs.writeFile(path(urls[i]), html, (err) => {
       if (err) rej(err);
       res('The file has been saved!');
     }));
   }
+  await seo.close();
 }
+
+renderUrls(['http://localhost:8080/abcd', 'http://localhost:8080/whatever'], (u) => joinPath(__dirname, '.' + u.slice(21)));
 ```
