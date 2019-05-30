@@ -14,6 +14,10 @@ global.expect = chai.expect;
 global.should = chai.should();
 global.puppeteer = require('puppeteer');
 global.port = 8888;
+const portIndex = Math.max(process.argv.indexOf('--test-port'), process.argv.indexOf('-tp'));
+if (portIndex !== -1) {
+  global.port = +process.argv[portIndex + 1];
+}
 global.PATH = `http://localhost:${port}`;
 global.delay = (time) => {
   return new Promise(res => {

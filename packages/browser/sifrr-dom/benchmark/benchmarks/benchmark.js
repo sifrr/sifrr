@@ -4,7 +4,7 @@ class Benchmark {
   }
 
   static async setup() {
-    await page.evaluate(async () => await Sifrr.Dom.loading());
+    await page.evaluate(async () => window.Sifrr ? await Sifrr.Dom.loading() : null);
     this.start = await page.evaluate(`window.from - 1`);
   }
 

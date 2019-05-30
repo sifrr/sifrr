@@ -47,7 +47,7 @@ describe('Speed tests', async function() {
   this.retries(2);
 
   const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
-  const url = `${PATH}/speedtest.html`;
+  const url = getArg('url') || `${PATH}/speedtest.html`;
   const urls = suffixes.map(s => url + s);
   // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
 
