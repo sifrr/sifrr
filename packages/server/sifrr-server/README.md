@@ -93,9 +93,9 @@ app.folder('/example', folder, options);
 ```
 
 **Extra options**
-`overwriteRoute`: if set to `true`, it will overwrite old pattern if same patter is added.
+`overwriteRoute`: if set to `true`, it will overwrite old pattern if same pattern is added.
 `failOnDuplicateRoute`: if set to `true`, it will throw error if you try add same pattern again.
-by default, it will serve the file you added with this pattern
+By default, it will serve the file you added first with a pattern.
 
 There is one more option available for `folder` with all the sendFile options:
 `watch`: if it is `true`, it will watch for new Files / deleted files and serve/unserve them as needed.
@@ -132,7 +132,7 @@ options need to have atleast one of `onFile` function or `tmpDir` if body has fi
 -   `onField` (optional): will be called with `fieldname, value` if given
 -   other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
 
-Array fields:
+Array fields/files:
 
 -   if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
 -   if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
@@ -180,6 +180,48 @@ app.get('/p/some', (res, req) => res.send('ABD'));
 
 -   `filter` - this function will be called with all filepaths in directory, and if this returns `true` that route file will be added, else it will be not.
 -   `basePath` - base path preffix to add for all the routes
+
+## Static server Benchmarks
+
+From [this file](./test/browser/speed.test.js)
+
+```sh
+# small static file
+┌─────────┬─────┬───────────────┬───────────────┬─────────────┬──────────────────┐
+│ (index) │ rps │ meanLatencyMs │ totalRequests │ totalErrors │ totalTimeSeconds │
+├─────────┼─────┼───────────────┼───────────────┼─────────────┼──────────────────┤
+│  sifrr  │ 947 │       1       │      500      │      0      │   0.527898745    │
+│ express │ 461 │      2.1      │      464      │      0      │   1.006188982    │
+└─────────┴─────┴───────────────┴───────────────┴─────────────┴──────────────────┘
+# big static files
+┌─────────┬─────┬───────────────┬───────────────┬─────────────┬──────────────────┐
+│ (index) │ rps │ meanLatencyMs │ totalRequests │ totalErrors │ totalTimeSeconds │
+├─────────┼─────┼───────────────┼───────────────┼─────────────┼──────────────────┤
+│  sifrr  │ 320 │       3       │      320      │      0      │    1.00049017    │
+│ express │ 281 │      3.5      │      281      │      0      │    1.00036553    │
+└─────────┴─────┴───────────────┴───────────────┴─────────────┴──────────────────┘
+# big static file with gzip compression
+┌─────────┬─────┬───────────────┬───────────────┬─────────────┬──────────────────┐
+│ (index) │ rps │ meanLatencyMs │ totalRequests │ totalErrors │ totalTimeSeconds │
+├─────────┼─────┼───────────────┼───────────────┼─────────────┼──────────────────┤
+│  sifrr  │ 65  │     15.1      │      65       │      0      │    1.00072367    │
+│ express │ 52  │      19       │      52       │      0      │    1.00023047    │
+└─────────┴─────┴───────────────┴───────────────┴─────────────┴──────────────────┘
+# big static file with cache vs express normal
+┌─────────┬─────┬───────────────┬───────────────┬─────────────┬────────────────────┐
+│ (index) │ rps │ meanLatencyMs │ totalRequests │ totalErrors │  totalTimeSeconds  │
+├─────────┼─────┼───────────────┼───────────────┼─────────────┼────────────────────┤
+│  sifrr  │ 350 │      2.8      │      350      │      0      │    1.000180245     │
+│ express │ 296 │      3.3      │      296      │      0      │ 0.9997323239999999 │
+└─────────┴─────┴───────────────┴───────────────┴─────────────┴────────────────────┘
+# big static file gzip compressed with cache vs express normal compressed
+┌─────────┬─────┬───────────────┬───────────────┬─────────────┬──────────────────┐
+│ (index) │ rps │ meanLatencyMs │ totalRequests │ totalErrors │ totalTimeSeconds │
+├─────────┼─────┼───────────────┼───────────────┼─────────────┼──────────────────┤
+│  sifrr  │ 140 │       7       │      141      │      0      │   1.005305281    │
+│ express │ 55  │      18       │      55       │      0      │    1.0004165     │
+└─────────┴─────┴───────────────┴───────────────┴─────────────┴──────────────────┘
+```
 
 ## Examples
 
