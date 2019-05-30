@@ -13,13 +13,13 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
       if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();
     }
   });
+  const client = await page.target().createCDPSession();
 
   const times = (warmups + 1) * runs;
   for (let i = 0; i < times; i++) {
     if (i % (warmups + 1) === 0) {
-      // if (url!== page.url()) await page.goto(url);
-      await page.goto(url, { waitUntil: 'networkidle0' });
-      await page.goto(url);
+      if (url !== page.url()) await page.goto(url);
+      // await page.goto(url, { waitUntil: 'networkidle0' });
       await BM.setup();
 
       // Run before all
@@ -34,8 +34,10 @@ module.exports = async function(benchmark, port, runs = 5, url, warmups = runs, 
     const beforeMetrics = await BM.metrics();
 
     // Run bechmark
+    await client.send('Emulation.setCPUThrottlingRate', { rate: bm.cpuSlowdown });
     bm.run();
     await page.waitForFunction(bm.runWait());
+    await client.send('Emulation.setCPUThrottlingRate', { rate: 1 });
     const afterMetrics = await BM.metrics();
 
     if (i % (warmups + 1) === warmups) {

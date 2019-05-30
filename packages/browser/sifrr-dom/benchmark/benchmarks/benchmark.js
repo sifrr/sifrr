@@ -22,6 +22,10 @@ class Benchmark {
     return "document.querySelector('#main')";
   }
 
+  get cpuSlowdown() {
+    return 1;
+  }
+
   mainClick(selector) {
     return page.$eval('#main', (el, selector) => el.$(selector).click(), selector);
   }
