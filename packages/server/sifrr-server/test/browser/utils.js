@@ -12,6 +12,7 @@ module.exports = {
   loadTest: async function(url) {
     const expressResults = await loadtest({
       url: url(EPATH),
+      concurrency: 8,
       maxSeconds: 1,
       maxRequests: 500,
       headers: {
@@ -20,6 +21,7 @@ module.exports = {
     });
     const sifrrResults = await loadtest({
       url: url(PATH),
+      concurrency: 8,
       maxSeconds: 1,
       maxRequests: 500,
       headers: {
