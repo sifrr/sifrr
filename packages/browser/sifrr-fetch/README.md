@@ -138,6 +138,21 @@ Sifrr.Fetch.graphql(url, { query: 'graphql query string', variables: { a: 'b' },
   });
 ```
 
+#### Cache as Middleware
+
+```js
+const storage = new Sifrr.Storage();
+function cacheOrGet(url) {
+  Sifrr.Fetch.get(url, {
+    use: (url) => storage.get(url).then(v => typeof v[url] === 'undefined' ? throw 'Not found' : v[url]),
+    after: (response) => {
+      storage.set(url, response);
+      return response;
+    }
+  })
+}
+```
+
 ## WebSockets
 
 Automatic connection retries, calls fallback on message sending failure/error
