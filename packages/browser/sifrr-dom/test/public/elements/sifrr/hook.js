@@ -1,6 +1,5 @@
 // import SifrrDom from '@sifrr/dom';
 // const Sifrr = { Dom: SifrrDom };
-const hahaHook = new Sifrr.Dom.Hook({ a: 'hahaha' });
 
 const template = `<p>\${this.hooks.haha.value.a}</p>`;
 class SifrrHook extends Sifrr.Dom.Element {
@@ -13,7 +12,7 @@ class SifrrHook extends Sifrr.Dom.Element {
   }
 
   get hooks() {
-    return { haha: hahaHook };
+    return { haha: window.hahaHook };
   }
 
   onUpdate() {

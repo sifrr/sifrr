@@ -5,9 +5,11 @@
   <body>
     <h1>OK</h1>
     <sifrr-hook></sifrr-hook>
+    <sifrr-hook></sifrr-hook>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup();
+      window.hahaHook = new Sifrr.Dom.Hook({ a: 'hahaha' });
       Sifrr.Dom.load('sifrr-hook');
     </script>
   </body>
