@@ -6,11 +6,15 @@
     <h1>OK</h1>
     <sifrr-hook></sifrr-hook>
     <sifrr-hook></sifrr-hook>
+    <sifrr-hook2></sifrr-hook2>
+    <sifrr-hook3></sifrr-hook3>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup();
-      window.hahaHook = new Sifrr.Dom.Hook('hahaha');
+      window.hahaHook = new Sifrr.Dom.Hook({ a: 'hahaha' });
       Sifrr.Dom.load('sifrr-hook');
+      Sifrr.Dom.load('sifrr-hook2');
+      Sifrr.Dom.load('sifrr-hook3');
     </script>
   </body>
 </html>
