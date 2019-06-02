@@ -1,7 +1,8 @@
 // import SifrrDom from '@sifrr/dom';
 // const Sifrr = { Dom: SifrrDom };
+const hahaHook = new Sifrr.Dom.Hook({ a: 'hahaha' });
 
-const template = `<p>\${this.hook.value.a}</p>`;
+const template = `<p>\${this.hooks.haha.value.a}</p>`;
 class SifrrHook extends Sifrr.Dom.Element {
   static get useShadowRoot() {
     return false;
@@ -11,8 +12,8 @@ class SifrrHook extends Sifrr.Dom.Element {
     return template;
   }
 
-  get hook() {
-    return new Sifrr.Dom.Hook({ a: 'hahaha' });
+  get hooks() {
+    return { haha: hahaHook };
   }
 
   onUpdate() {

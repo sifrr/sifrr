@@ -50,6 +50,10 @@ function elementClassFactory(baseClass) {
 
     constructor() {
       super();
+      let hooks = this.hooks;
+      if (hooks) {
+        for (let h in hooks) hooks[h].addListener(this.update.bind(this));
+      }
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);

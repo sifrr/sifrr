@@ -4,7 +4,6 @@ const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 const shouldMerge = require('../utils/shouldmerge');
-const Hook = require('./hook');
 
 function update(element, stateMap, i = 0, l = element._refs ? element._refs.length : -1) {
   stateMap = stateMap || element.constructor.stateMap;
@@ -59,9 +58,7 @@ function update(element, stateMap, i = 0, l = element._refs ? element._refs.leng
     else newValue = evaluateBindings(data.text, element);
 
     if (!newValue || newValue.length === 0) dom.textContent = '';
-    else if (newValue instanceof Hook) {
-      data.type = 5;
-    } else if (data.type === 3) {
+    else if (data.type === 3) {
       // repeaing node
       let key;
       // eslint-disable-next-line no-inner-declarations

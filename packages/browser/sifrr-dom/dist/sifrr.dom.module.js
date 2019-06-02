@@ -392,16 +392,6 @@ const Bindings = {
 };
 var bindings = Bindings;
 
-class Hook {
-  constructor(initial) {
-    this.value = initial;
-  }
-  set(newValue) {
-    if (shouldmerge(this.value, newValue)) Object.assign(this.value, newValue);
-  }
-}
-var hook = Hook;
-
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
@@ -446,9 +436,7 @@ function update(element, stateMap, i = 0, l = element._refs ? element._refs.leng
     if (typeof data.text === 'string') newValue = element._state[data.text];
     else newValue = evaluateBindings(data.text, element);
     if (!newValue || newValue.length === 0) dom.textContent = '';
-    else if (newValue instanceof hook) {
-      data.type = 5;
-    } else if (data.type === 3) {
+    else if (data.type === 3) {
       let key;
       data.se.root = element;
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
@@ -745,6 +733,10 @@ function elementClassFactory(baseClass) {
     }
     constructor() {
       super();
+      let hooks = this.hooks;
+      if (hooks) {
+        for (let h in hooks) hooks[h].addListener(this.update.bind(this));
+      }
       if (this.constructor.ctemp) {
         this._state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
@@ -849,6 +841,21 @@ var twowaybind = (e) => {
     else target._root.state = { [prop]: value };
   }
 };
+
+class Hook {
+  constructor(initial) {
+    this.value = initial;
+    this.listeners = [];
+  }
+  set(newValue) {
+    if (shouldmerge(this.value, newValue)) Object.assign(this.value, newValue);
+    this.listeners.forEach(l => l());
+  }
+  addListener(listener) {
+    this.listeners.push(listener);
+  }
+}
+var hook = Hook;
 
 const { BIND_ATTR: BIND_ATTR$2 } = constants;
 const bindSelector = '[' + BIND_ATTR$2 + ']';
