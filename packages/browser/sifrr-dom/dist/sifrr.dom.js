@@ -917,13 +917,16 @@
 	  }
 	};
 
+	const objCon = {}.constructor;
 	class Hook {
 	  constructor(initial) {
 	    this.value = initial;
 	    this.listeners = [];
 	  }
 	  set(newValue) {
-	    if (shouldmerge(this.value, newValue)) Object.assign(this.value, newValue);
+	    if (shouldmerge(this.value, newValue)) {
+	      if (this.value.constructor === objCon) Object.assign(this.value, newValue);else this.value = newValue;
+	    }
 	    this.listeners.forEach(l => l());
 	  }
 	  addListener(listener) {

@@ -1,4 +1,5 @@
 const shouldMerge = require('../utils/shouldmerge');
+const objCon = ({}).constructor;
 
 class Hook {
   constructor(initial) {
@@ -7,7 +8,10 @@ class Hook {
   }
 
   set(newValue) {
-    if (shouldMerge(this.value, newValue)) Object.assign(this.value, newValue);
+    if (shouldMerge(this.value, newValue)) {
+      if (this.value.constructor === objCon) Object.assign(this.value, newValue);
+      else this.value = newValue;
+    }
     this.listeners.forEach(l => l());
   }
 
