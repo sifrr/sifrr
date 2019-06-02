@@ -5,10 +5,10 @@ const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 const shouldMerge = require('../utils/shouldmerge');
 
-function update(element, stateMap, i = 0, l = element._refs ? element._refs.length : -1) {
+function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
-  for (; i < l; i++) {
+  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
     const data = stateMap[i].ref, dom = element._refs[i];
 
     // Fast path for text nodes

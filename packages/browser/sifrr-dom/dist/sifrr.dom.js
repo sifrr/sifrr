@@ -106,7 +106,7 @@
 	};
 
 	var shouldmerge = (a, b) => {
-	  if (typeof a !== 'object') return a === b;
+	  if (typeof a !== 'object') return a !== b;
 	  for (const key in b) {
 	    if (!(key in a) || a[key] !== b[key]) return true;
 	  }
@@ -441,9 +441,9 @@
 	  TEMPLATE: TEMPLATE$1,
 	  KEY_ATTR
 	} = constants;
-	function update(element, stateMap, i = 0, l = element._refs ? element._refs.length : -1) {
+	function update(element, stateMap) {
 	  stateMap = stateMap || element.constructor.stateMap;
-	  for (; i < l; i++) {
+	  for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
 	    const data = stateMap[i].ref,
 	          dom = element._refs[i];
 	    if (data.type === 0) {
