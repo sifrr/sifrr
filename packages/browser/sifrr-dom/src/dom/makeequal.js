@@ -45,7 +45,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
+    if (shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
 

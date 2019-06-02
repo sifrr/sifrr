@@ -4,11 +4,12 @@ const updateAttribute = require('./updateattribute');
 const { evaluateBindings } = require('./bindings');
 const { TEMPLATE, KEY_ATTR } = require('./constants');
 const shouldMerge = require('../utils/shouldmerge');
+const Hook = require('./hook');
 
-function update(element, stateMap) {
+function update(element, stateMap, i = 0, l = element._refs ? element._refs.length : -1) {
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
-  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
+  for (; i < l; i++) {
     const data = stateMap[i].ref, dom = element._refs[i];
 
     // Fast path for text nodes
@@ -35,7 +36,7 @@ function update(element, stateMap) {
       }
       if (data.events.__sb) {
         const newState = evaluateBindings(data.events.__sb, element);
-        if (!shouldMerge(newState, dom._state)) dom.state = newState;
+        if (shouldMerge(newState, dom._state)) dom.state = newState;
       }
     }
 
@@ -58,7 +59,9 @@ function update(element, stateMap) {
     else newValue = evaluateBindings(data.text, element);
 
     if (!newValue || newValue.length === 0) dom.textContent = '';
-    else if (data.type === 3) {
+    else if (newValue instanceof Hook) {
+      data.type = 5;
+    } else if (data.type === 3) {
       // repeaing node
       let key;
       // eslint-disable-next-line no-inner-declarations

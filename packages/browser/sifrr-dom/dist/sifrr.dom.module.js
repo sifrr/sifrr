@@ -93,9 +93,9 @@ var updateattribute = (element, name, newValue) => {
 var shouldmerge = (a, b) => {
   if (typeof a !== 'object') return a === b;
   for(const key in b) {
-    if(!(key in a) || a[key] !== b[key]) return false;
+    if(!(key in a) || a[key] !== b[key]) return true;
   }
-  return true;
+  return false;
 };
 
 const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE } = constants;
@@ -135,7 +135,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
 }
 function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (!shouldmerge(oldNode._state, newNode)) oldNode.state = newNode;
+    if (shouldmerge(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
   }
   if (oldNode.nodeName !== newNode.nodeName) {
@@ -392,13 +392,23 @@ const Bindings = {
 };
 var bindings = Bindings;
 
+class Hook {
+  constructor(initial) {
+    this.value = initial;
+  }
+  set(newValue) {
+    if (shouldmerge(this.value, newValue)) Object.assign(this.value, newValue);
+  }
+}
+var hook = Hook;
+
 const { makeChildrenEqual: makeChildrenEqual$1 } = makeequal;
 const { makeChildrenEqualKeyed: makeChildrenEqualKeyed$1 } = keyed;
 const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
-function update(element, stateMap) {
+function update(element, stateMap, i = 0, l = element._refs ? element._refs.length : -1) {
   stateMap = stateMap || element.constructor.stateMap;
-  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
+  for (; i < l; i++) {
     const data = stateMap[i].ref, dom = element._refs[i];
     if (data.type === 0) {
       if (dom.__data != element._state[data.text]) dom.data = dom.__data = element._state[data.text];
@@ -419,7 +429,7 @@ function update(element, stateMap) {
       }
       if (data.events.__sb) {
         const newState = evaluateBindings(data.events.__sb, element);
-        if (!shouldmerge(newState, dom._state)) dom.state = newState;
+        if (shouldmerge(newState, dom._state)) dom.state = newState;
       }
     }
     if (data.attributes) {
@@ -436,7 +446,9 @@ function update(element, stateMap) {
     if (typeof data.text === 'string') newValue = element._state[data.text];
     else newValue = evaluateBindings(data.text, element);
     if (!newValue || newValue.length === 0) dom.textContent = '';
-    else if (data.type === 3) {
+    else if (newValue instanceof hook) {
+      data.type = 5;
+    } else if (data.type === 3) {
       let key;
       data.se.root = element;
       if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
@@ -832,7 +844,7 @@ var twowaybind = (e) => {
     else target._root = null;
   }
   const prop = target.getAttribute(BIND_ATTR$1);
-  if (target._root && !shouldmerge(value, target._root._state[prop])) {
+  if (target._root && shouldmerge(value, target._root._state[prop])) {
     if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
     else target._root.state = { [prop]: value };
   }
@@ -852,6 +864,7 @@ SifrrDom.Event = event_1;
 SifrrDom.makeChildrenEqual = makeequal.makeChildrenEqual;
 SifrrDom.makeChildrenEqualKeyed = keyed.makeChildrenEqualKeyed;
 SifrrDom.makeEqual = makeequal.makeEqual;
+SifrrDom.Hook = hook;
 SifrrDom.template = template;
 SifrrDom.register = (Element, options = {}) => {
   Element.useSR = SifrrDom.config.useShadowRoot;
