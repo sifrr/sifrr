@@ -1,12 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-for dir in ./packages/*/*
-do
-  cd "$dir"
-  echo "Running changelog in $PWD"
-  ./node_modules/.bin/conventional-changelog -p angular -i "CHANGELOG.md" -s --commit-path . -k $OLDPWD "${@:1}"
-  cd "$OLDPWD"
-done
+const path = require('path');
+const { loadDir, generateChangelog } = require('@sifrr/dev');
 
-echo "Running changelog in $PWD"
-./node_modules/.bin/conventional-changelog -p angular -i "CHANGELOG.md" -s "${@:1}"
+loadDir({
+  dir: path.resolve('./elements'),
+  onDir: (dir) => {
+    generateChangelog({
+      changelogFile: path.join(dir, './CHANGELOG.md'),
+      multiRepo: path.basename(dir)
+    });
+  },
+  deep: 0
+});
+
+generateChangelog();
