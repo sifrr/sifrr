@@ -18,12 +18,14 @@ describe('sifrr-serviceworker', function() {
     // await page.setRequestInterception(true);
     // stubRequests();
     // [TODO]: Change status 404 to offline tests
-    await browser.current.defaultBrowserContext().overridePermissions(PATH, ['notifications']);
-    await page.goto(`${PATH}/`);
+    await browser.defaultBrowserContext().overridePermissions(PATH, ['notifications']);
+    await page.goto(`${PATH}/index.html`);
     await page.evaluate('navigator.serviceWorker.ready');
+    await page.setCacheEnabled(false);
   });
 
   after(async () => {
+    await page.setCacheEnabled(true);
   });
 
   it('registers service worker', async () => {
@@ -45,7 +47,7 @@ describe('sifrr-serviceworker', function() {
 
   it('shows push notification on payload', async () => {
     // [TODO] Doesn't work in headless
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/index.html`);
     // await page.evaluate('window.sendPush()');
     // await page.evaluate('window.sendPush({"title": "ok", "body": "body"})');
     const notifications = await page.evaluate(async () => {
@@ -139,7 +141,7 @@ describe('sifrr-serviceworker', function() {
   });
 
   it('deletes old cache versions when version is changed', async () => {
-    await page.goto(`${PATH}/`);
+    await page.goto(`${PATH}/index.html`);
     await page.evaluate(async () => {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
@@ -155,7 +157,7 @@ describe('sifrr-serviceworker', function() {
     });
     const caches = await page.evaluate("window.send_message_to_sw('caches')");
 
-    await page.goto(`${PATH}/?sw2.bundled.js`);
+    await page.goto(`${PATH}/index.html?sw2.bundled.js`);
     await page.evaluate(async () => {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
@@ -177,7 +179,7 @@ describe('sifrr-serviceworker', function() {
   });
 
   it('saves in default cache', async () => {
-    const resp = await page.goto(`${PATH}/?sw2.bundled.js`);
+    const resp = await page.goto(`${PATH}/index.html?sw2.bundled.js`);
     assert(resp.fromServiceWorker());
   });
 });
