@@ -50,8 +50,9 @@ respond with file from filepath. sets content-type based on [file name extension
 const { sendFile } = require('@sifrr/server');
 
 const app = new App();
-app.get(uWSRoutingPattern, res => {
-  sendFile(res, filepath, options)
+app.get(uWSRoutingPattern, (res, req) => {
+  res.onAborted((e) => process.stderr.write(e));
+  sendFile(res, req, filepath, options)
 });
 ```
 

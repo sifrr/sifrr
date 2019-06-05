@@ -82,7 +82,7 @@ runTests({
   useJunitReporter,
   inspect,
   folders: {
-    static: [path.join(__dirname, '../../dist')],
+    static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
     coverage: path.join(__dirname, '../../.nyc_output'),
     source: path.join(__dirname, '../../packages')
   },

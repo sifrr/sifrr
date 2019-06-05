@@ -31,7 +31,7 @@
     "storage"
   ],
   "scripts": {
-    "test": "rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
+    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
     "build": "./node_modules/.bin/rollup -c",
     "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
     "test-server-only": "node ../../../scripts/test/run.js ./packages/browser/sifrr-storage -s",

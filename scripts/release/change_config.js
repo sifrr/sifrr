@@ -19,7 +19,7 @@ module.exports = function(folder, isBrowser) {
     homepage: pkg.homepage,
     devDependencies: pkg.devDependencies,
     scripts: {
-      test: `rm -rf ../../../.nyc_output; node ../../../scripts/test/run.js ${folder}`,
+      test: `node ../../../scripts/test/run.js ${folder}`,
       build: './node_modules/.bin/rollup -c',
       'test-build': 'cd test/public && ../../node_modules/.bin/rollup -c',
       'test-server': `node ../../../scripts/test/run.js ${folder} -s`,

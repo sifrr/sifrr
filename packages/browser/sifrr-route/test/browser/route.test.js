@@ -152,12 +152,12 @@ describe('sifrr-route', () => {
   });
 
   it('opens in new tab when clicked with control key', async () => {
-    const oldP = (await browser.current.pages()).length;
+    const oldP = (await browser.pages()).length;
     // Not working in macOS
     await page.keyboard.down('Control');
     await page.click('a[target="_self"]');
     await page.keyboard.up('Control');
-    const newP = (await browser.current.pages()).length;
+    const newP = (await browser.pages()).length;
 
     // assert.equal(newP - oldP, 1);
   });
