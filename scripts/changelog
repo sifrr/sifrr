@@ -4,14 +4,16 @@ const path = require('path');
 const { loadDir, generateChangelog } = require('@sifrr/dev');
 
 loadDir({
-  dir: path.resolve('./elements'),
+  dir: path.resolve('./packages'),
   onDir: (dir) => {
-    generateChangelog({
-      changelogFile: path.join(dir, './CHANGELOG.md'),
-      multiRepo: path.basename(dir)
-    });
+    if (dir.indexOf('sifrr') > -1) {
+      generateChangelog({
+        changelogFile: path.join(dir, './CHANGELOG.md'),
+        multiRepo: path.basename(dir)
+      });
+    }
   },
-  deep: 0
+  deep: 1
 });
 
 generateChangelog();

@@ -1,26 +1,35 @@
-## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-19)
+## 0.0.5 (2019-06-05 18:04:38 +0900)
 
 
 ### Features
 
-* **sifrr-api:** association works in sequelize create resolver ([b1e354e](https://github.com/sifrr/sifrr/commit/b1e354e))
-* **sifrr-api:** make connection query work ([4f753c0](https://github.com/sifrr/sifrr/commit/4f753c0))
+* association works in sequelize create resolver ([b1e354e](https://github.com/sifrr/sifrr/commit/b1e354e))
+* make connection query work ([4f753c0](https://github.com/sifrr/sifrr/commit/4f753c0))
 
 
 
-## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
+## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-08 01:10:18 +0900)
+
+
+
+## [0.0.3](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha2...v0.0.3) (2019-03-05 23:44:39 +0900)
 
 
 ### Bug Fixes
 
-* **sifrr-api:** default base path is added before each route ([54b1c8e](https://github.com/sifrr/sifrr/commit/54b1c8e))
+* default base path is added before each route ([54b1c8e](https://github.com/sifrr/sifrr/commit/54b1c8e))
 
 
 ### Features
 
-* **sifrr-api:** Add description ([e1075ca](https://github.com/sifrr/sifrr/commit/e1075ca))
-* **sifrr-api:** Add schema saving to file ([1f299fc](https://github.com/sifrr/sifrr/commit/1f299fc))
-* **sifrr-api:** Only edit schema file if content has changed ([e2de504](https://github.com/sifrr/sifrr/commit/e2de504))
-* **sifrr-api:** separate model and connection and implement relay ([6b64627](https://github.com/sifrr/sifrr/commit/6b64627))
+* Add description ([e1075ca](https://github.com/sifrr/sifrr/commit/e1075ca))
+* Add schema saving to file ([1f299fc](https://github.com/sifrr/sifrr/commit/1f299fc))
+* Only edit schema file if content has changed ([e2de504](https://github.com/sifrr/sifrr/commit/e2de504))
+* separate model and connection and implement relay ([6b64627](https://github.com/sifrr/sifrr/commit/6b64627))
+
+
+
+## 0.0.1-alpha2 (2019-01-10 13:40:20 +0900)
+
 
 
