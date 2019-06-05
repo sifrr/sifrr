@@ -433,7 +433,7 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
     if (fs.statSync(file).isDirectory()) {
       paths.push(...loadRoutes.call(this, file, { filter, basePath }));
     } else if (path.extname(file) === '.js') {
-      const routes = commonjsRequire(file);
+      const routes = commonjsRequire();
       let basePaths = routes.basePath || [''];
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
@@ -524,7 +524,7 @@ class BaseApp {
         return stream;
       };
       res.body = () => streamtobuffer(res.bodyStream());
-      if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
+      if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse();
       if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata.bind(res, contType);
       handler(res, req);
     });

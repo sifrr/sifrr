@@ -87,14 +87,14 @@ class Renderer {
       const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
       await fetches.addListener;
       delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(url, { waitUntil: 'load' });
+      await newp.setExtraHTTPHeaders();
+      if (me.options.beforeRender) await newp.evaluateOnNewDocument();
+      const resp;
       const sRC = me.isHTML(resp);
       let ret;
       if (sRC) {
         await fetches.all();
-        if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
+        if (me.options.afterRender) await newp.evaluate();
         ret = await newp.content();
       } else ret = false;
       await newp.close();
