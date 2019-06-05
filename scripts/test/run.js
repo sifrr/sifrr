@@ -1,5 +1,35 @@
 const path = require('path');
 
+// Stub window in unit tests
+global.window = {
+  document: {
+    addEventListener: sinon.stub(),
+    createElement: sinon.stub()
+  },
+  addEventListener: sinon.stub(),
+  location: {
+    href: '/',
+    host: 'localhost'
+  },
+  Sifrr: {
+    Dom: {
+      Element: Object,
+      html: sinon.stub(),
+      register: sinon.stub(),
+      Event: {
+        add: sinon.stub()
+      }
+    }
+  },
+  history: { pushState: sinon.stub() },
+  console: {
+    log: sinon.stub(),
+    error: sinon.stub(),
+    warn: sinon.stub()
+  },
+  fetch: () => {}
+};
+
 // Check if need coverage
 const coverage = process.env.COVERAGE === 'true';
 
