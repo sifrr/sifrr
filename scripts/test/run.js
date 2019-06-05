@@ -1,4 +1,5 @@
 const path = require('path');
+const sinon = require('sinon');
 
 // Stub window in unit tests
 global.window = {
