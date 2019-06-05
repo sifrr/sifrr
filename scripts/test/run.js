@@ -81,6 +81,7 @@ runTests({
   port,
   useJunitReporter,
   inspect,
+  preCommand: ['cd test/public && yarn && yarn build'],
   folders: {
     static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
     coverage: path.join(__dirname, '../../.nyc_output'),
