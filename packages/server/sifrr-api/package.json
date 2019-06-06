@@ -24,7 +24,6 @@
     "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-api",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server-only": "node ../../../scripts/test/run.js ./packages/server/sifrr-api -s",
     "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-api -s"
   },
   "dependencies": {

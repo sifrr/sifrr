@@ -30,7 +30,6 @@
     "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server-only": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch -s",
     "test-server": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch -s"
   },
   "dependencies": {},
