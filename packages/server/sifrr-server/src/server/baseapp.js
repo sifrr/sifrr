@@ -50,8 +50,8 @@ class BaseApp {
     });
 
     if (options && options.watch) {
-      if (this._watched.indexOf(folder) < 0) {
-        fs.watch(folder, (event, filename) => {
+      if (!this._watched[folder]) {
+        const w = fs.watch(folder, (event, filename) => {
           if (event === 'rename') {
             if (!filename) return;
             const filePath = path.join(folder, filename);
@@ -63,7 +63,7 @@ class BaseApp {
             }
           }
         });
-        this._watched.push(folder);
+        this._watched[folder] = w;
       }
     }
     return this;
@@ -128,6 +128,9 @@ class BaseApp {
   }
 
   close() {
+    for (let f in this._watched) {
+      this._watched[f].close();
+    }
     if (this._socket) {
       uWS.us_listen_socket_close(this._socket);
       this._socket = null;
@@ -137,6 +140,6 @@ class BaseApp {
 }
 
 BaseApp.prototype._staticPaths = {};
-BaseApp.prototype._watched = [];
+BaseApp.prototype._watched = {};
 
 module.exports = BaseApp;
