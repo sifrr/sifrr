@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const sinon = require('sinon');
 
@@ -71,6 +72,11 @@ const root = path.join(__dirname, '../../', process.argv[2]) || path.resolve('./
 
 const { runTests } = require('@sifrr/dev');
 
+let preCommand = [];
+if (fs.existsSync(path.join(root, './test/public/package.json'))) {
+  preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
+}
+
 runTests({
   root,
   serverOnly,
@@ -81,7 +87,7 @@ runTests({
   port,
   useJunitReporter,
   inspect,
-  preCommand: ['cd test/public && yarn && yarn build'],
+  preCommand,
   folders: {
     static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
     coverage: path.join(__dirname, '../../.nyc_output'),
