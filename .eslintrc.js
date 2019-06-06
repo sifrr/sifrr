@@ -25,7 +25,8 @@ module.exports = {
     SifrrStorage: false,
     requireBase: false,
     graphqlSchema: true,
-    etg: true
+    etg: true,
+    pdescribe: true
   },
   extends: 'eslint:recommended',
   parserOptions: {

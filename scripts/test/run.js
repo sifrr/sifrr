@@ -77,6 +77,16 @@ if (fs.existsSync(path.join(root, './test/public/package.json'))) {
   preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
 }
 
+const loadBrowser = require('@sifrr/dev/src/test/loadbrowser');
+global.pdescribe = async function(name, cb) {
+  await loadBrowser(root, coverage, path.join(__dirname, '../../.nyc_output')).then(({ page }) => {
+    describe(name, () => {
+      cb({ page });
+    });
+    run();
+  });
+};
+
 runTests({
   root,
   serverOnly,
@@ -95,5 +105,8 @@ runTests({
   },
   sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
   junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
-  reporters
+  reporters,
+  mochaOptions: {
+    delay: true
+  }
 });

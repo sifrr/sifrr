@@ -47,17 +47,16 @@ function stubRequest(request) {
   }
 }
 
-async function getResponse(type, url, options, text = false) {
-  return page.evaluate((type, url, options, text) => {
-    if (typeof Sifrr === 'undefined') return Sifrr;
-    const ret = Sifrr.Fetch[type](url, options);
-    if (text) return ret.then((resp) => resp.text());
-    else return ret.catch((e) => e.message);
-  }, type, url, options, text);
-}
-
-
 describe('sifrr-fetch', () => {
+  async function getResponse(type, url, options, text = false) {
+    return page.evaluate((type, url, options, text) => {
+      if (typeof Sifrr === 'undefined') return Sifrr;
+      const ret = Sifrr.Fetch[type](url, options);
+      if (text) return ret.then((resp) => resp.text());
+      else return ret.catch((e) => e.message);
+    }, type, url, options, text);
+  }
+
   before(async () => {
     await page.setRequestInterception(true);
     page.on('request', stubRequest);
