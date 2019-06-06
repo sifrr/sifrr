@@ -23,8 +23,8 @@
   ],
   "scripts": {
     "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-cli",
-    "build": "./node_modules/.bin/rollup -c",
-    "test-build": "cd test/public && ../../node_modules/.bin/rollup -c",
+    "build": "yarn rollup -c",
+    "test-build": "cd test/public && yarn build",
     "test-server-only": "node ../../../scripts/test/run.js ./packages/server/sifrr-cli -s",
     "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-cli -s"
   },
@@ -34,7 +34,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.6",
+    "@sifrr/dev": "^0.0.7",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7"
   },
