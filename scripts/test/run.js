@@ -60,9 +60,7 @@ if (portIndex !== -1) {
 // check if need to filter
 let filters;
 const filter = process.argv.indexOf('-f') || process.argv.indexOf('--filter');
-if (filter > 0) {
-  filters = process.argv[filter + 1].split(' ');
-}
+if (filter > 0) filters = process.argv[filter + 1].split(/[ ,\n]/g);
 
 // reporters
 const reporters = ['html'];
