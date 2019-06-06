@@ -107,6 +107,6 @@ runTests({
   junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
   reporters,
   mochaOptions: {
-    delay: true
+    timeout: 10000
   }
 });
