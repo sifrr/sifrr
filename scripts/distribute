@@ -3,8 +3,8 @@
 set -ex
 
 ./scripts/release/config
-./scripts/yarn build
 ./scripts/contributors
+yarn build
 yarn install
 
 # Add dist files not generated before
