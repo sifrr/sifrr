@@ -11,7 +11,7 @@ fi
 if [ -z ${CIRCLE_NODE_TOTAL} ]; then
   FILES="sifrr"
 else
-  FILES=`circleci tests glob "packages/*/*/test/**.test.js" | circleci tests split --split-by=timings`
+  FILES=`circleci tests glob "packages/**/*.test.js" | circleci tests split --split-by=timings`
 fi
 
 for dir in packages/*/*
@@ -26,7 +26,7 @@ done
 
 if [[ $COVERAGE == 'true' ]]; then
   if [[ $LCOV == 'true' ]]; then
-    cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+    COVERALLS_PARALLEL=true cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   fi
 fi
 
