@@ -8,17 +8,17 @@ if [[ $COVERAGE == 'true' ]]; then
   rm -rf ./.nyc_output
 fi
 
+if [ -z ${CIRCLE_NODE_TOTAL} ]; then
+  FILES="sifrr"
+else
+  FILES=`circleci tests glob "packages/*/*/test/**.test.js" | circleci tests split --split-by=timings`
+fi
+
 for dir in packages/*/*
 do
   echo "Running test in ${dir}:"
 
-  if [ -z ${CIRCLE_NODE_TOTAL} ]; then
-    FILES="sifrr"
-  else
-    FILES=`circleci tests glob "packages/**/*.test.js" | circleci tests split --split-by=timings`
-  fi
-
-  node ./scripts/test/run.js "${dir}" "$@" -f $FILES
+  node ./scripts/test/run.js "${dir}" "$@" -f "${FILES}"
 
   NEW_STATUS=$?
   [ $NEW_STATUS -eq 0 ] || STATUS=$NEW_STATUS
