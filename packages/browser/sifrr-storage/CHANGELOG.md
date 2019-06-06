@@ -1,18 +1,15 @@
-## 0.0.5 (2019-06-05 18:04:38 +0900)
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
 
 
 ### Bug Fixes
 
 * fix bug of not returning falsy values in indexeddb ([5dd8521](https://github.com/sifrr/sifrr/commit/5dd8521))
-* fix typed array and blob support ([357ee65](https://github.com/sifrr/sifrr/commit/357ee65))
-* store = correctly in cookies ([06544a8](https://github.com/sifrr/sifrr/commit/06544a8))
 
 
 ### Features
 
 * add keys() method ([d23ea59](https://github.com/sifrr/sifrr/commit/d23ea59))
 * add support for ArrayBuffer, TypedArray data types ([40b62e9](https://github.com/sifrr/sifrr/commit/40b62e9))
-* refactor cookies to support larger data ([00ae6c8](https://github.com/sifrr/sifrr/commit/00ae6c8))
 
 
 ### Performance Improvements

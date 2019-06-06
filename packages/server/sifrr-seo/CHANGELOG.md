@@ -1,10 +1,4 @@
-## 0.0.5 (2019-06-05 18:04:38 +0900)
-
-
-### Features
-
-* make seo independent of overall design ([3fc918a](https://github.com/sifrr/sifrr/commit/3fc918a))
-* rename middleware to more specific express middleware ([528890a](https://github.com/sifrr/sifrr/commit/528890a))
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
 
 
 

@@ -1,4 +1,4 @@
-## 0.0.5 (2019-06-05 18:04:38 +0900)
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
 
 
 ### Bug Fixes
@@ -12,8 +12,6 @@
 
 * add option to change filename for tmpdir ([c2a9330](https://github.com/sifrr/sifrr/commit/c2a9330))
 * add optional caching  ([#106](https://github.com/sifrr/sifrr/issues/106)) ([cf74306](https://github.com/sifrr/sifrr/commit/cf74306))
-* add options to overwrite/fail on dup static route ([c515745](https://github.com/sifrr/sifrr/commit/c515745))
-* cache works for compressed file as well ([c0821e0](https://github.com/sifrr/sifrr/commit/c0821e0))
 * change ext methods to mimes/getMime ([724ecb5](https://github.com/sifrr/sifrr/commit/724ecb5))
 * clone connection with same resolver if none given ([a3ef846](https://github.com/sifrr/sifrr/commit/a3ef846))
 * make compress: false as default ([af95e82](https://github.com/sifrr/sifrr/commit/af95e82))
