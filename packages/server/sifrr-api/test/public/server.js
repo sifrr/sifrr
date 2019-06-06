@@ -9,11 +9,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { loadRoutes } = require('../../src/sifrr.api');
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize');
-let port = false;
-const index = Math.max(process.argv.indexOf('--port'), process.argv.indexOf('-p'));
-if (index !== -1) {
-  port = +process.argv[index + 1];
-}
 
 const server = express();
 
@@ -101,16 +96,11 @@ ${availRoutes}
   });
 }
 
-function sss(p) {
-  return server.listen(p, () => {
-    process.stdout.write(`Server is running on localhost:${p} \n`);
-  });
-}
-
-if (port) {
-  sss(port);
-}
+let ss;
 
 module.exports = {
-  listen: (p) => sss(p)
+  listen: (port) => ss = server.listen(port),
+  close: () => {
+    ss && ss.close();
+  }
 };
