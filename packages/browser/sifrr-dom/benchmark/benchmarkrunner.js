@@ -1,5 +1,5 @@
 const path =require('path');
-const server = require('../../../../scripts/test/server');
+const server = require('@sifrr/dev/src/test/server');
 const runClickBenchmark = require('./runclickbenchmark');
 
 class BenchmarkRunner {
@@ -13,7 +13,9 @@ class BenchmarkRunner {
   }
 
   startServer() {
-    this.server = server(this.port, path.join(__dirname, '../test/public'));
+    this.server = server(path.join(__dirname, '../test/public'), {
+      port: this.port
+    });
   }
 
   closeServer() {

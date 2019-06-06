@@ -1,17 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -ex
-
-./scripts/release/config
-./scripts/yarn build
-./scripts/contributors
-yarn install
-
-# Add dist files not generated before
-git ls-files '*/dist/*.js*' | xargs git add
-git ls-files '*package.json' | xargs git add
-git ls-files '*yarn.lock' | xargs git add
-git ls-files '*rollup.config.js' | xargs git add
-git ls-files 'misc/*' | xargs git add
-(git commit -m "chore: add auto generated files" && git push && exit 1) || exit 0
-echo 'Files up to date'
+const { gitAddCommitPush } = require('@sifrr/dev');
+gitAddCommitPush({
+  preCommand: ['sh ./scripts/release/config', 'yarn build', 'sh ./scripts/contributors'],
+  files: ['*dist/*.js*', '*package.json', 'yarn.lock', '*rollup.config.js', 'misc/*'],
+  commitMsg: 'chore: add auto generated files'
+});

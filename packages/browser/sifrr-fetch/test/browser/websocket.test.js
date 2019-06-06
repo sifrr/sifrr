@@ -1,6 +1,6 @@
 describe('websocket', function() {
   before(async () => {
-    await page.goto(`${PATH}/`, { waitUntil: 'networkidle0' });
+    await page.goto(`${PATH}/index.html`, { waitUntil: 'networkidle0' });
   });
 
   it('works with fallback', async () => {
@@ -78,6 +78,6 @@ describe('websockets', () => {
     global.console.table(result);
     expect(result.socket.total).to.equal(result.fetch.total);
     expect(result.socket.size).to.equal(result.fetch.size);
-    expect(result.socket.time).to.be.at.most(result.fetch.time / 4);
+    expect(result.socket.time).to.be.at.most(result.fetch.time / 3);
   });
 });

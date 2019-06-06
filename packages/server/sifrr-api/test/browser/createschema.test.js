@@ -32,8 +32,8 @@ describe('createSchemaFromModels', () => {
 
   it('rewrites if schema has changed', () => {
     fs.writeFileSync(schemaPath, fileSeparator + `type New {
-      dummy: ok
-    }`);
+  dummy: ok
+}`);
     const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
 
     require('../public/config/setup')();
@@ -45,8 +45,8 @@ describe('createSchemaFromModels', () => {
 
   it('should not rewrite schema if no schemaPath', () => {
     fs.writeFileSync(schemaPath, fileSeparator + `type New {
-      dummy: ok
-    }`);
+  dummy: ok
+}`);
     const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
 
     require('../public/config/setup')(false);

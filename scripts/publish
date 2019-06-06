@@ -1,10 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -ex
+const { exec } = require('@sifrr/dev');
 
-./scripts/checktag || exit 0
-./scripts/changelog
-git ls-files '*/CHANGELOG.md' | xargs git add
-(git commit -m "chore: update changelog" && git push) || echo 'Changelog up to date'
-./scripts/release/tag
-./scripts/repeat "./packages/*/*" "npm publish --access=public"
+(async function() {
+  const exists = await require('@sifrr/dev').checkTag();
+  if (exists) return;
+  await require('@sifrr/dev').gitAddCommitPush({
+    preCommand: 'node ./scripts/changelog',
+    files: ['*CHANGELOG.md'],
+    commitMsg: 'chore: update changelog'
+  });
+  await require('@sifrr/dev').releaseTag();
+  await exec(`sh ./scripts/repeat ./packages/*/* "npm publish --access=public"`);
+})();

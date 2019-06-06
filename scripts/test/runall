@@ -8,13 +8,7 @@ if [[ $COVERAGE == 'true' ]]; then
   rm -rf ./.nyc_output
 fi
 
-if [ -z ${CIRCLE_NODE_TOTAL} ]; then
-  FOLDERS="./packages/*/*"
-else
-  FOLDERS=`circleci tests glob "packages/*/*" | circleci tests split --split-by=timings`
-fi
-
-for dir in $FOLDERS
+for dir in ./packages/*/*
 do
   echo "Running test in ${dir}:"
   node ./scripts/test/run.js "${dir}" "$@"
@@ -24,9 +18,8 @@ do
 done
 
 if [[ $COVERAGE == 'true' ]]; then
-  node ./scripts/test/htmlcoverage.js
   if [[ $LCOV == 'true' ]]; then
-    COVERALLS_REPO_TOKEN=hBmgJrJrMMh6yjpePxajlVNzOh8WM3QpA cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+    cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   fi
 fi
 

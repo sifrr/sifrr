@@ -105,4 +105,6 @@ if (port) {
   sss(port);
 }
 
-module.exports = sss;
+module.exports = {
+  listen: (p) => sss(p)
+};

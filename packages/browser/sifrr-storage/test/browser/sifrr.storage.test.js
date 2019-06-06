@@ -1,3 +1,5 @@
+const SifrrStorage = require('../../src/sifrr.storage');
+
 describe('Sifrr.Storage in browser', () => {
   before(async () => {
     await page.goto(`${PATH}/index.html`);

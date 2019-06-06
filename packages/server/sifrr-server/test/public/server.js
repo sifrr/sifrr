@@ -91,4 +91,6 @@ if (port) {
 }
 
 
-module.exports = webSocketServer;
+module.exports = {
+  listen: (p) => webSocketServer(p)
+};
