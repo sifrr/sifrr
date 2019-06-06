@@ -74,10 +74,6 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
-      - store_artifacts:
-          path: coverage
-      - store_artifacts:
-          path: .nyc_output
 workflows:
   version: 2
   build_and_test:
