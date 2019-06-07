@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const sinon = require('sinon');
 
@@ -67,12 +66,8 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const { runTests } = require('@sifrr/dev');
 
 process.on('message', ({ root, i }) => {
+  global.console.log('\x1b[36m%s\x1b[0m', `RUNNING TEST IN ${root}`);
   (async function() {
-    let preCommand = [];
-    if (fs.existsSync(path.join(root, './test/public/package.json'))) {
-      preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
-    }
-
     await runTests({
       root,
       serverOnly,
@@ -83,7 +78,6 @@ process.on('message', ({ root, i }) => {
       port: port + i,
       useJunitReporter,
       inspect,
-      preCommand,
       folders: {
         static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
         coverage: path.join(__dirname, '../../.nyc_output'),
@@ -96,11 +90,10 @@ process.on('message', ({ root, i }) => {
         timeout: 10000
       }
     }).catch(e => {
-      global.console.error(`----- ${e} Failures -----`);
-      if (process.exitCode === 0) process.exitCode = 1;
+      process.exit(e);
     });
 
-    process.exit(process.exitCode);
+    process.exit(0);
   }());
 });
 
