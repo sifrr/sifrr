@@ -80,4 +80,9 @@ app.file('/cache_compress', path.join(__dirname, 'public/cache.html'), {
   compress: true
 });
 
+app.folder('/', path.join(__dirname, '../'), {
+  filter: (path) => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
+  watch: true
+});
+
 module.exports = app;
