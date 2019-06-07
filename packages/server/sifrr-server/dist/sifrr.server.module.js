@@ -502,6 +502,7 @@ class BaseApp {
     return this;
   }
   _serveStatic(res, req) {
+    res.onAborted(noOp);
     const options = this._staticPaths[req.getUrl()];
     if (typeof options === 'undefined') {
       res.writeStatus('404 Not Found');
