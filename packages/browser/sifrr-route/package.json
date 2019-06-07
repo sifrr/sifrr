@@ -38,7 +38,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.7",
+    "@sifrr/dev": "^0.0.8",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7"
   },

@@ -8,14 +8,12 @@ if [[ $COVERAGE == 'true' ]]; then
   rm -rf ./.nyc_output
 fi
 
-for dir in ./packages/*/*
-do
-  echo "Running test in ${dir}:"
-  node ./scripts/test/run.js "${dir}" "$@"
+dirs=(./packages/*/*)
+dirsc=$(echo "${dirs[@]}")
+node ./scripts/test/runmaster.js "${dirsc}" "$@"
 
-  NEW_STATUS=$?
-  [ $NEW_STATUS -eq 0 ] || STATUS=$NEW_STATUS
-done
+NEW_STATUS=$?
+[ $NEW_STATUS -eq 0 ] || STATUS=$NEW_STATUS
 
 if [[ $COVERAGE == 'true' ]]; then
   if [[ $LCOV == 'true' ]]; then
