@@ -61,52 +61,48 @@ if (portIndex !== -1) {
 let filters;
 const filter = process.argv.indexOf('-f') || process.argv.indexOf('--filter');
 if (filter > 0) {
-  filters = process.argv[filter + 1].split(',');
+  filters = process.argv[filter + 1].split(/[ ,\n]/g);
 }
 
 // reporters
 const reporters = ['html'];
 if (process.env.LCOV === 'true') reporters.push('lcov');
 
-const root = path.join(__dirname, '../../', process.argv[2]) || path.resolve('./');
+const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__dirname, '../../', p));
 
 const { runTests } = require('@sifrr/dev');
 
-let preCommand = [];
-if (fs.existsSync(path.join(root, './test/public/package.json'))) {
-  preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
-}
+(async function() {
+  for (let i = 0; i < roots.length; i++) {
+    const root = roots[i];
 
-const loadBrowser = require('@sifrr/dev/src/test/loadbrowser');
-global.pdescribe = async function(name, cb) {
-  await loadBrowser(root, coverage, path.join(__dirname, '../../.nyc_output')).then(({ page }) => {
-    describe(name, () => {
-      cb({ page });
+    let preCommand = [];
+    if (fs.existsSync(path.join(root, './test/public/package.json'))) {
+      preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
+    }
+
+    await runTests({
+      root,
+      serverOnly,
+      runUnitTests,
+      runBrowserTests,
+      coverage,
+      filters,
+      port,
+      useJunitReporter,
+      inspect,
+      preCommand,
+      folders: {
+        static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
+        coverage: path.join(__dirname, '../../.nyc_output'),
+        source: path.join(__dirname, '../../packages')
+      },
+      sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
+      junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
+      reporters,
+      mochaOptions: {
+        timeout: 10000
+      }
     });
-    run();
-  });
-};
-
-runTests({
-  root,
-  serverOnly,
-  runUnitTests,
-  runBrowserTests,
-  coverage,
-  filters,
-  port,
-  useJunitReporter,
-  inspect,
-  preCommand,
-  folders: {
-    static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
-    coverage: path.join(__dirname, '../../.nyc_output'),
-    source: path.join(__dirname, '../../packages')
-  },
-  sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
-  junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
-  reporters,
-  mochaOptions: {
-    timeout: 10000
   }
-});
+}());
