@@ -10,7 +10,7 @@ fi
 
 dirs=(./packages/*/*)
 dirsc=$(echo "${dirs[@]}")
-node ./scripts/test/run.js "${dirsc}" "$@"
+node ./scripts/test/runmaster.js "${dirsc}" "$@"
 
 NEW_STATUS=$?
 [ $NEW_STATUS -eq 0 ] || STATUS=$NEW_STATUS
