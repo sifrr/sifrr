@@ -34,39 +34,40 @@ global.window = {
 // Check if need coverage
 const coverage = process.env.COVERAGE === 'true';
 
-// check if should inspect or not
-const inspect = process.argv.indexOf('-i') > 0 || process.argv.indexOf('--inspect') > 0;
-
-// check if need junit reporter
-const useJunitReporter = process.argv.indexOf('-j') > 0 || process.argv.indexOf('--junit') > 0;
-
-// check if run only unit test
-const runUnitTests = process.argv.indexOf('-u') > 0 || process.argv.indexOf('--unit') > 0;
-
-// check if run only browser tests
-const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('--browser') > 0;
-
-// check if run only browser tests
-const serverOnly = process.argv.indexOf('-s') > 0 || process.argv.indexOf('--server') > 0;
-
-// test port
-let port = 8888;
-
-// check if need to filter
-let filters;
-const filter = process.argv.indexOf('-f') || process.argv.indexOf('--filter');
-if (filter > 0) {
-  filters = process.argv[filter + 1].split(/[ ,\n]/g);
-}
-
 // reporters
 const reporters = ['html'];
 if (process.env.LCOV === 'true') reporters.push('lcov');
 
 const { runTests } = require('@sifrr/dev');
 
-process.on('message', ({ root, i }) => {
-  global.console.log('\x1b[36m%s\x1b[0m', `RUNNING TEST IN ${root}`);
+process.on('message', ({ root, i, argv }) => {
+  global.console.log('\x1b[36m%s\x1b[0m', `RUNNING TEST IN ${root}, with options ${argv.join(' ')}`);
+
+  // check if should inspect or not
+  const inspect = argv.indexOf('-i') > -1 || argv.indexOf('--inspect') > -1;
+
+  // check if need junit reporter
+  const useJunitReporter = argv.indexOf('-j') > -1 || argv.indexOf('--junit') > -1;
+
+  // check if run only unit test
+  const runUnitTests = argv.indexOf('-u') > -1 || argv.indexOf('--unit') > -1;
+
+  // check if run only browser tests
+  const runBrowserTests = argv.indexOf('-b') > -1 || argv.indexOf('--browser') > -1;
+
+  // check if run only browser tests
+  const serverOnly = argv.indexOf('-s') > -1 || argv.indexOf('--server') > -1;
+
+  // test port
+  let port = 8888;
+
+  // check if need to filter
+  let filters;
+  const filter = argv.indexOf('-f') > -1 ? argv.indexOf('-f') : argv.indexOf('--filter');
+  if (filter > -1) {
+    filters = argv[filter + 1].split(/[ ,\n]/g);
+  }
+
   (async function() {
     await runTests({
       root,

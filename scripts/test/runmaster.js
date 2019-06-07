@@ -5,6 +5,8 @@ const { exec } = require('@sifrr/dev');
 const transformCoverage = require('@sifrr/dev/src/test/transformcoverage');
 
 const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__dirname, '../../', p));
+let argv = process.argv;
+argv.splice(0, 3);
 
 (async function() {
   let errors = 0;
@@ -27,7 +29,8 @@ const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__di
 
       childRun.send({
         root,
-        i
+        i,
+        argv
       });
     }));
   }
