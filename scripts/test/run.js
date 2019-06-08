@@ -1,35 +1,38 @@
 const fs = require('fs');
 const path = require('path');
-const sinon = require('sinon');
 
-// Stub window in unit tests
-global.window = {
-  document: {
+const before = function() {
+  const sinon = require('sinon');
+
+  // Stub window in unit tests
+  global.window = {
+    document: {
+      addEventListener: sinon.stub(),
+      createElement: sinon.stub()
+    },
     addEventListener: sinon.stub(),
-    createElement: sinon.stub()
-  },
-  addEventListener: sinon.stub(),
-  location: {
-    href: '/',
-    host: 'localhost'
-  },
-  Sifrr: {
-    Dom: {
-      Element: Object,
-      html: sinon.stub(),
-      register: sinon.stub(),
-      Event: {
-        add: sinon.stub()
+    location: {
+      href: '/',
+      host: 'localhost'
+    },
+    Sifrr: {
+      Dom: {
+        Element: Object,
+        html: sinon.stub(),
+        register: sinon.stub(),
+        Event: {
+          add: sinon.stub()
+        }
       }
-    }
-  },
-  history: { pushState: sinon.stub() },
-  console: {
-    log: sinon.stub(),
-    error: sinon.stub(),
-    warn: sinon.stub()
-  },
-  fetch: () => {}
+    },
+    history: { pushState: sinon.stub() },
+    console: {
+      log: sinon.stub(),
+      error: sinon.stub(),
+      warn: sinon.stub()
+    },
+    fetch: () => {}
+  };
 };
 
 // Check if need coverage
@@ -68,45 +71,39 @@ if (filter > 0) {
 const reporters = ['html'];
 if (process.env.LCOV === 'true') reporters.push('lcov');
 
-const root = path.join(__dirname, '../../', process.argv[2]) || path.resolve('./');
-
+const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__dirname, '../../', p));
 const { runTests } = require('@sifrr/dev');
 
-let preCommand = [];
-if (fs.existsSync(path.join(root, './test/public/package.json'))) {
-  preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
-}
-
-const loadBrowser = require('@sifrr/dev/src/test/loadbrowser');
-global.pdescribe = async function(name, cb) {
-  await loadBrowser(root, coverage, path.join(__dirname, '../../.nyc_output')).then(({ page }) => {
-    describe(name, () => {
-      cb({ page });
-    });
-    run();
-  });
-};
-
-runTests({
-  root,
-  serverOnly,
-  runUnitTests,
-  runBrowserTests,
-  coverage,
-  filters,
-  port,
-  useJunitReporter,
-  inspect,
-  preCommand,
-  folders: {
-    static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
-    coverage: path.join(__dirname, '../../.nyc_output'),
-    source: path.join(__dirname, '../../packages')
-  },
-  sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
-  junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
-  reporters,
-  mochaOptions: {
-    timeout: 10000
+const options = roots.map((root, i) => {
+  let preCommand = [];
+  if (fs.existsSync(path.join(root, './test/public/package.json'))) {
+    preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
   }
+
+  return {
+    root,
+    serverOnly,
+    runUnitTests,
+    runBrowserTests,
+    coverage,
+    filters,
+    port: port + i,
+    useJunitReporter,
+    inspect,
+    preCommand,
+    before,
+    folders: {
+      static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
+      coverage: path.join(__dirname, '../../.nyc_output'),
+      source: path.join(__dirname, '../../packages')
+    },
+    sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
+    junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
+    reporters,
+    mochaOptions: {
+      timeout: 10000
+    }
+  };
 });
+
+runTests(options);
