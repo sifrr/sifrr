@@ -70,8 +70,8 @@ describe('websockets', () => {
   it('load test', async () => {
     const result = await page.evaluate(async () => {
       return {
-        socket: await window.testSocket(1000),
-        fetch: await window.testFetch(1000)
+        socket: await window.testSocket(100),
+        fetch: await window.testFetch(100)
       };
     });
 
