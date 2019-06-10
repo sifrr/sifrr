@@ -1,4 +1,4 @@
-const SPORT = 8890;
+const { SPORT } = require('./utils');
 let sapp = require('../public/benchmarks/sifrrssl');
 
 describe('ssl app', function() {

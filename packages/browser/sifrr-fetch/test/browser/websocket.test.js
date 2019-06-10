@@ -23,7 +23,7 @@ describe('websocket', function() {
 });
 
 let wsserver;
-const wsport = 3333;
+const wsport = 7700;
 
 describe('websockets', () => {
   before(async () => {
@@ -70,8 +70,8 @@ describe('websockets', () => {
   it('load test', async () => {
     const result = await page.evaluate(async () => {
       return {
-        socket: await window.testSocket(1000),
-        fetch: await window.testFetch(1000)
+        socket: await window.testSocket(100),
+        fetch: await window.testFetch(100)
       };
     });
 

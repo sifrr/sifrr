@@ -1,4 +1,5 @@
-const EPORT = 8889;
+const EPORT = 7777;
+const SPORT = 7776;
 const EPATH = `http://localhost:${EPORT}`;
 const loadtest = require('util').promisify(require('loadtest').loadTest);
 
@@ -33,6 +34,7 @@ module.exports = {
     assert(sifrrResults.meanLatencyMs < expressResults.meanLatencyMs);
   },
   EPORT,
+  SPORT,
   EPATH,
   okTest: async function(url) {
     return page.goto(url).then(() => true).catch(() => false);

@@ -74,7 +74,7 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__dirname, '../../', p));
 const { runTests } = require('@sifrr/dev');
 
-const options = roots.map(root => {
+const options = roots.map((root, i) => {
   let preCommand = [];
   if (fs.existsSync(path.join(root, './test/public/package.json'))) {
     preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
@@ -87,7 +87,7 @@ const options = roots.map(root => {
     runBrowserTests,
     coverage,
     filters,
-    // port: port + i,
+    port: port + i,
     useJunitReporter,
     inspect,
     preCommand,
