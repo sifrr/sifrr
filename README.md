@@ -77,12 +77,12 @@ For eg.
 
 ## Node support (server packages and development)
 
-Sifrr officially supports node v10 (LTS), v11 (current). Other versions might work for some packages.
+Sifrr officially supports node v10 (LTS), v12 (current). Other versions might work for some packages.
 
 | Node Version | CI Status                                                                                                                |
 | :----------- | :----------------------------------------------------------------------------------------------------------------------- |
-| v11.15.0     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
-| v10.15.3     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
+| v12.4.0     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/2)](https://travis-ci.org/sifrr/sifrr) |
+| v10.16.0     | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
 
 ## Browser Support (browser packages)
 

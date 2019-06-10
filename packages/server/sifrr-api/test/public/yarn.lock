@@ -1805,9 +1805,9 @@ type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-uWebSockets.js@uNetworking/uWebSockets.js#v15.2.0:
-  version "15.2.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/67b74745666dd73c8e264410bc4fe6a4c684e0d6"
+uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0:
+  version "15.11.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
 
 umzug@^2.1.0:
   version "2.2.0"

@@ -3,9 +3,8 @@ before_install: yarn config set workspaces-experimental true && yarn config set 
 script: yarn test
 cache: yarn
 node_js:
-  - '11.15.0'
-  - '10.15.3'
-  # - '12.4.0'
+  - '10.16.0'
+  - '12.4.0'
 
 branches:
   only:
