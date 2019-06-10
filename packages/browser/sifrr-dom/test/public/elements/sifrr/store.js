@@ -1,9 +1,8 @@
 // import SifrrDom from '@sifrr/dom';
 // const Sifrr = { Dom: SifrrDom };
-const newHook = new Sifrr.Dom.Hook(['a', 'b']);
 
-const template = `<p>\${this.hooks.new.value[0]}\${this.hooks.new.value[1]}</p>`;
-class SifrrHook3 extends Sifrr.Dom.Element {
+const template = `<p>\${this.stores.haha.value.a}</p>`;
+class SifrrStore extends Sifrr.Dom.Element {
   static get useShadowRoot() {
     return false;
   }
@@ -12,8 +11,8 @@ class SifrrHook3 extends Sifrr.Dom.Element {
     return template;
   }
 
-  get hooks() {
-    return { new: newHook };
+  get stores() {
+    return { haha: window.hahaStore };
   }
 
   onUpdate() {
@@ -24,4 +23,4 @@ class SifrrHook3 extends Sifrr.Dom.Element {
     }
   }
 }
-Sifrr.Dom.register(SifrrHook3);
+Sifrr.Dom.register(SifrrStore);

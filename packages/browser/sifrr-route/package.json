@@ -31,7 +31,7 @@
     "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-route",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server": "node ../../../scripts/test/run.js ./packages/browser/sifrr-route -s"
+    "test-server": "yarn test -s"
   },
   "dependencies": {
     "@sifrr/dom": "0.0.5"

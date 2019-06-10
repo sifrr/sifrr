@@ -1,7 +1,7 @@
 const shouldMerge = require('../utils/shouldmerge');
 const objCon = ({}).constructor;
 
-class Hook {
+class Store {
   constructor(initial) {
     this.value = initial;
     this.listeners = [];
@@ -20,4 +20,4 @@ class Hook {
   }
 }
 
-module.exports = Hook;
+module.exports = Store;

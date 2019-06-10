@@ -33,7 +33,7 @@
     "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-dom",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server": "node ../../../scripts/test/run.js ./packages/browser/sifrr-dom -s",
+    "test-server": "yarn test -s",
     "benchmark": "node benchmark/runbenchmark.js"
   },
   "dependencies": {},

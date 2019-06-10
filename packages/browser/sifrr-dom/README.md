@@ -666,6 +666,10 @@ then you can use custom-tag as button in html like:
 <button is="custom-tag"></button>
 ```
 
+#### Stores
+
+
+
 #### slots
 
 -   Slots work same as it would in web components, but note that bindings in slot elements won't work

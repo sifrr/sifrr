@@ -18,7 +18,7 @@ SifrrDom.Event = require('./dom/event');
 SifrrDom.makeChildrenEqual = require('./dom/makeequal').makeChildrenEqual;
 SifrrDom.makeChildrenEqualKeyed = require('./dom/keyed').makeChildrenEqualKeyed;
 SifrrDom.makeEqual = require('./dom/makeequal').makeEqual;
-SifrrDom.Hook = require('./dom/hook');
+SifrrDom.Store = require('./dom/store');
 
 // HTML to template
 SifrrDom.template = require('./dom/template');

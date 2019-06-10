@@ -24,7 +24,7 @@
     "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-api",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-api -s"
+    "test-server": "yarn test -s"
   },
   "dependencies": {
     "graphql": "^14.3.0",

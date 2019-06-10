@@ -25,7 +25,7 @@
     "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-cli",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server": "node ../../../scripts/test/run.js ./packages/server/sifrr-cli -s"
+    "test-server": "yarn test -s"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",

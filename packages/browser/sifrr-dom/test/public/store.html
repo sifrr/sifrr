@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  </head>
+  <body>
+    <h1>OK</h1>
+    <sifrr-store></sifrr-store>
+    <sifrr-store></sifrr-store>
+    <sifrr-store2></sifrr-store2>
+    <sifrr-store3></sifrr-store3>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup();
+      window.hahaStore = new Sifrr.Dom.Store({ a: 'hahaha' });
+      Sifrr.Dom.load('sifrr-store');
+      Sifrr.Dom.load('sifrr-store2');
+      Sifrr.Dom.load('sifrr-store3');
+    </script>
+  </body>
+</html>

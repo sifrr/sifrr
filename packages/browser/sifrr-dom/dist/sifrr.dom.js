@@ -803,9 +803,9 @@
 	    }
 	    constructor() {
 	      super();
-	      let hooks = this.hooks;
-	      if (hooks) {
-	        for (let h in hooks) hooks[h].addListener(this.update.bind(this));
+	      let stores = this.stores;
+	      if (stores) {
+	        for (let h in stores) stores[h].addListener(this.update.bind(this));
 	      }
 	      if (this.constructor.ctemp) {
 	        this._state = Object.assign({}, this.constructor.defaultState, this.state);
@@ -918,7 +918,7 @@
 	};
 
 	const objCon = {}.constructor;
-	class Hook {
+	class Store {
 	  constructor(initial) {
 	    this.value = initial;
 	    this.listeners = [];
@@ -933,7 +933,7 @@
 	    this.listeners.push(listener);
 	  }
 	}
-	var hook = Hook;
+	var store = Store;
 
 	const {
 	  BIND_ATTR: BIND_ATTR$2
@@ -951,7 +951,7 @@
 	SifrrDom.makeChildrenEqual = makeequal.makeChildrenEqual;
 	SifrrDom.makeChildrenEqualKeyed = keyed.makeChildrenEqualKeyed;
 	SifrrDom.makeEqual = makeequal.makeEqual;
-	SifrrDom.Hook = hook;
+	SifrrDom.Store = store;
 	SifrrDom.template = template;
 	SifrrDom.register = (Element, options = {}) => {
 	  Element.useSR = SifrrDom.config.useShadowRoot;
