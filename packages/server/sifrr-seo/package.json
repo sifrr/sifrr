@@ -32,7 +32,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "sifrr/sifrr-dev#2c0a18aad3d26b7a8691e9a686a7270e285b5f54",
+    "@sifrr/dev": "^0.0.9",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7"
   },
