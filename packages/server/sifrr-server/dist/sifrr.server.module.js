@@ -433,7 +433,7 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
     if (fs.statSync(file).isDirectory()) {
       paths.push(...loadRoutes.call(this, file, { filter, basePath }));
     } else if (path.extname(file) === '.js') {
-      const routes = commonjsRequire(file);
+      const routes = commonjsRequire();
       let basePaths = routes.basePath || [''];
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
