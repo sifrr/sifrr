@@ -23,7 +23,7 @@ describe('websocket', function() {
 });
 
 let wsserver;
-const wsport = 3333;
+const wsport = 7700;
 
 describe('websockets', () => {
   before(async () => {

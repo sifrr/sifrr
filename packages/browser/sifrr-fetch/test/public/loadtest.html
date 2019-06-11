@@ -13,8 +13,8 @@
         let k = 0, size = 0, startTime = performance.now(), firstResponse;
         return new Promise(res => {
           for (let i = 0; i < connections; i++) {
-            const sock = Sifrr.Fetch.socket('ws://localhost:3333/test', undefined, {
-              url: 'http://localhost:3333/test',
+            const sock = Sifrr.Fetch.socket('ws://localhost:7700/test', undefined, {
+              url: 'http://localhost:7700/test',
               method: 'POST'
             });
             for (let j = 0; j < reqPerConn; j++) {
@@ -40,7 +40,7 @@
         let k = 0, size = 0;
         return new Promise(res => {
           for (let j = 0; j < requests; j++) {
-            Sifrr.Fetch.post('http://localhost:3333/test', {
+            Sifrr.Fetch.post('http://localhost:7700/test', {
               body: {
                 number: j
               }
@@ -49,7 +49,7 @@
               if (k === 0) firstResponse = performance.now() - startTime;
               console.log(response);
               k++;
-              if (k >= requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
+              if (k === requests) res({ time: performance.now() - startTime, size, total: k, rps: k * 1000 / (performance.now() - startTime), firstResponse });
             });
           }
         });

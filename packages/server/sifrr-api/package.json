@@ -37,7 +37,7 @@
     "sequelize": "^5.8.6"
   },
   "devDependencies": {
-    "@sifrr/dev": "^0.0.8",
+    "@sifrr/dev": "^0.0.9",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7"
   },

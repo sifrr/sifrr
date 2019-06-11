@@ -46,6 +46,7 @@ class Renderer {
 
       delete headers['user-agent'];
       await newp.setExtraHTTPHeaders(headers);
+      /* istanbul ignore next */
       if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
       const resp = await newp.goto(url, { waitUntil: 'load' });
       const sRC = me.isHTML(resp);
@@ -55,7 +56,6 @@ class Renderer {
         await fetches.all();
         /* istanbul ignore next */
         if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
-        /* istanbul ignore next */
         ret = await newp.content();
       } else ret = false;
 
