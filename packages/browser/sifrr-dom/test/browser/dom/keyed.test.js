@@ -9,7 +9,9 @@ function getStates() {
   return ret;
 }
 
-describe('Sifrr.Dom.keyed', () => {
+describe('Sifrr.Dom.keyed', function() {
+  this.timeout(0);
+
   beforeEach(async () => {
     await page.goto(`${PATH}/speedtest.html?useKey`);
     await page.evaluate(async () => { await Sifrr.Dom.loading(); });

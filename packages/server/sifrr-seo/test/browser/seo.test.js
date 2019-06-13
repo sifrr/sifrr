@@ -70,8 +70,8 @@ describe('sifrr-seo', () => {
       const resp = await (await page.goto(`${PATH}/xuser`)).text();
       const ltAfter = await loadTime(page);
 
-      assert.isAbove(ltAfter, 30, 'First render should take > 100ms');
-      assert.isBelow(ltBefore, 30, 'Second render should take < 100ms');
+      assert.isAbove(ltAfter, 50, 'First render should take > 100ms');
+      assert.isBelow(ltBefore, 50, 'Second render should take < 100ms');
       expect(resp).to.have.string('"x-user":"bang"', 'it should pass headers to render request');
     });
 
@@ -84,8 +84,8 @@ describe('sifrr-seo', () => {
       const resp = await (await page.goto(`${PATH}/xuser`)).text();
       const ltAfter = await loadTime(page);
 
-      assert.isAbove(ltAfter, 30, 'new x-user should render html again');
-      assert.isBelow(ltBefore, 30, 'no render because it was cached in previous test');
+      assert.isAbove(ltAfter, 50, 'new x-user should render html again');
+      assert.isBelow(ltBefore, 50, 'no render because it was cached in previous test');
       expect(resp).to.have.string('"x-user":"new"', 'it should pass headers to render request');
     });
   });
