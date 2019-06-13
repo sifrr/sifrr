@@ -800,9 +800,9 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@sifrr/sifrr-dev#cc69cad4a5335ab328079e296caf2380ac32faef":
+"@sifrr/dev@sifrr/sifrr-dev#e6fe2d036de1f20d9925959d2e90572a20716271":
   version "0.0.9"
-  resolved "https://codeload.github.com/sifrr/sifrr-dev/tar.gz/cc69cad4a5335ab328079e296caf2380ac32faef"
+  resolved "https://codeload.github.com/sifrr/sifrr-dev/tar.gz/e6fe2d036de1f20d9925959d2e90572a20716271"
   dependencies:
     "@babel/core" "^7.4.0"
     "@babel/plugin-external-helpers" "^7.2.0"
