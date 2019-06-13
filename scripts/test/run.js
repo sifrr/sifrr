@@ -106,7 +106,9 @@ const options = roots.map((root, i) => {
   };
 });
 
-runTests(options).then(() => global.console.log(`All tests passed!`)).catch(e => {
-  global.console.log(`${e} tests failed!`);
-  process.exit(1);
-});
+runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true')
+  .then(() => global.console.log(`All tests passed!`))
+  .catch(e => {
+    global.console.log(`${e} tests failed!`);
+    process.exit(1);
+  });
