@@ -800,10 +800,9 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@^0.0.9":
+"@sifrr/dev@sifrr/sifrr-dev#cc69cad4a5335ab328079e296caf2380ac32faef":
   version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.9.tgz#d0f51b4bb4238f8cede3b53dae619b2e45379128"
-  integrity sha512-YU9zGPGoUXDxz1zszgE6/RT8NwTJxDmIWkz2GYEr39FOc6rvdxcjfU0JiSA7fhmSu4dg7qq6Mxk+a5cQQVhLlg==
+  resolved "https://codeload.github.com/sifrr/sifrr-dev/tar.gz/cc69cad4a5335ab328079e296caf2380ac32faef"
   dependencies:
     "@babel/core" "^7.4.0"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -6615,7 +6614,7 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0:
-  version "15.11.0"
+  version "15.10.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
 
 uglify-js@3.4.x:
