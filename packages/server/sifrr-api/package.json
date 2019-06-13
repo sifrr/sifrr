@@ -37,7 +37,7 @@
     "sequelize": "^5.8.6"
   },
   "devDependencies": {
-    "@sifrr/dev": "sifrr/sifrr-dev#4ae33b86ca615b8822be6d9bbd6580c5d17bc701",
+    "@sifrr/dev": "sifrr/sifrr-dev#41c802b99577a3ed253f9a5d6821e3e01d1f0844",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7",
     "wtfnode": "^0.8.0"
