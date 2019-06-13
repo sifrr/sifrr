@@ -668,7 +668,36 @@ then you can use custom-tag as button in html like:
 
 #### Stores
 
+```js
+// create a new store
+const someStore = new Sifrr.Dom.Store({ initial: 'value' });
 
+// sync with a sifrr element
+class CustomElement {
+  get template() {
+    return '<p>${this.stores.some.value.initial}</p>' // <p>value</p>
+  }
+
+  get stores() {
+    return {
+      some: someStore // updating any stores added here will update this element
+    }
+  }
+}
+
+// get current value of store
+someSore.value; // { initial: 'value' }
+
+// update value, this will update all the elements where it is used in `get stores() {}`
+someStore.set({ initial: 'new value' });
+// custom element will be updated to `<p>new value</p>`
+
+// add a listener on store value update
+someStore.addListener(() => {
+  // do somthing
+  // this function will be called whenever store is updated
+});
+```
 
 #### slots
 
