@@ -26,17 +26,17 @@ jobs:
       - run:
           name: Yarn workspaces
           command: yarn config set workspaces-experimental true
-      # - restore_cache:
-      #     keys:
-      #       - sifrr-v4-yarn-{{ checksum "yarn.lock" }}
-      #       - sifrr-v4-yarn-
+      - restore_cache:
+          keys:
+            - sifrr-v4-yarn-{{ checksum "yarn.lock" }}
+            - sifrr-v4-yarn-
       - run:
           name: Yarn install
           command: yarn install
-      # - save_cache:
-      #     key: sifrr-v4-yarn-{{ checksum "yarn.lock" }}
-      #     paths:
-      #       - ~/.cache/yarn
+      - save_cache:
+          key: sifrr-v4-yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Check chrome version
           command: google-chrome --version
