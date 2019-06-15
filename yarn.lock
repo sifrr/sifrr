@@ -800,9 +800,9 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@sifrr/sifrr-dev#23b3047845261badd338b7c0695b5692fc313f19":
+"@sifrr/dev@sifrr/sifrr-dev#a11f1a9f0352f51c91b30fef412b0a11f5efb0eb":
   version "0.0.10"
-  resolved "https://codeload.github.com/sifrr/sifrr-dev/tar.gz/23b3047845261badd338b7c0695b5692fc313f19"
+  resolved "https://codeload.github.com/sifrr/sifrr-dev/tar.gz/a11f1a9f0352f51c91b30fef412b0a11f5efb0eb"
   dependencies:
     "@babel/core" "^7.4.0"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -6830,11 +6830,6 @@ ws@^6.1.0:
   integrity sha512-tbSxiT+qJI223AP4iLfQbkbxkwdFcneYinM2+x46Gx2wgvbaOMO36czfdfVUBRTHvzAMRhDd98sA5d/BuWbQdg==
   dependencies:
     async-limiter "~1.0.0"
-
-wtfnode@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wtfnode/-/wtfnode-0.8.0.tgz#26a1a6b8e07727d7ed29dacc6708bea4647ccd20"
-  integrity sha512-A5jm/0REykxUac1q4Q5kv+hDIiacvqVpwIoXzCQcRL7syeEKucVVOxyLLrt+jIiZoXfla3lnsxUw/cmWXIaGWA==
 
 xml@^1.0.0:
   version "1.0.1"

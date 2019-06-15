@@ -47,9 +47,8 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "sifrr/sifrr-dev#23b3047845261badd338b7c0695b5692fc313f19",
+    "@sifrr/dev": "sifrr/sifrr-dev#a11f1a9f0352f51c91b30fef412b0a11f5efb0eb",
     "cache-manager": "^2.9.1",
-    "loadtest": "^3.0.7",
-    "wtfnode": "^0.8.0"
+    "loadtest": "^3.0.7"
   }
 }
