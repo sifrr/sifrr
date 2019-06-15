@@ -3,12 +3,6 @@ const seo = new SifrrSeo(undefined, {
   ttl: 0.001,
   maxCacheSize: 0.000010 // In MB, 10 Bytes
 });
-const req2 = {
-  fullUrl: '/index2.html',
-  headers: {
-    'user-agent': 'Googlebot',
-  }
-};
 
 describe('SifrrSeo', () => {
   afterEach(() => {
