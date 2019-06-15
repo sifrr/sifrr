@@ -800,10 +800,10 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.10.tgz#d642f515363b9060ea0bfb98bfd1c81dbd2500ec"
-  integrity sha512-0yqvmZqAg0Lsvdbn2VyXKtOqzVo+pAIJ/Wvbkrbc92y2l2Vd9JyGYooQffwe5w/ouB4cO2dQExf4Ss5t4oOOew==
+"@sifrr/dev@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.11.tgz#9e266b4d31a043db4931d6c7463030ca1a557079"
+  integrity sha512-WpHqVLWwbA7xNVqGuhlSRU9t/Y8J3jVF42B3TuuLVKP4zkcfy7NWzjdYCHOM7PSq3z1Y/s1piVLqfl6ZSbK0rA==
   dependencies:
     "@babel/core" "^7.4.0"
     "@babel/plugin-external-helpers" "^7.2.0"
