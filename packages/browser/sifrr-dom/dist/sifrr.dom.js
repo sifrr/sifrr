@@ -955,7 +955,7 @@
 	SifrrDom.template = template;
 	SifrrDom.register = (Element, options = {}) => {
 	  Element.useSR = SifrrDom.config.useShadowRoot;
-	  const name = Element.elementName;
+	  const name = options.name || Element.elementName;
 	  if (!name) {
 	    throw Error('Error creating Custom Element: No name given.', Element);
 	  } else if (window.customElements.get(name)) {
