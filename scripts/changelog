@@ -9,7 +9,8 @@ loadDir({
     if (dir.match(/sifrr-[a-z]*/)) {
       generateChangelog({
         changelogFile: path.join(dir, './CHANGELOG.md'),
-        multiRepo: path.basename(dir)
+        multiRepo: path.basename(dir),
+        outputUnreleased: true
       });
     }
   },
