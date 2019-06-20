@@ -23,6 +23,8 @@ describe('Regex', () => {
     const res = reg.test('/abcd/name/yz');
     assert(res.match);
     assert.equal(res.data['*'][0], 'name');
+
+    assert(!reg.test('/abcd/yz').match);
   });
 
   it('works with **', () => {
@@ -30,6 +32,8 @@ describe('Regex', () => {
     const res = reg.test('/abcd/mnop/qrst/aaa/yz');
     assert(res.match);
     assert.equal(res.data['**'][0], 'mnop/qrst/aaa');
+
+    assert(!reg.test('abcd/sdfsdfsf/dsfdf/ab').match);
   });
 
   it('works with custom regex', () => {
