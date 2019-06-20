@@ -57,6 +57,7 @@ window.Sifrr.Fetch = Fetch;
 -   **params** `json object` key, value pairs will be added to url as ?key=value
 -   **body** `json object | string` body to send with post requests
 -   **onProgress** `function` if response has content-length, this function will be called with
+
 ```js
 {
   loaded, // loaded bytes
@@ -66,6 +67,7 @@ window.Sifrr.Fetch = Fetch;
   value // chunk value
 }
 ```
+
 -   **before** `function` this function will be called with `{ url, options, method }` and should return modified `{ url, options, method }` which will be used to send requests
 -   **after** `function` this function will be called with `response` and should return modified `response`
 -   **use** `function` this function will be called with `{ url, options, method }` and resolve/return with response which will be returned, if this function errors, response will be fetched normally (use case: use it as a middleware for cache)
@@ -97,6 +99,7 @@ Sifrr.Fetch.put(url, options).then((response) => {
 #### POST request
 
 you can add post request body parameters to post request options.
+
 ```js
 options.body = { key: 'value' };
 options.headers = {
@@ -196,6 +199,7 @@ socket.sendRaw(message);
 ```
 
 ### Hooks
+
 ```js
 // same as websocket's hooks
 socket.onmessage = (event) => {}

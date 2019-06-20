@@ -115,6 +115,7 @@ storage.set(data).then(() => {/* Do something here */});
 **Note** Cookies are trucated after ~628 characters in chrome (total of key + value characters), other browsers may tructae at other values as well. Use cookies for small data only
 
 Set cookie that can be sent
+
 ```js
 storage.store = `key=value; expires=...; path=/`;
 ```
@@ -180,24 +181,25 @@ should be `string`
 
 can be any of these types:
 
-- `Array`,
-- `ArrayBuffer`,
-- `Blob`,
-- `Float32Array`,
-- `Float64Array`,
-- `Int8Array`,
-- `Int16Array`,
-- `Int32Array`,
-- `Number`,
-- `Object`,
-- `Uint8Array`,
-- `Uint16Array`,
-- `Uint32Array`,
-- `Uint8ClampedArray`,
-- `String`
+-   `Array`,
+-   `ArrayBuffer`,
+-   `Blob`,
+-   `Float32Array`,
+-   `Float64Array`,
+-   `Int8Array`,
+-   `Int16Array`,
+-   `Int32Array`,
+-   `Number`,
+-   `Object`,
+-   `Uint8Array`,
+-   `Uint16Array`,
+-   `Uint32Array`,
+-   `Uint8ClampedArray`,
+-   `String`
 
 ### Gotchas
-- When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
-- Since object[key] is `undefined` when key is not present in the object, `undefined` is not supported as a value.
-- `null` value has buggy behaviour in localstorage, as it returns `null` when value is not present.
-- If you want to save falsy values, you can save `false` or `0` which are supported by all storages.
+
+-   When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
+-   Since object[key] is `undefined` when key is not present in the object, `undefined` is not supported as a value.
+-   `null` value has buggy behaviour in localstorage, as it returns `null` when value is not present.
+-   If you want to save falsy values, you can save `false` or `0` which are supported by all storages.

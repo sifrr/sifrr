@@ -173,7 +173,9 @@ if ('serviceWorker' in navigator) {
 ```
 
 ## More manual configuring
+
 In your sw file
+
 ```js
 const sw = new SW(/* config */);
 

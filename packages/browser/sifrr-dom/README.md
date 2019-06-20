@@ -548,7 +548,6 @@ this will render
 <some-element _state=${this.state.someElementState} data-sifrr-bind="someElementState"><some-element>
 ```
 
-
 #### Repeating a dom for Array
 
 parses array to dom nodes in bindings
