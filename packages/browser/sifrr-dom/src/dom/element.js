@@ -133,7 +133,6 @@ function elementClassFactory(baseClass) {
     sifrrClone(state) {
       const clone = this.cloneNode(false);
       clone._state = state;
-      clone.root = this.root;
       return clone;
     }
 
@@ -150,6 +149,16 @@ function elementClassFactory(baseClass) {
     $$(args, sr = true) {
       if (this.shadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
       else return this.querySelectorAll(args);
+    }
+
+    get root() {
+      if (this._root === undefined) {
+        let root = this.parentNode;
+        while(root && !root.isSifrr) root = root.parentNode || root.host;
+        if (root) this._root = root;
+        else this._root = null;
+      }
+      return this._root;
     }
   };
 }

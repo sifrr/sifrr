@@ -143,7 +143,7 @@ describe('sifrr-fetch', () => {
     expect(parseInt(resp2, 10)).to.be.at.most(100);
   });
 
-  it('progresses to 100, total 0 without content-length', async () => {
+  it.skip('progresses to 100, total 0 without content-length', async () => {
     const resp2 = await page.evaluate(async () => {
       return await new Promise(res => {
         Sifrr.Fetch.get('/nocl.json', {

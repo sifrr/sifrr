@@ -481,7 +481,7 @@
 	    if (typeof data.text === 'string') newValue = element._state[data.text];else newValue = evaluateBindings(data.text, element);
 	    if (!newValue || newValue.length === 0) dom.textContent = '';else if (data.type === 3) {
 	      let key;
-	      data.se.root = element;
+	      data.se._root = element;
 	      if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
 	        makeChildrenEqualKeyed$1(dom, newValue, data.se.sifrrClone.bind(data.se), key);
 	      } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone.bind(data.se));
@@ -516,7 +516,7 @@
 	} = ref;
 	function sifrrClone(newState) {
 	  const clone = this.cloneNode(true);
-	  clone.root = this.root;
+	  clone.root = this._root;
 	  clone._refs = collect$1(clone, this.stateMap);
 	  clone._state = Object.assign({}, this.defaultState, newState);
 	  Object.defineProperty(clone, 'state', this.stateProps);
@@ -876,7 +876,6 @@
 	    sifrrClone(state) {
 	      const clone = this.cloneNode(false);
 	      clone._state = state;
-	      clone.root = this.root;
 	      return clone;
 	    }
 	    clearState() {
@@ -888,6 +887,14 @@
 	    }
 	    $$(args, sr = true) {
 	      if (this.shadowRoot && sr) return this.shadowRoot.querySelectorAll(args);else return this.querySelectorAll(args);
+	    }
+	    get root() {
+	      if (this._root === undefined) {
+	        let root = this.parentNode;
+	        while (root && !root.isSifrr) root = root.parentNode || root.host;
+	        if (root) this._root = root;else this._root = null;
+	      }
+	      return this._root;
 	    }
 	  };
 	}

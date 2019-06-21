@@ -6,7 +6,7 @@ const creator = require('./creator');
 function sifrrClone(newState) {
   // this = content
   const clone = this.cloneNode(true);
-  clone.root = this.root;
+  clone.root = this._root;
   clone._refs = collect(clone, this.stateMap);
   clone._state = Object.assign({}, this.defaultState, newState);
   Object.defineProperty(clone, 'state', this.stateProps);
