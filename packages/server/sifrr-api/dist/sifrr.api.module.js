@@ -677,7 +677,7 @@ class SequelizeModel extends sequelize$1.Model {
     const ret = super.init(this.schema, options);
     ret.graphqlModel = new model(ret.name, attributeFields(ret), { description: `${ret.name} Model` });
     ret.graphqlConnection = new connection(ret.name + 'Connection', connectionArgs, createConnectionResolver({ target: ret }).resolveConnection, ret.graphqlModel.type);
-    ret.onInit();
+    ret._onInit();
     return ret;
   }
   static belongsToMany(model, options) {
@@ -703,23 +703,38 @@ class SequelizeModel extends sequelize$1.Model {
       this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: options.description });
     return this[name];
   }
-  static addAttr(name, options) {
-    this.graphqlModel.addAttribute(name, options);
+  static _onInit() {
+    for (let q in this.queries) this.addQuery(q, this.queries[q]);
+    for (let m in this.mutations) this.addMutation(m, this.mutations[m]);
+    for (let a in this.extraAttributes) this.addAttr(a, this.extraAttributes[a]);
+    this.onInit();
+  }
+  static get queries() {
+    return {};
+  }
+  static get mutations() {
+    return {};
+  }
+  static get extraAttributes() {
+    return {};
   }
   static gqAttrs(options) {
     return this.graphqlModel.getFilteredAttributes(options);
   }
+  static gqArgs({ required, allowed } = {}) {
+    return attrtypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  }
+  static addAttr(name, options) {
+    this.graphqlModel.addAttribute(name, options);
+  }
   static addQuery(name, options) {
     this.graphqlModel.addQuery(name, options);
-  }
-  static addConnectionQuery(name) {
-    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
   }
   static addMutation(name, options) {
     this.graphqlModel.addMutation(name, options);
   }
-  static gqArgs({ required, allowed } = {}) {
-    return attrtypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  static addConnectionQuery(name) {
+    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
   }
   static getQueryResolver(_, args, ctx, info) {
     const include = [];

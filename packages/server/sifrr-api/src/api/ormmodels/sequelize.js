@@ -11,7 +11,7 @@ class SequelizeModel extends Sequelize.Model {
     const ret = super.init(this.schema, options);
     ret.graphqlModel = new GqModel(ret.name, attributeFields(ret), { description: `${ret.name} Model` });
     ret.graphqlConnection = new GqConnection(ret.name + 'Connection', connectionArgs, createConnectionResolver({ target: ret }).resolveConnection, ret.graphqlModel.type);
-    ret.onInit();
+    ret._onInit();
     return ret;
   }
 
@@ -44,29 +44,50 @@ class SequelizeModel extends Sequelize.Model {
     return this[name];
   }
 
-  // Aliases
-  static addAttr(name, options) {
-    this.graphqlModel.addAttribute(name, options);
+  // on init simple method to add attributes, queries, mutations
+  static _onInit() {
+    for (let q in this.queries) this.addQuery(q, this.queries[q]);
+    for (let m in this.mutations) this.addMutation(m, this.mutations[m]);
+    for (let a in this.extraAttributes) this.addAttr(a, this.extraAttributes[a]);
+    this.onInit();
   }
 
+  static get queries() {
+    return {};
+  }
+
+  static get mutations() {
+    return {};
+  }
+
+  static get extraAttributes() {
+    return {};
+  }
+
+  // get attributes, arguments
   static gqAttrs(options) {
     return this.graphqlModel.getFilteredAttributes(options);
+  }
+
+  static gqArgs({ required, allowed } = {}) {
+    return attrsToTypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  }
+
+  // aliases on model, connection
+  static addAttr(name, options) {
+    this.graphqlModel.addAttribute(name, options);
   }
 
   static addQuery(name, options) {
     this.graphqlModel.addQuery(name, options);
   }
 
-  static addConnectionQuery(name) {
-    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
-  }
-
   static addMutation(name, options) {
     this.graphqlModel.addMutation(name, options);
   }
 
-  static gqArgs({ required, allowed } = {}) {
-    return attrsToTypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  static addConnectionQuery(name) {
+    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
   }
 
   // Default Resolvers - getQuery, createMutation, updateMutation, upsertMutation, deleteMutation
@@ -116,6 +137,7 @@ class SequelizeModel extends Sequelize.Model {
     return this.destroy({ where: args });
   }
 
+  // private
   static _assocsToInclude(assocs, column = true, model = this) {
     if (column) assocs.pop();
     const assocName = assocs.shift();
