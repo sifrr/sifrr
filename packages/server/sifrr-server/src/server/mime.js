@@ -167,6 +167,7 @@ const mimes = {
   zip   : 'application/zip',
   default: 'text/html'
 };
+
 module.exports = {
   getMime: (path) => {
     const i = path.lastIndexOf('.');

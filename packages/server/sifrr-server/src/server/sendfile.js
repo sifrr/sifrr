@@ -9,7 +9,7 @@ const compressions = {
 const { writeHeaders } = require('./utils');
 const getMime = require('./mime').getMime;
 const bytes = 'bytes=';
-const strToBuf = require('./streamtobuffer');
+const { stob } = require('./utils');
 
 function sendFile(res, req, path, options) {
   const reqHeaders = {
@@ -88,7 +88,7 @@ function sendFileToRes(res, reqHeaders, path, {
   // check cache
   if (cache) {
     return cache.wrap(`${path}_${mtimeutc}_${start}_${end}_${compressed}`, (cb) => {
-      strToBuf(readStream).then(b => cb(null, b)).catch(cb);
+      stob(readStream).then(b => cb(null, b)).catch(cb);
     }, { ttl: 0 }, (err, buffer) => {
       if (err) {
         res.writeStatus('500 Internal server error');

@@ -36,9 +36,28 @@ function extend(who, from, overwrite = true) {
     else who[prop] = clone(from.prototype[prop]);
   });
 }
+function stob(stream) {
+  return new Promise(resolve => {
+    const buffers = [];
+    stream.on('data', buffers.push.bind(buffers));
+    stream.on('end', () => {
+      switch (buffers.length) {
+      case 0:
+        resolve(Buffer.allocUnsafe(0));
+        break;
+      case 1:
+        resolve(buffers[0]);
+        break;
+      default:
+        resolve(Buffer.concat(buffers));
+      }
+    });
+  });
+}
 var utils = {
   writeHeaders,
-  extend
+  extend,
+  stob
 };
 
 const mimes = {
@@ -218,26 +237,6 @@ var mime = {
   mimes
 };
 
-function stob(stream) {
-  return new Promise(resolve => {
-    const buffers = [];
-    stream.on('data', buffers.push.bind(buffers));
-    stream.on('end', () => {
-      switch (buffers.length) {
-      case 0:
-        resolve(Buffer.allocUnsafe(0));
-        break;
-      case 1:
-        resolve(buffers[0]);
-        break;
-      default:
-        resolve(Buffer.concat(buffers));
-      }
-    });
-  });
-}
-var streamtobuffer = stob;
-
 const compressions = {
   br: zlib.createBrotliCompress,
   gzip: zlib.createGzip,
@@ -246,6 +245,7 @@ const compressions = {
 const { writeHeaders: writeHeaders$1 } = utils;
 const getMime = mime.getMime;
 const bytes = 'bytes=';
+const { stob: stob$1 } = utils;
 function sendFile(res, req, path, options) {
   const reqHeaders = {
     'if-modified-since': req.getHeader('if-modified-since'),
@@ -309,7 +309,7 @@ function sendFileToRes(res, reqHeaders, path, {
   writeHeaders$1(res, headers);
   if (cache) {
     return cache.wrap(`${path}_${mtimeutc}_${start}_${end}_${compressed}`, (cb) => {
-      streamtobuffer(readStream).then(b => cb(null, b)).catch(cb);
+      stob$1(readStream).then(b => cb(null, b)).catch(cb);
     }, { ttl: 0 }, (err, buffer) => {
       if (err) {
         res.writeStatus('500 Internal server error');
@@ -456,6 +456,7 @@ var loadroutes = loadRoutes;
 const { Readable } = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
+const { stob: stob$2 } = utils;
 class BaseApp {
   file(pattern, path, options = {}) {
     if (this._staticPaths[pattern]) {
@@ -524,7 +525,7 @@ class BaseApp {
         });
         return stream;
       };
-      res.body = () => streamtobuffer(res.bodyStream());
+      res.body = () => stob$2(res.bodyStream());
       if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
       if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata.bind(res, contType);
       handler(res, req);
