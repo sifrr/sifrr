@@ -12,22 +12,32 @@ const bytes = 'bytes=';
 const { stob } = require('./utils');
 
 function sendFile(res, req, path, options) {
-  sendFileToRes(res, {
-    'if-modified-since': req.getHeader('if-modified-since'),
-    range: req.getHeader('range'),
-    'accept-encoding': req.getHeader('accept-encoding')
-  }, path, options);
+  sendFileToRes(
+    res,
+    {
+      'if-modified-since': req.getHeader('if-modified-since'),
+      range: req.getHeader('range'),
+      'accept-encoding': req.getHeader('accept-encoding')
+    },
+    path,
+    options
+  );
 }
 
-function sendFileToRes(res, reqHeaders, path, {
-  lastModified = true,
-  headers,
-  compress = false,
-  compressionOptions = {
-    priority: [ 'gzip', 'br', 'deflate' ]
-  },
-  cache = false
-} = {}) {
+function sendFileToRes(
+  res,
+  reqHeaders,
+  path,
+  {
+    lastModified = true,
+    headers,
+    compress = false,
+    compressionOptions = {
+      priority: ['gzip', 'br', 'deflate']
+    },
+    cache = false
+  } = {}
+) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
@@ -47,7 +57,8 @@ function sendFileToRes(res, reqHeaders, path, {
   headers['content-type'] = getMime(path);
 
   // write data
-  let start = 0, end = size - 1;
+  let start = 0,
+    end = size - 1;
 
   if (reqHeaders.range) {
     compress = false;
@@ -85,22 +96,29 @@ function sendFileToRes(res, reqHeaders, path, {
   writeHeaders(res, headers);
   // check cache
   if (cache) {
-    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}_${compressed}`, (cb) => {
-      stob(readStream).then(b => cb(null, b)).catch(cb);
-    }, { ttl: 0 }, (err, buffer) => {
-      if (err) {
-        res.writeStatus('500 Internal server error');
-        res.end();
-        throw err;
+    return cache.wrap(
+      `${path}_${mtimeutc}_${start}_${end}_${compressed}`,
+      cb => {
+        stob(readStream)
+          .then(b => cb(null, b))
+          .catch(cb);
+      },
+      { ttl: 0 },
+      (err, buffer) => {
+        if (err) {
+          res.writeStatus('500 Internal server error');
+          res.end();
+          throw err;
+        }
+        res.end(buffer);
       }
-      res.end(buffer);
-    });
+    );
   } else if (compressed) {
-    readStream.on('data', (buffer) => {
+    readStream.on('data', buffer => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
     });
   } else {
-    readStream.on('data', (buffer) => {
+    readStream.on('data', buffer => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
         lastOffset = res.getWriteOffset();
 
@@ -118,7 +136,7 @@ function sendFileToRes(res, reqHeaders, path, {
         res.abOffset = lastOffset;
 
         // Register async handlers for drainage
-        res.onWritable((offset) => {
+        res.onWritable(offset => {
           const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
           if (done) {
             readStream.destroy();

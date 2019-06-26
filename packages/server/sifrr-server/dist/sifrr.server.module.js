@@ -43,14 +43,14 @@ function stob(stream) {
     stream.on('data', buffers.push.bind(buffers));
     stream.on('end', () => {
       switch (buffers.length) {
-      case 0:
-        resolve(Buffer.allocUnsafe(0));
-        break;
-      case 1:
-        resolve(buffers[0]);
-        break;
-      default:
-        resolve(Buffer.concat(buffers));
+        case 0:
+          resolve(Buffer.allocUnsafe(0));
+          break;
+        case 1:
+          resolve(buffers[0]);
+          break;
+        default:
+          resolve(Buffer.concat(buffers));
       }
     });
   });
@@ -62,176 +62,176 @@ var utils = {
 };
 
 const mimes = {
-  '3gp' : 'video/3gpp',
-  a     : 'application/octet-stream',
-  ai    : 'application/postscript',
-  aif   : 'audio/x-aiff',
-  aiff  : 'audio/x-aiff',
-  asc   : 'application/pgp-signature',
-  asf   : 'video/x-ms-asf',
-  asm   : 'text/x-asm',
-  asx   : 'video/x-ms-asf',
-  atom  : 'application/atom+xml',
-  au    : 'audio/basic',
-  avi   : 'video/x-msvideo',
-  bat   : 'application/x-msdownload',
-  bin   : 'application/octet-stream',
-  bmp   : 'image/bmp',
-  bz2   : 'application/x-bzip2',
-  c     : 'text/x-c',
-  cab   : 'application/vnd.ms-cab-compressed',
-  cc    : 'text/x-c',
-  chm   : 'application/vnd.ms-htmlhelp',
-  class : 'application/octet-stream',
-  com   : 'application/x-msdownload',
-  conf  : 'text/plain',
-  cpp   : 'text/x-c',
-  crt   : 'application/x-x509-ca-cert',
-  css   : 'text/css',
-  csv   : 'text/csv',
-  cxx   : 'text/x-c',
-  deb   : 'application/x-debian-package',
-  der   : 'application/x-x509-ca-cert',
-  diff  : 'text/x-diff',
-  djv   : 'image/vnd.djvu',
-  djvu  : 'image/vnd.djvu',
-  dll   : 'application/x-msdownload',
-  dmg   : 'application/octet-stream',
-  doc   : 'application/msword',
-  dot   : 'application/msword',
-  dtd   : 'application/xml-dtd',
-  dvi   : 'application/x-dvi',
-  ear   : 'application/java-archive',
-  eml   : 'message/rfc822',
-  eps   : 'application/postscript',
-  exe   : 'application/x-msdownload',
-  f     : 'text/x-fortran',
-  f77   : 'text/x-fortran',
-  f90   : 'text/x-fortran',
-  flv   : 'video/x-flv',
-  for   : 'text/x-fortran',
-  gem   : 'application/octet-stream',
+  '3gp': 'video/3gpp',
+  a: 'application/octet-stream',
+  ai: 'application/postscript',
+  aif: 'audio/x-aiff',
+  aiff: 'audio/x-aiff',
+  asc: 'application/pgp-signature',
+  asf: 'video/x-ms-asf',
+  asm: 'text/x-asm',
+  asx: 'video/x-ms-asf',
+  atom: 'application/atom+xml',
+  au: 'audio/basic',
+  avi: 'video/x-msvideo',
+  bat: 'application/x-msdownload',
+  bin: 'application/octet-stream',
+  bmp: 'image/bmp',
+  bz2: 'application/x-bzip2',
+  c: 'text/x-c',
+  cab: 'application/vnd.ms-cab-compressed',
+  cc: 'text/x-c',
+  chm: 'application/vnd.ms-htmlhelp',
+  class: 'application/octet-stream',
+  com: 'application/x-msdownload',
+  conf: 'text/plain',
+  cpp: 'text/x-c',
+  crt: 'application/x-x509-ca-cert',
+  css: 'text/css',
+  csv: 'text/csv',
+  cxx: 'text/x-c',
+  deb: 'application/x-debian-package',
+  der: 'application/x-x509-ca-cert',
+  diff: 'text/x-diff',
+  djv: 'image/vnd.djvu',
+  djvu: 'image/vnd.djvu',
+  dll: 'application/x-msdownload',
+  dmg: 'application/octet-stream',
+  doc: 'application/msword',
+  dot: 'application/msword',
+  dtd: 'application/xml-dtd',
+  dvi: 'application/x-dvi',
+  ear: 'application/java-archive',
+  eml: 'message/rfc822',
+  eps: 'application/postscript',
+  exe: 'application/x-msdownload',
+  f: 'text/x-fortran',
+  f77: 'text/x-fortran',
+  f90: 'text/x-fortran',
+  flv: 'video/x-flv',
+  for: 'text/x-fortran',
+  gem: 'application/octet-stream',
   gemspec: 'text/x-script.ruby',
-  gif   : 'image/gif',
-  gz    : 'application/x-gzip',
-  h     : 'text/x-c',
-  hh    : 'text/x-c',
-  htm   : 'text/html',
-  html  : 'text/html',
-  ico   : 'image/vnd.microsoft.icon',
-  ics   : 'text/calendar',
-  ifb   : 'text/calendar',
-  iso   : 'application/octet-stream',
-  jar   : 'application/java-archive',
-  java  : 'text/x-java-source',
-  jnlp  : 'application/x-java-jnlp-file',
-  jpeg  : 'image/jpeg',
-  jpg   : 'image/jpeg',
-  js    : 'application/javascript',
-  json  : 'application/json',
-  log   : 'text/plain',
-  m3u   : 'audio/x-mpegurl',
-  m4v   : 'video/mp4',
-  man   : 'text/troff',
+  gif: 'image/gif',
+  gz: 'application/x-gzip',
+  h: 'text/x-c',
+  hh: 'text/x-c',
+  htm: 'text/html',
+  html: 'text/html',
+  ico: 'image/vnd.microsoft.icon',
+  ics: 'text/calendar',
+  ifb: 'text/calendar',
+  iso: 'application/octet-stream',
+  jar: 'application/java-archive',
+  java: 'text/x-java-source',
+  jnlp: 'application/x-java-jnlp-file',
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpeg',
+  js: 'application/javascript',
+  json: 'application/json',
+  log: 'text/plain',
+  m3u: 'audio/x-mpegurl',
+  m4v: 'video/mp4',
+  man: 'text/troff',
   mathml: 'application/mathml+xml',
-  mbox  : 'application/mbox',
-  mdoc  : 'text/troff',
-  me    : 'text/troff',
-  mid   : 'audio/midi',
-  midi  : 'audio/midi',
-  mime  : 'message/rfc822',
-  mjs   : 'application/javascript',
-  mml   : 'application/mathml+xml',
-  mng   : 'video/x-mng',
-  mov   : 'video/quicktime',
-  mp3   : 'audio/mpeg',
-  mp4   : 'video/mp4',
-  mp4v  : 'video/mp4',
-  mpeg  : 'video/mpeg',
-  mpg   : 'video/mpeg',
-  ms    : 'text/troff',
-  msi   : 'application/x-msdownload',
-  odp   : 'application/vnd.oasis.opendocument.presentation',
-  ods   : 'application/vnd.oasis.opendocument.spreadsheet',
-  odt   : 'application/vnd.oasis.opendocument.text',
-  ogg   : 'application/ogg',
-  p     : 'text/x-pascal',
-  pas   : 'text/x-pascal',
-  pbm   : 'image/x-portable-bitmap',
-  pdf   : 'application/pdf',
-  pem   : 'application/x-x509-ca-cert',
-  pgm   : 'image/x-portable-graymap',
-  pgp   : 'application/pgp-encrypted',
-  pkg   : 'application/octet-stream',
-  pl    : 'text/x-script.perl',
-  pm    : 'text/x-script.perl-module',
-  png   : 'image/png',
-  pnm   : 'image/x-portable-anymap',
-  ppm   : 'image/x-portable-pixmap',
-  pps   : 'application/vnd.ms-powerpoint',
-  ppt   : 'application/vnd.ms-powerpoint',
-  ps    : 'application/postscript',
-  psd   : 'image/vnd.adobe.photoshop',
-  py    : 'text/x-script.python',
-  qt    : 'video/quicktime',
-  ra    : 'audio/x-pn-realaudio',
-  rake  : 'text/x-script.ruby',
-  ram   : 'audio/x-pn-realaudio',
-  rar   : 'application/x-rar-compressed',
-  rb    : 'text/x-script.ruby',
-  rdf   : 'application/rdf+xml',
-  roff  : 'text/troff',
-  rpm   : 'application/x-redhat-package-manager',
-  rss   : 'application/rss+xml',
-  rtf   : 'application/rtf',
-  ru    : 'text/x-script.ruby',
-  s     : 'text/x-asm',
-  sgm   : 'text/sgml',
-  sgml  : 'text/sgml',
-  sh    : 'application/x-sh',
-  sig   : 'application/pgp-signature',
-  snd   : 'audio/basic',
-  so    : 'application/octet-stream',
-  svg   : 'image/svg+xml',
-  svgz  : 'image/svg+xml',
-  swf   : 'application/x-shockwave-flash',
-  t     : 'text/troff',
-  tar   : 'application/x-tar',
-  tbz   : 'application/x-bzip-compressed-tar',
-  tcl   : 'application/x-tcl',
-  tex   : 'application/x-tex',
-  texi  : 'application/x-texinfo',
+  mbox: 'application/mbox',
+  mdoc: 'text/troff',
+  me: 'text/troff',
+  mid: 'audio/midi',
+  midi: 'audio/midi',
+  mime: 'message/rfc822',
+  mjs: 'application/javascript',
+  mml: 'application/mathml+xml',
+  mng: 'video/x-mng',
+  mov: 'video/quicktime',
+  mp3: 'audio/mpeg',
+  mp4: 'video/mp4',
+  mp4v: 'video/mp4',
+  mpeg: 'video/mpeg',
+  mpg: 'video/mpeg',
+  ms: 'text/troff',
+  msi: 'application/x-msdownload',
+  odp: 'application/vnd.oasis.opendocument.presentation',
+  ods: 'application/vnd.oasis.opendocument.spreadsheet',
+  odt: 'application/vnd.oasis.opendocument.text',
+  ogg: 'application/ogg',
+  p: 'text/x-pascal',
+  pas: 'text/x-pascal',
+  pbm: 'image/x-portable-bitmap',
+  pdf: 'application/pdf',
+  pem: 'application/x-x509-ca-cert',
+  pgm: 'image/x-portable-graymap',
+  pgp: 'application/pgp-encrypted',
+  pkg: 'application/octet-stream',
+  pl: 'text/x-script.perl',
+  pm: 'text/x-script.perl-module',
+  png: 'image/png',
+  pnm: 'image/x-portable-anymap',
+  ppm: 'image/x-portable-pixmap',
+  pps: 'application/vnd.ms-powerpoint',
+  ppt: 'application/vnd.ms-powerpoint',
+  ps: 'application/postscript',
+  psd: 'image/vnd.adobe.photoshop',
+  py: 'text/x-script.python',
+  qt: 'video/quicktime',
+  ra: 'audio/x-pn-realaudio',
+  rake: 'text/x-script.ruby',
+  ram: 'audio/x-pn-realaudio',
+  rar: 'application/x-rar-compressed',
+  rb: 'text/x-script.ruby',
+  rdf: 'application/rdf+xml',
+  roff: 'text/troff',
+  rpm: 'application/x-redhat-package-manager',
+  rss: 'application/rss+xml',
+  rtf: 'application/rtf',
+  ru: 'text/x-script.ruby',
+  s: 'text/x-asm',
+  sgm: 'text/sgml',
+  sgml: 'text/sgml',
+  sh: 'application/x-sh',
+  sig: 'application/pgp-signature',
+  snd: 'audio/basic',
+  so: 'application/octet-stream',
+  svg: 'image/svg+xml',
+  svgz: 'image/svg+xml',
+  swf: 'application/x-shockwave-flash',
+  t: 'text/troff',
+  tar: 'application/x-tar',
+  tbz: 'application/x-bzip-compressed-tar',
+  tcl: 'application/x-tcl',
+  tex: 'application/x-tex',
+  texi: 'application/x-texinfo',
   texinfo: 'application/x-texinfo',
-  text  : 'text/plain',
-  tif   : 'image/tiff',
-  tiff  : 'image/tiff',
+  text: 'text/plain',
+  tif: 'image/tiff',
+  tiff: 'image/tiff',
   torrent: 'application/x-bittorrent',
-  tr    : 'text/troff',
-  txt   : 'text/plain',
-  vcf   : 'text/x-vcard',
-  vcs   : 'text/x-vcalendar',
-  vrml  : 'model/vrml',
-  war   : 'application/java-archive',
-  wav   : 'audio/x-wav',
-  wma   : 'audio/x-ms-wma',
-  wmv   : 'video/x-ms-wmv',
-  wmx   : 'video/x-ms-wmx',
-  wrl   : 'model/vrml',
-  wsdl  : 'application/wsdl+xml',
-  xbm   : 'image/x-xbitmap',
-  xhtml : 'application/xhtml+xml',
-  xls   : 'application/vnd.ms-excel',
-  xml   : 'application/xml',
-  xpm   : 'image/x-xpixmap',
-  xsl   : 'application/xml',
-  xslt  : 'application/xslt+xml',
-  yaml  : 'text/yaml',
-  yml   : 'text/yaml',
-  zip   : 'application/zip',
+  tr: 'text/troff',
+  txt: 'text/plain',
+  vcf: 'text/x-vcard',
+  vcs: 'text/x-vcalendar',
+  vrml: 'model/vrml',
+  war: 'application/java-archive',
+  wav: 'audio/x-wav',
+  wma: 'audio/x-ms-wma',
+  wmv: 'video/x-ms-wmv',
+  wmx: 'video/x-ms-wmx',
+  wrl: 'model/vrml',
+  wsdl: 'application/wsdl+xml',
+  xbm: 'image/x-xbitmap',
+  xhtml: 'application/xhtml+xml',
+  xls: 'application/vnd.ms-excel',
+  xml: 'application/xml',
+  xpm: 'image/x-xpixmap',
+  xsl: 'application/xml',
+  xslt: 'application/xslt+xml',
+  yaml: 'text/yaml',
+  yml: 'text/yaml',
+  zip: 'application/zip',
   default: 'text/html'
 };
 var mime = {
-  getMime: (path) => {
+  getMime: path => {
     const i = path.lastIndexOf('.');
     return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
   },
@@ -248,21 +248,31 @@ const getMime = mime.getMime;
 const bytes = 'bytes=';
 const { stob: stob$1 } = utils;
 function sendFile(res, req, path, options) {
-  sendFileToRes(res, {
-    'if-modified-since': req.getHeader('if-modified-since'),
-    range: req.getHeader('range'),
-    'accept-encoding': req.getHeader('accept-encoding')
-  }, path, options);
+  sendFileToRes(
+    res,
+    {
+      'if-modified-since': req.getHeader('if-modified-since'),
+      range: req.getHeader('range'),
+      'accept-encoding': req.getHeader('accept-encoding')
+    },
+    path,
+    options
+  );
 }
-function sendFileToRes(res, reqHeaders, path, {
-  lastModified = true,
-  headers,
-  compress = false,
-  compressionOptions = {
-    priority: [ 'gzip', 'br', 'deflate' ]
-  },
-  cache = false
-} = {}) {
+function sendFileToRes(
+  res,
+  reqHeaders,
+  path,
+  {
+    lastModified = true,
+    headers,
+    compress = false,
+    compressionOptions = {
+      priority: ['gzip', 'br', 'deflate']
+    },
+    cache = false
+  } = {}
+) {
   let { mtime, size } = fs.statSync(path);
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
@@ -277,7 +287,8 @@ function sendFileToRes(res, reqHeaders, path, {
     headers['last-modified'] = mtimeutc;
   }
   headers['content-type'] = getMime(path);
-  let start = 0, end = size - 1;
+  let start = 0,
+    end = size - 1;
   if (reqHeaders.range) {
     compress = false;
     const parts = reqHeaders.range.replace(bytes, '').split('-');
@@ -308,22 +319,29 @@ function sendFileToRes(res, reqHeaders, path, {
   res.onAborted(() => readStream.destroy());
   writeHeaders$1(res, headers);
   if (cache) {
-    return cache.wrap(`${path}_${mtimeutc}_${start}_${end}_${compressed}`, (cb) => {
-      stob$1(readStream).then(b => cb(null, b)).catch(cb);
-    }, { ttl: 0 }, (err, buffer) => {
-      if (err) {
-        res.writeStatus('500 Internal server error');
-        res.end();
-        throw err;
+    return cache.wrap(
+      `${path}_${mtimeutc}_${start}_${end}_${compressed}`,
+      cb => {
+        stob$1(readStream)
+          .then(b => cb(null, b))
+          .catch(cb);
+      },
+      { ttl: 0 },
+      (err, buffer) => {
+        if (err) {
+          res.writeStatus('500 Internal server error');
+          res.end();
+          throw err;
+        }
+        res.end(buffer);
       }
-      res.end(buffer);
-    });
+    );
   } else if (compressed) {
-    readStream.on('data', (buffer) => {
+    readStream.on('data', buffer => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
     });
   } else {
-    readStream.on('data', (buffer) => {
+    readStream.on('data', buffer => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
         lastOffset = res.getWriteOffset();
       const [ok, done] = res.tryEnd(chunk, size);
@@ -333,7 +351,7 @@ function sendFileToRes(res, reqHeaders, path, {
         readStream.pause();
         res.ab = chunk;
         res.abOffset = lastOffset;
-        res.onWritable((offset) => {
+        res.onWritable(offset => {
           const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
           if (done) {
             readStream.destroy();
@@ -408,7 +426,7 @@ function setRetValue(ret, fieldname, value) {
       ret[fieldname].push(value);
     } else if (ret[fieldname]) {
       ret[fieldname] = [ret[fieldname], value];
-    }  else {
+    } else {
       ret[fieldname] = value;
     }
   }
@@ -425,11 +443,12 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   if (fs.statSync(dir).isDirectory()) {
     files = fs
       .readdirSync(dir)
-      .filter(filter).map(file => path.join(dir, file));
+      .filter(filter)
+      .map(file => path.join(dir, file));
   } else {
     files = [dir];
   }
-  files.forEach((file) => {
+  files.forEach(file => {
     if (fs.statSync(file).isDirectory()) {
       paths.push(...loadRoutes.call(this, file, { filter, basePath }));
     } else if (path.extname(file) === '.js') {
@@ -437,7 +456,7 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
       let basePaths = routes.basePath || [''];
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
-      basePaths.forEach((basep) => {
+      basePaths.forEach(basep => {
         for (const method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
@@ -460,7 +479,12 @@ const { stob: stob$2 } = utils;
 class BaseApp {
   file(pattern, path, options = {}) {
     if (this._staticPaths[pattern]) {
-      if (options.failOnDuplicateRoute) throw Error(`Error serving '${path}' for '${pattern}', already serving '${this._staticPaths[pattern][0]}' file for this patter.`);
+      if (options.failOnDuplicateRoute)
+        throw Error(
+          `Error serving '${path}' for '${pattern}', already serving '${
+            this._staticPaths[pattern][0]
+          }' file for this patter.`
+        );
       else if (!options.overwriteRoute) return;
     }
     this._staticPaths[pattern] = [path, options];
@@ -486,11 +510,11 @@ class BaseApp {
     if (options && options.watch) {
       if (!this._watched[folder]) {
         const w = chokidar.watch(folder);
-        w.on('unlink', (filePath) => {
+        w.on('unlink', filePath => {
           const url = '/' + path.relative(base, filePath);
           delete this._staticPaths[prefix + url];
         });
-        w.on('add', (filePath) => {
+        w.on('add', filePath => {
           const url = '/' + path.relative(base, filePath);
           this.file(prefix + url, filePath, options);
         });
@@ -508,7 +532,8 @@ class BaseApp {
     } else sendfile(res, req, options[0], options[1]);
   }
   post(pattern, handler) {
-    if (typeof handler !== 'function') throw Error(`handler should be a function, given ${typeof handler}.`);
+    if (typeof handler !== 'function')
+      throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
       res.bodyStream = function() {
@@ -523,8 +548,10 @@ class BaseApp {
         return stream;
       };
       res.body = () => stob$2(res.bodyStream());
-      if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
-      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata.bind(res, contType);
+      if (contType.indexOf('application/json') > -1)
+        res.json = async () => JSON.parse(await res.body());
+      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
+        res.formData = formdata.bind(res, contType);
       handler(res, req);
     });
     return this;
@@ -535,12 +562,12 @@ class BaseApp {
   }
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this._listen(h, p, (socket) => {
+      this._listen(h, p, socket => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this._listen(h, (socket) => {
+      this._listen(h, socket => {
         this._socket = socket;
         p(socket);
       });

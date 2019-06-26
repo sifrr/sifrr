@@ -20,12 +20,14 @@ async function assertHtmlValue(type, value) {
 
 function getField(type) {
   const selector = type === 'content' ? 'div[contenteditable]' : type;
-  return page.evaluateHandle(`document.querySelector('twoway-${type}').shadowRoot.querySelector('${selector}')`);
+  return page.evaluateHandle(
+    `document.querySelector('twoway-${type}').shadowRoot.querySelector('${selector}')`
+  );
 }
 
 async function getFieldValue(type) {
   const field = await getField(type);
-  return await page.evaluate((el) => el.value || el.innerHTML, field);
+  return await page.evaluate(el => el.value || el.innerHTML, field);
 }
 
 async function assertFieldValue(type, value) {
@@ -37,7 +39,9 @@ async function assertFieldValue(type, value) {
 describe('Two way bind', () => {
   before(async () => {
     await page.goto(`${PATH}/twoway.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   describe('input', () => {
@@ -184,7 +188,7 @@ describe('Two way bind', () => {
 
   it("doesn't do anything for no binding input", async () => {
     let e;
-    page.on('pageerror', err => e = err.message);
+    page.on('pageerror', err => (e = err.message));
     const content = await page.evaluateHandle('document.querySelector("#emptybind")');
     await content.click({ clickCount: 3 });
     await content.type('random');

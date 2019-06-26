@@ -1,11 +1,14 @@
 const Cache = require('cache-manager');
 
-module.exports = (ops) => {
-  ops = Object.assign({
-    cacheStore: 'memory',
-    maxCacheSize: 100, // in MB
-    ttl: 0 // in Seconds
-  }, ops);
+module.exports = ops => {
+  ops = Object.assign(
+    {
+      cacheStore: 'memory',
+      maxCacheSize: 100, // in MB
+      ttl: 0 // in Seconds
+    },
+    ops
+  );
 
   return Cache.caching({
     store: ops.cacheStore,

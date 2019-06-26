@@ -7,7 +7,8 @@ const reg = '(\\${(?:(?:[^{}$]|{(?:[^{}$])*})*)})';
 var constants = {
   TEMPLATE: () => temp.cloneNode(false),
   SCRIPT: () => script.cloneNode(false),
-  TREE_WALKER: () => window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false),
+  TREE_WALKER: () =>
+    window.document.createTreeWalker(window.document, window.NodeFilter.SHOW_ALL, null, false),
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
   ELEMENT_NODE: 1,
@@ -24,27 +25,31 @@ var constants = {
 const { TEXT_NODE, TREE_WALKER } = constants;
 const TW_SHARED = TREE_WALKER();
 function collect(element, stateMap) {
-  const l = stateMap.length, refs = new Array(l);
+  const l = stateMap.length,
+    refs = new Array(l);
   TW_SHARED.currentNode = element;
   for (let i = 0, n; i < l; i++) {
     n = stateMap[i].idx;
-    while(--n) element = TW_SHARED.nextNode();
+    while (--n) element = TW_SHARED.nextNode();
     refs[i] = element;
   }
   return refs;
 }
 function create(node, fxn, passedArg) {
   const TW = TREE_WALKER();
-  let indices = [], ref, idx = 0, ntr;
+  let indices = [],
+    ref,
+    idx = 0,
+    ntr;
   TW.currentNode = node;
-  while(node) {
+  while (node) {
     if (node.nodeType === TEXT_NODE && node.data.trim() === '') {
       ntr = node;
       node = TW.nextNode();
       ntr.remove();
     } else {
-      if (ref = fxn(node, passedArg)) {
-        indices.push({ idx: idx+1, ref });
+      if ((ref = fxn(node, passedArg))) {
+        indices.push({ idx: idx + 1, ref });
         idx = 1;
       } else {
         idx++;
@@ -71,7 +76,7 @@ var template = (str, ...extra) => {
     isString = true;
     str = String.raw(str, ...extra);
   } else if (str instanceof NodeList || (Array.isArray(str) && str[0].nodeType)) {
-    Array.from(str).forEach((s) => {
+    Array.from(str).forEach(s => {
       tmp.content.appendChild(s);
     });
   } else if (str.nodeType) {
@@ -84,49 +89,54 @@ var template = (str, ...extra) => {
 };
 
 var updateattribute = (element, name, newValue) => {
-  if (newValue === false || newValue === null || newValue === undefined) element.hasAttribute(name) && element.removeAttribute(name);
+  if (newValue === false || newValue === null || newValue === undefined)
+    element.hasAttribute(name) && element.removeAttribute(name);
   else if (name === 'class') element.className = newValue;
-  else if ((name === 'id' || name === 'value') && element[name] !== newValue) element[name] = newValue;
+  else if ((name === 'id' || name === 'value') && element[name] !== newValue)
+    element[name] = newValue;
   else if (element.getAttribute(name) !== newValue) element.setAttribute(name, newValue);
 };
 
 var shouldmerge = (a, b) => {
   if (typeof a !== 'object') return a !== b;
-  for(const key in b) {
-    if(!(key in a) || a[key] !== b[key]) return true;
+  for (const key in b) {
+    if (!(key in a) || a[key] !== b[key]) return true;
   }
   return false;
 };
 
 const { TEXT_NODE: TEXT_NODE$1, COMMENT_NODE } = constants;
 function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
-  const newL = newChildren.length, oldL = parent.childNodes.length;
+  const newL = newChildren.length,
+    oldL = parent.childNodes.length;
   if (oldL > newL) {
     let i = oldL;
-    while(i > newL) {
+    while (i > newL) {
       parent.removeChild(parent.lastChild);
       i--;
     }
   }
-  let item, head = parent.firstChild, curNewChild = newChildren[0];
+  let item,
+    head = parent.firstChild,
+    curNewChild = newChildren[0];
   if (isNode) {
-    while(head) {
+    while (head) {
       item = curNewChild.nextSibling;
       head = makeEqual(head, curNewChild).nextSibling;
       curNewChild = item;
     }
-    while(curNewChild) {
+    while (curNewChild) {
       item = curNewChild.nextSibling;
       parent.appendChild(curNewChild);
       curNewChild = item;
     }
   } else {
     let i = 0;
-    while(head) {
+    while (head) {
       head = makeEqual(head, newChildren[i]).nextSibling;
       i++;
     }
-    while(i < newL) {
+    while (i < newL) {
       item = newChildren[i];
       parent.appendChild(item.nodeType ? item : createFn(item));
       i++;
@@ -147,7 +157,8 @@ function makeEqual(oldNode, newNode) {
     return oldNode;
   }
   if (newNode.state) oldNode.state = newNode.state;
-  const oldAttrs = oldNode.attributes, newAttrs = newNode.attributes;
+  const oldAttrs = oldNode.attributes,
+    newAttrs = newNode.attributes;
   for (let i = newAttrs.length - 1; i > -1; --i) {
     updateattribute(oldNode, newAttrs[i].name, newAttrs[i].value);
   }
@@ -164,7 +175,8 @@ var makeequal = {
 
 const { makeEqual: makeEqual$1 } = makeequal;
 function makeChildrenEqualKeyed(parent, newData, createFn, key) {
-  const newL = newData.length, oldL = parent.childNodes.length;
+  const newL = newData.length,
+    oldL = parent.childNodes.length;
   if (oldL === 0) {
     for (let i = 0; i < newL; i++) {
       parent.appendChild(createFn(newData[i]));
@@ -174,34 +186,37 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   let prevStart = 0,
     newStart = 0,
     loop = true,
-    prevEnd = oldL - 1, newEnd = newL - 1,
+    prevEnd = oldL - 1,
+    newEnd = newL - 1,
     prevStartNode = parent.firstChild,
     prevEndNode = parent.lastChild,
     finalNode,
-    a, b, _node;
-  fixes: while(loop) {
+    a,
+    b,
+    _node;
+  fixes: while (loop) {
     loop = false;
-    a = prevStartNode.state, b = newData[newStart];
-    while(a[key] === b[key]) {
+    (a = prevStartNode.state), (b = newData[newStart]);
+    while (a[key] === b[key]) {
       makeEqual$1(prevStartNode, b);
       prevStart++;
       prevStartNode = prevStartNode.nextSibling;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = prevStartNode.state, b = newData[newStart];
+      (a = prevStartNode.state), (b = newData[newStart]);
     }
-    a = prevEndNode.state, b = newData[newEnd];
-    while(a[key] === b[key]) {
+    (a = prevEndNode.state), (b = newData[newEnd]);
+    while (a[key] === b[key]) {
       makeEqual$1(prevEndNode, b);
       prevEnd--;
       finalNode = prevEndNode;
       prevEndNode = prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = prevEndNode.state, b = newData[newEnd];
+      (a = prevEndNode.state), (b = newData[newEnd]);
     }
-    a = prevEndNode.state, b = newData[newStart];
-    while(a[key] === b[key]) {
+    (a = prevEndNode.state), (b = newData[newStart]);
+    while (a[key] === b[key]) {
       loop = true;
       makeEqual$1(prevEndNode, b);
       _node = prevEndNode.previousSibling;
@@ -210,10 +225,10 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = prevEndNode.state, b = newData[newStart];
+      (a = prevEndNode.state), (b = newData[newStart]);
     }
-    a = prevStartNode.state, b = newData[newEnd];
-    while(a[key] === b[key]) {
+    (a = prevStartNode.state), (b = newData[newEnd]);
+    while (a[key] === b[key]) {
       loop = true;
       makeEqual$1(prevStartNode, b);
       _node = prevStartNode.nextSibling;
@@ -224,13 +239,13 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      a = prevStartNode.state, b = newData[newEnd];
+      (a = prevStartNode.state), (b = newData[newEnd]);
     }
   }
   if (newEnd < newStart) {
     if (prevStart <= prevEnd) {
       let next;
-      while(prevStart <= prevEnd) {
+      while (prevStart <= prevEnd) {
         if (prevEnd === 0) {
           parent.removeChild(prevEndNode);
         } else {
@@ -245,7 +260,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   }
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
-      while(newStart <= newEnd) {
+      while (newStart <= newEnd) {
         _node = createFn(newData[newStart]);
         parent.insertBefore(_node, finalNode);
         prevEndNode = _node;
@@ -254,7 +269,10 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     }
     return;
   }
-  const oldKeys = new Array(newEnd + 1 - newStart), newKeys = new Map(), nodes = new Array(prevEnd - prevStart + 1), toDelete = [];
+  const oldKeys = new Array(newEnd + 1 - newStart),
+    newKeys = new Map(),
+    nodes = new Array(prevEnd - prevStart + 1),
+    toDelete = [];
   for (let i = newStart; i <= newEnd; i++) {
     oldKeys[i] = -1;
     newKeys.set(newData[i][key], i);
@@ -281,9 +299,10 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     return;
   }
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
-  let lisIdx = longestSeq.length - 1, tmpD;
+  let lisIdx = longestSeq.length - 1,
+    tmpD;
   for (let i = newEnd; i >= newStart; i--) {
-    if(longestSeq[lisIdx] === i) {
+    if (longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
       makeEqual$1(finalNode, newData[i]);
       lisIdx--;
@@ -301,8 +320,8 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 }
 function longestPositiveIncreasingSubsequence(ns, newStart) {
   let seq = [],
-    is  = [],
-    l   = -1,
+    is = [],
+    l = -1,
     pre = new Array(ns.length);
   for (let i = newStart, len = ns.length; i < len; i++) {
     let n = ns[i];
@@ -312,7 +331,7 @@ function longestPositiveIncreasingSubsequence(ns, newStart) {
     if (j === l) {
       l++;
       seq[l] = n;
-      is[l]  = i;
+      is[l] = i;
     } else if (n < seq[j + 1]) {
       seq[j + 1] = n;
       is[j + 1] = i;
@@ -352,7 +371,7 @@ function replacer(match) {
   }
   try {
     return new Function(f);
-  } catch(e) {
+  } catch (e) {
     window.console.log(`Error processing binding: \`${f}\``);
     return '';
   }
@@ -361,15 +380,20 @@ function evaluate(fxn, el) {
   try {
     if (typeof fxn === 'string') return fxn;
     else return fxn.call(el);
-  } catch(e) {
+  } catch (e) {
     const str = fxn.toString();
-    window.console.log(`Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`, el);
+    window.console.log(
+      `Error evaluating: \`${str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'))}\` for element`,
+      el
+    );
     window.console.error(e);
   }
 }
 const Bindings = {
-  getBindingFxns: (string) => {
-    const splitted = string.split(OUTER_REGEX), l = splitted.length, ret = [];
+  getBindingFxns: string => {
+    const splitted = string.split(OUTER_REGEX),
+      l = splitted.length,
+      ret = [];
     for (let i = 0; i < l; i++) {
       if (splitted[i][0] === '$' && splitted[i][1] === '{') {
         ret.push(replacer(splitted[i].slice(2, -1)));
@@ -378,7 +402,7 @@ const Bindings = {
     if (ret.length === 1) return ret[0];
     return ret;
   },
-  getStringBindingFxn: (string) => {
+  getStringBindingFxn: string => {
     const match = string.match(STATE_REGEX);
     if (match) return match[1];
     return Bindings.getBindingFxns(string);
@@ -398,10 +422,12 @@ const { evaluateBindings } = bindings;
 const { TEMPLATE: TEMPLATE$1, KEY_ATTR } = constants;
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
-  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
-    const data = stateMap[i].ref, dom = element._refs[i];
+  for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
+    const data = stateMap[i].ref,
+      dom = element._refs[i];
     if (data.type === 0) {
-      if (dom.__data != element._state[data.text]) dom.data = dom.__data = element._state[data.text];
+      if (dom.__data != element._state[data.text])
+        dom.data = dom.__data = element._state[data.text];
       continue;
     } else if (data.type === 1) {
       const newValue = evaluateBindings(data.text, element);
@@ -444,7 +470,8 @@ function update(element, stateMap) {
       } else makeChildrenEqual$1(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
       const newValue = evaluateBindings(data.text, element);
-      let children, isNode = false;
+      let children,
+        isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
       } else if (newValue.content && newValue.content.nodeType === 11) {
@@ -479,8 +506,12 @@ function sifrrClone(newState) {
 function SimpleElement(content, defaultState = null) {
   const templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
-  if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') > 0)
+  if (
+    content.isSifrr ||
+    content.nodeName.indexOf('-') !== -1 ||
+    (content.getAttribute &&
+      content.getAttribute('is') &&
+      content.getAttribute('is').indexOf('-') > 0)
   ) {
     if (!content.isSifrr) {
       window.document.body.appendChild(content);
@@ -492,7 +523,9 @@ function SimpleElement(content, defaultState = null) {
   content.stateMap = create$1(content, creator_1, defaultState);
   content.sifrrClone = sifrrClone;
   content.stateProps = {
-    get: function() { return this._state; },
+    get: function() {
+      return this._state;
+    },
     set: function(v) {
       if (this._state !== v) Object.assign(this._state, v);
       update_1(this, content.stateMap);
@@ -507,7 +540,8 @@ const { KEY_ATTR: KEY_ATTR$1, REPEAT_ATTR, DEFAULT_STATE_ATTR } = constants;
 var repeatref = (sm, el) => {
   sm.type = 3;
   let defaultState;
-  if (el.hasAttribute(DEFAULT_STATE_ATTR)) defaultState = JSON.parse(el.getAttribute(DEFAULT_STATE_ATTR));
+  if (el.hasAttribute(DEFAULT_STATE_ATTR))
+    defaultState = JSON.parse(el.getAttribute(DEFAULT_STATE_ATTR));
   sm.se = simpleelement(el.childNodes, defaultState);
   sm.text = getStringBindingFxn(el.getAttribute(REPEAT_ATTR));
   sm.keyed = el.hasAttribute(KEY_ATTR$1);
@@ -546,7 +580,8 @@ function creator(el, defaultState) {
     } else if (el.hasAttribute(REPEAT_ATTR$1)) {
       repeatref(sm, el);
     }
-    const attrs = el.attributes, l = attrs.length;
+    const attrs = el.attributes,
+      l = attrs.length;
     const attrStateMap = [];
     const eventMap = [];
     for (let i = 0; i < l; i++) {
@@ -583,49 +618,59 @@ class Loader {
   executeScripts(js = true) {
     if (this._exec) return this._exec;
     if (!js) {
-      return this._exec = this.constructor.executeHTML(this.getUrl('html'), this), this._exec;
+      return (this._exec = this.constructor.executeHTML(this.getUrl('html'), this)), this._exec;
     } else {
-      return this._exec = this.constructor.executeJS(this.getUrl('js')).catch((e) => {
-        window.console.error(e);
-        window.console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
-        return this.constructor.executeHTML(this.getUrl('html'), this);
-      }), this._exec;
+      return (
+        (this._exec = this.constructor.executeJS(this.getUrl('js')).catch(e => {
+          window.console.error(e);
+          window.console.log(
+            `JS file for '${this.elementName}' gave error. Trying to get html file.`
+          );
+          return this.constructor.executeHTML(this.getUrl('html'), this);
+        })),
+        this._exec
+      );
     }
   }
   getUrl(type = 'js') {
-    return this.url || `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`;
+    return (
+      this.url ||
+      `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName
+        .split('-')
+        .join('/')}.${type}`
+    );
   }
   static getFile(url) {
-    return window.fetch(url)
-      .then((resp) => {
-        if (resp.ok) return resp.text();
-        else throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
-      });
+    return window.fetch(url).then(resp => {
+      if (resp.ok) return resp.text();
+      else throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
+    });
   }
   static executeHTML(url, me) {
     return this.getFile(url)
-      .then((file) => template(file).content)
-      .then((content) => {
+      .then(file => template(file).content)
+      .then(content => {
         let promise = Promise.resolve(true);
         me.template = content.querySelector('template');
-        content.querySelectorAll('script').forEach((script) => {
+        content.querySelectorAll('script').forEach(script => {
           if (script.src) {
             window.fetch(script.src);
             promise = promise
               .then(() => window.fetch(script.src).then(resp => resp.text()))
               .then(text => new Function(text + `\n//# sourceURL=${script.src}`).call(window));
           } else {
-            promise = promise.then(() => new Function(script.text + `\n//# sourceURL=${url}`).call(window));
+            promise = promise.then(() =>
+              new Function(script.text + `\n//# sourceURL=${url}`).call(window)
+            );
           }
         });
         return promise;
       });
   }
   static executeJS(url) {
-    return this.getFile(url)
-      .then((script) => {
-        return new Function(script + `\n //# sourceURL=${url}`).call();
-      });
+    return this.getFile(url).then(script => {
+      return new Function(script + `\n //# sourceURL=${url}`).call();
+    });
   }
 }
 Loader.all = {};
@@ -633,12 +678,13 @@ var loader = Loader;
 
 const SYNTHETIC_EVENTS = {};
 const opts = { capture: true, passive: true };
-const getEventListener = (name) => {
-  return (e) => {
+const getEventListener = name => {
+  return e => {
     const target = e.composedPath ? e.composedPath()[0] : e.target;
     let dom = target;
-    while(dom) {
-      const eventHandler = dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
+    while (dom) {
+      const eventHandler =
+        dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
       if (typeof eventHandler === 'function') {
         eventHandler.call(dom._root || window, e, target);
       } else if (typeof eventHandler === 'string') {
@@ -651,19 +697,22 @@ const getEventListener = (name) => {
 };
 const cssMatchEvent = (e, name, dom, target) => {
   function callEach(fxns, isElement) {
-    fxns.forEach((fxn) => {
+    fxns.forEach(fxn => {
       if (!isElement || fxn.__dom === dom) fxn(e, target, dom);
     });
   }
   for (let css in SYNTHETIC_EVENTS[name]) {
-    if ((typeof dom.matches === 'function' && dom.matches(css)) ||
-    (dom.nodeType === 9 && css === 'document') ||
-    css === 'element') callEach(SYNTHETIC_EVENTS[name][css], css === 'element');
+    if (
+      (typeof dom.matches === 'function' && dom.matches(css)) ||
+      (dom.nodeType === 9 && css === 'document') ||
+      css === 'element'
+    )
+      callEach(SYNTHETIC_EVENTS[name][css], css === 'element');
   }
 };
 const Event = {
   all: SYNTHETIC_EVENTS,
-  add: (name) => {
+  add: name => {
     if (SYNTHETIC_EVENTS[name]) return false;
     const namedEL = getEventListener(name);
     window.addEventListener(name, namedEL, opts);
@@ -671,7 +720,8 @@ const Event = {
     return true;
   },
   addListener: (name, css, fxn) => {
-    if (!SYNTHETIC_EVENTS[name]) throw Error(`You need to call Sifrr.Dom.Event.add('${name}') before using listeners.`);
+    if (!SYNTHETIC_EVENTS[name])
+      throw Error(`You need to call Sifrr.Dom.Event.add('${name}') before using listeners.`);
     if (typeof css !== 'string') {
       fxn.__dom = css;
       css = 'element';
@@ -696,7 +746,7 @@ var event_1 = Event;
 
 const { collect: collect$2, create: create$2 } = ref;
 const { trigger } = event_1;
-const { BIND_ATTR , STATE_ATTR} = constants;
+const { BIND_ATTR, STATE_ATTR } = constants;
 function elementClassFactory(baseClass) {
   return class extends baseClass {
     static extends(htmlElementClass) {
@@ -753,7 +803,7 @@ function elementClassFactory(baseClass) {
     }
     connectedCallback() {
       this.connected = true;
-      if(this.__content) {
+      if (this.__content) {
         if (this.childNodes.length !== 0) this.textContent = '';
         this.appendChild(this.__content);
         delete this.__content;
@@ -820,7 +870,7 @@ function elementClassFactory(baseClass) {
     get root() {
       if (this._root === undefined) {
         let root = this.parentNode;
-        while(root && !root.isSifrr) root = root.parentNode || root.host;
+        while (root && !root.isSifrr) root = root.parentNode || root.host;
         if (root) this._root = root;
         else this._root = null;
       }
@@ -831,7 +881,7 @@ function elementClassFactory(baseClass) {
 var element = elementClassFactory(window.HTMLElement);
 
 const { BIND_ATTR: BIND_ATTR$1 } = constants;
-var twowaybind = (e) => {
+var twowaybind = e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
   if (!target.hasAttribute(BIND_ATTR$1) || target._root === null) return;
   if (e.type === 'update' && !target._sifrrEventSet) return;
@@ -839,7 +889,7 @@ var twowaybind = (e) => {
   if (target.firstChild) target.firstChild.__data = value;
   if (!target._root) {
     let root = target.parentNode;
-    while(root && !root.isSifrr) root = root.parentNode || root.host;
+    while (root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;
   }
@@ -850,7 +900,7 @@ var twowaybind = (e) => {
   }
 };
 
-const objCon = ({}).constructor;
+const objCon = {}.constructor;
 class Store {
   constructor(initial) {
     this.value = initial;
@@ -891,7 +941,9 @@ SifrrDom.register = (Element, options = {}) => {
   if (!name) {
     throw Error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
-    commonjsGlobal.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
+    commonjsGlobal.console.warn(
+      `Error creating Element: ${name} - Custom Element with this name is already defined.`
+    );
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
@@ -904,12 +956,14 @@ SifrrDom.register = (Element, options = {}) => {
     delete options.dependsOn;
     const registering = before.then(() => window.customElements.define(name, Element, options));
     SifrrDom.registering[name] = registering;
-    return registering.then(() => {
-      SifrrDom.elements[name] = Element;
-      delete SifrrDom.registering[name];
-    }).catch(error => {
-      throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
-    });
+    return registering
+      .then(() => {
+        SifrrDom.elements[name] = Element;
+        delete SifrrDom.registering[name];
+      })
+      .catch(error => {
+        throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
+      });
   }
 };
 SifrrDom.setup = function(config) {
@@ -917,11 +971,14 @@ SifrrDom.setup = function(config) {
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
   document.$$ = document.querySelectorAll;
-  SifrrDom.config = Object.assign({
-    baseUrl: '',
-    useShadowRoot: true,
-    events: []
-  }, config);
+  SifrrDom.config = Object.assign(
+    {
+      baseUrl: '',
+      useShadowRoot: true,
+      events: []
+    },
+    config
+  );
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.config.events.push('input', 'change', 'update');
   SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
@@ -932,20 +989,30 @@ SifrrDom.setup = function(config) {
   window.Sifrr.Dom = window.Sifrr.Dom || SifrrDom;
 };
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
-  if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
+  if (window.customElements.get(elemName)) {
+    return Promise.resolve(
+      window.console.warn(
+        `Error loading Element: ${elemName} - Custom Element with this name is already defined.`
+      )
+    );
+  }
   SifrrDom.loadingElements[elemName] = window.customElements.whenDefined(elemName);
   let loader = new SifrrDom.Loader(elemName, url);
-  return loader.executeScripts(js).then(() => SifrrDom.registering[elemName]).then(() => {
-    if (!window.customElements.get(elemName)) {
-      window.console.warn(`Executing '${elemName}' file didn't register the element.`);
-    }
-    delete SifrrDom.registering[elemName];
-    delete SifrrDom.loadingElements[elemName];
-  }).catch(e => {
-    delete SifrrDom.registering[elemName];
-    delete SifrrDom.loadingElements[elemName];
-    throw e;
-  });
+  return loader
+    .executeScripts(js)
+    .then(() => SifrrDom.registering[elemName])
+    .then(() => {
+      if (!window.customElements.get(elemName)) {
+        window.console.warn(`Executing '${elemName}' file didn't register the element.`);
+      }
+      delete SifrrDom.registering[elemName];
+      delete SifrrDom.loadingElements[elemName];
+    })
+    .catch(e => {
+      delete SifrrDom.registering[elemName];
+      delete SifrrDom.loadingElements[elemName];
+      throw e;
+    });
 };
 SifrrDom.loading = () => {
   const promises = [];

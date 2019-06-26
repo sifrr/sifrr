@@ -14,7 +14,9 @@ class TenkUpdate10th extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td a') && ${this.main}.$('tr td a').textContent.indexOf('${(' !!!').repeat(this.i + 1)}') > 0`;
+    return `${this.main}.$('tr td a') && ${
+      this.main
+    }.$('tr td a').textContent.indexOf('${' !!!'.repeat(this.i + 1)}') > 0`;
   }
 }
 

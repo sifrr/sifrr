@@ -8,14 +8,14 @@ const PageRequest = require('./pagerequest');
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.status = 0;
-    this.puppeteerOptions = Object.assign({
-      headless: true,
-      args: [],
-    }, puppeteerOptions);
-    this.puppeteerOptions.args.push(
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
+    this.puppeteerOptions = Object.assign(
+      {
+        headless: true,
+        args: []
+      },
+      puppeteerOptions
     );
+    this.puppeteerOptions.args.push('--no-sandbox', '--disable-setuid-sandbox');
     this.options = options;
   }
 
@@ -40,32 +40,37 @@ class Renderer {
   render(url, headers = {}) {
     const me = this;
 
-    return this.browserAsync().then((b) => b.newPage()).then(async (newp) => {
-      const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
-      await fetches.addListener;
+    return this.browserAsync()
+      .then(b => b.newPage())
+      .then(async newp => {
+        const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
+        await fetches.addListener;
 
-      delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      /* istanbul ignore next */
-      if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(url, { waitUntil: 'load' });
-      const sRC = me.isHTML(resp);
-      let ret;
-
-      if (sRC) {
-        await fetches.all();
+        delete headers['user-agent'];
+        await newp.setExtraHTTPHeaders(headers);
         /* istanbul ignore next */
-        if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
-        ret = await newp.content();
-      } else ret = false;
+        if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
+        const resp = await newp.goto(url, { waitUntil: 'load' });
+        const sRC = me.isHTML(resp);
+        let ret;
 
-      await newp.close();
-      return ret;
-    });
+        if (sRC) {
+          await fetches.all();
+          /* istanbul ignore next */
+          if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
+          ret = await newp.content();
+        } else ret = false;
+
+        await newp.close();
+        return ret;
+      });
   }
 
   isHTML(puppeteerResp) {
-    return (puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+    return (
+      puppeteerResp.headers()['content-type'] &&
+      puppeteerResp.headers()['content-type'].indexOf('html') >= 0
+    );
   }
 }
 

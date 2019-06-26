@@ -12,14 +12,14 @@ class PageRequest {
     this.npage = npage;
     this.filter = filter;
     this.pendingRequests = 0;
-    this.pendingPromise = new Promise(res => this.pendingResolver = res);
+    this.pendingPromise = new Promise(res => (this.pendingResolver = res));
     this.addOnRequestListener();
     this.addEndRequestListener();
   }
   addOnRequestListener() {
     const me = this;
     this.addListener = this.npage.setRequestInterception(true).then(() => {
-      me.npage.on('request', (request) => {
+      me.npage.on('request', request => {
         if (isTypeOf(request, whiteTypes) && this.filter(request.url())) {
           me.pendingRequests++;
           request.__allowed = true;
@@ -56,14 +56,14 @@ var pagerequest = PageRequest;
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.status = 0;
-    this.puppeteerOptions = Object.assign({
-      headless: true,
-      args: [],
-    }, puppeteerOptions);
-    this.puppeteerOptions.args.push(
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
+    this.puppeteerOptions = Object.assign(
+      {
+        headless: true,
+        args: []
+      },
+      puppeteerOptions
     );
+    this.puppeteerOptions.args.push('--no-sandbox', '--disable-setuid-sandbox');
     this.options = options;
   }
   async browserAsync() {
@@ -83,36 +83,44 @@ class Renderer {
   }
   render(url, headers = {}) {
     const me = this;
-    return this.browserAsync().then((b) => b.newPage()).then(async (newp) => {
-      const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
-      await fetches.addListener;
-      delete headers['user-agent'];
-      await newp.setExtraHTTPHeaders(headers);
-      if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
-      const resp = await newp.goto(url, { waitUntil: 'load' });
-      const sRC = me.isHTML(resp);
-      let ret;
-      if (sRC) {
-        await fetches.all();
-        if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
-        ret = await newp.content();
-      } else ret = false;
-      await newp.close();
-      return ret;
-    });
+    return this.browserAsync()
+      .then(b => b.newPage())
+      .then(async newp => {
+        const fetches = new pagerequest(newp, me.options.filterOutgoingRequests);
+        await fetches.addListener;
+        delete headers['user-agent'];
+        await newp.setExtraHTTPHeaders(headers);
+        if (me.options.beforeRender) await newp.evaluateOnNewDocument(me.options.beforeRender);
+        const resp = await newp.goto(url, { waitUntil: 'load' });
+        const sRC = me.isHTML(resp);
+        let ret;
+        if (sRC) {
+          await fetches.all();
+          if (me.options.afterRender) await newp.evaluate(me.options.afterRender);
+          ret = await newp.content();
+        } else ret = false;
+        await newp.close();
+        return ret;
+      });
   }
   isHTML(puppeteerResp) {
-    return (puppeteerResp.headers()['content-type'] && puppeteerResp.headers()['content-type'].indexOf('html') >= 0);
+    return (
+      puppeteerResp.headers()['content-type'] &&
+      puppeteerResp.headers()['content-type'].indexOf('html') >= 0
+    );
   }
 }
 var renderer = Renderer;
 
-var getcache = (ops) => {
-  ops = Object.assign({
-    cacheStore: 'memory',
-    maxCacheSize: 100,
-    ttl: 0
-  }, ops);
+var getcache = ops => {
+  ops = Object.assign(
+    {
+      cacheStore: 'memory',
+      maxCacheSize: 100,
+      ttl: 0
+    },
+    ops
+  );
   return cacheManager.caching({
     store: ops.cacheStore,
     ttl: ops.ttl,
@@ -130,7 +138,7 @@ var constants = {
 };
 
 const { headerName, headerValue } = constants;
-var middleware = (getUrl) => {
+var middleware = getUrl => {
   return function(req, res, next) {
     if (req.method !== 'GET') return next();
     const url = getUrl(req);
@@ -149,38 +157,46 @@ var middleware = (getUrl) => {
         res._end(resp, encoding);
       };
     }
-    return this.render(url, headers).then((html) => {
-      if (html) {
-        res.set(headerName, headerValue);
-        res.send(html);
-      } else {
-        next();
-      }
-    }).catch((e) => {
-      if (e.message === 'No Render') {
-        next();
-      } else next(e);
-    });
+    return this.render(url, headers)
+      .then(html => {
+        if (html) {
+          res.set(headerName, headerValue);
+          res.send(html);
+        } else {
+          next();
+        }
+      })
+      .catch(e => {
+        if (e.message === 'No Render') {
+          next();
+        } else next(e);
+      });
   };
 };
 
 const isHeadless = new RegExp('(headless|Headless)');
 class SifrrSeo {
-  constructor(userAgents = [
-    'Googlebot',
-    'Bingbot',
-    'Slurp',
-    'DuckDuckBot',
-    'Baiduspider',
-    'YandexBot',
-    'Sogou',
-    'Exabot',
-  ], options = {}) {
-    this._uas = userAgents.map((ua) => new RegExp(ua));
+  constructor(
+    userAgents = [
+      'Googlebot',
+      'Bingbot',
+      'Slurp',
+      'DuckDuckBot',
+      'Baiduspider',
+      'YandexBot',
+      'Sogou',
+      'Exabot'
+    ],
+    options = {}
+  ) {
+    this._uas = userAgents.map(ua => new RegExp(ua));
     this.shouldRenderCache = {};
-    this.options = Object.assign({
-      cacheKey: (url) => url,
-    }, options);
+    this.options = Object.assign(
+      {
+        cacheKey: url => url
+      },
+      options
+    );
   }
   get renderer() {
     this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
@@ -190,7 +206,7 @@ class SifrrSeo {
     this._cache = this._cache || getcache(this.options);
     return this._cache;
   }
-  getExpressMiddleware(getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+  getExpressMiddleware(getUrl = expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`) {
     return middleware(getUrl).bind(this);
   }
   addUserAgent(userAgent) {
@@ -228,12 +244,17 @@ class SifrrSeo {
           if (err) {
             rej(err);
           } else if (!val) {
-            this.renderer.render(url, headers).then((resp) => {
-              this.cache.set(key, resp);
-              res(resp);
-            }).catch( err => {
-              rej(err);
-            });
+            this.renderer
+              .render(url, headers)
+              .then(resp => {
+                this.cache.set(key, resp);
+                res(resp);
+              })
+              .catch(
+                 err => {
+                  rej(err);
+                }
+              );
           } else {
             res(val);
           }
@@ -249,7 +270,7 @@ class SifrrSeo {
   _isUserAgent(headers = {}) {
     const ua = headers['user-agent'];
     let ret = false;
-    this._uas.forEach((b) => {
+    this._uas.forEach(b => {
       if (b.test(ua)) ret = true;
     });
     return ret;

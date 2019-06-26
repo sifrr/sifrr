@@ -4,7 +4,7 @@ describe('json body test', function() {
   });
 
   it('gives json body on res.json()', async () => {
-    const resp = await page.evaluate(async (path) => {
+    const resp = await page.evaluate(async path => {
       return await Sifrr.Fetch.post(`${path}/json`, {
         body: {
           json: 'body'

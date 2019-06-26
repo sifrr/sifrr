@@ -10,7 +10,7 @@ class PageRequest {
     this.npage = npage;
     this.filter = filter;
     this.pendingRequests = 0;
-    this.pendingPromise = new Promise(res => this.pendingResolver = res);
+    this.pendingPromise = new Promise(res => (this.pendingResolver = res));
     this.addOnRequestListener();
     this.addEndRequestListener();
   }
@@ -18,7 +18,7 @@ class PageRequest {
   addOnRequestListener() {
     const me = this;
     this.addListener = this.npage.setRequestInterception(true).then(() => {
-      me.npage.on('request', (request) => {
+      me.npage.on('request', request => {
         if (isTypeOf(request, whiteTypes) && this.filter(request.url())) {
           me.pendingRequests++;
           request.__allowed = true;

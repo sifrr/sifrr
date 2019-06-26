@@ -3,17 +3,20 @@ const JsonStorage = require('./storages/jsonstorage');
 
 class SifrrStorage {
   constructor(options) {
-    if (typeof options === 'string') options = { priority: [options] }; else options = options || {};
+    if (typeof options === 'string') options = { priority: [options] };
+    else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);
     return this.storage;
   }
 
   get storage() {
     let storage = this.supportedStore();
-    if (typeof storage === 'undefined') throw Error('No available storage supported in this browser');
+    if (typeof storage === 'undefined')
+      throw Error('No available storage supported in this browser');
     let matchingInstance = this.constructor._matchingInstance(this._options, storage.type);
-    if (matchingInstance) { return matchingInstance; }
-    else {
+    if (matchingInstance) {
+      return matchingInstance;
+    } else {
       let storageInstance = new storage(this._options);
       this.constructor._add(storageInstance);
       return storageInstance;
@@ -21,7 +24,13 @@ class SifrrStorage {
   }
 
   get priority() {
-    return this._options.priority.concat(['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage']);
+    return this._options.priority.concat([
+      'indexeddb',
+      'websql',
+      'localstorage',
+      'cookies',
+      'jsonstorage'
+    ]);
   }
 
   supportedStore() {
@@ -32,7 +41,8 @@ class SifrrStorage {
   }
 
   static _matchingInstance(options, type) {
-    let allInstances = this.all, i;
+    let allInstances = this.all,
+      i;
     let length = allInstances.length;
     for (i = 0; i < length; i++) {
       if (allInstances[i]._isEqual(options, type)) return allInstances[i];

@@ -25,8 +25,10 @@ var filterobject = function(json, fxn) {
 };
 
 var attrtypes = (attrs, required = [], allowed = []) => {
-  if (allowed.length > 0) attrs = filterobject(attrs, (attr) => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
-  let ret = {}, type;
+  if (allowed.length > 0)
+    attrs = filterobject(attrs, attr => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
+  let ret = {},
+    type;
   for (let attr in attrs) {
     let bang = required.indexOf(attr) >= 0 ? true : false;
     if (attrs[attr].returnType) {
@@ -77,7 +79,7 @@ class BaseType {
     return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
   }
   get schemaPrefix() {
-    return `${this.description ? `"""${this.description}"""\n` : '' }`;
+    return `${this.description ? `"""${this.description}"""\n` : ''}`;
   }
 }
 var basetype = BaseType;
@@ -108,9 +110,12 @@ class Model extends basetype {
     this.mutations[name] = mutation;
   }
   getSchema() {
-    return this.schemaPrefix + `type ${this.type} {
+    return (
+      this.schemaPrefix +
+      `type ${this.type} {
   ${flatten(this.attributes, '\n  ', true)}
-}`;
+}`
+    );
   }
 }
 var model = Model;
@@ -135,7 +140,9 @@ class Connection extends basetype {
     this.args[name] = type;
   }
   getSchema() {
-    return this.schemaPrefix + `type ${this.type} {
+    return (
+      this.schemaPrefix +
+      `type ${this.type} {
   edges: [${this.type + 'Edge'}]
   ${flatten(this.attributes, '\n  ', true)}
 }
@@ -143,7 +150,8 @@ class Connection extends basetype {
 type ${this.type + 'Edge'} {
   node: ${this.nodeType}
   cursor: String
-}`;
+}`
+    );
   }
 }
 var connection = Connection;
@@ -675,8 +683,15 @@ const { connectionArgs } = lib;
 class SequelizeModel extends sequelize$1.Model {
   static init(options) {
     const ret = super.init(this.schema, options);
-    ret.graphqlModel = new model(ret.name, attributeFields(ret), { description: `${ret.name} Model` });
-    ret.graphqlConnection = new connection(ret.name + 'Connection', connectionArgs, createConnectionResolver({ target: ret }).resolveConnection, ret.graphqlModel.type);
+    ret.graphqlModel = new model(ret.name, attributeFields(ret), {
+      description: `${ret.name} Model`
+    });
+    ret.graphqlConnection = new connection(
+      ret.name + 'Connection',
+      connectionArgs,
+      createConnectionResolver({ target: ret }).resolveConnection,
+      ret.graphqlModel.type
+    );
     ret._onInit();
     return ret;
   }
@@ -696,11 +711,17 @@ class SequelizeModel extends sequelize$1.Model {
     const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
     this[name] = super[type](model, options);
     if (options.useConnection) {
-      const conn = model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection);
+      const conn = model.graphqlConnection.clone(
+        createConnectionResolver({ target: this[name] }).resolveConnection
+      );
       conn.description = options.description;
       this.graphqlModel.addConnection(name, conn);
     } else
-      this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: options.description });
+      this.graphqlModel.addAttribute(name, {
+        resolver: resolver(this[name]),
+        returnType: model.graphqlModel.type,
+        description: options.description
+      });
     return this[name];
   }
   static _onInit() {
@@ -747,7 +768,7 @@ class SequelizeModel extends sequelize$1.Model {
       }
     }
     return resolver(this, {
-      before: (findOptions) => {
+      before: findOptions => {
         findOptions.include = include;
         return findOptions;
       }
@@ -780,10 +801,12 @@ class SequelizeModel extends sequelize$1.Model {
   static _assocsToInclude(assocs, column = true, model = this) {
     if (column) assocs.pop();
     const assocName = assocs.shift();
-    const include = [{
-      association: model[assocName],
-      as: assocName
-    }];
+    const include = [
+      {
+        association: model[assocName],
+        as: assocName
+      }
+    ];
     if (assocs.length > 0) {
       include[0].include = this._assocsToInclude(assocs, false, model[assocName].target);
     }
@@ -811,18 +834,14 @@ var graphqlexecutor = GraphqlExecutor;
 
 function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
   const paths = [];
-  fs
-    .readdirSync(dir)
-    .filter(file =>
-      path.extname(file) === '.js' &&
-      ignore.indexOf(file) < 0
-    )
-    .forEach((file) => {
+  fs.readdirSync(dir)
+    .filter(file => path.extname(file) === '.js' && ignore.indexOf(file) < 0)
+    .forEach(file => {
       const routes = commonjsRequire(path.join(dir, file));
       let basePaths = routes.basePath || '';
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
-      basePaths.forEach((basep) => {
+      basePaths.forEach(basep => {
         for (const method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {
@@ -851,9 +870,14 @@ function getTypeDef(qs, resolvers) {
   }
   return flatten(attrtypes(qs), '\n  ', true);
 }
-function createSchemaFromModels(models, { extra = '', queries = {}, mutations = {}, schemaPath } = {}) {
-  const connections = {}, typeDefs = [], resolvers = {};
-  for(let modelName in models) {
+function createSchemaFromModels(
+  models,
+  { extra = '', queries = {}, mutations = {}, schemaPath } = {}
+) {
+  const connections = {},
+    typeDefs = [],
+    resolvers = {};
+  for (let modelName in models) {
     const model = models[modelName];
     typeDefs.push(model.getSchema());
     Object.assign(queries, model.queries);
@@ -870,7 +894,8 @@ function createSchemaFromModels(models, { extra = '', queries = {}, mutations = 
     resolvers[conn.type] = resolvers[conn.type] || {};
     Object.assign(resolvers[conn.type], conn.getResolvers());
   }
-  const qnew = {}, mnew = {};
+  const qnew = {},
+    mnew = {};
   const queryMut = `type Query {
   ${getTypeDef(queries, qnew)}
 }
@@ -888,7 +913,9 @@ ${extra}`;
   if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
     const comment = fileHeader + timestampHeader + fileSeparator;
-    const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : null;
+    const oldFileContent = fs.existsSync(schemaPath)
+      ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1]
+      : null;
     const newFileContent = typeDefs.join('\n\n') + '\n';
     if (oldFileContent !== newFileContent) fs.writeFileSync(schemaPath, comment + newFileContent);
   }
@@ -902,11 +929,11 @@ var createschemafrommodels = createSchemaFromModels;
 function reqToVariables(req, { allowed = [] } = {}) {
   let args = {};
   Object.assign(args, req.query, req.body, req.params);
-  if (allowed.length > 0) args = filterobject(args, (arg) => allowed.indexOf(arg) >= 0);
+  if (allowed.length > 0) args = filterobject(args, arg => allowed.indexOf(arg) >= 0);
   for (let arg in args) {
     try {
       args[arg] = JSON.parse(args[arg]);
-    } catch(e) {
+    } catch (e) {
     }
   }
   return args;

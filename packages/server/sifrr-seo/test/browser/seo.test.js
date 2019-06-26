@@ -14,7 +14,7 @@ describe('sifrr-seo', () => {
       await page.goto(`${PATH}/`);
     });
 
-    it('doesn\'t have sifrr when js disabled', async () => {
+    it("doesn't have sifrr when js disabled", async () => {
       const sifrr = await page.evaluate(() => typeof Sifrr);
 
       assert.equal(sifrr, 'undefined');
@@ -99,7 +99,7 @@ describe('sifrr-seo', () => {
   });
 
   it("doesn't render other requests than GET", async () => {
-    const html = await page.evaluate((path) => {
+    const html = await page.evaluate(path => {
       return fetch(`${path}/post`, {
         method: 'POST',
         referrer: 'no-referrer'

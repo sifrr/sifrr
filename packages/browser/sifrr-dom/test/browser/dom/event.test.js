@@ -1,6 +1,8 @@
 let client, windowId;
 async function getListeners(type = '') {
-  return (await client.send('DOMDebugger.getEventListeners', { objectId: windowId })).listeners.filter(l => l.type.indexOf(type) >= 0);
+  return (await client.send('DOMDebugger.getEventListeners', {
+    objectId: windowId
+  })).listeners.filter(l => l.type.indexOf(type) >= 0);
 }
 
 describe('Sifrr.Dom.Event', () => {
@@ -30,7 +32,8 @@ describe('Sifrr.Dom.Event', () => {
 
   it('works with _event properties', async () => {
     const ret = await page.$eval('a', el => {
-      let i = 0, sameEl = false;
+      let i = 0,
+        sameEl = false;
       el._click = (e, target) => {
         sameEl = target === el;
         i++;
@@ -46,7 +49,9 @@ describe('Sifrr.Dom.Event', () => {
   it('works with _event attribute', async () => {
     const ret = await page.$eval('a', el => {
       el._click = undefined;
-      let i = 0, sameEl, ev;
+      let i = 0,
+        sameEl,
+        ev;
       // eslint-disable-next-line no-unused-vars
       window.clickEvent = (e, target) => {
         ev = !!e;
@@ -131,7 +136,7 @@ describe('Sifrr.Dom.Event', () => {
       try {
         Sifrr.Dom.Event.removeListener('click', '.bang', () => {}); // Should not do anything for
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });

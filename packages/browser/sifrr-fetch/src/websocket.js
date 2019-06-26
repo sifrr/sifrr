@@ -1,5 +1,9 @@
 class WebSocket {
-  constructor(url, protocol, fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))) {
+  constructor(
+    url,
+    protocol,
+    fallback = () => Promise.reject(Error('No fallback provided for websocket failure.'))
+  ) {
     this.url = url;
     this.protocol = protocol;
     this._fallback = !window.WebSocket;
@@ -20,21 +24,23 @@ class WebSocket {
 
   sendRaw(message, id, original = message) {
     if (this._fallback) return this.fallback(original);
-    return this._openSocket().then(ws => {
-      ws.send(message);
-      return new Promise((res) => {
-        this._requests[id] = {
-          res: (v) => {
-            delete this._requests[id];
-            res(v);
-          },
-          original
-        };
+    return this._openSocket()
+      .then(ws => {
+        ws.send(message);
+        return new Promise(res => {
+          this._requests[id] = {
+            res: v => {
+              delete this._requests[id];
+              res(v);
+            },
+            original
+          };
+        });
+      })
+      .catch(e => {
+        window.console.error(e);
+        return this.fallback(original);
       });
-    }).catch((e) => {
-      window.console.error(e);
-      return this.fallback(original);
-    });
   }
 
   _openSocket() {

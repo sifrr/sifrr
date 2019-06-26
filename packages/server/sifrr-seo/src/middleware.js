@@ -1,7 +1,7 @@
 const { headerName, headerValue } = require('./constants');
 
 // this = sifrr seo instance
-module.exports = (getUrl) => {
+module.exports = getUrl => {
   return function(req, res, next) {
     // Don't render other requests than GET
     if (req.method !== 'GET') return next();
@@ -24,17 +24,19 @@ module.exports = (getUrl) => {
       };
     }
 
-    return this.render(url, headers).then((html) => {
-      if (html) {
-        res.set(headerName, headerValue);
-        res.send(html);
-      } else {
-        next();
-      }
-    }).catch((e) => {
-      if (e.message === 'No Render') {
-        next();
-      } else next(e);
-    });
+    return this.render(url, headers)
+      .then(html => {
+        if (html) {
+          res.set(headerName, headerValue);
+          res.send(html);
+        } else {
+          next();
+        }
+      })
+      .catch(e => {
+        if (e.message === 'No Render') {
+          next();
+        } else next(e);
+      });
   };
 };

@@ -20,5 +20,5 @@ module.exports = {
     commonjs(),
     babel(),
     terser()
-  ],
+  ]
 };

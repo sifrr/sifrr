@@ -2,23 +2,29 @@
 describe('Sifrr.Dom.Element', () => {
   before(async () => {
     await page.goto(`${PATH}/element.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   it('extends HTMLElement by default', async () => {
-    const isHTMLElement = await page.evaluate(() => document.createElement('element-html') instanceof HTMLElement);
+    const isHTMLElement = await page.evaluate(
+      () => document.createElement('element-html') instanceof HTMLElement
+    );
 
     assert.equal(isHTMLElement, true);
   });
 
   it('extends given Element class', async () => {
-    const isDivElement = await page.evaluate(() => document.createElement('div', { is: 'element-div' }) instanceof HTMLDivElement);
+    const isDivElement = await page.evaluate(
+      () => document.createElement('div', { is: 'element-div' }) instanceof HTMLDivElement
+    );
 
     assert.equal(isDivElement, true);
   });
 
   it("doesn't add shadowRoot to empty element", async () => {
-    const res = await page.$eval('element-empty', (el) => {
+    const res = await page.$eval('element-empty', el => {
       return {
         isSifrr: el.isSifrr(),
         shadowRoot: !!el.shadowRoot
@@ -32,7 +38,7 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   it('works with string template', async () => {
-    const res = await page.$eval('element-string', (el) => {
+    const res = await page.$eval('element-string', el => {
       return {
         isSifrr: el.isSifrr(),
         content: el.shadowRoot.innerHTML
@@ -62,7 +68,10 @@ describe('Sifrr.Dom.Element', () => {
   describe('attributes', () => {
     it('calls onAttributeChange for observed attributes', async () => {
       const res = await page.evaluate(() => {
-        let name, old, newv, i = 0;
+        let name,
+          old,
+          newv,
+          i = 0;
         const el = document.createElement('element-attrs');
         el.onAttributeChange = (nam, o, n) => {
           name = nam;
@@ -119,12 +128,8 @@ describe('Sifrr.Dom.Element', () => {
 
     it('updates only once on connect', async () => {
       const res = await page.evaluate(() => {
-        const types = [
-            'element-nods',
-            'element-ds',
-            'element-ps',
-            'element-as'
-          ], result = {};
+        const types = ['element-nods', 'element-ds', 'element-ps', 'element-as'],
+          result = {};
 
         types.forEach(t => {
           result[t + '-sr'] = document.querySelector(t + '-sr').updateCount;

@@ -49,14 +49,16 @@ class SifrrFetch {
     if (typeof o.use === 'function') {
       current = 'catch';
       promise = promise.then(({ url, options, method }) => {
-        return Promise.resolve(true).then(() => {
-          const r = o.use({ url, options, method });
-          delete o.use;
-          return r;
-        }).catch((e) => {
-          window.console.error(e);
-          throw { url, options, method };
-        });
+        return Promise.resolve(true)
+          .then(() => {
+            const r = o.use({ url, options, method });
+            delete o.use;
+            return r;
+          })
+          .catch(e => {
+            window.console.error(e);
+            throw { url, options, method };
+          });
       });
     }
     promise = promise[current](({ url, options, method }) => {

@@ -1,4 +1,4 @@
-const path =require('path');
+const path = require('path');
 const server = require('@sifrr/dev/src/test/server');
 const runClickBenchmark = require('./runclickbenchmark');
 
@@ -30,7 +30,13 @@ class BenchmarkRunner {
     const l = this.benchmarks.length;
     for (let i = 0; i < l; i++) {
       const b = this.benchmarks[i];
-      this.speedMetrics[b] = await runClickBenchmark(b, this.port, this.runs, this.url, this.warmups);
+      this.speedMetrics[b] = await runClickBenchmark(
+        b,
+        this.port,
+        this.runs,
+        this.url,
+        this.warmups
+      );
     }
 
     this.closeServer();

@@ -6,7 +6,8 @@ const keyedKey = window.location.href.indexOf('useKey') >= 0 ? 'id' : '';
 const useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
 Sifrr.Dom.Event.add('click');
 
-const css = useAnimation ? `tr {
+const css = useAnimation
+  ? `tr {
   animation: slide-up 0.4s ease;
 }
 @keyframes slide-up {
@@ -18,7 +19,8 @@ const css = useAnimation ? `tr {
     opacity: 1;
     transform: translateY(0);
   }
-}` : '';
+}`
+  : '';
 
 const template = `<link href="./css/currentStyle.css" rel="stylesheet">
 <style media="screen">
@@ -72,22 +74,77 @@ function _random(max) {
   return Math.round(Math.random() * 1000) % max;
 }
 
-let buildData = window.buildData = function(count = 1000, frm = window.from) {
-  const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
-    'cheap', 'expensive', 'fancy'
+let buildData = (window.buildData = function(count = 1000, frm = window.from) {
+  const adjectives = [
+    'pretty',
+    'large',
+    'big',
+    'small',
+    'tall',
+    'short',
+    'long',
+    'handsome',
+    'plain',
+    'quaint',
+    'clean',
+    'elegant',
+    'easy',
+    'angry',
+    'crazy',
+    'helpful',
+    'mushy',
+    'odd',
+    'unsightly',
+    'adorable',
+    'important',
+    'inexpensive',
+    'cheap',
+    'expensive',
+    'fancy'
   ];
-  const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
-  const nouns = ['table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger', 'pizza', 'mouse', 'keyboard'];
+  const colours = [
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange'
+  ];
+  const nouns = [
+    'table',
+    'chair',
+    'house',
+    'bbq',
+    'desk',
+    'car',
+    'pony',
+    'cookie',
+    'sandwich',
+    'burger',
+    'pizza',
+    'mouse',
+    'keyboard'
+  ];
   let data = [];
   for (let i = 0; i < count; i++)
     data.push({
       id: i + frm,
-      label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)],
+      label:
+        adjectives[_random(adjectives.length)] +
+        ' ' +
+        colours[_random(colours.length)] +
+        ' ' +
+        nouns[_random(nouns.length)],
       class: false
     });
   window.from = window.from + count;
   return data;
-};
+});
 
 function getParent(elem) {
   while (elem.nodeName !== 'TR') elem = elem.parentNode;
@@ -115,11 +172,12 @@ class MainElement extends Sifrr.Dom.Element {
     });
     Sifrr.Dom.Event.addListener('click', '.lbl', (e, target) => {
       const id = getParent(target).state.id;
-      const data = me.state.data, l = me.state.data.length;
+      const data = me.state.data,
+        l = me.state.data.length;
       let k = 0;
       for (let i = 0; i < l; i++) {
-        if (me.state.data[i].class) me.state.data[i].class = '', k++;
-        if (me.state.data[i].id === id) me.state.data[i].class = 'danger', k++;
+        if (me.state.data[i].class) (me.state.data[i].class = ''), k++;
+        if (me.state.data[i].id === id) (me.state.data[i].class = 'danger'), k++;
         if (k > 1) break;
       }
       me.state = { data: data };
@@ -175,9 +233,8 @@ class MainElement extends Sifrr.Dom.Element {
   dataHTML() {
     const rows = document.createElement('template');
     let html = '';
-    this.state.data.forEach((r) => {
-      html +=
-        `<tr><td class='col-md-1 id'>${r.id}</td><td class='col-md-4'><a class='lbl'>${r.label}</a></td><td class='col-md-1'><a class='remove'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a></td><td class='col-md-6'></td></tr>`;
+    this.state.data.forEach(r => {
+      html += `<tr><td class='col-md-1 id'>${r.id}</td><td class='col-md-4'><a class='lbl'>${r.label}</a></td><td class='col-md-1'><a class='remove'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a></td><td class='col-md-6'></td></tr>`;
     });
     rows.innerHTML = html;
     return rows;

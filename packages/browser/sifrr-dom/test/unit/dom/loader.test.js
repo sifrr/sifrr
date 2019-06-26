@@ -1,4 +1,3 @@
-
 describe('Loader', () => {
   afterEach(() => {
     const loader = require.resolve('../../../src/dom/loader');

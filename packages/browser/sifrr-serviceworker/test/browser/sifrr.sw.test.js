@@ -145,7 +145,7 @@ describe('sifrr-serviceworker', function() {
     await page.evaluate(async () => {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
-        if(sw.scriptURL.indexOf('sw.bundled.js') < 0 || sw.state !== 'activated') {
+        if (sw.scriptURL.indexOf('sw.bundled.js') < 0 || sw.state !== 'activated') {
           return new Promise(res => {
             window.setTimeout(() => res(checkSW()), 100);
           });
@@ -161,7 +161,7 @@ describe('sifrr-serviceworker', function() {
     await page.evaluate(async () => {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
-        if(sw.scriptURL.indexOf('sw2.bundled.js') < 0 || sw.state !== 'activated') {
+        if (sw.scriptURL.indexOf('sw2.bundled.js') < 0 || sw.state !== 'activated') {
           return new Promise(res => {
             window.setTimeout(() => res(checkSW()), 100);
           });
@@ -173,7 +173,7 @@ describe('sifrr-serviceworker', function() {
     });
     const cachesNew = await page.evaluate("window.send_message_to_sw('caches')");
 
-    caches.forEach((k) => {
+    caches.forEach(k => {
       expect(cachesNew).to.not.include(k);
     });
   });

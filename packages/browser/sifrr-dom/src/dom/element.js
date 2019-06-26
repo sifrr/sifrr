@@ -4,7 +4,7 @@ const update = require('./update');
 const Loader = require('./loader');
 const { trigger } = require('./event');
 const template = require('./template');
-const { BIND_ATTR , STATE_ATTR} = require('./constants');
+const { BIND_ATTR, STATE_ATTR } = require('./constants');
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -71,7 +71,7 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       this.connected = true;
-      if(this.__content) {
+      if (this.__content) {
         if (this.childNodes.length !== 0) this.textContent = '';
         this.appendChild(this.__content);
         delete this.__content;
@@ -154,7 +154,7 @@ function elementClassFactory(baseClass) {
     get root() {
       if (this._root === undefined) {
         let root = this.parentNode;
-        while(root && !root.isSifrr) root = root.parentNode || root.host;
+        while (root && !root.isSifrr) root = root.parentNode || root.host;
         if (root) this._root = root;
         else this._root = null;
       }

@@ -18,8 +18,12 @@ function SimpleElement(content, defaultState = null) {
   const templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
   // Already sifrr element
-  if (content.isSifrr || content.nodeName.indexOf('-') !== -1 ||
-    (content.getAttribute && content.getAttribute('is') && content.getAttribute('is').indexOf('-') > 0)
+  if (
+    content.isSifrr ||
+    content.nodeName.indexOf('-') !== -1 ||
+    (content.getAttribute &&
+      content.getAttribute('is') &&
+      content.getAttribute('is').indexOf('-') > 0)
   ) {
     if (!content.isSifrr) {
       // Render custom element if not rendered
@@ -32,7 +36,9 @@ function SimpleElement(content, defaultState = null) {
   content.stateMap = create(content, creator, defaultState);
   content.sifrrClone = sifrrClone;
   content.stateProps = {
-    get: function() { return this._state; },
+    get: function() {
+      return this._state;
+    },
     set: function(v) {
       if (this._state !== v) Object.assign(this._state, v);
       update(this, content.stateMap);

@@ -3,16 +3,71 @@ function _random(max) {
 }
 
 function buildData(count = 10, from = 1) {
-  const adjectives = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful', 'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
-    'cheap', 'expensive', 'fancy'
+  const adjectives = [
+    'pretty',
+    'large',
+    'big',
+    'small',
+    'tall',
+    'short',
+    'long',
+    'handsome',
+    'plain',
+    'quaint',
+    'clean',
+    'elegant',
+    'easy',
+    'angry',
+    'crazy',
+    'helpful',
+    'mushy',
+    'odd',
+    'unsightly',
+    'adorable',
+    'important',
+    'inexpensive',
+    'cheap',
+    'expensive',
+    'fancy'
   ];
-  const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
-  const nouns = ['table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger', 'pizza', 'mouse', 'keyboard'];
+  const colours = [
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange'
+  ];
+  const nouns = [
+    'table',
+    'chair',
+    'house',
+    'bbq',
+    'desk',
+    'car',
+    'pony',
+    'cookie',
+    'sandwich',
+    'burger',
+    'pizza',
+    'mouse',
+    'keyboard'
+  ];
   let data = [];
   for (let i = 0; i < count; i++)
     data.push({
       id: i + from,
-      label: adjectives[_random(adjectives.length)] + ' ' + colours[_random(colours.length)] + ' ' + nouns[_random(nouns.length)]
+      label:
+        adjectives[_random(adjectives.length)] +
+        ' ' +
+        colours[_random(colours.length)] +
+        ' ' +
+        nouns[_random(nouns.length)]
     });
   from = from + count;
   return data;
@@ -24,7 +79,7 @@ function dataToChildNodes(data) {
       _state: d
     };
     node._getStub = sinon.stub().callsFake(() => node._state);
-    node._setStub = sinon.stub().callsFake((v) => node._state = v);
+    node._setStub = sinon.stub().callsFake(v => (node._state = v));
     Object.defineProperty(node, 'state', {
       get: node._getStub,
       set: node._setStub
@@ -75,7 +130,7 @@ function parent(childNodes) {
     },
     appendChild: function(a) {
       this.childNodes.push(a);
-    },
+    }
   };
   for (let name in parent) {
     sinon.spy(parent, name);

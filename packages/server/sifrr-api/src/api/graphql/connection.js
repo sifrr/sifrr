@@ -24,7 +24,9 @@ class Connection extends BaseType {
   }
 
   getSchema() {
-    return this.schemaPrefix + `type ${this.type} {
+    return (
+      this.schemaPrefix +
+      `type ${this.type} {
   edges: [${this.type + 'Edge'}]
   ${flatten(this.attributes, '\n  ', true)}
 }
@@ -32,7 +34,8 @@ class Connection extends BaseType {
 type ${this.type + 'Edge'} {
   node: ${this.nodeType}
   cursor: String
-}`;
+}`
+    );
   }
 }
 

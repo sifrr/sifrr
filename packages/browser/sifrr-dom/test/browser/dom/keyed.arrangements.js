@@ -156,4 +156,21 @@ function removeInBack() {
   return document.body.$('main-element').$$('tr').length === 950;
 }
 
-module.exports = [addInFront, addInBack, removeInFront, removeInBack, swapback, swapforward, swapForwardBackward, swapForwardBackwardMultiple, shrink, add, replace, updateAll, replaceAndAdd, replaceAndRemove, rearrange, rearrange2];
+module.exports = [
+  addInFront,
+  addInBack,
+  removeInFront,
+  removeInBack,
+  swapback,
+  swapforward,
+  swapForwardBackward,
+  swapForwardBackwardMultiple,
+  shrink,
+  add,
+  replace,
+  updateAll,
+  replaceAndAdd,
+  replaceAndRemove,
+  rearrange,
+  rearrange2
+];

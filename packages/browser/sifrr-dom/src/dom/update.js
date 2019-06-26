@@ -8,13 +8,15 @@ const shouldMerge = require('../utils/shouldmerge');
 function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
-  for (let i = element._refs ? element._refs.length -1 : -1; i > -1; --i) {
-    const data = stateMap[i].ref, dom = element._refs[i];
+  for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
+    const data = stateMap[i].ref,
+      dom = element._refs[i];
 
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      if (dom.__data != element._state[data.text]) dom.data = dom.__data = element._state[data.text];
+      if (dom.__data != element._state[data.text])
+        dom.data = dom.__data = element._state[data.text];
       continue;
     } else if (data.type === 1) {
       // text node
@@ -69,7 +71,8 @@ function update(element, stateMap) {
     } else {
       // html node
       const newValue = evaluateBindings(data.text, element);
-      let children, isNode = false;
+      let children,
+        isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
       } else if (newValue.content && newValue.content.nodeType === 11) {

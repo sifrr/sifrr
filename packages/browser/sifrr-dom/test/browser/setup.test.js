@@ -11,7 +11,7 @@ describe('Sifrr.Dom.setup', () => {
       try {
         Sifrr.Dom.setup({ baseUrl: () => {} });
         return true;
-      } catch(e) {
+      } catch (e) {
         return e.message;
       }
     });
@@ -33,7 +33,7 @@ describe('Sifrr.Dom.setup', () => {
       config: {
         baseUrl: '/',
         useShadowRoot: false,
-        events: [ 'input', 'change', 'update' ]
+        events: ['input', 'change', 'update']
       },
       // Adds event listeners
       events: {

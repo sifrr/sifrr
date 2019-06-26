@@ -1,19 +1,25 @@
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.SW = factory());
-}(this, function () { 'use strict';
+(function(global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined'
+    ? (module.exports = factory())
+    : typeof define === 'function' && define.amd
+    ? define(factory)
+    : ((global = global || self), (global.SW = factory()));
+})(this, function() {
+  'use strict';
 
   class SW {
     constructor(options) {
-      this.options = Object.assign({
-        version: 1,
-        fallbackCacheName: 'fallbacks',
-        defaultCacheName: 'default',
-        policies: {},
-        fallbacks: {},
-        precacheUrls: []
-      }, options);
+      this.options = Object.assign(
+        {
+          version: 1,
+          fallbackCacheName: 'fallbacks',
+          defaultCacheName: 'default',
+          policies: {},
+          fallbacks: {},
+          precacheUrls: []
+        },
+        options
+      );
       this.options.policies.default = Object.assign(this.options.policies.default || {}, {
         policy: 'NETWORK_FIRST',
         cacheName: this.options.defaultCacheName
@@ -26,9 +32,12 @@
       self.addEventListener('fetch', this.fetchEventListener.bind(this));
     }
 
-    setupPushNotification(defaultTitle = '', defaultOptions = {
-      body: ''
-    }) {
+    setupPushNotification(
+      defaultTitle = '',
+      defaultOptions = {
+        body: ''
+      }
+    ) {
       this.defaultPushTitle = defaultTitle;
       this.defaultPushOptions = defaultOptions;
       self.addEventListener('push', this.pushEventListener.bind(this));
@@ -41,20 +50,25 @@
     }
     /* istanbul ignore next */
 
-
     onInstall() {}
 
     activateEventListener() {
       const version = '-v' + this.options.version; // remove old version caches
 
-      caches.keys().then(cacheNames => {
-        // [FIX] -v1 won't delete -v10
-        return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
-      }).then(cachesToDelete => {
-        return Promise.all(cachesToDelete.map(cacheToDelete => {
-          return caches.delete(cacheToDelete);
-        }));
-      }).then(() => self.clients.claim());
+      caches
+        .keys()
+        .then(cacheNames => {
+          // [FIX] -v1 won't delete -v10
+          return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
+        })
+        .then(cachesToDelete => {
+          return Promise.all(
+            cachesToDelete.map(cacheToDelete => {
+              return caches.delete(cacheToDelete);
+            })
+          );
+        })
+        .then(() => self.clients.claim());
     }
 
     fetchEventListener(event) {
@@ -63,13 +77,21 @@
       const oreq = request.clone();
 
       if (request.method === 'GET') {
-        event.respondWith(this.respondWithPolicy(request).then(response => {
-          if (!response.ok && response.status > 0 && this.findRegex(oreq.url, this.options.fallbacks)) {
-            throw Error('response status ' + response.status);
-          }
+        event.respondWith(
+          this.respondWithPolicy(request)
+            .then(response => {
+              if (
+                !response.ok &&
+                response.status > 0 &&
+                this.findRegex(oreq.url, this.options.fallbacks)
+              ) {
+                throw Error('response status ' + response.status);
+              }
 
-          return response;
-        }).catch(e => this.respondWithFallback(otherReq, e)));
+              return response;
+            })
+            .catch(e => this.respondWithFallback(otherReq, e))
+        );
       }
     }
 
@@ -77,7 +99,8 @@
       let data = {};
 
       if (event.data) {
-        if (typeof event.data.json === 'function') data = event.data.json();else data = event.data || {};
+        if (typeof event.data.json === 'function') data = event.data.json();
+        else data = event.data || {};
       }
 
       const title = data.title || this.defaultPushTitle;
@@ -86,7 +109,6 @@
     }
     /* istanbul ignore next */
 
-
     onNotificationClick() {}
 
     precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
@@ -94,7 +116,9 @@
       let promises = [];
       urls.forEach(u => {
         let req = me.createRequest(u);
-        return promises.push(me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName));
+        return promises.push(
+          me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName)
+        );
       });
 
       for (let value of Object.values(fbs)) {
@@ -131,16 +155,22 @@
 
         case 'CACHE_FIRST':
         case 'CACHE_ONLY':
-          resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          resp = this.responseFromCache(req1, cacheName).catch(() =>
+            this.responseFromNetwork(request, cacheName)
+          );
           break;
 
         case 'CACHE_AND_UPDATE':
-          resp = this.responseFromCache(req1, cacheName).catch(() => this.responseFromNetwork(request, cacheName));
+          resp = this.responseFromCache(req1, cacheName).catch(() =>
+            this.responseFromNetwork(request, cacheName)
+          );
           this.responseFromNetwork(req2, cacheName);
           break;
 
         default:
-          resp = this.responseFromNetwork(req1, cacheName).catch(() => this.responseFromCache(request, cacheName));
+          resp = this.responseFromNetwork(req1, cacheName).catch(() =>
+            this.responseFromCache(request, cacheName)
+          );
           break;
       }
 
@@ -148,21 +178,30 @@
     }
 
     responseFromNetwork(request, cache, putInCache = true) {
-      return caches.open(cache + '-v' + this.options.version).then(cache => fetch(request).then(response => {
-        if (putInCache) cache.put(request, response.clone());
-        return response;
-      }));
+      return caches.open(cache + '-v' + this.options.version).then(cache =>
+        fetch(request).then(response => {
+          if (putInCache) cache.put(request, response.clone());
+          return response;
+        })
+      );
     }
 
     responseFromCache(request, cache) {
-      return caches.open(cache + '-v' + this.options.version).then(cache => cache.match(request)).then(resp => {
-        if (resp) return resp;else throw 'Cache not found for ' + request.url;
-      });
+      return caches
+        .open(cache + '-v' + this.options.version)
+        .then(cache => cache.match(request))
+        .then(resp => {
+          if (resp) return resp;
+          else throw 'Cache not found for ' + request.url;
+        });
     }
 
-    createRequest(url, data = {
-      method: 'GET'
-    }) {
+    createRequest(
+      url,
+      data = {
+        method: 'GET'
+      }
+    ) {
       return new Request(url, data);
     }
 
@@ -174,7 +213,6 @@
 
       return policies['default'];
     }
-
   }
 
   var sifrr_serviceworker = SW;
@@ -226,24 +264,28 @@
 
   sw.onNotificationClick = event => {
     event.notification.close();
-    event.waitUntil(self.clients.matchAll({
-      type: 'window'
-    }).then(function (clientList) {
-      for (let i = 0; i < clientList.length; i++) {
-        const client = clientList[i];
-        const url = new URL(client.url);
-        if (url.pathname == '/' && 'focus' in client) return client.focus();
-      }
+    event.waitUntil(
+      self.clients
+        .matchAll({
+          type: 'window'
+        })
+        .then(function(clientList) {
+          for (let i = 0; i < clientList.length; i++) {
+            const client = clientList[i];
+            const url = new URL(client.url);
+            if (url.pathname == '/' && 'focus' in client) return client.focus();
+          }
 
-      if (self.clients.openWindow) return self.clients.openWindow('/');
-    }));
+          if (self.clients.openWindow) return self.clients.openWindow('/');
+        })
+    );
   };
 
   self.addEventListener('message', async e => {
     if (e.data === 'coverage') {
       e.ports[0].postMessage(self.__coverage__);
     } else if (e.data === 'caches') {
-      e.ports[0].postMessage((await caches.keys()));
+      e.ports[0].postMessage(await caches.keys());
     } else if (e.data.type && e.data.type === 'push') {
       sw.pushEventListener(e.data.event).then(() => e.ports[0].postMessage('ok'));
     }
@@ -251,6 +293,5 @@
   var sw_1 = sw;
 
   return sw_1;
-
-}));
+});
 //# sourceMappingURL=sw.bundled.js.map

@@ -14,7 +14,10 @@ class TenkReplace extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor.start + 10000 * (this.i + 1) + 1}'`;
+    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor
+      .start +
+      10000 * (this.i + 1) +
+      1}'`;
   }
 }
 

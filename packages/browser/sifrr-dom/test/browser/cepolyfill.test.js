@@ -1,7 +1,9 @@
 describe('customElements polyfill', () => {
   before(async () => {
     await page.goto(`${PATH}/cepolyfill.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   it('works with sifrrElements', async () => {

@@ -1,7 +1,11 @@
 function request(type, url) {
-  return page.evaluate((url, type) => {
-    return Sifrr.Fetch[type](url);
-  }, PATH + url, type);
+  return page.evaluate(
+    (url, type) => {
+      return Sifrr.Fetch[type](url);
+    },
+    PATH + url,
+    type
+  );
 }
 
 describe('SequelizeModel', () => {

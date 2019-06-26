@@ -14,8 +14,12 @@ describe('createSchemaFromModels', () => {
 
     expect(fs.existsSync(schemaPath)).to.equal(true);
 
-    const generatedSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1];
-    const correctSchema = fs.readFileSync(path.join(__dirname, './correct.graphql'), { encoding: 'UTF-8' });
+    const generatedSchema = fs
+      .readFileSync(schemaPath, { encoding: 'UTF-8' })
+      .split(fileSeparator)[1];
+    const correctSchema = fs.readFileSync(path.join(__dirname, './correct.graphql'), {
+      encoding: 'UTF-8'
+    });
 
     expect(generatedSchema).to.equal(correctSchema);
   });
@@ -31,9 +35,13 @@ describe('createSchemaFromModels', () => {
   });
 
   it('rewrites if schema has changed', () => {
-    fs.writeFileSync(schemaPath, fileSeparator + `type New {
+    fs.writeFileSync(
+      schemaPath,
+      fileSeparator +
+        `type New {
   dummy: ok
-}`);
+}`
+    );
     const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
 
     require('../public/config/setup')();
@@ -44,9 +52,13 @@ describe('createSchemaFromModels', () => {
   });
 
   it('should not rewrite schema if no schemaPath', () => {
-    fs.writeFileSync(schemaPath, fileSeparator + `type New {
+    fs.writeFileSync(
+      schemaPath,
+      fileSeparator +
+        `type New {
   dummy: ok
-}`);
+}`
+    );
     const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
 
     require('../public/config/setup')(false);

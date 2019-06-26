@@ -7,15 +7,15 @@ describe('form test', function() {
   });
 
   it('handles input form data', async () => {
-    const resp = await page.evaluate(async (path) => {
+    const resp = await page.evaluate(async path => {
       return await submitForm2(`${path}/stream`);
     }, PATH);
 
     expect(resp).to.deep.equal({
       firstname: 'Aaditya',
       lastname: 'Taparia',
-      address: [ 'address1', 'address2', 'address3' ],
-      some: [ 'some1', 'some2', 'some3' ],
+      address: ['address1', 'address2', 'address3'],
+      some: ['some1', 'some2', 'some3'],
       name: ['Aaditya']
     });
   });
@@ -25,9 +25,12 @@ describe('form test', function() {
     fileInput.uploadFile(path.join(__dirname, '../public/nocl.json'));
 
     const filesInput = await page.$('#mulfile');
-    filesInput.uploadFile(path.join(__dirname, '../public/static.html'), path.join(__dirname, '../public/all.js'));
+    filesInput.uploadFile(
+      path.join(__dirname, '../public/static.html'),
+      path.join(__dirname, '../public/all.js')
+    );
 
-    const resp = await page.evaluate(async (path) => {
+    const resp = await page.evaluate(async path => {
       return await submitForm(`${path}/stream`);
     }, PATH);
 
@@ -55,7 +58,7 @@ describe('form test', function() {
   });
 
   it('gives uploaded file and saves in tmpDir', async () => {
-    const { resp2, time } = await page.evaluate(async (path) => {
+    const { resp2, time } = await page.evaluate(async path => {
       const start = performance.now();
       let resp;
       for (let i = 0; i < 100; i++) {
@@ -92,7 +95,9 @@ describe('form test', function() {
     });
 
     // Same file content
-    expect(fs.readFileSync(resp2.file.filePath)).to.deep.equal(fs.readFileSync(path.join(__dirname, '../public/nocl.json')));
+    expect(fs.readFileSync(resp2.file.filePath)).to.deep.equal(
+      fs.readFileSync(path.join(__dirname, '../public/nocl.json'))
+    );
 
     // delete files
     fs.unlinkSync(resp2.file2[0].filePath);

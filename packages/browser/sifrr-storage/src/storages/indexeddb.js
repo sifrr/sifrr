@@ -12,7 +12,7 @@ class IndexedDB extends Storage {
   _select(keys) {
     const ans = {};
     const promises = [];
-    keys.forEach((key) => promises.push(this._tx('readonly', 'get', key).then((r) => ans[key] = r)));
+    keys.forEach(key => promises.push(this._tx('readonly', 'get', key).then(r => (ans[key] = r))));
     return Promise.all(promises).then(() => ans);
   }
 
@@ -24,7 +24,7 @@ class IndexedDB extends Storage {
 
   _delete(keys) {
     const promises = [];
-    keys.forEach((key) => promises.push(this._tx('readwrite', 'delete', key)));
+    keys.forEach(key => promises.push(this._tx('readwrite', 'delete', key)));
     return Promise.all(promises);
   }
 
@@ -35,12 +35,12 @@ class IndexedDB extends Storage {
   _tx(scope, fn, param1, param2) {
     const me = this;
     this._store = this._store || this.createStore(me.tableName);
-    return this._store.then((db) => {
+    return this._store.then(db => {
       return new Promise((resolve, reject) => {
         const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
         const request = tx[fn].call(tx, param1, param2);
-        request.onsuccess = (event) =>  resolve(event.target.result);
-        request.onerror = (event) => reject(event.error);
+        request.onsuccess = event => resolve(event.target.result);
+        request.onerror = event => reject(event.error);
       });
     });
   }
@@ -52,7 +52,7 @@ class IndexedDB extends Storage {
   createStore(table) {
     return new Promise((resolve, reject) => {
       const request = this.store.open(table, 1);
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = event.target.result;
         db.createObjectStore(table);
       };

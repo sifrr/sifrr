@@ -14,7 +14,9 @@ class OnekSwap extends Benchmark {
   }
 
   beforeWait() {
-    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 999}'`;
+    return `${this.main}.$$('tr')[1] && ${
+      this.main
+    }.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 999}'`;
   }
 
   run() {
@@ -22,7 +24,9 @@ class OnekSwap extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$$('tr')[1] && ${this.main}.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 2}'`;
+    return `${this.main}.$$('tr')[1] && ${
+      this.main
+    }.$$('tr')[1].querySelector('td').textContent === '${this.constructor.start + 2}'`;
   }
 }
 

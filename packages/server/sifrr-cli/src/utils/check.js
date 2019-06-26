@@ -5,7 +5,7 @@ function check(cmnd, err) {
   try {
     exec(cmnd, { stdio: 'ignore' });
     isWorking = true;
-  } catch(e) {
+  } catch (e) {
     isWorking = false;
   }
 

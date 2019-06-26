@@ -5,7 +5,9 @@ const loadtest = require('util').promisify(require('loadtest').loadTest);
 
 function clean(results) {
   const ans = {};
-  ['rps', 'meanLatencyMs', 'totalRequests', 'totalErrors', 'totalTimeSeconds'].forEach(i => ans[i] = results[i]);
+  ['rps', 'meanLatencyMs', 'totalRequests', 'totalErrors', 'totalTimeSeconds'].forEach(
+    i => (ans[i] = results[i])
+  );
   return ans;
 }
 
@@ -37,6 +39,9 @@ module.exports = {
   SPORT,
   EPATH,
   okTest: async function(url) {
-    return page.goto(url).then(() => true).catch(() => false);
+    return page
+      .goto(url)
+      .then(() => true)
+      .catch(() => false);
   }
 };

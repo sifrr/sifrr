@@ -8,7 +8,7 @@ function save_cookies() {
 
 function save_websql() {
   let webSQL = window.openDatabase('ss', 1, 'whatever', 1 * 1024 * 1024);
-  webSQL.transaction(function (tx) {
+  webSQL.transaction(function(tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS SifrrStorage1 (key unique, value)');
     tx.executeSql('INSERT INTO SifrrStorage1(key, value) VALUES ("a", "b")');
   });
@@ -38,7 +38,7 @@ function arrayEqual(buf1, buf2) {
     return buf1.type === buf2.type && buf1.size === buf2.size;
   }
   if (Array.isArray(buf1)) {
-    for (let i = 0 ; i < buf1.length ; i++) {
+    for (let i = 0; i < buf1.length; i++) {
       if (buf1[i] !== buf2[i]) return false;
     }
     return true;
@@ -46,7 +46,7 @@ function arrayEqual(buf1, buf2) {
   if (buf1.byteLength != buf2.byteLength) return false;
   let dv1 = new Int8Array(buf1);
   let dv2 = new Int8Array(buf2);
-  for (let i = 0 ; i < buf1.byteLength ; i++) {
+  for (let i = 0; i < buf1.byteLength; i++) {
     if (dv1[i] !== dv2[i]) return false;
   }
   return true;
@@ -54,7 +54,7 @@ function arrayEqual(buf1, buf2) {
 
 const ab = new ArrayBuffer(16);
 window.AllDataTypes = {
-  Array: [ 1, 2, 3, 'a', 'b', '1234' ],
+  Array: [1, 2, 3, 'a', 'b', '1234'],
   ArrayBuffer: ab,
   Blob: new Blob(['abcd'], { type: 'text/html' }),
   Float32Array: new Float32Array(ab),

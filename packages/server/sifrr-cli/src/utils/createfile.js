@@ -3,7 +3,7 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 
 module.exports = (elemPath, content, force = false) => {
-  mkdirp.sync(path.dirname(elemPath), (err) => {
+  mkdirp.sync(path.dirname(elemPath), err => {
     /* istanbul ignore next */
     if (err) throw err;
   });
@@ -16,7 +16,7 @@ module.exports = (elemPath, content, force = false) => {
 
   fs.writeFileSync(elemPath, content, err => {
     /* istanbul ignore next */
-    if(err) throw err;
+    if (err) throw err;
   });
 
   process.stdout.write(`File was saved at '${elemPath}'!`);

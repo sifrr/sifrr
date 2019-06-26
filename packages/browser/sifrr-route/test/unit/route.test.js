@@ -78,7 +78,9 @@ describe('Route', () => {
     });
 
     it('returns false if target host and location host are not same', () => {
-      expect(Route.clickEventListener({ target: { host: 'locl', matches: () => true } })).to.equal(false);
+      expect(Route.clickEventListener({ target: { host: 'locl', matches: () => true } })).to.equal(
+        false
+      );
     });
 
     it('calls e preventDefault if everything is okay', () => {
@@ -95,11 +97,17 @@ describe('Route', () => {
       });
 
       assert(spy.calledOnce);
-      assert(window.history.pushState.calledWith({
-        pathname: '/',
-        title: 'new title',
-        href: '/?bang#hash'
-      }, 'new title', '/?bang#hash'));
+      assert(
+        window.history.pushState.calledWith(
+          {
+            pathname: '/',
+            title: 'new title',
+            href: '/?bang#hash'
+          },
+          'new title',
+          '/?bang#hash'
+        )
+      );
       assert.equal(window.document.title, 'new title');
     });
   });

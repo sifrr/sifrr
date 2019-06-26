@@ -24,7 +24,7 @@ let benchmarks = [
   warmups = parseInt(getArg('warmups') || 1, 10);
 
 const benchmarkFilters = (getArg('benchmarks') || '').split(',');
-benchmarks = benchmarks.filter((b) => {
+benchmarks = benchmarks.filter(b => {
   return benchmarkFilters.map(bf => b.indexOf(bf) >= 0).indexOf(true) >= 0;
 });
 
@@ -46,21 +46,30 @@ pdescribe('Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 
-  const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'], compare = {};
+  const suffixes = ['', '?useKey', '?useSifrr', '?useSifrr&useKey'],
+    compare = {};
   const url = getArg('url') || `${PATH}/speedtest.html`;
   const urls = suffixes.map(s => url + s);
   // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
 
-  for(let j = 0; j < urls.length; j++) {
+  for (let j = 0; j < urls.length; j++) {
     const u = urls[j];
 
     for (let i = 0; i < benchmarks.length; i++) {
       const bm = benchmarks[i];
       it(`passes speed test for ${u} - ${bm}`, async () => {
-        const results = await new BenchmarkRunner([bm], { port, runs: runs, warmups: warmups, url: u }, false).run();
+        const results = await new BenchmarkRunner(
+          [bm],
+          { port, runs: runs, warmups: warmups, url: u },
+          false
+        ).run();
         const bmd = results[bm];
 
-        assert.isAtMost(bmd['LayoutCount'], ExpectedLayoutCounts[bm], `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`);
+        assert.isAtMost(
+          bmd['LayoutCount'],
+          ExpectedLayoutCounts[bm],
+          `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`
+        );
 
         const shortu = u.split('/').pop();
         compare[bm] = compare[bm] || {};

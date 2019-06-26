@@ -8,12 +8,13 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   if (fs.statSync(dir).isDirectory()) {
     files = fs
       .readdirSync(dir)
-      .filter(filter).map(file => path.join(dir, file));
+      .filter(filter)
+      .map(file => path.join(dir, file));
   } else {
     files = [dir];
   }
 
-  files.forEach((file) => {
+  files.forEach(file => {
     if (fs.statSync(file).isDirectory()) {
       // Recursive if directory
       paths.push(...loadRoutes.call(this, file, { filter, basePath }));
@@ -23,7 +24,7 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
 
-      basePaths.forEach((basep) => {
+      basePaths.forEach(basep => {
         for (const method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {

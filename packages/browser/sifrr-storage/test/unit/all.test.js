@@ -11,9 +11,9 @@ describe('SifrrStorage', () => {
       assert.equal(x.type, 'indexeddb');
     });
 
-    Object.keys(SifrrStorage.availableStores).forEach((type) => {
+    Object.keys(SifrrStorage.availableStores).forEach(type => {
       it(`should return ${type} if ${type} is prioritized`, () => {
-        let x = new SifrrStorage({priority: [type]});
+        let x = new SifrrStorage({ priority: [type] });
         expect(x).to.be.an.instanceof(SifrrStorage.availableStores[type]);
         assert.equal(x.type, type);
 
@@ -74,7 +74,7 @@ describe('JsonStorage', () => {
     });
 
     it('should not parse provided object', () => {
-      let x = new JsonStorage(options, {a: 'b'});
+      let x = new JsonStorage(options, { a: 'b' });
       assert.equal(x.store['a'], 'b');
     });
   });
@@ -89,7 +89,7 @@ describe('Storage', () => {
     });
 
     it('should return object if key is object and value is not there', () => {
-      assert.deepEqual(x._parseKeyValue({a: 'b', c: 'd'}), {a: 'b', c: 'd'});
+      assert.deepEqual(x._parseKeyValue({ a: 'b', c: 'd' }), { a: 'b', c: 'd' });
     });
 
     it('should return array if key is string and value is not there', () => {
@@ -97,7 +97,7 @@ describe('Storage', () => {
     });
 
     it('should return object if key is string and value is string', () => {
-      assert.deepEqual(x._parseKeyValue('a', 'b'), {a: 'b'});
+      assert.deepEqual(x._parseKeyValue('a', 'b'), { a: 'b' });
     });
 
     it('throws error when key is not supported', () => {
@@ -111,7 +111,8 @@ describe('Storage', () => {
     expect(x.isSupported(true), 'returns true on isSupported if document is undefined').to.be.true;
 
     x.store = true;
-    expect(x.isSupported(false), 'returns true on isSupported if store is not undefined').to.be.true;
+    expect(x.isSupported(false), 'returns true on isSupported if store is not undefined').to.be
+      .true;
   });
 });
 

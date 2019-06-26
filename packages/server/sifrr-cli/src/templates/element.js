@@ -15,7 +15,7 @@ class ${name} extends SifrrDom.Element${ext ? `.extends(${ext})` : ''} {
   }
 }
 ${name}.defaultState = {};
-SifrrDom.register(${name}${ext ? ', { extends: \'/* tag of html to extend, eg. tr */\' }' : ''});
+SifrrDom.register(${name}${ext ? ", { extends: '/* tag of html to extend, eg. tr */' }" : ''});
 
 export default ${name};
 `;

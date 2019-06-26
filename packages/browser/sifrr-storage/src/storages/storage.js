@@ -19,7 +19,8 @@ class Storage {
         return [key];
       } else if (key.constructor === jsonConstructor) {
         return key;
-      } {
+      }
+      {
         throw Error('Invalid Key');
       }
     } else if (typeof key === 'string') {
@@ -32,9 +33,9 @@ class Storage {
   }
 
   _select(keys) {
-    return this.all().then((data) => {
+    return this.all().then(data => {
       let ans = {};
-      keys.forEach((key) => ans[key] = data[key]);
+      keys.forEach(key => (ans[key] = data[key]));
       return ans;
     });
   }
@@ -49,7 +50,7 @@ class Storage {
 
   _delete(keys) {
     let table = this.table;
-    keys.forEach((key) => delete table[key]);
+    keys.forEach(key => delete table[key]);
     this.table = table;
   }
 
@@ -58,14 +59,21 @@ class Storage {
   }
 
   _isEqual(options, type) {
-    if (this.tableName == options.name + options.version && this.type == type) { return true; }
-    else { return false; }
+    if (this.tableName == options.name + options.version && this.type == type) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   isSupported(force = true) {
-    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) { return true; }
-    else if (window && typeof this.store !== 'undefined') { return true; }
-    else { return false; }
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
+      return true;
+    } else if (window && typeof this.store !== 'undefined') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   keys() {

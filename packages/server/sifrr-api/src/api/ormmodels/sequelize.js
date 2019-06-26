@@ -9,8 +9,15 @@ const { connectionArgs } = require('graphql-relay');
 class SequelizeModel extends Sequelize.Model {
   static init(options) {
     const ret = super.init(this.schema, options);
-    ret.graphqlModel = new GqModel(ret.name, attributeFields(ret), { description: `${ret.name} Model` });
-    ret.graphqlConnection = new GqConnection(ret.name + 'Connection', connectionArgs, createConnectionResolver({ target: ret }).resolveConnection, ret.graphqlModel.type);
+    ret.graphqlModel = new GqModel(ret.name, attributeFields(ret), {
+      description: `${ret.name} Model`
+    });
+    ret.graphqlConnection = new GqConnection(
+      ret.name + 'Connection',
+      connectionArgs,
+      createConnectionResolver({ target: ret }).resolveConnection,
+      ret.graphqlModel.type
+    );
     ret._onInit();
     return ret;
   }
@@ -36,11 +43,17 @@ class SequelizeModel extends Sequelize.Model {
     const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
     this[name] = super[type](model, options);
     if (options.useConnection) {
-      const conn = model.graphqlConnection.clone(createConnectionResolver({ target: this[name] }).resolveConnection);
+      const conn = model.graphqlConnection.clone(
+        createConnectionResolver({ target: this[name] }).resolveConnection
+      );
       conn.description = options.description;
       this.graphqlModel.addConnection(name, conn);
     } else
-      this.graphqlModel.addAttribute(name, { resolver: resolver(this[name]), returnType: model.graphqlModel.type, description: options.description });
+      this.graphqlModel.addAttribute(name, {
+        resolver: resolver(this[name]),
+        returnType: model.graphqlModel.type,
+        description: options.description
+      });
     return this[name];
   }
 
@@ -102,7 +115,7 @@ class SequelizeModel extends Sequelize.Model {
       }
     }
     return resolver(this, {
-      before: (findOptions) => {
+      before: findOptions => {
         findOptions.include = include;
         return findOptions;
       }
@@ -141,10 +154,12 @@ class SequelizeModel extends Sequelize.Model {
   static _assocsToInclude(assocs, column = true, model = this) {
     if (column) assocs.pop();
     const assocName = assocs.shift();
-    const include = [{
-      association: model[assocName],
-      as: assocName
-    }];
+    const include = [
+      {
+        association: model[assocName],
+        as: assocName
+      }
+    ];
     if (assocs.length > 0) {
       include[0].include = this._assocsToInclude(assocs, false, model[assocName].target);
     }

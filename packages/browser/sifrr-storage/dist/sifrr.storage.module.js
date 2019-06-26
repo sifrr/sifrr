@@ -22,7 +22,7 @@ class Json {
     if (typeof data === 'string') {
       try {
         ans = data = JSON.parse(data);
-      } catch(e) {
+      } catch (e) {
       }
     }
     if (typeof data === 'string' && data.indexOf(uId) > 0) {
@@ -83,7 +83,8 @@ class Storage {
         return [key];
       } else if (key.constructor === jsonConstructor) {
         return key;
-      } {
+      }
+      {
         throw Error('Invalid Key');
       }
     } else if (typeof key === 'string') {
@@ -95,9 +96,9 @@ class Storage {
     }
   }
   _select(keys) {
-    return this.all().then((data) => {
+    return this.all().then(data => {
       let ans = {};
-      keys.forEach((key) => ans[key] = data[key]);
+      keys.forEach(key => (ans[key] = data[key]));
       return ans;
     });
   }
@@ -110,20 +111,27 @@ class Storage {
   }
   _delete(keys) {
     let table = this.table;
-    keys.forEach((key) => delete table[key]);
+    keys.forEach(key => delete table[key]);
     this.table = table;
   }
   _clear() {
     this.table = {};
   }
   _isEqual(options, type) {
-    if (this.tableName == options.name + options.version && this.type == type) { return true; }
-    else { return false; }
+    if (this.tableName == options.name + options.version && this.type == type) {
+      return true;
+    } else {
+      return false;
+    }
   }
   isSupported(force = true) {
-    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) { return true; }
-    else if (window && typeof this.store !== 'undefined') { return true; }
-    else { return false; }
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
+      return true;
+    } else if (window && typeof this.store !== 'undefined') {
+      return true;
+    } else {
+      return false;
+    }
   }
   keys() {
     return this.all().then(d => Object.keys(d));
@@ -162,7 +170,7 @@ class IndexedDB extends storage {
   _select(keys) {
     const ans = {};
     const promises = [];
-    keys.forEach((key) => promises.push(this._tx('readonly', 'get', key).then((r) => ans[key] = r)));
+    keys.forEach(key => promises.push(this._tx('readonly', 'get', key).then(r => (ans[key] = r))));
     return Promise.all(promises).then(() => ans);
   }
   _upsert(data) {
@@ -172,7 +180,7 @@ class IndexedDB extends storage {
   }
   _delete(keys) {
     const promises = [];
-    keys.forEach((key) => promises.push(this._tx('readwrite', 'delete', key)));
+    keys.forEach(key => promises.push(this._tx('readwrite', 'delete', key)));
     return Promise.all(promises);
   }
   _clear() {
@@ -181,12 +189,12 @@ class IndexedDB extends storage {
   _tx(scope, fn, param1, param2) {
     const me = this;
     this._store = this._store || this.createStore(me.tableName);
-    return this._store.then((db) => {
+    return this._store.then(db => {
       return new Promise((resolve, reject) => {
         const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
         const request = tx[fn].call(tx, param1, param2);
-        request.onsuccess = (event) =>  resolve(event.target.result);
-        request.onerror = (event) => reject(event.error);
+        request.onsuccess = event => resolve(event.target.result);
+        request.onerror = event => reject(event.error);
       });
     });
   }
@@ -196,7 +204,7 @@ class IndexedDB extends storage {
   createStore(table) {
     return new Promise((resolve, reject) => {
       const request = this.store.open(table, 1);
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = event.target.result;
         db.createObjectStore(table);
       };
@@ -223,9 +231,12 @@ class WebSQL extends storage {
     return this.execSql(`SELECT key, value FROM ${this.tableName} WHERE key in (${q})`, keys);
   }
   _upsert(data) {
-    this.store.transaction((tx) => {
+    this.store.transaction(tx => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR REPLACE INTO ${this.tableName}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${this.tableName}(key, value) VALUES (?, ?)`, [
+          key,
+          this.constructor.stringify(data[key])
+        ]);
       }
     });
   }
@@ -245,8 +256,8 @@ class WebSQL extends storage {
   }
   execSql(query, args = []) {
     const me = this;
-    return new Promise((resolve) => {
-      me.store.transaction(function (tx) {
+    return new Promise(resolve => {
+      me.store.transaction(function(tx) {
         tx.executeSql(query, args, (txn, results) => {
           resolve(me.parse(results));
         });
@@ -272,9 +283,13 @@ class LocalStorage extends storage {
     super(options);
   }
   _parsedData() {
-    return this._select(Object.keys(this.store).map(k => {
-      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
-    }).filter(k => typeof k !== 'undefined'));
+    return this._select(
+      Object.keys(this.store)
+        .map(k => {
+          if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
+        })
+        .filter(k => typeof k !== 'undefined')
+    );
   }
   _select(keys) {
     const table = {};
@@ -309,28 +324,35 @@ class LocalStorage extends storage {
 var localstorage = LocalStorage;
 
 const date = new Date(0).toUTCString();
-const equal = '%3D', equalRegex = new RegExp(equal, 'g');
+const equal = '%3D',
+  equalRegex = new RegExp(equal, 'g');
 class Cookies extends storage {
   constructor(options) {
     super(options);
   }
   _parsedData() {
-    let result = this.store, ans = {};
-    result.split('; ').forEach((value) => {
+    let result = this.store,
+      ans = {};
+    result.split('; ').forEach(value => {
       let [k, v] = value.split('=');
-      if (k.indexOf(this.tableName) === 0) ans[k.slice(this.tableName.length + 1)] = this.constructor.parse(v.replace(equalRegex, '='));
+      if (k.indexOf(this.tableName) === 0)
+        ans[k.slice(this.tableName.length + 1)] = this.constructor.parse(
+          v.replace(equalRegex, '=')
+        );
     });
     return ans;
   }
   _upsert(data) {
     for (let key in data) {
-      this.store = `${this.tableName}/${key}=${this.constructor.stringify(data[key]).replace(/=/g, equal)}; path=/`;
+      this.store = `${this.tableName}/${key}=${this.constructor
+        .stringify(data[key])
+        .replace(/=/g, equal)}; path=/`;
     }
     return true;
   }
   _clear() {
     let result = this.store;
-    result.split('; ').forEach((value) => {
+    result.split('; ').forEach(value => {
       const k = value.split('=')[0];
       if (k.indexOf(this.tableName) === 0) {
         this.store = `${k}=; expires=${date}; path=/`;
@@ -376,23 +398,32 @@ var storages_1 = storages;
 
 class SifrrStorage {
   constructor(options) {
-    if (typeof options === 'string') options = { priority: [options] }; else options = options || {};
+    if (typeof options === 'string') options = { priority: [options] };
+    else options = options || {};
     this._options = Object.assign(this.constructor.defaultOptions, options);
     return this.storage;
   }
   get storage() {
     let storage = this.supportedStore();
-    if (typeof storage === 'undefined') throw Error('No available storage supported in this browser');
+    if (typeof storage === 'undefined')
+      throw Error('No available storage supported in this browser');
     let matchingInstance = this.constructor._matchingInstance(this._options, storage.type);
-    if (matchingInstance) { return matchingInstance; }
-    else {
+    if (matchingInstance) {
+      return matchingInstance;
+    } else {
       let storageInstance = new storage(this._options);
       this.constructor._add(storageInstance);
       return storageInstance;
     }
   }
   get priority() {
-    return this._options.priority.concat(['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage']);
+    return this._options.priority.concat([
+      'indexeddb',
+      'websql',
+      'localstorage',
+      'cookies',
+      'jsonstorage'
+    ]);
   }
   supportedStore() {
     for (let i = 0; i < this.priority.length; i++) {
@@ -401,7 +432,8 @@ class SifrrStorage {
     }
   }
   static _matchingInstance(options, type) {
-    let allInstances = this.all, i;
+    let allInstances = this.all,
+      i;
     let length = allInstances.length;
     for (i = 0; i < length; i++) {
       if (allInstances[i]._isEqual(options, type)) return allInstances[i];

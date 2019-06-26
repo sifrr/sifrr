@@ -5,18 +5,24 @@ class RegexPath {
   }
 
   get regex() {
-    this._regex = this._regex || new RegExp('^' + this.path
-      .replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?')
-      .replace(/\*\*/g, '(.{0,})')
-      .replace(/\*/g, '([^/]{0,})')
-      .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
+    this._regex =
+      this._regex ||
+      new RegExp(
+        '^' +
+          this.path
+            .replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?')
+            .replace(/\*\*/g, '(.{0,})')
+            .replace(/\*/g, '([^/]{0,})')
+            .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') +
+          '$'
+      );
     return this._regex;
   }
 
   get dataMap() {
     if (this._dataMap) return this._dataMap;
     this._dataMap = [];
-    this.path.split('/').forEach((r) => {
+    this.path.split('/').forEach(r => {
       if (r[0] === ':') {
         this._dataMap.push(r);
       } else if (r === '*' || r === '**' || r.match(/\(.*\)/)) {
@@ -27,7 +33,8 @@ class RegexPath {
   }
 
   test(route) {
-    const data = {}, match = this.regex.exec(route);
+    const data = {},
+      match = this.regex.exec(route);
     if (match) {
       this.dataMap.forEach((d, i) => {
         if (d === '*') {

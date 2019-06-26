@@ -20,14 +20,14 @@ class ${name} extends SifrrDom.Element${ext ? `.extends(${ext})` : ''} {
   }
 }
 ${name}.defaultState = {};
-SifrrDom.register(${name}${ext ? ', { extends: \'/* tag of html to extend, eg. tr */\' }' : ''});
+SifrrDom.register(${name}${ext ? ", { extends: '/* tag of html to extend, eg. tr */' }" : ''});
 
 export default ${name};
 `;
 };
 
 var createfile = (elemPath, content, force = false) => {
-  mkdirp.sync(path.dirname(elemPath), (err) => {
+  mkdirp.sync(path.dirname(elemPath), err => {
     if (err) throw err;
   });
   if (fs.existsSync(elemPath) && !force) {
@@ -36,16 +36,18 @@ var createfile = (elemPath, content, force = false) => {
     return false;
   }
   fs.writeFileSync(elemPath, content, err => {
-    if(err) throw err;
+    if (err) throw err;
   });
   process.stdout.write(`File was saved at '${elemPath}'!`);
   return true;
 };
 
-var elementgenerate = (argv) => {
+var elementgenerate = argv => {
   const elemName = argv.name;
   const elemPath = path.resolve(argv.path, `./${elemName.split('-').join('/')}.js`);
-  const className = elemName.replace(/-([a-z])/g, (g) => g[1].toUpperCase()).replace(/^([a-z])/, (g) => g[0].toUpperCase());
+  const className = elemName
+    .replace(/-([a-z])/g, g => g[1].toUpperCase())
+    .replace(/^([a-z])/, g => g[0].toUpperCase());
   const elemHtml = element(className, argv.extends);
   createfile(elemPath, elemHtml, argv.force === 'true');
 };

@@ -23,12 +23,12 @@ const sw = new SW({
       cacheName: 'bangbang2'
     },
     cacheupdate: {
-      policy: 'CACHE_AND_UPDATE',
+      policy: 'CACHE_AND_UPDATE'
     },
     precache: {
       policy: 'CACHE_ONLY',
       cacheName: 'bangbang2'
-    },
+    }
   },
   fallbacks: {
     status404: '/offline.html'
@@ -41,22 +41,24 @@ sw.onInstall = () => {
   self.skipWaiting();
 };
 sw.setupPushNotification('default title', { body: 'default body' });
-sw.onNotificationClick = (event) => {
+sw.onNotificationClick = event => {
   event.notification.close();
-  event.waitUntil(self.clients.matchAll({
-    type: 'window'
-  }).then(function(clientList) {
-    for (let i = 0; i < clientList.length; i++) {
-      const client = clientList[i];
-      const url = new URL(client.url);
-      if (url.pathname == '/' && 'focus' in client)
-        return client.focus();
-    }
-    if (self.clients.openWindow)
-      return self.clients.openWindow('/');
-  }));
+  event.waitUntil(
+    self.clients
+      .matchAll({
+        type: 'window'
+      })
+      .then(function(clientList) {
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          const url = new URL(client.url);
+          if (url.pathname == '/' && 'focus' in client) return client.focus();
+        }
+        if (self.clients.openWindow) return self.clients.openWindow('/');
+      })
+  );
 };
-self.addEventListener('message', async (e) => {
+self.addEventListener('message', async e => {
   if (e.data === 'coverage') {
     e.ports[0].postMessage(self.__coverage__);
   } else if (e.data === 'caches') {

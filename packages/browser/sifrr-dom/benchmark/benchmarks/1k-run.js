@@ -14,7 +14,10 @@ class OnekRun extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor.start + 1000 * this.i + 1}'`;
+    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor
+      .start +
+      1000 * this.i +
+      1}'`;
   }
 }
 

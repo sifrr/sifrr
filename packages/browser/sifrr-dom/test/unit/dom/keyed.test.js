@@ -1,5 +1,15 @@
-const { makeChildrenEqualKeyed, longestPositiveIncreasingSubsequence } = require('../../../src/dom/keyed');
-const { buildData, dataToChildNode, dataToChildNodes, parent, moveEl, findIndex } = require('../../helpers/keyed');
+const {
+  makeChildrenEqualKeyed,
+  longestPositiveIncreasingSubsequence
+} = require('../../../src/dom/keyed');
+const {
+  buildData,
+  dataToChildNode,
+  dataToChildNodes,
+  parent,
+  moveEl,
+  findIndex
+} = require('../../helpers/keyed');
 
 function expectSameState(nodes, states) {
   const nodeStates = nodes.map(n => n.state);
@@ -65,7 +75,12 @@ describe('Keyed', () => {
       const par = parent(oldNodes);
       makeChildrenEqualKeyed(par, newData, undefined, 'id');
 
-      assert(par.insertBefore.calledOnceWithExactly(oldNodes[findIndex(oldNodes, 7)], oldNodes[findIndex(oldNodes, 3)]));
+      assert(
+        par.insertBefore.calledOnceWithExactly(
+          oldNodes[findIndex(oldNodes, 7)],
+          oldNodes[findIndex(oldNodes, 3)]
+        )
+      );
       expectSameState(par.childNodes, newData);
     });
 
@@ -77,7 +92,12 @@ describe('Keyed', () => {
       const par = parent(oldNodes);
       makeChildrenEqualKeyed(par, newData, undefined, 'id');
 
-      assert(par.insertBefore.calledOnceWithExactly(oldNodes[findIndex(oldNodes, 4)], oldNodes[findIndex(oldNodes, 9)]));
+      assert(
+        par.insertBefore.calledOnceWithExactly(
+          oldNodes[findIndex(oldNodes, 4)],
+          oldNodes[findIndex(oldNodes, 9)]
+        )
+      );
       expectSameState(par.childNodes, newData);
     });
 
@@ -91,8 +111,18 @@ describe('Keyed', () => {
       makeChildrenEqualKeyed(par, newData, undefined, 'id');
 
       assert(par.insertBefore.calledTwice);
-      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 9)], oldNodes[findIndex(oldNodes, 4)]));
-      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 4)], oldNodes[findIndex(oldNodes, 10)]));
+      assert(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 9)],
+          oldNodes[findIndex(oldNodes, 4)]
+        )
+      );
+      assert(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 4)],
+          oldNodes[findIndex(oldNodes, 10)]
+        )
+      );
       expectSameState(par.childNodes, newData);
     });
 
@@ -108,10 +138,25 @@ describe('Keyed', () => {
       makeChildrenEqualKeyed(par, newData, undefined, 'id');
 
       assert.equal(par.insertBefore.callCount, 4);
-      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 10)], oldNodes[findIndex(oldNodes, 3)]));
+      assert(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 10)],
+          oldNodes[findIndex(oldNodes, 3)]
+        )
+      );
       assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 3)], undefined));
-      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 8)], oldNodes[findIndex(oldNodes, 5)]));
-      assert(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 5)], oldNodes[findIndex(oldNodes, 9)]));
+      assert(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 8)],
+          oldNodes[findIndex(oldNodes, 5)]
+        )
+      );
+      assert(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 5)],
+          oldNodes[findIndex(oldNodes, 9)]
+        )
+      );
       expectSameState(par.childNodes, newData);
     });
 
@@ -144,7 +189,14 @@ describe('Keyed', () => {
       const newData = buildData(11);
       const added = dataToChildNodes([newData[10]])[0];
       const par = parent(dataToChildNodes(oldData));
-      makeChildrenEqualKeyed(par, newData, () => { return added; }, 'id');
+      makeChildrenEqualKeyed(
+        par,
+        newData,
+        () => {
+          return added;
+        },
+        'id'
+      );
 
       assert(par.insertBefore.calledOnce);
       expectSameState(par.childNodes, newData);
@@ -164,10 +216,34 @@ describe('Keyed', () => {
 
       assert.equal(par.insertBefore.callCount, 5);
       assert.equal(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 6)], undefined), true);
-      assert.equal(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 4)], oldNodes[findIndex(oldNodes, 9)]), true);
-      assert.equal(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 5)], oldNodes[findIndex(oldNodes, 2)]), true);
-      assert.equal(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 10)], oldNodes[findIndex(oldNodes, 1)]), true);
-      assert.equal(par.insertBefore.calledWith(oldNodes[findIndex(oldNodes, 3)], oldNodes[findIndex(oldNodes, 10)]), true);
+      assert.equal(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 4)],
+          oldNodes[findIndex(oldNodes, 9)]
+        ),
+        true
+      );
+      assert.equal(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 5)],
+          oldNodes[findIndex(oldNodes, 2)]
+        ),
+        true
+      );
+      assert.equal(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 10)],
+          oldNodes[findIndex(oldNodes, 1)]
+        ),
+        true
+      );
+      assert.equal(
+        par.insertBefore.calledWith(
+          oldNodes[findIndex(oldNodes, 3)],
+          oldNodes[findIndex(oldNodes, 10)]
+        ),
+        true
+      );
       expectSameState(par.childNodes, newData);
     });
   });

@@ -14,9 +14,14 @@ function getTypeDef(qs, resolvers) {
   return flatten(attrsToTypes(qs), '\n  ', true);
 }
 
-function createSchemaFromModels(models, { extra = '', queries = {}, mutations = {}, schemaPath } = {}) {
-  const connections = {}, typeDefs = [], resolvers = {};
-  for(let modelName in models) {
+function createSchemaFromModels(
+  models,
+  { extra = '', queries = {}, mutations = {}, schemaPath } = {}
+) {
+  const connections = {},
+    typeDefs = [],
+    resolvers = {};
+  for (let modelName in models) {
     const model = models[modelName];
     typeDefs.push(model.getSchema());
     Object.assign(queries, model.queries);
@@ -35,7 +40,8 @@ function createSchemaFromModels(models, { extra = '', queries = {}, mutations = 
     Object.assign(resolvers[conn.type], conn.getResolvers());
   }
 
-  const qnew = {}, mnew = {};
+  const qnew = {},
+    mnew = {};
 
   const queryMut = `type Query {
   ${getTypeDef(queries, qnew)}
@@ -56,7 +62,9 @@ ${extra}`;
   if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
     const comment = fileHeader + timestampHeader + fileSeparator;
-    const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1] : null;
+    const oldFileContent = fs.existsSync(schemaPath)
+      ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1]
+      : null;
     const newFileContent = typeDefs.join('\n\n') + '\n';
     if (oldFileContent !== newFileContent) fs.writeFileSync(schemaPath, comment + newFileContent);
   }

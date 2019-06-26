@@ -7,17 +7,23 @@ class RegexPath {
     this.path = path;
   }
   get regex() {
-    this._regex = this._regex || new RegExp('^' + this.path
-      .replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?')
-      .replace(/\*\*/g, '(.{0,})')
-      .replace(/\*/g, '([^/]{0,})')
-      .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
+    this._regex =
+      this._regex ||
+      new RegExp(
+        '^' +
+          this.path
+            .replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?')
+            .replace(/\*\*/g, '(.{0,})')
+            .replace(/\*/g, '([^/]{0,})')
+            .replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') +
+          '$'
+      );
     return this._regex;
   }
   get dataMap() {
     if (this._dataMap) return this._dataMap;
     this._dataMap = [];
-    this.path.split('/').forEach((r) => {
+    this.path.split('/').forEach(r => {
       if (r[0] === ':') {
         this._dataMap.push(r);
       } else if (r === '*' || r === '**' || r.match(/\(.*\)/)) {
@@ -27,7 +33,8 @@ class RegexPath {
     return this._dataMap;
   }
   test(route) {
-    const data = {}, match = this.regex.exec(route);
+    const data = {},
+      match = this.regex.exec(route);
     if (match) {
       this.dataMap.forEach((d, i) => {
         if (d === '*') {
@@ -52,13 +59,15 @@ class RegexPath {
 }
 var regexpath = RegexPath;
 
-const Route =  {
+const Route = {
   RegexPath: regexpath
 };
 const firstTitle = window.document.title;
 class SifrrRoute extends dom.Element {
   static get template() {
-    return dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+    return dom.template(
+      '<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>'
+    );
   }
   static observedAttrs() {
     return ['path'];
@@ -85,7 +94,7 @@ class SifrrRoute extends dom.Element {
     if (parsed.match) {
       this.activate();
       this.state = parsed.data;
-      this.$$('[data-sifrr-route-state=true]', false).forEach((el) => {
+      this.$$('[data-sifrr-route-state=true]', false).forEach(el => {
         el.state = { route: parsed.data };
       });
     } else this.deactivate();
@@ -123,7 +132,7 @@ class SifrrRoute extends dom.Element {
   }
   static refreshAll() {
     if (window.location.pathname === this.currentUrl) return;
-    this.all.forEach((sfr) => {
+    this.all.forEach(sfr => {
       sfr.refresh();
     });
     this.onRouteChange();
@@ -133,11 +142,14 @@ class SifrrRoute extends dom.Element {
   static clickEventListener(e) {
     if (!(window.history && window.history.pushState)) return false;
     const target = e.composedPath ? e.composedPath()[0] : e.target;
-    if (e.metaKey ||
+    if (
+      e.metaKey ||
       e.ctrlKey ||
       !target.matches('a') ||
       target.host !== window.location.host ||
-      (target.target && target.target !== '_self')) return false;
+      (target.target && target.target !== '_self')
+    )
+      return false;
     e.preventDefault();
     const title = target.getAttribute('title') || firstTitle;
     const state = {

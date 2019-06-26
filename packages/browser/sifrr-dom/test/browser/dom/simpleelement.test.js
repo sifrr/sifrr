@@ -23,11 +23,23 @@ describe('Sifrr.Dom.SimpleElement', () => {
 
   it('renders again when state is changed', async () => {
     /* eslint-disable no-undef */
-    await page.evaluate(() => { seState.state = { p: 'new' }; return seState.innerHTML; });
+    await page.evaluate(() => {
+      seState.state = { p: 'new' };
+      return seState.innerHTML;
+    });
     // double render shouldn't change anything
-    const inner = await page.evaluate(() => { seState.state = { p: 'new' }; return seState.innerHTML; });
-    const data = await page.evaluate(() => { seTextState.state = { text: 'newyay' }; return seTextState.data; });
-    const nulled = await page.evaluate(() => { seState.state = { p: null }; return seState.innerHTML; });
+    const inner = await page.evaluate(() => {
+      seState.state = { p: 'new' };
+      return seState.innerHTML;
+    });
+    const data = await page.evaluate(() => {
+      seTextState.state = { text: 'newyay' };
+      return seTextState.data;
+    });
+    const nulled = await page.evaluate(() => {
+      seState.state = { p: null };
+      return seState.innerHTML;
+    });
     /* eslint-enable no-undef */
 
     expect(inner).to.eq('new');
@@ -95,12 +107,14 @@ describe('Sifrr.Dom.SimpleElement', () => {
       try {
         Sifrr.Dom.SimpleElement({});
         return true;
-      } catch(e) {
+      } catch (e) {
         return e.message;
       }
     });
 
-    expect(error).to.eq('Argument must be of type string | template literal | Node | [Node] | NodeList');
+    expect(error).to.eq(
+      'Argument must be of type string | template literal | Node | [Node] | NodeList'
+    );
   });
 
   it("doesn't do anything with customElements", async () => {
@@ -154,7 +168,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
         return {
           stateEqual: seClone.state === seComplex.state,
           cloneText: seClone.childNodes[1].data,
-          textEqual: seClone.childNodes[1].data === seComplex.childNodes[1].data,
+          textEqual: seClone.childNodes[1].data === seComplex.childNodes[1].data
         };
       });
       /* eslint-enable no-undef */

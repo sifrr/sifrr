@@ -9,7 +9,7 @@ describe('Sifrr.Storage in browser', () => {
     const result = await page.evaluate(() => {
       try {
         return Sifrr.Storage.availableStores;
-      } catch(e) {
+      } catch (e) {
         return e;
       }
     });
@@ -22,7 +22,7 @@ describe('Sifrr.Storage in browser', () => {
         let x = new Sifrr.Storage({ priority: ['localstorage'] });
         x.store;
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });
@@ -35,7 +35,7 @@ describe('Sifrr.Storage in browser', () => {
         let x = new Sifrr.Storage({ priority: ['indexeddb'] });
         x.store;
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });
@@ -48,7 +48,7 @@ describe('Sifrr.Storage in browser', () => {
         let x = new Sifrr.Storage({ priority: ['websql'] });
         x.store;
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });
@@ -61,7 +61,7 @@ describe('Sifrr.Storage in browser', () => {
         let x = new Sifrr.Storage({ priority: ['cookies'] });
         x.store;
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });
@@ -72,7 +72,7 @@ describe('Sifrr.Storage in browser', () => {
     const result = await page.evaluate(() => {
       try {
         return new Sifrr.Storage().type;
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     });

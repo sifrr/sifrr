@@ -27,18 +27,17 @@ class Json {
     if (typeof data === 'string') {
       try {
         ans = data = JSON.parse(data);
-      } catch(e) {
+      } catch (e) {
         // do nothing
       }
     }
 
     if (typeof data === 'string' && data.indexOf(uId) > 0) {
       const [type, av, av2] = data.split(uId);
-      
+
       if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
       else if (type === 'Blob') ans = decodeBlob(av2, av);
       else ans = new window[type](av.split(','));
-
     } else if (Array.isArray(data)) {
       ans = [];
       data.forEach((v, i) => {

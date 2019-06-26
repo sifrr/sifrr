@@ -6,9 +6,13 @@ class LocalStorage extends Storage {
   }
 
   _parsedData() {
-    return this._select(Object.keys(this.store).map(k => {
-      if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
-    }).filter(k => typeof k !== 'undefined'));
+    return this._select(
+      Object.keys(this.store)
+        .map(k => {
+          if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
+        })
+        .filter(k => typeof k !== 'undefined')
+    );
   }
 
   _select(keys) {

@@ -11,7 +11,7 @@ module.exports = (str, ...extra) => {
     isString = true;
     str = String.raw(str, ...extra);
   } else if (str instanceof NodeList || (Array.isArray(str) && str[0].nodeType)) {
-    Array.from(str).forEach((s) => {
+    Array.from(str).forEach(s => {
       tmp.content.appendChild(s);
     });
   } else if (str.nodeType) {

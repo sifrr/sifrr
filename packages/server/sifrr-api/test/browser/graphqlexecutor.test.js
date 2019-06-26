@@ -1,5 +1,5 @@
 function getReq(url) {
-  return page.evaluate((url) => {
+  return page.evaluate(url => {
     return Sifrr.Fetch.get(url);
   }, PATH + url);
 }

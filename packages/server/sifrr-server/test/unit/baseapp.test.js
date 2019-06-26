@@ -4,13 +4,17 @@ const baseapp = new BaseApp();
 describe('speed test', () => {
   describe('#folder', () => {
     it('throws error when folder is not a directory', () => {
-      expect(() => { baseapp.folder('', __filename); }).to.throw();
+      expect(() => {
+        baseapp.folder('', __filename);
+      }).to.throw();
     });
   });
 
   describe('#post', () => {
     it('throws error cb is not a function', () => {
-      expect(() => { baseapp.post('', ''); }).to.throw();
+      expect(() => {
+        baseapp.post('', '');
+      }).to.throw();
     });
   });
 
@@ -28,7 +32,9 @@ describe('speed test', () => {
 
   describe('#close', () => {
     it('does nothing when no socket', () => {
-      expect(() => { baseapp.close(); }).to.not.throw();
+      expect(() => {
+        baseapp.close();
+      }).to.not.throw();
     });
   });
 

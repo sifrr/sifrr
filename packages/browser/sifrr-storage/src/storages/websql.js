@@ -17,9 +17,12 @@ class WebSQL extends Storage {
   }
 
   _upsert(data) {
-    this.store.transaction((tx) => {
+    this.store.transaction(tx => {
       for (let key in data) {
-        tx.executeSql(`INSERT OR REPLACE INTO ${this.tableName}(key, value) VALUES (?, ?)`, [key, this.constructor.stringify(data[key])]);
+        tx.executeSql(`INSERT OR REPLACE INTO ${this.tableName}(key, value) VALUES (?, ?)`, [
+          key,
+          this.constructor.stringify(data[key])
+        ]);
       }
     });
   }
@@ -44,8 +47,8 @@ class WebSQL extends Storage {
 
   execSql(query, args = []) {
     const me = this;
-    return new Promise((resolve) => {
-      me.store.transaction(function (tx) {
+    return new Promise(resolve => {
+      me.store.transaction(function(tx) {
         tx.executeSql(query, args, (txn, results) => {
           resolve(me.parse(results));
         });

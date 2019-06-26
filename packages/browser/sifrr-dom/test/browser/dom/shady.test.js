@@ -1,7 +1,9 @@
 describe('shady polyfills', () => {
   before(async () => {
     await page.goto(`${PATH}/shady.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   it('works when polyfill is applied', async () => {
@@ -10,11 +12,11 @@ describe('shady polyfills', () => {
       return {
         SR: {
           isShady: !!document.querySelector('shady-sr').shadowRoot.__shady,
-          pColor: getComputedStyle(document.querySelector('shady-sr').$('p')).color,
+          pColor: getComputedStyle(document.querySelector('shady-sr').$('p')).color
         },
         NOSR: {
           isShady: !!document.querySelector('shady-nosr').shadowRoot,
-          pColor: getComputedStyle(document.querySelector('shady-nosr').$('p')).color,
+          pColor: getComputedStyle(document.querySelector('shady-nosr').$('p')).color
         },
         P: {
           color: getComputedStyle(document.querySelector('body > p')).color

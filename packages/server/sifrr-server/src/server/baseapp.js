@@ -15,7 +15,12 @@ const { stob } = require('./utils');
 class BaseApp {
   file(pattern, path, options = {}) {
     if (this._staticPaths[pattern]) {
-      if (options.failOnDuplicateRoute) throw Error(`Error serving '${path}' for '${pattern}', already serving '${this._staticPaths[pattern][0]}' file for this patter.`);
+      if (options.failOnDuplicateRoute)
+        throw Error(
+          `Error serving '${path}' for '${pattern}', already serving '${
+            this._staticPaths[pattern][0]
+          }' file for this patter.`
+        );
       else if (!options.overwriteRoute) return;
     }
 
@@ -54,12 +59,12 @@ class BaseApp {
       if (!this._watched[folder]) {
         const w = chokidar.watch(folder);
 
-        w.on('unlink', (filePath) => {
+        w.on('unlink', filePath => {
           const url = '/' + path.relative(base, filePath);
           delete this._staticPaths[prefix + url];
         });
 
-        w.on('add', (filePath) => {
+        w.on('add', filePath => {
           const url = '/' + path.relative(base, filePath);
           this.file(prefix + url, filePath, options);
         });
@@ -80,7 +85,8 @@ class BaseApp {
   }
 
   post(pattern, handler) {
-    if (typeof handler !== 'function') throw Error(`handler should be a function, given ${typeof handler}.`);
+    if (typeof handler !== 'function')
+      throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
 
@@ -101,8 +107,10 @@ class BaseApp {
 
       res.body = () => stob(res.bodyStream());
 
-      if (contType.indexOf('application/json') > -1) res.json = async () => JSON.parse(await res.body());
-      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formData.bind(res, contType);
+      if (contType.indexOf('application/json') > -1)
+        res.json = async () => JSON.parse(await res.body());
+      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
+        res.formData = formData.bind(res, contType);
 
       handler(res, req);
     });
@@ -116,12 +124,12 @@ class BaseApp {
 
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
-      this._listen(h, p, (socket) => {
+      this._listen(h, p, socket => {
         this._socket = socket;
         cb(socket);
       });
     } else {
-      this._listen(h, (socket) => {
+      this._listen(h, socket => {
         this._socket = socket;
         p(socket);
       });

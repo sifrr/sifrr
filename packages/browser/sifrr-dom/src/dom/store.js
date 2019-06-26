@@ -1,5 +1,5 @@
 const shouldMerge = require('../utils/shouldmerge');
-const objCon = ({}).constructor;
+const objCon = {}.constructor;
 
 class Store {
   constructor(initial) {

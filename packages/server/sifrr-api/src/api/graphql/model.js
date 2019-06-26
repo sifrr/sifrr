@@ -32,9 +32,12 @@ class Model extends BaseType {
   }
 
   getSchema() {
-    return this.schemaPrefix + `type ${this.type} {
+    return (
+      this.schemaPrefix +
+      `type ${this.type} {
   ${flatten(this.attributes, '\n  ', true)}
-}`;
+}`
+    );
   }
 }
 

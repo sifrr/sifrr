@@ -30,7 +30,9 @@ SifrrDom.register = (Element, options = {}) => {
   if (!name) {
     throw Error('Error creating Custom Element: No name given.', Element);
   } else if (window.customElements.get(name)) {
-    global.console.warn(`Error creating Element: ${name} - Custom Element with this name is already defined.`);
+    global.console.warn(
+      `Error creating Element: ${name} - Custom Element with this name is already defined.`
+    );
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
   } else {
@@ -43,12 +45,14 @@ SifrrDom.register = (Element, options = {}) => {
     delete options.dependsOn;
     const registering = before.then(() => window.customElements.define(name, Element, options));
     SifrrDom.registering[name] = registering;
-    return registering.then(() => {
-      SifrrDom.elements[name] = Element;
-      delete SifrrDom.registering[name];
-    }).catch(error => {
-      throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
-    });
+    return registering
+      .then(() => {
+        SifrrDom.elements[name] = Element;
+        delete SifrrDom.registering[name];
+      })
+      .catch(error => {
+        throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
+      });
   }
 };
 
@@ -58,11 +62,14 @@ SifrrDom.setup = function(config) {
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
   document.$$ = document.querySelectorAll;
-  SifrrDom.config = Object.assign({
-    baseUrl: '',
-    useShadowRoot: true,
-    events: []
-  }, config);
+  SifrrDom.config = Object.assign(
+    {
+      baseUrl: '',
+      useShadowRoot: true,
+      events: []
+    },
+    config
+  );
   if (typeof SifrrDom.config.baseUrl !== 'string') throw Error('baseUrl should be a string');
   SifrrDom.config.events.push('input', 'change', 'update');
   SifrrDom.config.events.forEach(e => SifrrDom.Event.add(e));
@@ -75,20 +82,30 @@ SifrrDom.setup = function(config) {
 
 // Load Element HTML and execute script in it
 SifrrDom.load = function(elemName, { url, js = true } = {}) {
-  if (window.customElements.get(elemName)) { return Promise.resolve(window.console.warn(`Error loading Element: ${elemName} - Custom Element with this name is already defined.`)); }
+  if (window.customElements.get(elemName)) {
+    return Promise.resolve(
+      window.console.warn(
+        `Error loading Element: ${elemName} - Custom Element with this name is already defined.`
+      )
+    );
+  }
   SifrrDom.loadingElements[elemName] = window.customElements.whenDefined(elemName);
   let loader = new SifrrDom.Loader(elemName, url);
-  return loader.executeScripts(js).then(() => SifrrDom.registering[elemName]).then(() => {
-    if (!window.customElements.get(elemName)) {
-      window.console.warn(`Executing '${elemName}' file didn't register the element.`);
-    }
-    delete SifrrDom.registering[elemName];
-    delete SifrrDom.loadingElements[elemName];
-  }).catch(e => {
-    delete SifrrDom.registering[elemName];
-    delete SifrrDom.loadingElements[elemName];
-    throw e;
-  });
+  return loader
+    .executeScripts(js)
+    .then(() => SifrrDom.registering[elemName])
+    .then(() => {
+      if (!window.customElements.get(elemName)) {
+        window.console.warn(`Executing '${elemName}' file didn't register the element.`);
+      }
+      delete SifrrDom.registering[elemName];
+      delete SifrrDom.loadingElements[elemName];
+    })
+    .catch(e => {
+      delete SifrrDom.registering[elemName];
+      delete SifrrDom.loadingElements[elemName];
+      throw e;
+    });
 };
 
 SifrrDom.loading = () => {

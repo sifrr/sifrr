@@ -1,60 +1,66 @@
 function stubRequest(request) {
   switch (request.method()) {
-  case 'GET':
-    if (request.url().indexOf('file') >= 0) {
-      request.respond({
-        status: 200,
-        contentType: 'text/plain',
-        body: 'abcd'
-      });
-    } else if (request.url().indexOf('test') >= 0) {
-      request.respond({
-        status: 200,
-        contentType: 'bang,application/json',
-        body: '{"a": "GET"}'
-      });
-    } else if (request.url().indexOf('error') >= 0) {
-      request.respond({ status: 404 });
-    } else if (request.url().indexOf('param=value') >= 0) {
-      request.respond({
-        status: 200,
-        contentType: 'bang,application/json',
-        body: '{"param": "value"}'
-      });
-    } else {
+    case 'GET':
+      if (request.url().indexOf('file') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'text/plain',
+          body: 'abcd'
+        });
+      } else if (request.url().indexOf('test') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'bang,application/json',
+          body: '{"a": "GET"}'
+        });
+      } else if (request.url().indexOf('error') >= 0) {
+        request.respond({ status: 404 });
+      } else if (request.url().indexOf('param=value') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'bang,application/json',
+          body: '{"param": "value"}'
+        });
+      } else {
+        request.continue();
+      }
+      break;
+    case 'PUT':
+    case 'POST':
+    case 'DELETE':
+      if (request.url().indexOf('test') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ a: request.postData() || request.method() })
+        });
+      } else if (request.url().indexOf('graphql') >= 0) {
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ body: JSON.parse(request.postData()) })
+        });
+      }
+      break;
+    default:
       request.continue();
-    }
-    break;
-  case 'PUT':
-  case 'POST':
-  case 'DELETE':
-    if (request.url().indexOf('test') >= 0) {
-      request.respond({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ a: request.postData() || request.method() })
-      });
-    } else if (request.url().indexOf('graphql') >= 0) {
-      request.respond({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ body: JSON.parse(request.postData()) })
-      });
-    }
-    break;
-  default:
-    request.continue();
   }
 }
 
 describe('sifrr-fetch', () => {
   async function getResponse(type, url, options, text = false) {
-    return page.evaluate((type, url, options, text) => {
-      if (typeof Sifrr === 'undefined') return Sifrr;
-      const ret = Sifrr.Fetch[type](url, options);
-      if (text) return ret.then((resp) => resp.text());
-      else return ret.catch((e) => e.message);
-    }, type, url, options, text);
+    return page.evaluate(
+      (type, url, options, text) => {
+        if (typeof Sifrr === 'undefined') return Sifrr;
+        const ret = Sifrr.Fetch[type](url, options);
+        if (text) return ret.then(resp => resp.text());
+        else return ret.catch(e => e.message);
+      },
+      type,
+      url,
+      options,
+      text
+    );
   }
 
   before(async () => {
@@ -89,7 +95,10 @@ describe('sifrr-fetch', () => {
   });
 
   it('graphqls request', async () => {
-    const resp = await getResponse('graphql', '/graphql', { query: 'query { hello }', variables: { var: 'var' } });
+    const resp = await getResponse('graphql', '/graphql', {
+      query: 'query { hello }',
+      variables: { var: 'var' }
+    });
     expect(resp.body).to.deep.equal({ query: 'query { hello }', variables: { var: 'var' } });
 
     // Default empty variables
@@ -177,7 +186,7 @@ describe('sifrr-fetch', () => {
           return { url, options, method };
         },
         use: () => ({ a: 'hijack part 2' }),
-        after: (resp) => {
+        after: resp => {
           resp.b = 'hijack part 3';
           return resp;
         }
@@ -195,7 +204,7 @@ describe('sifrr-fetch', () => {
         use: () => {
           throw Error('bang');
         },
-        after: (resp) => {
+        after: resp => {
           resp.b = 'hijack part 3';
           return resp;
         }

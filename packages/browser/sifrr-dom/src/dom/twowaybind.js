@@ -1,7 +1,7 @@
 const { BIND_ATTR } = require('./constants');
 const shouldMerge = require('../utils/shouldmerge');
 
-module.exports = (e) => {
+module.exports = e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
 
   if (!target.hasAttribute(BIND_ATTR) || target._root === null) return;
@@ -11,7 +11,7 @@ module.exports = (e) => {
   if (target.firstChild) target.firstChild.__data = value;
   if (!target._root) {
     let root = target.parentNode;
-    while(root && !root.isSifrr) root = root.parentNode || root.host;
+    while (root && !root.isSifrr) root = root.parentNode || root.host;
     if (root) target._root = root;
     else target._root = null;
   }

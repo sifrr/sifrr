@@ -1,13 +1,15 @@
 const SifrrDom = require('@sifrr/dom');
 
-const Route =  {
+const Route = {
   RegexPath: require('./regexpath')
 };
 
 const firstTitle = window.document.title;
 class SifrrRoute extends SifrrDom.Element {
   static get template() {
-    return SifrrDom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
+    return SifrrDom.template(
+      '<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>'
+    );
   }
 
   static observedAttrs() {
@@ -40,7 +42,7 @@ class SifrrRoute extends SifrrDom.Element {
     if (parsed.match) {
       this.activate();
       this.state = parsed.data;
-      this.$$('[data-sifrr-route-state=true]', false).forEach((el) => {
+      this.$$('[data-sifrr-route-state=true]', false).forEach(el => {
         el.state = { route: parsed.data };
       });
     } else this.deactivate();
@@ -85,7 +87,7 @@ class SifrrRoute extends SifrrDom.Element {
 
   static refreshAll() {
     if (window.location.pathname === this.currentUrl) return;
-    this.all.forEach((sfr) => {
+    this.all.forEach(sfr => {
       sfr.refresh();
     });
     this.onRouteChange();
@@ -97,11 +99,14 @@ class SifrrRoute extends SifrrDom.Element {
   static clickEventListener(e) {
     if (!(window.history && window.history.pushState)) return false;
     const target = e.composedPath ? e.composedPath()[0] : e.target; // composedPath works in safari too
-    if (e.metaKey ||
+    if (
+      e.metaKey ||
       e.ctrlKey ||
       !target.matches('a') ||
       target.host !== window.location.host ||
-      (target.target && target.target !== '_self')) return false;
+      (target.target && target.target !== '_self')
+    )
+      return false;
 
     e.preventDefault();
     // replace title with First title if there's no attribute

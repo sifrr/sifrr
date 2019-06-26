@@ -15,7 +15,10 @@ describe('websocket', function() {
   it('throws error without fallback', async () => {
     const message = await page.evaluate(async () => {
       const sock = Sifrr.Fetch.socket(`ws://localhost:0909/`);
-      return await sock.send({ ok: true }).catch(e => e.message).then(m => m);
+      return await sock
+        .send({ ok: true })
+        .catch(e => e.message)
+        .then(m => m);
     });
 
     expect(message).to.equal('No fallback provided for websocket failure.');
@@ -37,16 +40,19 @@ describe('websockets', () => {
   });
 
   it('connections to ws', async () => {
-    const state = await page.evaluate(async (port) => {
+    const state = await page.evaluate(async port => {
       const sock = Sifrr.Fetch.socket(`ws://localhost:${port}/`);
-      return await sock._openSocket().then(ws => !!ws).catch(() => false);
+      return await sock
+        ._openSocket()
+        .then(ws => !!ws)
+        .catch(() => false);
     }, wsport);
 
     assert.equal(state, true);
   });
 
   it('gets back the data', async () => {
-    const message = await page.evaluate(async (port) => {
+    const message = await page.evaluate(async port => {
       const sock = Sifrr.Fetch.socket(`ws://localhost:${port}/`);
       return await sock.send({ ok: true });
     }, wsport);
@@ -55,7 +61,7 @@ describe('websockets', () => {
   });
 
   it('gets back correct data', async () => {
-    const message = await page.evaluate(async (port) => {
+    const message = await page.evaluate(async port => {
       const sock = Sifrr.Fetch.socket(`ws://localhost:${port}/`);
       return {
         ok: await sock.send({ ok: true }),

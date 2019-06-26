@@ -31,7 +31,6 @@ describe('sifrr-route', () => {
 
     expect(await isActive('#test')).to.be.true;
 
-
     await page.$eval('#test', el => {
       el.routeRegex.test = () => {
         return { match: false };
@@ -50,7 +49,7 @@ describe('sifrr-route', () => {
   it("refreshes once when a link is click and doesn't if somewhere else is click", async () => {
     await page.$eval('#test', el => {
       el.i = 0;
-      el.refresh = () => el.i = el.i + 1;
+      el.refresh = () => (el.i = el.i + 1);
     });
     await page.click('a[href="/abcd"]');
     await page.click('h1');
@@ -58,11 +57,11 @@ describe('sifrr-route', () => {
     assert.equal(await page.$eval('#test', el => el.i), 1);
   });
 
-  it('doesn\'t refresh if same link is clicked', async () => {
+  it("doesn't refresh if same link is clicked", async () => {
     await page.click('a[href="/abcd"]');
     await page.$eval('#test', el => {
       el.i = 0;
-      el.refresh = () => el.i = el.i + 1;
+      el.refresh = () => (el.i = el.i + 1);
     });
     await page.click('a[href="/abcd"]');
 
@@ -97,8 +96,8 @@ describe('sifrr-route', () => {
     expect(await page.title()).to.be.equal('route');
   });
 
-  it('doesn\'t reload when clicked on a link without target', async () => {
-    await page.$eval('#complexlink', el => el.i = 1);
+  it("doesn't reload when clicked on a link without target", async () => {
+    await page.$eval('#complexlink', el => (el.i = 1));
     await page.click('a[href="/abcd"]');
 
     expect(page.url()).to.equal(`${PATH}/abcd`);
@@ -107,46 +106,44 @@ describe('sifrr-route', () => {
 
   it('reloads when clicked on a link with target not equal to _self', async () => {
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => el.i = 2);
+    await page.$eval('#complexlink', el => (el.i = 2));
     await page.click('a[target="_self"]');
 
     expect(page.url()).to.equal(`${PATH}/target`);
     expect(await page.$eval('#complexlink', el => el.i)).to.equal(2);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => el.i = 3);
+    await page.$eval('#complexlink', el => (el.i = 3));
     await page.click('a[target="_blank"]');
 
     expect(page.url()).to.not.equal(`${PATH}/target`);
     expect(await page.$eval('#complexlink', el => el.i)).to.equal(3);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => el.i = 4);
+    await page.$eval('#complexlink', el => (el.i = 4));
     await page.click('a[target="_top"]');
 
     expect(page.url()).to.equal(`${PATH}/target`);
     expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(4);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => el.i = 5);
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click('a[target="_parent"]')
-    ]);
+    await page.$eval('#complexlink', el => (el.i = 5));
+    await Promise.all([page.waitForNavigation(), page.click('a[target="_parent"]')]);
 
     expect(page.url()).to.equal(`${PATH}/target`);
     expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(5);
   });
 
   it('reloads when clicked on a link with target has different host', async () => {
-    expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.equal(PATH);
+    expect(
+      await page.evaluate(() => window.location.protocol + '//' + window.location.host)
+    ).to.equal(PATH);
 
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click('a#external')
-    ]);
+    await Promise.all([page.waitForNavigation(), page.click('a#external')]);
 
-    expect(await page.evaluate(() => window.location.protocol + '//' + window.location.host)).to.not.equal(PATH);
+    expect(
+      await page.evaluate(() => window.location.protocol + '//' + window.location.host)
+    ).to.not.equal(PATH);
 
     await page.goto(`${PATH}/`);
   });
@@ -179,10 +176,10 @@ describe('sifrr-route', () => {
     expect(await page.title()).to.equal('abcd');
   });
 
-  it('doesn\'t reload when clicking back/forward', async () => {
+  it("doesn't reload when clicking back/forward", async () => {
     await page.goto(`${PATH}/`);
     await page.click('a[href="/abcd"]');
-    await page.$eval('#complexlink', el => el.i = 11);
+    await page.$eval('#complexlink', el => (el.i = 11));
     await page.goBack();
 
     expect(page.url()).to.equal(`${PATH}/`);
@@ -196,13 +193,8 @@ describe('sifrr-route', () => {
     expect(state).to.deep.equal({
       x: 'new',
       k: 'klm',
-      '*': [
-        'def',
-        'sdf'
-      ],
-      '**': [
-        'ghi/klm'
-      ]
+      '*': ['def', 'sdf'],
+      '**': ['ghi/klm']
     });
   });
 
@@ -218,13 +210,19 @@ describe('sifrr-route', () => {
   it('loads sifrr elements required', async () => {
     await page.evaluate(() => {
       window.loadedEls = {};
-      Sifrr.Dom.load = (k, o = {}) => window.loadedEls[k] = o;
+      Sifrr.Dom.load = (k, o = {}) => (window.loadedEls[k] = o);
     });
     await page.click('#elementSimple');
-    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({'sifrr-a': {}, 'sifrr-b': {}});
+    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({
+      'sifrr-a': {},
+      'sifrr-b': {}
+    });
 
-    await page.evaluate(() => window.loadedEls = {});
+    await page.evaluate(() => (window.loadedEls = {}));
     await page.click('#elementJson');
-    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({'sifrr-a': {}, 'sifrr-b': { js: true }});
+    expect(await page.evaluate(() => window.loadedEls)).to.deep.equal({
+      'sifrr-a': {},
+      'sifrr-b': { js: true }
+    });
   });
 });

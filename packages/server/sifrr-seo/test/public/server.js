@@ -28,13 +28,16 @@ const server = express();
 // Show total request time
 if (global.ENV === 'development') {
   let time;
-  server.use(function (req, res, next) {
+  server.use(function(req, res, next) {
     time = Date.now();
     function afterResponse() {
       res.removeListener('finish', afterResponse);
 
       // action after response
-      global.console.log('\x1b[36m%s\x1b[0m', `Request '${req.originalUrl}' took: ${Date.now() - time}ms`);
+      global.console.log(
+        '\x1b[36m%s\x1b[0m',
+        `Request '${req.originalUrl}' took: ${Date.now() - time}ms`
+      );
     }
 
     res.on('finish', afterResponse);
@@ -51,7 +54,7 @@ server.use(serveStatic(path.join(baseDir, './browser/sifrr-fetch/dist')));
 process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
 // export server for importing
-server.use(seo.getExpressMiddleware((expressReq) => `${PATH}${expressReq.originalUrl}`));
+server.use(seo.getExpressMiddleware(expressReq => `${PATH}${expressReq.originalUrl}`));
 server.use(compression());
 server.get('/xuser', (req, res) => {
   res.set('content-type', 'text/html');
@@ -81,7 +84,7 @@ server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));
 let ss;
 
 module.exports = {
-  listen: (port) => ss = server.listen(port),
+  listen: port => (ss = server.listen(port)),
   close: () => {
     ss && ss.close();
     seo.close();

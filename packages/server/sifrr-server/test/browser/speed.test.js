@@ -15,33 +15,33 @@ describe('speed test', function() {
 
   it('faster in static files', async () => {
     global.console.log('# small static file');
-    await loadTest((p) => `${p}/example.json`);
+    await loadTest(p => `${p}/example.json`);
   });
 
   it('faster in static files (big)', async () => {
     global.console.log('# big file');
-    await loadTest((p) => `${p}/random.html`, 50);
+    await loadTest(p => `${p}/random.html`, 50);
   });
 
   it('faster in static files (big, compression)', async () => {
     global.console.log('# big file with gzip compression');
-    await loadTest((p) => `${p}/compressed.html`);
+    await loadTest(p => `${p}/compressed.html`);
   });
 
   it('faster in cached files (big)', async () => {
     global.console.log('# big file with cache vs normal express');
-    await page.evaluate((p) => {
+    await page.evaluate(p => {
       return Sifrr.Fetch.get(`${p}/cache.html`).then(r => r.text());
     }, PATH);
-    await loadTest((p) => `${p}/cache.html`);
+    await loadTest(p => `${p}/cache.html`);
   });
 
   it('faster in cached compressed files (big)', async () => {
     global.console.log('# big file gzip compressin and cache vs normal express with compression');
-    await page.evaluate((p) => {
+    await page.evaluate(p => {
       return Sifrr.Fetch.get(`${p}/cache_compress`).then(r => r.text());
     }, PATH);
-    await loadTest((p) => {
+    await loadTest(p => {
       if (p.indexOf(EPORT) > 0) {
         return `${p}/compressed.html`;
       } else {

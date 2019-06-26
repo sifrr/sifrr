@@ -56,13 +56,8 @@ describe('Regex', () => {
     expect(res.data).to.deep.equal({
       x: 'new',
       k: 'klm',
-      '*': [
-        'def',
-        'sdf'
-      ],
-      '**': [
-        'ghi/klm'
-      ],
+      '*': ['def', 'sdf'],
+      '**': ['ghi/klm']
     });
   });
 });

@@ -66,7 +66,7 @@ function setRetValue(ret, fieldname, value) {
       ret[fieldname].push(value);
     } else if (ret[fieldname]) {
       ret[fieldname] = [ret[fieldname], value];
-    }  else {
+    } else {
       ret[fieldname] = value;
     }
   }

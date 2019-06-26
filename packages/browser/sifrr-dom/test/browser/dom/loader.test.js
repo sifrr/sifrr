@@ -1,12 +1,17 @@
 async function testElement(elName, str) {
-  expect(await page.evaluate((el) => typeof Sifrr.Dom.elements[el], elName)).to.eq('function', elName);
+  expect(await page.evaluate(el => typeof Sifrr.Dom.elements[el], elName)).to.eq(
+    'function',
+    elName
+  );
   expect(await page.$eval(elName, el => el.shadowRoot.innerHTML)).to.have.string(str);
 }
 
 describe('Sifrr.Dom.load and Loader', () => {
   before(async () => {
     await page.goto(`${PATH}/loading.html`);
-    await page.evaluate(async () => { await Sifrr.Dom.loading(); });
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   it('has all defined elements', async () => {
@@ -25,7 +30,7 @@ describe('Sifrr.Dom.load and Loader', () => {
       try {
         Sifrr.Dom.load('loading-load');
         return false;
-      } catch(e) {
+      } catch (e) {
         return e;
       }
     });
@@ -34,7 +39,9 @@ describe('Sifrr.Dom.load and Loader', () => {
   });
 
   it("doesn't try to run script element if it is already executed", async () => {
-    const mes = await page.evaluate(() => (new Sifrr.Dom.Loader('loading-load')).executeScripts().catch(e => e.message));
+    const mes = await page.evaluate(() =>
+      new Sifrr.Dom.Loader('loading-load').executeScripts().catch(e => e.message)
+    );
 
     assert(!mes);
   });

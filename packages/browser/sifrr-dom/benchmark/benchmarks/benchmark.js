@@ -4,19 +4,31 @@ class Benchmark {
   }
 
   static async setup() {
-    await page.evaluate(async () => window.Sifrr ? await Sifrr.Dom.loading() : null);
+    await page.evaluate(async () => (window.Sifrr ? await Sifrr.Dom.loading() : null));
     this.start = await page.evaluate(`window.from - 1`);
   }
 
-  static beforeAll() { return Promise.resolve(true); }
+  static beforeAll() {
+    return Promise.resolve(true);
+  }
 
-  before() { return Promise.resolve(true); }
-  run() { return Promise.resolve(true); }
+  before() {
+    return Promise.resolve(true);
+  }
+  run() {
+    return Promise.resolve(true);
+  }
 
-  static beforeAllWait() { return '1 === 1'; }
+  static beforeAllWait() {
+    return '1 === 1';
+  }
 
-  beforeWait() { return '1 === 1'; }
-  runWait() { return '1 === 1'; }
+  beforeWait() {
+    return '1 === 1';
+  }
+  runWait() {
+    return '1 === 1';
+  }
 
   get main() {
     return "document.querySelector('#main')";

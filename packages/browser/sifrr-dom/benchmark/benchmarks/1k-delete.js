@@ -14,7 +14,9 @@ class OnekDelete extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$$('tr td:first-child')[5].textContent == ${this.constructor.start + this.i + 7}`;
+    return `${this.main}.$$('tr td:first-child')[5].textContent == ${this.constructor.start +
+      this.i +
+      7}`;
   }
 }
 

@@ -4,19 +4,15 @@ const path = require('path');
 function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
   const paths = [];
 
-  fs
-    .readdirSync(dir)
-    .filter(file =>
-      path.extname(file) === '.js' &&
-      ignore.indexOf(file) < 0
-    )
-    .forEach((file) => {
+  fs.readdirSync(dir)
+    .filter(file => path.extname(file) === '.js' && ignore.indexOf(file) < 0)
+    .forEach(file => {
       const routes = require(path.join(dir, file));
       let basePaths = routes.basePath || '';
       delete routes.basePath;
       if (typeof basePaths === 'string') basePaths = [basePaths];
 
-      basePaths.forEach((basep) => {
+      basePaths.forEach(basep => {
         for (const method in routes) {
           const methodRoutes = routes[method];
           for (let r in methodRoutes) {

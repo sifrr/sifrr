@@ -3,21 +3,27 @@ const isHeadless = new RegExp('(headless|Headless)');
 const getCache = require('./getcache');
 
 class SifrrSeo {
-  constructor(userAgents = [
-    'Googlebot', // Google
-    'Bingbot', // Bing
-    'Slurp', // Slurp
-    'DuckDuckBot', // DuckDuckGo
-    'Baiduspider', //Baidu
-    'YandexBot', // Yandex
-    'Sogou', // Sogou
-    'Exabot', // Exalead
-  ], options = {}) {
-    this._uas = userAgents.map((ua) => new RegExp(ua));
+  constructor(
+    userAgents = [
+      'Googlebot', // Google
+      'Bingbot', // Bing
+      'Slurp', // Slurp
+      'DuckDuckBot', // DuckDuckGo
+      'Baiduspider', //Baidu
+      'YandexBot', // Yandex
+      'Sogou', // Sogou
+      'Exabot' // Exalead
+    ],
+    options = {}
+  ) {
+    this._uas = userAgents.map(ua => new RegExp(ua));
     this.shouldRenderCache = {};
-    this.options = Object.assign({
-      cacheKey: (url) => url,
-    }, options);
+    this.options = Object.assign(
+      {
+        cacheKey: url => url
+      },
+      options
+    );
   }
 
   get renderer() {
@@ -30,7 +36,7 @@ class SifrrSeo {
     return this._cache;
   }
 
-  getExpressMiddleware(getUrl = (expressReq) => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+  getExpressMiddleware(getUrl = expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`) {
     return require('./middleware')(getUrl).bind(this);
   }
 
@@ -77,12 +83,17 @@ class SifrrSeo {
           if (err) {
             rej(err);
           } else if (!val) {
-            this.renderer.render(url, headers).then((resp) => {
-              this.cache.set(key, resp);
-              res(resp);
-            }).catch(/* istanbul ignore next */ err => {
-              rej(err);
-            });
+            this.renderer
+              .render(url, headers)
+              .then(resp => {
+                this.cache.set(key, resp);
+                res(resp);
+              })
+              .catch(
+                /* istanbul ignore next */ err => {
+                  rej(err);
+                }
+              );
           } else {
             res(val);
           }
@@ -100,7 +111,7 @@ class SifrrSeo {
   _isUserAgent(headers = {}) {
     const ua = headers['user-agent'];
     let ret = false;
-    this._uas.forEach((b) => {
+    this._uas.forEach(b => {
       if (b.test(ua)) ret = true;
     });
     return ret;
