@@ -3,6 +3,7 @@ import uWebSockets from 'uWebSockets.js';
 import fs from 'fs';
 import path from 'path';
 import stream from 'stream';
+import chokidar from 'chokidar';
 import zlib from 'zlib';
 import busboy from 'busboy';
 import mkdirp from 'mkdirp';
@@ -247,12 +248,11 @@ const getMime = mime.getMime;
 const bytes = 'bytes=';
 const { stob: stob$1 } = utils;
 function sendFile(res, req, path, options) {
-  const reqHeaders = {
+  sendFileToRes(res, {
     'if-modified-since': req.getHeader('if-modified-since'),
     range: req.getHeader('range'),
     'accept-encoding': req.getHeader('accept-encoding')
-  };
-  sendFileToRes(res, reqHeaders, path, options);
+  }, path, options);
 }
 function sendFileToRes(res, reqHeaders, path, {
   lastModified = true,
@@ -485,17 +485,14 @@ class BaseApp {
     });
     if (options && options.watch) {
       if (!this._watched[folder]) {
-        const w = fs.watch(folder, (event, filename) => {
-          if (event === 'rename') {
-            if (!filename) return;
-            const filePath = path.join(folder, filename);
-            const url = '/' + path.relative(base, filePath);
-            if (fs.existsSync(filePath) && filter(filePath)) {
-              this.file(prefix + url, filePath, options);
-            } else {
-              delete this._staticPaths[prefix + url];
-            }
-          }
+        const w = chokidar.watch(folder);
+        w.on('unlink', (filePath) => {
+          const url = '/' + path.relative(base, filePath);
+          delete this._staticPaths[prefix + url];
+        });
+        w.on('add', (filePath) => {
+          const url = '/' + path.relative(base, filePath);
+          this.file(prefix + url, filePath, options);
         });
         this._watched[folder] = w;
       }

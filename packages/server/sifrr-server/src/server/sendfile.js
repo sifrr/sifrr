@@ -12,13 +12,11 @@ const bytes = 'bytes=';
 const { stob } = require('./utils');
 
 function sendFile(res, req, path, options) {
-  const reqHeaders = {
+  sendFileToRes(res, {
     'if-modified-since': req.getHeader('if-modified-since'),
     range: req.getHeader('range'),
     'accept-encoding': req.getHeader('accept-encoding')
-  };
-
-  sendFileToRes(res, reqHeaders, path, options);
+  }, path, options);
 }
 
 function sendFileToRes(res, reqHeaders, path, {

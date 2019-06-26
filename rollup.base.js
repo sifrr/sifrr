@@ -19,7 +19,8 @@ const external = [
   'events',
   'uWebSockets.js',
   'stream',
-  'zlib'
+  'zlib',
+  'chokidar'
 ];
 const globals = {
   '@sifrr/dom': 'Sifrr.Dom',

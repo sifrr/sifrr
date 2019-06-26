@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { Readable } = require('stream');
 const uWS = require('uWebSockets.js');
+const chokidar = require('chokidar');
 
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
@@ -51,18 +52,18 @@ class BaseApp {
 
     if (options && options.watch) {
       if (!this._watched[folder]) {
-        const w = fs.watch(folder, (event, filename) => {
-          if (event === 'rename') {
-            if (!filename) return;
-            const filePath = path.join(folder, filename);
-            const url = '/' + path.relative(base, filePath);
-            if (fs.existsSync(filePath) && filter(filePath)) {
-              this.file(prefix + url, filePath, options);
-            } else {
-              delete this._staticPaths[prefix + url];
-            }
-          }
+        const w = chokidar.watch(folder);
+
+        w.on('unlink', (filePath) => {
+          const url = '/' + path.relative(base, filePath);
+          delete this._staticPaths[prefix + url];
         });
+
+        w.on('add', (filePath) => {
+          const url = '/' + path.relative(base, filePath);
+          this.file(prefix + url, filePath, options);
+        });
+
         this._watched[folder] = w;
       }
     }

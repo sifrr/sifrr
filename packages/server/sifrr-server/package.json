@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "busboy": "^0.3.0",
+    "chokidar": "^3.0.1",
     "mkdirp": "^0.5.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
   },
