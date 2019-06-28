@@ -1,24 +1,26 @@
 /*! Sifrr.Fetch v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Fetch = factory()));
-}(this, function () { 'use strict';
+this.Sifrr = this.Sifrr || {};
+this.Sifrr.Fetch = (function () {
+  'use strict';
 
   const ObjConst = {}.constructor;
+
   class Request {
     constructor(url, options) {
       this._options = options;
       this._url = url;
     }
+
     response() {
       const me = this;
       return window.fetch(this.url, this.options).then(resp => {
         const contentType = resp.headers.get('content-type');
         const isJson = contentType && contentType.includes('application/json');
+
         if (resp.ok && typeof me._options.onProgress === 'function') {
           const contentLength = resp.headers.get('content-length');
           const total = parseInt(contentLength, 10);
+
           if (!total || !resp.body || !ReadableStream) {
             me._options.onProgress({
               total: 0,
@@ -30,6 +32,7 @@
             resp = new Response(new ReadableStream({
               start(controller) {
                 const start = performance.now();
+
                 function read() {
                   return reader.read().then(({
                     done,
@@ -39,6 +42,7 @@
                       controller.close();
                     } else {
                       loaded += value.byteLength;
+
                       me._options.onProgress({
                         loaded: loaded,
                         total: total,
@@ -46,13 +50,16 @@
                         speed: loaded / (performance.now() - start),
                         value
                       });
+
                       controller.enqueue(value);
                       return read();
                     }
                   });
                 }
+
                 return read();
               }
+
             }));
           }
         } else if (!resp.ok) {
@@ -63,6 +70,7 @@
           error.response = resp;
           throw error;
         }
+
         return {
           response: resp,
           isJson
@@ -75,26 +83,33 @@
         return response;
       });
     }
+
     get url() {
       const params = this._options.params;
+
       if (params && Object.keys(params).length > 0) {
         return this._url + '?' + Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
       } else {
         return this._url;
       }
     }
+
     get options() {
       const options = Object.assign({
         redirect: 'follow'
       }, this._options);
       options.headers = this._options.headers || {};
+
       if (options.body && options.body.constructor === ObjConst) {
         options.headers['content-type'] = options.headers['content-type'] || 'application/json';
         options.body = JSON.stringify(options.body);
       }
+
       return options;
     }
+
   }
+
   var request = Request;
 
   class WebSocket {
@@ -105,8 +120,10 @@
       this.fallback = fallback;
       this.id = 1;
       this._requests = {};
+
       this._openSocket();
     }
+
     send(data, type = 'JSON') {
       const message = {
         data,
@@ -115,6 +132,7 @@
       };
       return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
     }
+
     sendRaw(message, id, original = message) {
       if (this._fallback) return this.fallback(original);
       return this._openSocket().then(ws => {
@@ -133,6 +151,7 @@
         return this.fallback(original);
       });
     }
+
     _openSocket() {
       if (!this.ws) {
         this.ws = new window.WebSocket(this.url, this.protocol);
@@ -146,6 +165,7 @@
         this.ws = null;
         return this._openSocket();
       }
+
       const me = this;
       return new Promise((res, rej) => {
         function waiting() {
@@ -157,38 +177,51 @@
             res(me.ws);
           }
         }
+
         window.requestAnimationFrame(waiting);
       });
     }
+
     onerror() {}
+
     onopen() {}
+
     onclose() {}
+
     close() {
       this.ws.close();
     }
+
     _onmessage(event) {
       const data = JSON.parse(event.data);
       if (data.sifrrQueryId) this._requests[data.sifrrQueryId].res(data.data);
       delete this._requests[data.sifrrQueryId];
       this.onmessage(event);
     }
+
     onmessage() {}
+
   }
+
   var websocket = WebSocket;
 
   class SifrrFetch {
     static get(url, options) {
       return this.request(url, options, 'GET');
     }
+
     static post(url, options) {
       return this.request(url, options, 'POST');
     }
+
     static put(url, options) {
       return this.request(url, options, 'PUT');
     }
+
     static delete(url, options) {
       return this.request(url, options, 'DELETE');
     }
+
     static graphql(url, options) {
       const {
         query,
@@ -205,14 +238,17 @@
       };
       return this.request(url, options, 'POST');
     }
+
     static socket(url, protocol, fallback) {
       return new websocket(url, protocol, fallback);
     }
+
     static file(url, options = {}) {
       options.headers = options.headers || {};
       options.headers.accept = options.headers.accept || '*/*';
       return this.request(url, options);
     }
+
     static request(u, o = {}, m = 'GET') {
       let promise = Promise.resolve({
         url: u,
@@ -221,6 +257,7 @@
       });
       if (typeof o.before === 'function') (promise = promise.then(o.before)) && delete o.before;
       let current = 'then';
+
       if (typeof o.use === 'function') {
         current = 'catch';
         promise = promise.then(({
@@ -246,6 +283,7 @@
           });
         });
       }
+
       promise = promise[current](({
         url,
         options,
@@ -257,13 +295,15 @@
       if (typeof o.after === 'function') (promise = promise.then(o.after)) && delete o.after;
       return promise;
     }
+
   }
+
   SifrrFetch._middlewares = [];
   SifrrFetch.WebSocket = websocket;
   var sifrr_fetch = SifrrFetch;
 
   return sifrr_fetch;
 
-}));
+}());
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.fetch.js.map
