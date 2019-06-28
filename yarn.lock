@@ -812,56 +812,6 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.13.tgz#e6523af16bbf32105b9d586ce9fd83a015f099f7"
-  integrity sha512-FDpsrRskYJQiIb206Wwl8R6TiGqWtfMyo5M/MH3VqWYpoLj14NOGUEXpBqMcdnAfbCT0yw2y5eki6U7HfD1n/Q==
-  dependencies:
-    "@babel/core" "^7.4.0"
-    "@babel/plugin-external-helpers" "^7.2.0"
-    "@babel/preset-env" "^7.4.1"
-    "@commitlint/cli" "^8.0.0"
-    "@commitlint/config-conventional" "^8.0.0"
-    "@sifrr/server" "^0.0.5"
-    autoprefixer "^9.6.0"
-    babel-eslint "^10.0.2"
-    browserslist "^4.5.6"
-    chai "^4.1.2"
-    chai-as-promised "^7.1.1"
-    conventional-changelog "^3.1.8"
-    coveralls "^3.0.2"
-    cssnano "^4.1.10"
-    eslint "^6.0.0"
-    eslint-config-prettier "^5.0.0"
-    eslint-config-sifrr "^0.0.1"
-    eslint-plugin-mocha "^5.3.0"
-    eslint-plugin-prettier "^3.1.0"
-    husky "^2.0.0"
-    istanbul-api "^3.0.0"
-    istanbul-lib-coverage "^2.0.1"
-    istanbul-lib-hook "^2.0.1"
-    istanbul-lib-instrument "^3.0.0"
-    istanbul-lib-source-maps "^3.0.2"
-    istanbul-reports "^2.2.3"
-    json-fn "^1.1.1"
-    mocha "^6.1.3"
-    mocha-junit-reporter "^1.22.0"
-    mock-require "^3.0.3"
-    node-sass "^4.12.0"
-    portfinder "^1.0.20"
-    prettier "^1.18.2"
-    puppeteer "^1.16.0"
-    repl "^0.1.3"
-    rollup "^1.13.1"
-    rollup-plugin-babel "^4.0.1"
-    rollup-plugin-cleanup "^3.0.0"
-    rollup-plugin-commonjs "^10.0.0"
-    rollup-plugin-html "^0.2.1"
-    rollup-plugin-node-resolve "^5.0.1"
-    rollup-plugin-postcss "^2.0.3"
-    rollup-plugin-terser "^5.0.0"
-    sinon "^7.3.2"
-
 "@sifrr/dev@^0.0.16":
   version "0.0.16"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.16.tgz#acdcf92e411580355e199f530b9f0c5ce9361849"
@@ -2555,17 +2505,12 @@ escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
-eslint-config-prettier@^5.0.0, eslint-config-prettier@^5.1.0:
+eslint-config-prettier@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-5.1.0.tgz#bf29442e7c818236a77acfe2241ec991299f9bf1"
   integrity sha512-+tpiaLm3wl6fPW5nq0dDyVowQM0FT61lAdWZ+sDWgk6kKzgbOnCDwlcbwI38cyCBhq+Z3ret5Iofp6/gZpO0zw==
   dependencies:
     get-stdin "^6.0.0"
-
-eslint-config-sifrr@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-sifrr/-/eslint-config-sifrr-0.0.1.tgz#4262be72d0683839db7276e0da43764b4c6480c4"
-  integrity sha512-Y6GivcEsZDVE6VcbVshtg9c5atN4dl9xzQQW7vU15oj6Sa4N1+gPUImo2rl6R8fIQIpYUebZpikMOL/clmRYNg==
 
 eslint-plugin-mocha@^5.3.0:
   version "5.3.0"
