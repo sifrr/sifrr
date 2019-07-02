@@ -71,6 +71,7 @@ function elementClassFactory(baseClass) {
 
     connectedCallback() {
       this.connected = true;
+      this._root = undefined;
       if (this.__content) {
         if (this.childNodes.length !== 0) this.textContent = '';
         this.appendChild(this.__content);
@@ -83,6 +84,7 @@ function elementClassFactory(baseClass) {
     onConnect() {}
 
     disconnectedCallback() {
+      this.connected = false;
       this.onDisconnect();
     }
 
