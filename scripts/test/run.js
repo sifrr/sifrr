@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const log = require('why-is-node-running');
 
 const before = function() {
   const sinon = require('sinon');
@@ -71,7 +72,9 @@ if (filter > 0) {
 const reporters = ['html'];
 if (process.env.LCOV === 'true') reporters.push('lcov');
 
-const roots = (process.argv[2] || './').split(/[ ,\n]/g).map(p => path.join(__dirname, '../../', p));
+const roots = (process.argv[2] || './')
+  .split(/[ ,\n]/g)
+  .map(p => path.join(__dirname, '../../', p));
 const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
@@ -93,7 +96,10 @@ const options = roots.map((root, i) => {
     preCommand,
     before,
     folders: {
-      static: [path.join(__dirname, '../../packages/browser/sifrr-dom/dist'), path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')],
+      static: [
+        path.join(__dirname, '../../packages/browser/sifrr-dom/dist'),
+        path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')
+      ],
       coverage: path.join(__dirname, '../../.nyc_output'),
       source: path.join(__dirname, '../../packages')
     },
@@ -107,8 +113,12 @@ const options = roots.map((root, i) => {
 });
 
 runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true')
-  .then(() => global.console.log(`All tests passed!`))
+  .then(() => {
+    global.console.log(`All tests passed!`);
+  })
   .catch(e => {
     global.console.log(`${e} tests failed!`);
     process.exit(1);
   });
+
+setInterval(log, 10000);

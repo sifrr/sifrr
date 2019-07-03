@@ -1084,6 +1084,10 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
+uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0:
+  version "15.11.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
+
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"

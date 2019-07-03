@@ -6340,6 +6340,11 @@ stable@^0.1.8:
   resolved "https://registry.yarnpkg.com/stable/-/stable-0.1.8.tgz#836eb3c8382fe2936feaf544631017ce7d47a3cf"
   integrity sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
 
+stackback@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/stackback/-/stackback-0.0.2.tgz#1ac8a0d9483848d1695e418b6d031a3c3ce68e3b"
+  integrity sha1-Gsig2Ug4SNFpXkGLbQMaPDzmjjs=
+
 static-extend@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/static-extend/-/static-extend-0.1.2.tgz#60809c39cbff55337226fd5e0b520f341f1fb5c6"
@@ -6755,6 +6760,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0:
+  version "15.11.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
+
 uglify-js@3.4.x:
   version "3.4.10"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.4.10.tgz#9ad9563d8eb3acdfb8d38597d2af1d815f6a755f"
@@ -6915,6 +6924,13 @@ which@1, which@1.3.1, which@^1.2.9:
   integrity sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==
   dependencies:
     isexe "^2.0.0"
+
+why-is-node-running@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/why-is-node-running/-/why-is-node-running-2.1.0.tgz#e71a9816a32ca4d4f759aabe90edd1007d805f48"
+  integrity sha512-oLmJ1uZOaKra+GDmYcUHMnVhi4CnZnlt4IE3J05ZDSEAiejeB5dMoR4a4rGcMWRy1Avx24dGTw8yxJ/+EmwPBQ==
+  dependencies:
+    stackback "0.0.2"
 
 wide-align@1.1.3, wide-align@^1.1.0:
   version "1.1.3"

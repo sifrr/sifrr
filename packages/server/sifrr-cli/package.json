@@ -35,7 +35,8 @@
   "devDependencies": {
     "@sifrr/dev": "^0.0.13",
     "cache-manager": "^2.9.1",
-    "loadtest": "^3.0.7"
+    "loadtest": "^3.0.7",
+    "why-is-node-running": "^2.1.0"
   },
   "files": [
     "bin",
