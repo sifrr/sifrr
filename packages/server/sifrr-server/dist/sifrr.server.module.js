@@ -619,7 +619,9 @@ function createCluster({ apps = [], onListen = noop } = {}) {
       ports = [port];
     }
     ports.forEach(p => {
-      app.listen(p, onListen);
+      app.listen(p, socket => {
+        onListen.call(app, socket, port);
+      });
     });
     finalApps.push({
       app,
