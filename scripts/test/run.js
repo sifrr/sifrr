@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const log = require('why-is-node-running');
 
 const before = function() {
   const sinon = require('sinon');
