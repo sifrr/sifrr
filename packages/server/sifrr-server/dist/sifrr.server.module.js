@@ -563,12 +563,12 @@ class BaseApp {
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, socket => {
-        this._socket = socket;
+        this._sockets.push(socket);
         cb(socket);
       });
     } else {
       this._listen(h, socket => {
-        this._socket = socket;
+        this._sockets.push(socket);
         p(socket);
       });
     }
@@ -578,15 +578,16 @@ class BaseApp {
     for (let f in this._watched) {
       this._watched[f].close();
     }
-    if (this._socket) {
-      uWebSockets.us_listen_socket_close(this._socket);
-      this._socket = null;
-    }
+    this._sockets.forEach(s => {
+      uWebSockets.us_listen_socket_close(s);
+    });
+    this._sockets = [];
     return this;
   }
 }
 BaseApp.prototype._staticPaths = {};
 BaseApp.prototype._watched = {};
+BaseApp.prototype._sockets = [];
 var baseapp = BaseApp;
 
 const { extend: extend$1 } = utils;
@@ -607,13 +608,36 @@ class SSLApp extends uWebSockets.SSLApp {
 }
 var sslapp = SSLApp;
 
+const noop = () => {};
+function createCluster({ apps = [], onListen = noop } = {}) {
+  const finalApps = [];
+  for (let i = 0; i < apps.length; i++) {
+    const config = apps[i];
+    let { app, port, ports } = config;
+    if (!Array.isArray(ports) || ports.length === 0) {
+      if (typeof port !== 'number') throw Error(`Port should be a number, given ${port}`);
+      ports = [port];
+    }
+    ports.forEach(p => {
+      app.listen(p, onListen);
+    });
+    finalApps.push({
+      app,
+      ports
+    });
+  }
+  return finalApps;
+}
+var createcluster = createCluster;
+
 var sifrr_server = {
   App: app,
   SSLApp: sslapp,
   mimes: mime.mimes,
   getMime: mime.getMime,
   writeHeaders: utils.writeHeaders,
-  sendFile: sendfile
+  sendFile: sendfile,
+  createCluster: createcluster
 };
 var sifrr_server_1 = sifrr_server.App;
 var sifrr_server_2 = sifrr_server.SSLApp;
@@ -621,8 +645,9 @@ var sifrr_server_3 = sifrr_server.mimes;
 var sifrr_server_4 = sifrr_server.getMime;
 var sifrr_server_5 = sifrr_server.writeHeaders;
 var sifrr_server_6 = sifrr_server.sendFile;
+var sifrr_server_7 = sifrr_server.createCluster;
 
 export default sifrr_server;
-export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_4 as getMime, sifrr_server_3 as mimes, sifrr_server_6 as sendFile, sifrr_server_5 as writeHeaders };
+export { sifrr_server_1 as App, sifrr_server_2 as SSLApp, sifrr_server_7 as createCluster, sifrr_server_4 as getMime, sifrr_server_3 as mimes, sifrr_server_6 as sendFile, sifrr_server_5 as writeHeaders };
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.server.module.js.map

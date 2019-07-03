@@ -120,5 +120,3 @@ runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === '
     global.console.log(`${e} tests failed!`);
     process.exit(1);
   });
-
-setInterval(log, 10000);

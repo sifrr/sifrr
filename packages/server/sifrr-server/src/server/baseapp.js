@@ -125,12 +125,12 @@ class BaseApp {
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, socket => {
-        this._socket = socket;
+        this._sockets.push(socket);
         cb(socket);
       });
     } else {
       this._listen(h, socket => {
-        this._socket = socket;
+        this._sockets.push(socket);
         p(socket);
       });
     }
@@ -141,15 +141,16 @@ class BaseApp {
     for (let f in this._watched) {
       this._watched[f].close();
     }
-    if (this._socket) {
-      uWS.us_listen_socket_close(this._socket);
-      this._socket = null;
-    }
+    this._sockets.forEach(s => {
+      uWS.us_listen_socket_close(s);
+    });
+    this._sockets = [];
     return this;
   }
 }
 
 BaseApp.prototype._staticPaths = {};
 BaseApp.prototype._watched = {};
+BaseApp.prototype._sockets = [];
 
 module.exports = BaseApp;

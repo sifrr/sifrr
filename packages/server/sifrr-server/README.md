@@ -4,9 +4,9 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 
 ## Features
 
--   Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
--   Simple static file serving with conditional last-modified, compression, cache support
--   Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
+- Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
+- Simple static file serving with conditional last-modified, compression, cache support
+- Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
 
 ## How to use
 
@@ -22,10 +22,36 @@ Sifrr Server extends 'uWebSockets.js' package. You can view more details [here](
 const { App, SSLApp } = require('@sifrr/server');
 ```
 
--   `App` extends uWS.App
--   `SSLApp` extends uWS.SSLApp
+- `App` extends uWS.App
+- `SSLApp` extends uWS.SSLApp
 
 ## Extra APIs than uWS
+
+### createCluster
+
+```js
+const { createCluster, App } = require('@sifrr/server');
+const app = new App();
+// do something on app
+const app2 = new App();
+// do something on app2
+createCluster({
+  apps: [
+    {
+      app: app,
+      port: 12345
+    },
+    {
+      app: app2,
+      ports: [12346, 12347]
+    }
+  ],
+  onListen: (uwsSocket, port) => {
+    // this = app for port
+    console.log(this, `is listening on port ${port}`);
+  }
+});
+```
 
 ### writeHeaders
 
@@ -51,17 +77,17 @@ const { sendFile } = require('@sifrr/server');
 
 const app = new App();
 app.get(uWSRoutingPattern, (res, req) => {
-  res.onAborted((e) => process.stderr.write(e));
-  sendFile(res, req, filepath, options)
+  res.onAborted(e => process.stderr.write(e));
+  sendFile(res, req, filepath, options);
 });
 ```
 
--   `options`:
-    -   `lastModified`: **default: `true`** responds with `304 Not Modified` for non-modified files if this is set to true
-    -   `headers`: **default:** `{}` Additional headers to set on response ,
-    -   `compress`: **default:** `false` responses are compressed if this is set to true and if `accept-encoding` header has supported compressions (gzip, brotli, deflate)
-    -   `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
-    -   `cache`: **default:** `false`, if given a [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) instance, it will cache the files in given cache. Generally it might not be needed at all, check for performance improvement before using it blindly.
+- `options`:
+  - `lastModified`: **default: `true`** responds with `304 Not Modified` for non-modified files if this is set to true
+  - `headers`: **default:** `{}` Additional headers to set on response ,
+  - `compress`: **default:** `false` responses are compressed if this is set to true and if `accept-encoding` header has supported compressions (gzip, brotli, deflate)
+  - `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
+  - `cache`: **default:** `false`, if given a [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) instance, it will cache the files in given cache. Generally it might not be needed at all, check for performance improvement before using it blindly.
 
 #### Add additional mime type:
 
@@ -72,7 +98,7 @@ mimes['extension'] = 'mime/type';
 
 ### host static files
 
--   Single file (alias for sendFile example above)
+- Single file (alias for sendFile example above)
 
 file from filepath will be server for given pattern
 
@@ -80,7 +106,7 @@ file from filepath will be server for given pattern
 app.file(uWSRoutingPattern, filepath, options); // options are sendFile options
 ```
 
--   Folder
+- Folder
 
 Whole folder will be server recursively under given prefix
 
@@ -105,10 +131,10 @@ There is one more option available for `folder` with all the sendFile options:
 
 for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests), note that as stream can only be used once, only one of these function can be called for one request:
 
--   `res.body().then(body => /* do something */)`: gives post body as buffer
--   `res.bodyStream()`: Gives post body stream
--   `res.json().then(jsonBody => /* do something */)`: gives post body as json if content-type is `application/json` (this method is only set if post body content-type is `application/json`)
--   `res.formData(options).then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
+- `res.body().then(body => /* do something */)`: gives post body as buffer
+- `res.bodyStream()`: Gives post body stream
+- `res.json().then(jsonBody => /* do something */)`: gives post body as json if content-type is `application/json` (this method is only set if post body content-type is `application/json`)
+- `res.formData(options).then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
 
 ```js
 res.formData(options).then(data => {
@@ -122,21 +148,21 @@ res.formData(options).then(data => {
   //   },
   //   fieldname: value
   // }
-})
+});
 ```
 
 options need to have atleast one of `onFile` function or `tmpDir` if body has files else request will timeout and formData() will never resolve.
 
--   if `onFile` is set, then it will be called with `fieldname, file, filename, encoding, mimetype` for every file uploaded, where file is file stream, you need to consume it or the request will never resolve
--   if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
-    if `filename` function is given, it will be called with original filename, and name returned will be used when saving in tmpDir.
--   `onField` (optional): will be called with `fieldname, value` if given
--   other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
+- if `onFile` is set, then it will be called with `fieldname, file, filename, encoding, mimetype` for every file uploaded, where file is file stream, you need to consume it or the request will never resolve
+- if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
+  if `filename` function is given, it will be called with original filename, and name returned will be used when saving in tmpDir.
+- `onField` (optional): will be called with `fieldname, value` if given
+- other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
 
 Array fields/files:
 
--   if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
--   if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
+- if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
+- if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
 
 ### Load routes
 
@@ -165,7 +191,7 @@ module.exports = {
 You can have multiple route files in a folder, and then you can call
 
 ```js
-app.load(dirPath, { filter: (filepath) => true, basePath: '' });
+app.load(dirPath, { filter: filepath => true, basePath: '' });
 ```
 
 And all the routes from the route files in this directory will be added to your app server.
@@ -179,8 +205,8 @@ app.get('/p/some', (res, req) => res.send('ABD'));
 
 `Options`:
 
--   `filter` - this function will be called with all filepaths in directory, and if this returns `true` that route file will be added, else it will be not.
--   `basePath` - base path preffix to add for all the routes
+- `filter` - this function will be called with all filepaths in directory, and if this returns `true` that route file will be added, else it will be not.
+- `basePath` - base path preffix to add for all the routes
 
 ## Static server Benchmarks
 
@@ -239,12 +265,19 @@ function handleError(res, err) {
 app.post('/graphql', res => {
   res.onAborted(err => handleError(res, err));
 
-  res.json().then(({ query, variables }) =>
-    graphql({
-      schema: executableSchema,
-      source: query,
-      variableValues: variables,
-      context: { /* set context */ }
-    })).then(data => res.end(JSON.stringify(data))).catch(err => handleError(res, err));
+  res
+    .json()
+    .then(({ query, variables }) =>
+      graphql({
+        schema: executableSchema,
+        source: query,
+        variableValues: variables,
+        context: {
+          /* set context */
+        }
+      })
+    )
+    .then(data => res.end(JSON.stringify(data)))
+    .catch(err => handleError(res, err));
 });
 ```
