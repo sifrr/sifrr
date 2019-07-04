@@ -112,7 +112,8 @@ const options = roots.map((root, i) => {
 });
 
 runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
-  ({ failures }) => {
+  ({ failures, coverage }) => {
+    console.table(coverage);
     if (failures > 0) {
       global.console.log(`${failures} tests failed!`);
       process.exit(1);
