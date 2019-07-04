@@ -41,15 +41,13 @@ jobs:
           name: Check chrome version
           command: google-chrome --version
       - run:
-          name: Add git user email and name and Update dist files
+          name: Add git user email and name and Update files
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              git config --global user.email "aadityataparia@gmail.com"
-              git config --global user.name "Aaditya Taparia"
-              git push --set-upstream origin $CIRCLE_BRANCH
-              if [ "${CIRCLE_NODE_INDEX}" == "0" ]; then
-                ./scripts/distribute
-              fi
+            git config --global user.email "aadityataparia@gmail.com" || exit 0
+            git config --global user.name "Aaditya Taparia"
+            git push --set-upstream origin $CIRCLE_BRANCH
+            if [ "${CIRCLE_NODE_INDEX}" == "0" ]; then
+              ./scripts/distribute
             fi
       - run:
           name: Build dist files
