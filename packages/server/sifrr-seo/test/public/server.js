@@ -4,6 +4,7 @@ const seo = new Seo(['UC Browser'], {
   cacheKey: (url, headers) => url + (headers['x-user'] ? headers['x-user'] : ''),
   beforeRender: () => {
     // Force shadyDom (no shadow root)
+    // eslint-disable-next-line no-undef
     ShadyDOM = { force: true };
   },
   afterRender: async () => {

@@ -1,5 +1,5 @@
 {
-  "name": "Sifrr",
+  "name": "sifrr",
   "private": true,
   "workspaces": [
     "packages/*/*"
