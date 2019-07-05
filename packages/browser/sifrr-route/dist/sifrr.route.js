@@ -1,9 +1,7 @@
 /*! Sifrr.Route v0.0.5 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@sifrr/dom')) :
-  typeof define === 'function' && define.amd ? define(['@sifrr/dom'], factory) :
-  (global = global || self, (global.Sifrr = global.Sifrr || {}, global.Sifrr.Route = factory(global.Sifrr.Dom)));
-}(this, function (dom) { 'use strict';
+this.Sifrr = this.Sifrr || {};
+this.Sifrr.Route = (function (dom) {
+  'use strict';
 
   dom = dom && dom.hasOwnProperty('default') ? dom['default'] : dom;
 
@@ -14,10 +12,12 @@
       }, options);
       this.path = path;
     }
+
     get regex() {
       this._regex = this._regex || new RegExp('^' + this.path.replace(/\/:[A-Za-z0-9_]{0,}\?/g, '(/[^/]{0,})?').replace(/\*\*/g, '(.{0,})').replace(/\*/g, '([^/]{0,})').replace(/:[A-Za-z0-9_]{0,}/g, '([^/]{0,})') + '$');
       return this._regex;
     }
+
     get dataMap() {
       if (this._dataMap) return this._dataMap;
       this._dataMap = [];
@@ -30,9 +30,11 @@
       });
       return this._dataMap;
     }
+
     test(route) {
       const data = {},
             match = this.regex.exec(route);
+
       if (match) {
         this.dataMap.forEach((d, i) => {
           if (d === '*') {
@@ -49,44 +51,55 @@
           }
         });
       }
+
       return {
         match: !!match,
         data: data
       };
     }
+
   }
+
   var regexpath = RegexPath;
 
   const Route = {
     RegexPath: regexpath
   };
   const firstTitle = window.document.title;
+
   class SifrrRoute extends dom.Element {
     static get template() {
       return dom.template('<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>');
     }
+
     static observedAttrs() {
       return ['path'];
     }
+
     onConnect() {
       this.loaded = false;
       this.constructor.all.add(this);
     }
+
     onDisconnect() {
       this.constructor.all.delete(this);
     }
+
     onAttributeChange(attrName) {
       if (attrName === 'path') {
         this._routeRegex = new Route.RegexPath(this.getAttribute('path'));
         this.refresh();
       }
     }
+
     get routeRegex() {
       return this._routeRegex;
     }
+
     refresh() {
       const location = window.location.pathname;
       const parsed = this.routeRegex.test(location);
+
       if (parsed.match) {
         this.activate();
         this.state = parsed.data;
@@ -97,9 +110,11 @@
         });
       } else this.deactivate();
     }
+
     activate() {
       if (!this.loaded) {
         const sifrrElements = this.dataset.sifrrElements;
+
         if (sifrrElements && sifrrElements.indexOf('-') > 0) {
           try {
             const elements = JSON.parse(sifrrElements);
@@ -111,23 +126,30 @@
           this.loaded = Promise.resolve(true);
         }
       }
+
       this.classList.add('active');
       this.onActivate();
       dom.Event.trigger(this, 'activate');
     }
+
     onActivate() {}
+
     deactivate() {
       this.classList.remove('active');
       this.onDeactivate();
       dom.Event.trigger(this, 'deactivate');
     }
+
     onDeactivate() {}
+
     static get currentUrl() {
       return this._curl;
     }
+
     static set currentUrl(v) {
       this._curl = v;
     }
+
     static refreshAll() {
       if (window.location.pathname === this.currentUrl) return;
       this.all.forEach(sfr => {
@@ -136,7 +158,9 @@
       this.onRouteChange();
       this.currentUrl = window.location.pathname;
     }
+
     static onRouteChange() {}
+
     static clickEventListener(e) {
       if (!(window.history && window.history.pushState)) return false;
       const target = e.composedPath ? e.composedPath()[0] : e.target;
@@ -153,12 +177,14 @@
       SifrrRoute.refreshAll();
       return true;
     }
+
     static popstateEventListener(e) {
-      if (e.state && e.state.title) window.document.title = e.state.title;
-      else window.document.title = firstTitle;
+      if (e.state && e.state.title) window.document.title = e.state.title;else window.document.title = firstTitle;
       SifrrRoute.refreshAll();
     }
+
   }
+
   SifrrRoute.all = new Set();
   dom.Event.add('activate');
   dom.Event.add('deactivate');
@@ -170,6 +196,6 @@
 
   return sifrr_route;
 
-}));
+}(Sifrr.Dom));
 /*! (c) @aadityataparia */
 //# sourceMappingURL=sifrr.route.js.map

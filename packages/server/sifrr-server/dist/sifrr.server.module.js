@@ -8,6 +8,42 @@ import zlib from 'zlib';
 import busboy from 'busboy';
 import mkdirp from 'mkdirp';
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+        args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+
+      _next(undefined);
+    });
+  };
+}
+
 function writeHeaders(res, headers, other) {
   if (typeof other !== 'undefined') {
     res.writeHeader(headers, other.toString());
@@ -17,6 +53,7 @@ function writeHeaders(res, headers, other) {
     }
   }
 }
+
 function clone(obj) {
   if (typeof obj === 'object') {
     if (Array.isArray(obj)) return obj.slice(0);
@@ -26,17 +63,20 @@ function clone(obj) {
     return obj;
   }
 }
+
 function extend(who, from, overwrite = true) {
   const ownProps = Object.getOwnPropertyNames(from.prototype);
   ownProps.forEach(prop => {
     if (prop === 'constructor') return;
+
     if (who[prop] && overwrite) {
-      who[`_${prop}`] = who[prop];
+      who["_".concat(prop)] = who[prop];
     }
-    if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);
-    else who[prop] = clone(from.prototype[prop]);
+
+    if (typeof from.prototype[prop] === 'function') who[prop] = from.prototype[prop].bind(who);else who[prop] = clone(from.prototype[prop]);
   });
 }
+
 function stob(stream) {
   return new Promise(resolve => {
     const buffers = [];
@@ -46,15 +86,18 @@ function stob(stream) {
         case 0:
           resolve(Buffer.allocUnsafe(0));
           break;
+
         case 1:
           resolve(buffers[0]);
           break;
+
         default:
           resolve(Buffer.concat(buffers));
       }
     });
   });
 }
+
 var utils = {
   writeHeaders,
   extend,
@@ -243,40 +286,40 @@ const compressions = {
   gzip: zlib.createGzip,
   deflate: zlib.createDeflate
 };
-const { writeHeaders: writeHeaders$1 } = utils;
+const {
+  writeHeaders: writeHeaders$1
+} = utils;
 const getMime = mime.getMime;
 const bytes = 'bytes=';
-const { stob: stob$1 } = utils;
+const {
+  stob: stob$1
+} = utils;
+
 function sendFile(res, req, path, options) {
-  sendFileToRes(
-    res,
-    {
-      'if-modified-since': req.getHeader('if-modified-since'),
-      range: req.getHeader('range'),
-      'accept-encoding': req.getHeader('accept-encoding')
-    },
-    path,
-    options
-  );
+  sendFileToRes(res, {
+    'if-modified-since': req.getHeader('if-modified-since'),
+    range: req.getHeader('range'),
+    'accept-encoding': req.getHeader('accept-encoding')
+  }, path, options);
 }
-function sendFileToRes(
-  res,
-  reqHeaders,
-  path,
-  {
-    lastModified = true,
-    headers,
-    compress = false,
-    compressionOptions = {
-      priority: ['gzip', 'br', 'deflate']
-    },
-    cache = false
-  } = {}
-) {
-  let { mtime, size } = fs.statSync(path);
+
+function sendFileToRes(res, reqHeaders, path, {
+  lastModified = true,
+  headers,
+  compress = false,
+  compressionOptions = {
+    priority: ['gzip', 'br', 'deflate']
+  },
+  cache = false
+} = {}) {
+  let {
+    mtime,
+    size
+  } = fs.statSync(path);
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
   headers = Object.assign({}, headers);
+
   if (lastModified) {
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
@@ -284,28 +327,38 @@ function sendFileToRes(
         return res.end();
       }
     }
+
     headers['last-modified'] = mtimeutc;
   }
+
   headers['content-type'] = getMime(path);
   let start = 0,
-    end = size - 1;
+      end = size - 1;
+
   if (reqHeaders.range) {
     compress = false;
     const parts = reqHeaders.range.replace(bytes, '').split('-');
     start = parseInt(parts[0], 10);
     end = parts[1] ? parseInt(parts[1], 10) : end;
     headers['accept-ranges'] = 'bytes';
-    headers['content-range'] = `bytes ${start}-${end}/${size}`;
+    headers['content-range'] = "bytes ".concat(start, "-").concat(end, "/").concat(size);
     size = end - start + 1;
     res.writeStatus('206 Partial Content');
   }
+
   if (end < 0) end = 0;
-  let readStream = fs.createReadStream(path, { start, end });
+  let readStream = fs.createReadStream(path, {
+    start,
+    end
+  });
   let compressed = false;
+
   if (compress) {
     const l = compressionOptions.priority.length;
+
     for (let i = 0; i < l; i++) {
       const type = compressionOptions.priority[i];
+
       if (reqHeaders['accept-encoding'].indexOf(type) > -1) {
         compressed = type;
         const compressor = compressions[type](compressionOptions);
@@ -316,26 +369,24 @@ function sendFileToRes(
       }
     }
   }
+
   res.onAborted(() => readStream.destroy());
   writeHeaders$1(res, headers);
+
   if (cache) {
-    return cache.wrap(
-      `${path}_${mtimeutc}_${start}_${end}_${compressed}`,
-      cb => {
-        stob$1(readStream)
-          .then(b => cb(null, b))
-          .catch(cb);
-      },
-      { ttl: 0 },
-      (err, buffer) => {
-        if (err) {
-          res.writeStatus('500 Internal server error');
-          res.end();
-          throw err;
-        }
-        res.end(buffer);
+    return cache.wrap("".concat(path, "_").concat(mtimeutc, "_").concat(start, "_").concat(end, "_").concat(compressed), cb => {
+      stob$1(readStream).then(b => cb(null, b)).catch(cb);
+    }, {
+      ttl: 0
+    }, (err, buffer) => {
+      if (err) {
+        res.writeStatus('500 Internal server error');
+        res.end();
+        throw err;
       }
-    );
+
+      res.end(buffer);
+    });
   } else if (compressed) {
     readStream.on('data', buffer => {
       res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
@@ -343,8 +394,9 @@ function sendFileToRes(
   } else {
     readStream.on('data', buffer => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
-        lastOffset = res.getWriteOffset();
+            lastOffset = res.getWriteOffset();
       const [ok, done] = res.tryEnd(chunk, size);
+
       if (done) {
         readStream.destroy();
       } else if (!ok) {
@@ -353,26 +405,28 @@ function sendFileToRes(
         res.abOffset = lastOffset;
         res.onWritable(offset => {
           const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
+
           if (done) {
             readStream.destroy();
           } else if (ok) {
             readStream.resume();
           }
+
           return ok;
         });
       }
     });
   }
-  readStream
-    .on('error', () => {
-      res.writeStatus('500 Internal server error');
-      res.end();
-      readStream.destroy();
-    })
-    .on('end', () => {
-      res.end();
-    });
+
+  readStream.on('error', () => {
+    res.writeStatus('500 Internal server error');
+    res.end();
+    readStream.destroy();
+  }).on('end', () => {
+    res.end();
+  });
 }
+
 var sendfile = sendFile;
 
 function formData(contType, options = {}) {
@@ -388,12 +442,13 @@ function formData(contType, options = {}) {
         reject(Error('limit'));
       }
     });
-    busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    busb.on('file', function (fieldname, file, filename, encoding, mimetype) {
       const value = {
         filename,
         encoding,
         mimetype
       };
+
       if (typeof options.tmpDir === 'string') {
         if (typeof options.filename === 'function') filename = options.filename(filename);
         const fileToSave = path.join(options.tmpDir, filename);
@@ -401,21 +456,24 @@ function formData(contType, options = {}) {
         file.pipe(fs.createWriteStream(fileToSave));
         value.filePath = fileToSave;
       } else options.onFile(fieldname, file, filename, encoding, mimetype);
+
       setRetValue(ret, fieldname, value);
     });
-    busb.on('field', function(fieldname, value) {
+    busb.on('field', function (fieldname, value) {
       if (typeof options.onField === 'function') options.onField(fieldname, value);
       setRetValue(ret, fieldname, value);
     });
-    busb.on('finish', function() {
+    busb.on('finish', function () {
       resolve(ret);
     });
     busb.on('error', reject);
   });
 }
+
 function setRetValue(ret, fieldname, value) {
   if (fieldname.slice(-2) === '[]') {
     fieldname = fieldname.slice(0, fieldname.length - 2);
+
     if (Array.isArray(ret[fieldname])) {
       ret[fieldname].push(value);
     } else {
@@ -431,26 +489,32 @@ function setRetValue(ret, fieldname, value) {
     }
   }
 }
+
 var formdata = formData;
 
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
 }
 
-function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
+function loadRoutes(dir, {
+  filter = () => true,
+  basePath = ''
+} = {}) {
   let files;
   const paths = [];
+
   if (fs.statSync(dir).isDirectory()) {
-    files = fs
-      .readdirSync(dir)
-      .filter(filter)
-      .map(file => path.join(dir, file));
+    files = fs.readdirSync(dir).filter(filter).map(file => path.join(dir, file));
   } else {
     files = [dir];
   }
+
   files.forEach(file => {
     if (fs.statSync(file).isDirectory()) {
-      paths.push(...loadRoutes.call(this, file, { filter, basePath }));
+      paths.push(...loadRoutes.call(this, file, {
+        filter,
+        basePath
+      }));
     } else if (path.extname(file) === '.js') {
       const routes = commonjsRequire(file);
       let basePaths = routes.basePath || [''];
@@ -459,6 +523,7 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
       basePaths.forEach(basep => {
         for (const method in routes) {
           const methodRoutes = routes[method];
+
           for (let r in methodRoutes) {
             if (!Array.isArray(methodRoutes[r])) methodRoutes[r] = [methodRoutes[r]];
             this[method](basePath + basep + r, ...methodRoutes[r]);
@@ -470,43 +535,50 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   });
   return paths;
 }
+
 var loadroutes = loadRoutes;
 
-const { Readable } = stream;
+const {
+  Readable
+} = stream;
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
+
 const noOp = () => true;
-const { stob: stob$2 } = utils;
+
+const {
+  stob: stob$2
+} = utils;
+
 class BaseApp {
   file(pattern, path, options = {}) {
     if (this._staticPaths[pattern]) {
-      if (options.failOnDuplicateRoute)
-        throw Error(
-          `Error serving '${path}' for '${pattern}', already serving '${
-            this._staticPaths[pattern][0]
-          }' file for this patter.`
-        );
-      else if (!options.overwriteRoute) return;
+      if (options.failOnDuplicateRoute) throw Error("Error serving '".concat(path, "' for '").concat(pattern, "', already serving '").concat(this._staticPaths[pattern][0], "' file for this patter."));else if (!options.overwriteRoute) return;
     }
+
     this._staticPaths[pattern] = [path, options];
     this.get(pattern, this._serveStatic);
     return this;
   }
+
   folder(prefix, folder, options, base = folder) {
     if (!fs.statSync(folder).isDirectory()) {
       throw Error('Given path is not a directory: ' + folder);
     }
+
     if (prefix[0] !== '/') prefix = '/' + prefix;
     if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
     const filter = options ? options.filter || noOp : noOp;
     fs.readdirSync(folder).forEach(file => {
       const filePath = path.join(folder, file);
       if (!filter(filePath)) return;
+
       if (fs.statSync(filePath).isDirectory()) {
         this.folder(prefix, filePath, options, base);
       } else {
         this.file(prefix + '/' + path.relative(base, filePath), filePath, options);
       }
     });
+
     if (options && options.watch) {
       if (!this._watched[folder]) {
         const w = chokidar.watch(folder);
@@ -521,103 +593,146 @@ class BaseApp {
         this._watched[folder] = w;
       }
     }
+
     return this;
   }
+
   _serveStatic(res, req) {
     res.onAborted(noOp);
+
     const options = this._staticPaths[req.getUrl()];
+
     if (typeof options === 'undefined') {
       res.writeStatus('404 Not Found');
       res.end();
     } else sendfile(res, req, options[0], options[1]);
   }
+
   post(pattern, handler) {
-    if (typeof handler !== 'function')
-      throw Error(`handler should be a function, given ${typeof handler}.`);
+    if (typeof handler !== 'function') throw Error("handler should be a function, given ".concat(typeof handler, "."));
+
     this._post(pattern, (res, req) => {
       const contType = req.getHeader('content-type');
-      res.bodyStream = function() {
+
+      res.bodyStream = function () {
         const stream = new Readable();
         stream._read = noOp;
         this.onData((ab, isLast) => {
           stream.push(new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)));
+
           if (isLast) {
             stream.push(null);
           }
         });
         return stream;
       };
+
       res.body = () => stob$2(res.bodyStream());
-      if (contType.indexOf('application/json') > -1)
-        res.json = async () => JSON.parse(await res.body());
-      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
-        res.formData = formdata.bind(res, contType);
+
+      if (contType.indexOf('application/json') > -1) res.json =
+      /*#__PURE__*/
+      _asyncToGenerator(function* () {
+        return JSON.parse((yield res.body()));
+      });
+      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1) res.formData = formdata.bind(res, contType);
       handler(res, req);
     });
+
     return this;
   }
+
   load(dir, options) {
     loadroutes.call(this, dir, options);
     return this;
   }
+
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, socket => {
         this._sockets.push(socket);
+
         cb(socket);
       });
     } else {
       this._listen(h, socket => {
         this._sockets.push(socket);
+
         p(socket);
       });
     }
+
     return this;
   }
+
   close() {
     for (let f in this._watched) {
       this._watched[f].close();
     }
+
     this._sockets.forEach(s => {
       uWebSockets.us_listen_socket_close(s);
     });
+
     this._sockets = [];
     return this;
   }
+
 }
+
 BaseApp.prototype._staticPaths = {};
 BaseApp.prototype._watched = {};
 BaseApp.prototype._sockets = [];
 var baseapp = BaseApp;
 
-const { extend: extend$1 } = utils;
+const {
+  extend: extend$1
+} = utils;
+
 class App extends uWebSockets.App {
   constructor(options = {}) {
     super(options);
     extend$1(this, baseapp);
   }
+
 }
+
 var app = App;
 
-const { extend: extend$2 } = utils;
+const {
+  extend: extend$2
+} = utils;
+
 class SSLApp extends uWebSockets.SSLApp {
   constructor(options) {
     super(options);
     extend$2(this, baseapp);
   }
+
 }
+
 var sslapp = SSLApp;
 
 const noop = () => {};
-function createCluster({ apps = [], onListen = noop } = {}) {
+
+function createCluster({
+  apps = [],
+  onListen = noop
+} = {}) {
   const finalApps = [];
+
   for (let i = 0; i < apps.length; i++) {
     const config = apps[i];
-    let { app, port, ports } = config;
+    let {
+      app,
+      port,
+      ports
+    } = config;
+
     if (!Array.isArray(ports) || ports.length === 0) {
-      if (typeof port !== 'number') throw Error(`Port should be a number, given ${port}`);
+      if (typeof port !== 'number') throw Error("Port should be a number, given ".concat(port));
       ports = [port];
     }
+
     ports.forEach(p => {
       app.listen(p, socket => {
         onListen.call(app, socket, port);
@@ -628,8 +743,10 @@ function createCluster({ apps = [], onListen = noop } = {}) {
       ports
     });
   }
+
   return finalApps;
 }
+
 var createcluster = createCluster;
 
 var sifrr_server = {

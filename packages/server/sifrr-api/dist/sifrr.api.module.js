@@ -9,34 +9,39 @@ import graphqlTools from 'graphql-tools';
 
 var flatten = (attrs, separator = ', ', addDescription = false) => {
   const str = [];
+
   for (let attr in attrs) {
-    if (addDescription && attrs[attr].description) str.push(`"""${attrs[attr].description}"""`);
-    str.push(`${attr}: ${attrs[attr].type || attrs[attr]}`);
+    if (addDescription && attrs[attr].description) str.push("\"\"\"".concat(attrs[attr].description, "\"\"\""));
+    str.push("".concat(attr, ": ").concat(attrs[attr].type || attrs[attr]));
   }
+
   return str.join(separator);
 };
 
-var filterobject = function(json, fxn) {
+var filterobject = function (json, fxn) {
   const res = {};
+
   for (let k in json) {
     if (fxn(k)) res[k] = json[k];
   }
+
   return res;
 };
 
 var attrtypes = (attrs, required = [], allowed = []) => {
-  if (allowed.length > 0)
-    attrs = filterobject(attrs, attr => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
+  if (allowed.length > 0) attrs = filterobject(attrs, attr => allowed.indexOf(attr) >= 0 || required.indexOf(attr) >= 0);
   let ret = {},
-    type;
+      type;
+
   for (let attr in attrs) {
     let bang = required.indexOf(attr) >= 0 ? true : false;
+
     if (attrs[attr].returnType) {
       type = attrs[attr].returnType;
     } else if (!attrs[attr].type) {
       type = attrs[attr];
     } else if (attrs[attr].type.constructor.name === 'GraphQLList') {
-      type = `[${attrs[attr].type.ofType.name}]`;
+      type = "[".concat(attrs[attr].type.ofType.name, "]");
     } else if (attrs[attr].type.constructor.name === 'GraphQLNonNull') {
       type = attrs[attr].type.ofType.name;
       bang = true;
@@ -47,10 +52,14 @@ var attrtypes = (attrs, required = [], allowed = []) => {
     } else {
       type = attrs[attr].type;
     }
-    const args = attrs[attr].args ? `(${flatten(attrs[attr].args)})` : '';
-    ret[attr + args] = { type: type + (bang ? '!' : '') };
+
+    const args = attrs[attr].args ? "(".concat(flatten(attrs[attr].args), ")") : '';
+    ret[attr + args] = {
+      type: type + (bang ? '!' : '')
+    };
     if (attrs[attr].description) ret[attr + args].description = attrs[attr].description;
   }
+
   return ret;
 };
 
@@ -58,34 +67,56 @@ class BaseType {
   constructor(attributes) {
     this._attributes = attributes;
   }
+
   addAttribute(name, attribute) {
     this._attributes[name] = attribute;
   }
-  filterAttributes({ allowed = [], required = [] }) {
+
+  filterAttributes({
+    allowed = [],
+    required = []
+  }) {
     this._allowedAttrs = allowed;
     this._reqAttrs = required;
   }
-  getFilteredAttributes({ required = [], allowed = [] }) {
+
+  getFilteredAttributes({
+    required = [],
+    allowed = []
+  }) {
     return attrtypes(this._attributes, required, allowed);
   }
+
   getResolvers() {
     const resolvers = {};
+
     for (let attr in this._attributes) {
       if (this._attributes[attr].resolver) resolvers[attr] = this._attributes[attr].resolver;
     }
+
     return resolvers;
   }
+
   get attributes() {
-    return this.getFilteredAttributes({ required: this._reqAttrs, allowed: this._allowedAttrs });
+    return this.getFilteredAttributes({
+      required: this._reqAttrs,
+      allowed: this._allowedAttrs
+    });
   }
+
   get schemaPrefix() {
-    return `${this.description ? `"""${this.description}"""\n` : ''}`;
+    return "".concat(this.description ? "\"\"\"".concat(this.description, "\"\"\"\n") : '');
   }
+
 }
+
 var basetype = BaseType;
 
 class Model extends basetype {
-  constructor(type, attributes = {}, { queries = {}, mutations = {} }) {
+  constructor(type, attributes = {}, {
+    queries = {},
+    mutations = {}
+  }) {
     super(attributes);
     this.type = type;
     this.queries = queries;
@@ -95,29 +126,31 @@ class Model extends basetype {
     this._reqAttrs = [];
     this.description;
   }
+
   addConnection(name, connection) {
     this.connections.push(connection);
     this._attributes[name] = connection;
   }
+
   addConnectionQuery(name, connection) {
     this.connections.push(connection);
     this.queries[name] = connection;
   }
+
   addQuery(name, query) {
     this.queries[name] = query;
   }
+
   addMutation(name, mutation) {
     this.mutations[name] = mutation;
   }
+
   getSchema() {
-    return (
-      this.schemaPrefix +
-      `type ${this.type} {
-  ${flatten(this.attributes, '\n  ', true)}
-}`
-    );
+    return this.schemaPrefix + "type ".concat(this.type, " {\n  ").concat(flatten(this.attributes, '\n  ', true), "\n}");
   }
+
 }
+
 var model = Model;
 
 class Connection extends basetype {
@@ -129,6 +162,7 @@ class Connection extends basetype {
     this.nodeType = nodeType;
     this.description;
   }
+
   clone(resolver = this.resolver) {
     const conn = new Connection(this.type, this.args, resolver, this.nodeType);
     conn._attributes = this._attributes;
@@ -136,24 +170,17 @@ class Connection extends basetype {
     conn.base = this;
     return conn;
   }
+
   addArgument(name, type) {
     this.args[name] = type;
   }
+
   getSchema() {
-    return (
-      this.schemaPrefix +
-      `type ${this.type} {
-  edges: [${this.type + 'Edge'}]
-  ${flatten(this.attributes, '\n  ', true)}
+    return this.schemaPrefix + "type ".concat(this.type, " {\n  edges: [").concat(this.type + 'Edge', "]\n  ").concat(flatten(this.attributes, '\n  ', true), "\n}\n\ntype ").concat(this.type + 'Edge', " {\n  node: ").concat(this.nodeType, "\n  cursor: String\n}");
+  }
+
 }
 
-type ${this.type + 'Edge'} {
-  node: ${this.nodeType}
-  cursor: String
-}`
-    );
-  }
-}
 var connection = Connection;
 
 function commonjsRequire () {
@@ -677,88 +704,121 @@ Object.defineProperty(exports, 'toGlobalId', {
 });
 unwrapExports(lib);
 
-const { attributeFields, defaultListArgs, defaultArgs } = graphqlSequelize;
-const { resolver, createConnectionResolver } = graphqlSequelize;
-const { connectionArgs } = lib;
+const {
+  attributeFields,
+  defaultListArgs,
+  defaultArgs
+} = graphqlSequelize;
+const {
+  resolver,
+  createConnectionResolver
+} = graphqlSequelize;
+const {
+  connectionArgs
+} = lib;
+
 class SequelizeModel extends sequelize$1.Model {
   static init(options) {
     const ret = super.init(this.schema, options);
     ret.graphqlModel = new model(ret.name, attributeFields(ret), {
-      description: `${ret.name} Model`
+      description: "".concat(ret.name, " Model")
     });
-    ret.graphqlConnection = new connection(
-      ret.name + 'Connection',
-      connectionArgs,
-      createConnectionResolver({ target: ret }).resolveConnection,
-      ret.graphqlModel.type
-    );
+    ret.graphqlConnection = new connection(ret.name + 'Connection', connectionArgs, createConnectionResolver({
+      target: ret
+    }).resolveConnection, ret.graphqlModel.type);
+
     ret._onInit();
+
     return ret;
   }
+
   static belongsToMany(model, options) {
     return this.graphqlAssoc('belongsToMany', model, options, true);
   }
+
   static belongsTo(model, options) {
     return this.graphqlAssoc('belongsTo', model, options, false);
   }
+
   static hasMany(model, options) {
     return this.graphqlAssoc('hasMany', model, options, true);
   }
+
   static hasOne(model, options) {
     return this.graphqlAssoc('hasOne', model, options, false);
   }
+
   static graphqlAssoc(type, model, options, multiple) {
     const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
     this[name] = super[type](model, options);
+
     if (options.useConnection) {
-      const conn = model.graphqlConnection.clone(
-        createConnectionResolver({ target: this[name] }).resolveConnection
-      );
+      const conn = model.graphqlConnection.clone(createConnectionResolver({
+        target: this[name]
+      }).resolveConnection);
       conn.description = options.description;
       this.graphqlModel.addConnection(name, conn);
-    } else
-      this.graphqlModel.addAttribute(name, {
-        resolver: resolver(this[name]),
-        returnType: model.graphqlModel.type,
-        description: options.description
-      });
+    } else this.graphqlModel.addAttribute(name, {
+      resolver: resolver(this[name]),
+      returnType: model.graphqlModel.type,
+      description: options.description
+    });
+
     return this[name];
   }
+
   static _onInit() {
     for (let q in this.queries) this.addQuery(q, this.queries[q]);
+
     for (let m in this.mutations) this.addMutation(m, this.mutations[m]);
+
     for (let a in this.extraAttributes) this.addAttr(a, this.extraAttributes[a]);
+
     this.onInit();
   }
+
   static get queries() {
     return {};
   }
+
   static get mutations() {
     return {};
   }
+
   static get extraAttributes() {
     return {};
   }
+
   static gqAttrs(options) {
     return this.graphqlModel.getFilteredAttributes(options);
   }
-  static gqArgs({ required, allowed } = {}) {
+
+  static gqArgs({
+    required,
+    allowed
+  } = {}) {
     return attrtypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
   }
+
   static addAttr(name, options) {
     this.graphqlModel.addAttribute(name, options);
   }
+
   static addQuery(name, options) {
     this.graphqlModel.addQuery(name, options);
   }
+
   static addMutation(name, options) {
     this.graphqlModel.addMutation(name, options);
   }
+
   static addConnectionQuery(name) {
     this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
   }
+
   static getQueryResolver(_, args, ctx, info) {
     const include = [];
+
     for (let arg in args.where) {
       if (arg.indexOf('__') >= 0) {
         const assocs = arg.split('__');
@@ -767,6 +827,7 @@ class SequelizeModel extends sequelize$1.Model {
         delete args.where[arg];
       }
     }
+
     return resolver(this, {
       before: findOptions => {
         findOptions.include = include;
@@ -774,8 +835,10 @@ class SequelizeModel extends sequelize$1.Model {
       }
     })(_, args, ctx, info);
   }
+
   static createMutationResolver(_, args) {
     const include = [];
+
     for (let arg in args) {
       if (arg.indexOf('__') >= 0) {
         const assocs = arg.split('__');
@@ -785,42 +848,61 @@ class SequelizeModel extends sequelize$1.Model {
         delete args[arg];
       }
     }
-    return this.create(args, { include });
+
+    return this.create(args, {
+      include
+    });
   }
+
   static updateMutationResolver(_, args) {
-    const options = { where: { id: args.id } };
+    const options = {
+      where: {
+        id: args.id
+      }
+    };
     delete args.id;
     return this.update(args, options).then(() => this.findByPk(options.where.id));
   }
+
   static upsertMutationResolver(_, args) {
     return this.upsert(args).then(() => this.findByPk(args.id));
   }
+
   static deleteMutationResolver(_, args) {
-    return this.destroy({ where: args });
+    return this.destroy({
+      where: args
+    });
   }
+
   static _assocsToInclude(assocs, column = true, model = this) {
     if (column) assocs.pop();
     const assocName = assocs.shift();
-    const include = [
-      {
-        association: model[assocName],
-        as: assocName
-      }
-    ];
+    const include = [{
+      association: model[assocName],
+      as: assocName
+    }];
+
     if (assocs.length > 0) {
       include[0].include = this._assocsToInclude(assocs, false, model[assocName].target);
     }
+
     return include;
   }
+
 }
+
 var sequelize = SequelizeModel;
 
-const { graphql } = graphql$1;
+const {
+  graphql
+} = graphql$1;
+
 class GraphqlExecutor {
   constructor(executableSchema) {
     this._schema = executableSchema;
     this._middlewares = [];
   }
+
   resolve(query, variables, context = {}) {
     return graphql({
       schema: this._schema,
@@ -829,54 +911,71 @@ class GraphqlExecutor {
       contextValue: context
     });
   }
+
 }
+
 var graphqlexecutor = GraphqlExecutor;
 
-function loadRoutes(app, dir, { ignore = [], basePath = '' }) {
+function loadRoutes(app, dir, {
+  ignore = [],
+  basePath = ''
+}) {
   const paths = [];
-  fs.readdirSync(dir)
-    .filter(file => path.extname(file) === '.js' && ignore.indexOf(file) < 0)
-    .forEach(file => {
-      const routes = commonjsRequire(path.join(dir, file));
-      let basePaths = routes.basePath || '';
-      delete routes.basePath;
-      if (typeof basePaths === 'string') basePaths = [basePaths];
-      basePaths.forEach(basep => {
-        for (const method in routes) {
-          const methodRoutes = routes[method];
-          for (let r in methodRoutes) {
-            app[method](basePath + basep + r, methodRoutes[r]);
-            paths.push(basePath + basep + r);
-          }
+  fs.readdirSync(dir).filter(file => path.extname(file) === '.js' && ignore.indexOf(file) < 0).forEach(file => {
+    const routes = commonjsRequire(path.join(dir, file));
+    let basePaths = routes.basePath || '';
+    delete routes.basePath;
+    if (typeof basePaths === 'string') basePaths = [basePaths];
+    basePaths.forEach(basep => {
+      for (const method in routes) {
+        const methodRoutes = routes[method];
+
+        for (let r in methodRoutes) {
+          app[method](basePath + basep + r, methodRoutes[r]);
+          paths.push(basePath + basep + r);
         }
-      });
+      }
     });
+  });
   return paths;
 }
+
 var loadroutes = loadRoutes;
 
 var constants = {
   fileHeader: '# THIS FILE WAS AUTOGENERATED BY SIFRR-API. DO NOT EDIT THIS FILE DIRECTLY.\n',
-  timestampHeader: `# Genarated at ${new Date().toUTCString()} (${Date.now()})\n`,
+  timestampHeader: "# Genarated at ".concat(new Date().toUTCString(), " (").concat(Date.now(), ")\n"),
   fileSeparator: '#### Graphql Schema ####\n\n'
 };
 
-const { makeExecutableSchema } = graphqlTools;
-const { fileHeader, timestampHeader, fileSeparator } = constants;
+const {
+  makeExecutableSchema
+} = graphqlTools;
+const {
+  fileHeader,
+  timestampHeader,
+  fileSeparator
+} = constants;
+
 function getTypeDef(qs, resolvers) {
   for (let q in qs) {
     const qdet = qs[q];
     resolvers[q] = qdet.resolver;
   }
+
   return flatten(attrtypes(qs), '\n  ', true);
 }
-function createSchemaFromModels(
-  models,
-  { extra = '', queries = {}, mutations = {}, schemaPath } = {}
-) {
+
+function createSchemaFromModels(models, {
+  extra = '',
+  queries = {},
+  mutations = {},
+  schemaPath
+} = {}) {
   const connections = {},
-    typeDefs = [],
-    resolvers = {};
+        typeDefs = [],
+        resolvers = {};
+
   for (let modelName in models) {
     const model = models[modelName];
     typeDefs.push(model.getSchema());
@@ -888,56 +987,55 @@ function createSchemaFromModels(
       connections[conn.type] = conn.base || conn;
     });
   }
+
   for (let name in connections) {
     const conn = connections[name];
     typeDefs.push(conn.getSchema());
     resolvers[conn.type] = resolvers[conn.type] || {};
     Object.assign(resolvers[conn.type], conn.getResolvers());
   }
+
   const qnew = {},
-    mnew = {};
-  const queryMut = `type Query {
-  ${getTypeDef(queries, qnew)}
-}
-
-type Mutation {
-  ${getTypeDef(mutations, mnew)}
-}
-
-scalar SequelizeJSON
-scalar Date
-${extra}`;
+        mnew = {};
+  const queryMut = "type Query {\n  ".concat(getTypeDef(queries, qnew), "\n}\n\ntype Mutation {\n  ").concat(getTypeDef(mutations, mnew), "\n}\n\nscalar SequelizeJSON\nscalar Date\n").concat(extra);
   typeDefs.unshift(queryMut);
   resolvers.Query = qnew;
   resolvers.Mutation = mnew;
+
   if (schemaPath) {
     mkdirp(path.dirname(schemaPath));
     const comment = fileHeader + timestampHeader + fileSeparator;
-    const oldFileContent = fs.existsSync(schemaPath)
-      ? fs.readFileSync(schemaPath, { encoding: 'UTF-8' }).split(fileSeparator)[1]
-      : null;
+    const oldFileContent = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, {
+      encoding: 'UTF-8'
+    }).split(fileSeparator)[1] : null;
     const newFileContent = typeDefs.join('\n\n') + '\n';
     if (oldFileContent !== newFileContent) fs.writeFileSync(schemaPath, comment + newFileContent);
   }
+
   return makeExecutableSchema({
     typeDefs,
     resolvers
   });
 }
+
 var createschemafrommodels = createSchemaFromModels;
 
-function reqToVariables(req, { allowed = [] } = {}) {
+function reqToVariables(req, {
+  allowed = []
+} = {}) {
   let args = {};
   Object.assign(args, req.query, req.body, req.params);
   if (allowed.length > 0) args = filterobject(args, arg => allowed.indexOf(arg) >= 0);
+
   for (let arg in args) {
     try {
       args[arg] = JSON.parse(args[arg]);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
+
   return args;
 }
+
 var reqtovariables = reqToVariables;
 
 const SifrrApi = {};
