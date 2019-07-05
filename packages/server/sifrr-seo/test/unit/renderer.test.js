@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const Renderer = require('../../src/renderer');
 const renderer = new Renderer({ damn: true });
+
 const res = {
   headers: () => {
     return { 'content-type': 'asdsad' };
