@@ -77,7 +77,7 @@ const roots = (process.argv[2] || './')
 const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
-  let preCommand = ['yarn build'];
+  let preCommand = [`cd ${root} && yarn build`];
   if (fs.existsSync(path.join(root, './test/public/package.json'))) {
     preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
   }

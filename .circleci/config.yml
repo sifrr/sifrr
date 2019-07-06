@@ -50,9 +50,6 @@ jobs:
               ./scripts/distribute
             fi
       - run:
-          name: Build dist files
-          command: yarn build
-      - run:
           name: Run tests
           command: PARALLEL=true COVERAGE=true LCOV=true yarn test -j
       - run:
