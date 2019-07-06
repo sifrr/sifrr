@@ -119,10 +119,5 @@ runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === '
       process.exit(1);
     }
     global.console.log(`All tests passed!`);
-    process.exit(0);
   }
 );
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-});
