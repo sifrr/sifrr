@@ -13,7 +13,7 @@
   <a href="https://sifrr.github.io/sifrr/">Documentation</a> | <a href="./CHANGELOG.md">Changelog</a> | <a href="./misc/CONTRIBUTORS">Contributors</a> | <a href="./misc/CONTRIBUTING.md">Contributing guidelines</a> | <a href="./misc/CODE_OF_CONDUCT.md">Code of Conduct</a>
 </p>
 
-* * *
+---
 
 > sifrr is a set of tiny, customizable, independent libraries for creating modern and fast webapps using JavaScript.
 
@@ -39,9 +39,9 @@ This repository is a monorepo managed using yarn workspaces. This means there ar
 
 | Package                                         | Description                                            | NPM                                                                                                           | Documentation                                                                                                                          |                   Tests                   |
 | :---------------------------------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------: |
-| [sifrr-api](./packages/server/sifrr-api/)       | Create normal/GraphQL APIs with same codebase          | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-api/)    |   [OK](./packages/server/sifrr-api/test)  |
-| [sifrr-cli](./packages/server/sifrr-cli/)       | Sifrr cli for creating webapps using sifrr             | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-cli/)    |                   \[WIP]                  |
-| [sifrr-seo](./packages/server/sifrr-seo/)       | Server side pre-rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)    |   [OK](./packages/server/sifrr-seo/test)  |
+| [sifrr-api](./packages/server/sifrr-api/)       | Create normal/GraphQL APIs with same codebase          | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-api/)    |  [OK](./packages/server/sifrr-api/test)   |
+| [sifrr-cli](./packages/server/sifrr-cli/)       | Sifrr cli for creating webapps using sifrr             | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-cli/)    |                  \[WIP]                   |
+| [sifrr-seo](./packages/server/sifrr-seo/)       | Server side pre-rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)    |  [OK](./packages/server/sifrr-seo/test)   |
 | [sifrr-server](./packages/server/sifrr-server/) | Fast HTTP + WebSockets server                          | [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-server/) | [OK](./packages/server/sifrr-server/test) |
 
 `sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
@@ -53,13 +53,13 @@ All the packages can be used with node, es6 modules, and are compatible with bun
 ### commonJS (node)
 
 ```js
-const SifrrDom = require('@sifrr/dom')
+const SifrrDom = require('@sifrr/dom');
 ```
 
 ### ES6 modules (`import`)
 
 ```js
-import SifrrDom from '@sifrr/dom'
+import SifrrDom from '@sifrr/dom';
 ```
 
 ### standalone distributions (browser packages only)

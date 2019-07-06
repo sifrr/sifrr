@@ -1,24 +1,18 @@
 'use strict';
 
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import { terser } from 'rollup-plugin-terser';
-import commonjs from 'rollup-plugin-commonjs';
+import path from 'path';
+import { getRollupConfig } from '@sifrr/dev';
 
-export default {
-  input: 'index.js',
-  output: {
-    file: 'index.bundled.js',
-    format: 'umd',
-    name: 'SW',
-    sourcemap: true
+export default getRollupConfig(
+  {
+    name: 'sseo',
+    inputFile: path.join(__dirname, `./src.js`),
+    outputFolder: __dirname,
+    outputFileName: 'index',
+    type: 'browser'
   },
-  plugins: [
-    resolve({
-      browser: true
-    }),
-    commonjs(),
-    babel(),
-    terser()
-  ],
-};
+  {
+    external: []
+  },
+  false
+);
