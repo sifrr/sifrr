@@ -43,12 +43,6 @@ class Renderer {
     return this.browserAsync()
       .then(b => b.newPage())
       .then(async newp => {
-        newp._evaluate = newp.evaluate;
-        newp.evaluate = fxn => {
-          console.log(fxn.toString());
-          newp._evaluate(fxn);
-        };
-
         const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
         await fetches.addListener;
 
