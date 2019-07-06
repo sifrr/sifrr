@@ -7,6 +7,7 @@ const seo = new Seo(['UC Browser'], {
     // eslint-disable-next-line no-undef
     ShadyDOM = { force: true };
   },
+  /* s */
   afterRender: async () => {
     // Wait till all sifrr elements are loaded
     if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
