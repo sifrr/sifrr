@@ -1,6 +1,7 @@
 // Inspired from https://github.com/Freak6133/stage0/blob/master/syntheticEvents.js
 const SYNTHETIC_EVENTS = {};
-const opts = { capture: true, passive: true, bubbles: true };
+const listenOpts = { capture: true, passive: true };
+const customOpts = { composed: true, bubbles: true };
 
 const getEventListener = name => {
   return e => {
@@ -41,7 +42,7 @@ const Event = {
   add: name => {
     if (SYNTHETIC_EVENTS[name]) return false;
     const namedEL = getEventListener(name);
-    document.addEventListener(name, namedEL, opts);
+    document.addEventListener(name, namedEL, listenOpts);
     SYNTHETIC_EVENTS[name] = {};
     return true;
   },
@@ -62,10 +63,8 @@ const Event = {
   },
   trigger: (el, name, options) => {
     if (typeof el === 'string') el = document.$(el);
-    const ce = new CustomEvent(name, Object.assign(opts, options));
-    el.dispatchEvent(ce);
+    el.dispatchEvent(new CustomEvent(name, Object.assign(customOpts, options)));
   },
-  opts,
   getEventListener
 };
 
