@@ -12,12 +12,12 @@ module.exports = e => {
 
   let root = target._root || target.root || target.parentNode;
   while (root && !root.isSifrr) root = root.parentNode || root.host;
-  if (root) target._root = root;
-  else target._root = null;
-
-  const prop = target.getAttribute(BIND_ATTR);
-  if (target._root && shouldMerge(value, target._root._state[prop])) {
-    if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
-    else target._root.state = { [prop]: value };
-  }
+  if (root) {
+    target._root = root;
+    const prop = target.getAttribute(BIND_ATTR);
+    if (shouldMerge(value, root._state[prop])) {
+      if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
+      else root.state = { [prop]: value };
+    }
+  } else target._root = null;
 };
