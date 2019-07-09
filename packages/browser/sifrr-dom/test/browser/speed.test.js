@@ -42,7 +42,7 @@ const ExpectedLayoutCounts = {
   '1k-append': 1
 };
 
-pdescribe('Speed tests', async function() {
+describe('Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 
