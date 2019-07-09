@@ -11,10 +11,13 @@ async function isActive(selector) {
 describe('sifrr-route', () => {
   before(async () => {
     await page.goto(`${PATH}/`);
+    await page.evaluate(async () => {
+      await Sifrr.Dom.loading();
+    });
   });
 
   it('has Sifrr.Route', async () => {
-    const element = await page.evaluate(() => typeof Sifrr.Route.Element);
+    const element = await page.evaluate(() => typeof Sifrr.Route.SifrrRoute);
     const regex = await page.evaluate(() => typeof Sifrr.Route.RegexPath);
 
     expect(element).to.equal('function');

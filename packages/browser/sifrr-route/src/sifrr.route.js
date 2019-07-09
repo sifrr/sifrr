@@ -1,18 +1,13 @@
-const SifrrDom = require('@sifrr/dom');
-
-const Route = {
-  RegexPath: require('./regexpath')
-};
+import { Element, load, Event, register } from '@sifrr/dom';
+import RegexPath from './regexpath';
 
 const firstTitle = window.document.title;
-class SifrrRoute extends SifrrDom.Element {
+class SifrrRoute extends Element {
   static get template() {
-    return SifrrDom.template(
-      '<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>'
-    );
+    return '<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>';
   }
 
-  static observedAttrs() {
+  static syncedAttrs() {
     return ['path'];
   }
 
@@ -27,18 +22,14 @@ class SifrrRoute extends SifrrDom.Element {
 
   onAttributeChange(attrName) {
     if (attrName === 'path') {
-      this._routeRegex = new Route.RegexPath(this.getAttribute('path'));
+      this.routeRegex = new RegexPath(this.path);
       this.refresh();
     }
   }
 
-  get routeRegex() {
-    return this._routeRegex;
-  }
-
   refresh() {
-    const location = window.location.pathname;
-    const parsed = this.routeRegex.test(location);
+    const loc = window.location.pathname;
+    const parsed = this.routeRegex.test(loc);
     if (parsed.match) {
       this.activate();
       this.state = parsed.data;
@@ -54,55 +45,56 @@ class SifrrRoute extends SifrrDom.Element {
       if (sifrrElements && sifrrElements.indexOf('-') > 0) {
         try {
           const elements = JSON.parse(sifrrElements);
-          this.loaded = Promise.all(Object.keys(elements).map(k => SifrrDom.load(k, elements[k])));
+          this.loaded = Promise.all(Object.keys(elements).map(k => load(k, elements[k])));
         } catch (e) {
-          this.loaded = Promise.all(sifrrElements.split(',').map(k => SifrrDom.load(k)));
+          this.loaded = Promise.all(sifrrElements.split(',').map(k => load(k)));
         }
       } else {
         this.loaded = Promise.resolve(true);
       }
     }
     this.classList.add('active');
+    Event.trigger(this, 'activate');
     this.onActivate();
-    SifrrDom.Event.trigger(this, 'activate');
   }
 
   onActivate() {}
 
   deactivate() {
     this.classList.remove('active');
+    Event.trigger(this, 'deactivate');
     this.onDeactivate();
-    SifrrDom.Event.trigger(this, 'deactivate');
   }
 
   onDeactivate() {}
 
-  static get currentUrl() {
-    return this._curl;
-  }
-
-  static set currentUrl(v) {
-    this._curl = v;
-  }
-
   static refreshAll() {
     if (window.location.pathname === this.currentUrl) return;
-    this.all.forEach(sfr => {
-      sfr.refresh();
-    });
-    this.onRouteChange();
+    this.all.forEach(sfr => sfr.refresh());
     this.currentUrl = window.location.pathname;
+    this.onRouteChange();
   }
 
   static onRouteChange() {}
 
   static clickEventListener(e) {
     if (!(window.history && window.history.pushState)) return false;
-    const target = e.composedPath ? e.composedPath()[0] : e.target; // composedPath works in safari too
+    if (e.metaKey || e.ctrlKey) return false;
+
+    // find closest link element
+    const composedPath = e.composedPath ? e.composedPath() : [e.target],
+      l = composedPath.length;
+    let target;
+    for (let i = 0; i < l; i++) {
+      const t = composedPath[i];
+      if (t.matches && t.matches('a')) {
+        target = t;
+        break;
+      }
+    }
+
     if (
-      e.metaKey ||
-      e.ctrlKey ||
-      !target.matches('a') ||
+      !target ||
       target.host !== window.location.host ||
       (target.target && target.target !== '_self')
     )
@@ -124,7 +116,7 @@ class SifrrRoute extends SifrrDom.Element {
   }
 
   static popstateEventListener(e) {
-    if (e.state && e.state.title) window.document.title = e.state.title;
+    if (e.state && e.state.title) document.title = e.state.title;
     // replace title with First title if there's no state title
     else window.document.title = firstTitle;
     SifrrRoute.refreshAll();
@@ -133,12 +125,11 @@ class SifrrRoute extends SifrrDom.Element {
 
 SifrrRoute.all = new Set();
 
-SifrrDom.Event.add('activate');
-SifrrDom.Event.add('deactivate');
-Route.Element = SifrrRoute;
-SifrrDom.register(SifrrRoute);
+Event.add('activate');
+Event.add('deactivate');
+register(SifrrRoute);
 
 window.addEventListener('popstate', SifrrRoute.popstateEventListener);
 window.document.addEventListener('click', SifrrRoute.clickEventListener);
 
-module.exports = Route;
+export { RegexPath, SifrrRoute };

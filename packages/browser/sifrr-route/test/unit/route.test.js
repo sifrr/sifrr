@@ -1,6 +1,6 @@
 const mock = require('mock-require');
 mock('@sifrr/dom', window.Sifrr.Dom);
-const Route = require('../../src/sifrr.route').Element;
+const Route = require('../../src/sifrr.route').SifrrRoute;
 mock.stop('@sifrr/dom');
 
 describe('Route', () => {

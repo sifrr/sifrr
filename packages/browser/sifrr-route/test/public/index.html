@@ -1,96 +1,98 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
-<head>
-  <meta charset="utf-8">
-  <title>route</title>
-  <style media="screen">
-    *:not(:defined) * {
-      display: none;
-    }
-
-    *:not(:defined)::before {
-      content: " ";
-      display: block !important;
-      width: 24px;
-      height: 24px;
-      margin: 1px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      border-color: red transparent blue transparent;
-      animation: lds-dual-ring 1.2s linear infinite;
-    }
-
-    @keyframes lds-dual-ring {
-      0% {
-        transform: rotate(0deg);
+  <head>
+    <meta charset="utf-8" />
+    <title>route</title>
+    <style media="screen">
+      *:not(:defined) * {
+        display: none;
       }
 
-      100% {
-        transform: rotate(360deg);
+      *:not(:defined)::before {
+        content: ' ';
+        display: block !important;
+        width: 24px;
+        height: 24px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        border-color: red transparent blue transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
       }
-    }
 
-    /* Animation */
-    sifrr-route.active {
-      opacity: 0;
-      animation: anim 0.3s ease forwards;
-    }
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
 
-    @keyframes anim {
-      from {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Animation */
+      sifrr-route.active {
         opacity: 0;
+        animation: anim 0.3s ease forwards;
       }
-      to {
-        opacity: 1;
+
+      @keyframes anim {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
-    }
-  </style>
-</head>
+    </style>
+  </head>
 
-<body>
-  <h1><a id="ok" href="/" title="Home">OK</a></h1>
-  <a href="http://google.com" id="external" title="Home">External</a>
-  <a href="/target" target="_blank" title="Home">Outside</a>
-  <a href="/target" target="_parent" title="Home">Parent</a>
-  <a href="/target" target="_top" title="Home">Top</a>
-  <a href="/target" target="_self" title="Home">Self</a>
-  <a href="/abcd" title="abcd">/abcd</a>
-  <a href="/abcd?query=random" title="abcd">/abcd query</a>
-  <a href="/abcd#hash_random" title="abcd">/abcd hash</a>
-  <a href="/efgh" title="efgh">/efgh</a>
-  <a href="/efgh?query=random" title="efgh">/efgh query</a>
-  <a href="/efgh#hash_random" title="efgh">/efgh hash</a>
-  <a href="/notitle">/notitle</a>
-  <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
-  <a id="elementSimple" href="/els/simple" title="Elements">Load simple elements</a>
-  <a id="elementJson" href="/els/json" title="Elements">Load JSON elements</a>
-  <sifrr-route id='test' path='/'>
-    <p>test</p>
-  </sifrr-route>
-  <sifrr-route id='everywhere' path='**'>
-    <p>a</p>
-    <p>Visible everywhere</p>
-    <p>e</p>
-  </sifrr-route>
-  <sifrr-route id='abcd' title='abcd' path='/abcd' data-sifrr-elements='sifrr-test,sifrr-test'>
-    <p>/abcd</p>
-    <sifrr-test data-sifrr-state='{"route":{}}'></sifrr-test>
-  </sifrr-route>
-  <sifrr-route id='efgh' path='/efgh'>
-    /efgh
-  </sifrr-route>
-  <sifrr-route id="complex" path='/:x/*/**/mnop/*/:k' data-sifrr-elements='sifrr-test'>
-    Route state check
-    <sifrr-test data-sifrr-route-state="true"></sifrr-test>
-  </sifrr-route>
-  <sifrr-route path='/els/simple' data-sifrr-elements='sifrr-a,sifrr-b'>
-  </sifrr-route>
-  <sifrr-route path='/els/json' data-sifrr-elements='{"sifrr-a": {}, "sifrr-b": { "js": true }}'>
-  </sifrr-route>
-  <script src="/sifrr.dom.js" charset="utf-8"></script>
-  <script src="/index.bundled.js" charset="utf-8"></script>
-  <script src="/sifrr.route.js" charset="utf-8"></script>
-</body>
-
+  <body>
+    <h1><a id="ok" href="/" title="Home">OK</a></h1>
+    <a href="http://google.com" id="external" title="Home">External</a>
+    <a href="/target" target="_blank" title="Home">Outside</a>
+    <a href="/target" target="_parent" title="Home">Parent</a>
+    <a href="/target" target="_top" title="Home">Top</a>
+    <a href="/target" target="_self" title="Home">Self</a>
+    <a href="/abcd" title="abcd">/abcd</a>
+    <a href="/abcd?query=random" title="abcd">/abcd query</a>
+    <a href="/abcd#hash_random" title="abcd">/abcd hash</a>
+    <a href="/efgh" title="efgh">/efgh</a>
+    <a href="/efgh?query=random" title="efgh">/efgh query</a>
+    <a href="/efgh#hash_random" title="efgh">/efgh hash</a>
+    <a href="/notitle">/notitle</a>
+    <a id="complexlink" href="/new/def/ghi/klm/mnop/sdf/klm" title="complex">route state check</a>
+    <a id="elementSimple" href="/els/simple" title="Elements">Load simple elements</a>
+    <a id="elementJson" href="/els/json" title="Elements">Load JSON elements</a>
+    <sifrr-route id="test" path="/">
+      <p>test</p>
+    </sifrr-route>
+    <sifrr-route id="everywhere" path="**">
+      <p>a</p>
+      <p>Visible everywhere</p>
+      <p>e</p>
+    </sifrr-route>
+    <sifrr-route id="abcd" title="abcd" path="/abcd" data-sifrr-elements="sifrr-test,sifrr-test">
+      <p>/abcd</p>
+      <sifrr-test data-sifrr-state='{"route":{}}'></sifrr-test>
+    </sifrr-route>
+    <sifrr-route id="efgh" path="/efgh">
+      /efgh
+    </sifrr-route>
+    <sifrr-route id="complex" path="/:x/*/**/mnop/*/:k" data-sifrr-elements="sifrr-test">
+      Route state check
+      <sifrr-test data-sifrr-route-state="true"></sifrr-test>
+    </sifrr-route>
+    <sifrr-route path="/els/simple" data-sifrr-elements="sifrr-a,sifrr-b"> </sifrr-route>
+    <sifrr-route path="/els/json" data-sifrr-elements='{"sifrr-a": {}, "sifrr-b": { "js": true }}'>
+    </sifrr-route>
+    <a href="/abcd">
+      <div>
+        <button>HAHAHA</button>
+      </div>
+    </a>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script src="/index.js" charset="utf-8"></script>
+    <script src="/sifrr.route.js" charset="utf-8"></script>
+  </body>
 </html>

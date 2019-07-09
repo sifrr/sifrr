@@ -58,4 +58,4 @@ class RegexPath {
   }
 }
 
-module.exports = RegexPath;
+export default RegexPath;

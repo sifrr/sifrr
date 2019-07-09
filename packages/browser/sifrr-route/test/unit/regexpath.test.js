@@ -1,4 +1,4 @@
-const Regex = require('../../src/regexpath');
+import Regex from '../../src/regexpath';
 
 describe('Regex', () => {
   it('works with :name', () => {
