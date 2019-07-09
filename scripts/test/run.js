@@ -53,6 +53,9 @@ const runBrowserTests = process.argv.indexOf('-b') > 0 || process.argv.indexOf('
 // check if run only browser tests
 const serverOnly = process.argv.indexOf('-s') > 0 || process.argv.indexOf('--server') > 0;
 
+const dontRunPrecommand =
+  process.argv.indexOf('-np') > 0 || process.argv.indexOf('--no-precommand') > 0;
+
 // test port
 let port = 8888;
 const portIndex = Math.max(process.argv.indexOf('--test-port'), process.argv.indexOf('-tp'));
@@ -77,9 +80,12 @@ const roots = (process.argv[2] || './')
 const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
-  let preCommand = [`cd ${root} && yarn build`];
-  if (fs.existsSync(path.join(root, './test/public/package.json'))) {
-    preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
+  let preCommand = [];
+  if (!dontRunPrecommand) {
+    preCommand.push(`cd ${root} && yarn build`);
+    if (fs.existsSync(path.join(root, './test/public/package.json'))) {
+      preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
+    }
   }
 
   return {
@@ -99,8 +105,7 @@ const options = roots.map((root, i) => {
         path.join(__dirname, '../../packages/browser/sifrr-dom/dist'),
         path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')
       ],
-      coverage: path.join(__dirname, '../../.nyc_output'),
-      source: path.join(__dirname, '../../packages')
+      coverage: path.join(__dirname, '../../.nyc_output')
     },
     sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
     junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
