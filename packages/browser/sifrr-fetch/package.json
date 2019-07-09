@@ -35,9 +35,10 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.22",
+    "@sifrr/dev": "^0.0.20",
     "cache-manager": "^2.9.1",
-    "loadtest": "^3.0.7"
+    "loadtest": "^3.0.7",
+    "node-fetch": "^2.6.0"
   },
   "files": [
     "bin",

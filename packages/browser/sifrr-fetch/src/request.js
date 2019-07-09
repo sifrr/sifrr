@@ -8,8 +8,7 @@ class Request {
 
   response() {
     const me = this;
-    return window
-      .fetch(this.url, this.options)
+    return fetch(this.url, this.options)
       .then(resp => {
         const contentType = resp.headers.get('content-type');
         const isJson = contentType && contentType.includes('application/json');
