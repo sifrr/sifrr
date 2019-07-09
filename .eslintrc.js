@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['sifrr'],
+  extends: ['@sifrr'],
   globals: {
     Sifrr: false
   }

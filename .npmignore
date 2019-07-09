@@ -18,5 +18,4 @@ typings/
 .yarn-integrity
 .env
 .next
-dist
 .DS_Store

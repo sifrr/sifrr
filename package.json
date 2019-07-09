@@ -1,8 +1,9 @@
 {
-  "name": "Sifrr",
+  "name": "sifrr",
   "private": true,
   "workspaces": [
-    "packages/*/*"
+    "packages/*/*",
+    "packages/*/*/test/public"
   ],
   "version": "0.0.5",
   "description": "a fullstack nodeJS/vanillaJS framework",
@@ -47,7 +48,7 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.13",
+    "@sifrr/dev": "^0.0.22",
     "cache-manager": "^2.9.1",
     "loadtest": "^3.0.7"
   }

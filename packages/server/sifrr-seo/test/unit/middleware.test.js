@@ -8,10 +8,14 @@ describe('middleware', () => {
     sinon.stub(seo, 'getShouldRenderCache').returns(true);
     const next = sinon.spy();
 
-    await m({
-      method: 'GET',
-      headers: {}
-    }, {}, next);
+    await m(
+      {
+        method: 'GET',
+        headers: {}
+      },
+      {},
+      next
+    );
 
     assert(next.calledOnce);
   });
@@ -24,15 +28,19 @@ describe('middleware', () => {
     sinon.stub(seo, 'getShouldRenderCache').returns(true);
     const next = sinon.spy();
 
-    await m({
-      method: 'GET',
-      headers: {}
-    }, {}, next);
+    await m(
+      {
+        method: 'GET',
+        headers: {}
+      },
+      {},
+      next
+    );
 
     assert(next.calledOnceWith(err));
   });
 
-  it('doesn\'t set shouldRenderCache when res has no content-type', async () => {
+  it("doesn't set shouldRenderCache when res has no content-type", async () => {
     const seo = new SifrrSeo();
     const m = seo.getExpressMiddleware(() => 'http://');
     sinon.stub(seo, 'render').resolves(false);
@@ -50,9 +58,12 @@ describe('middleware', () => {
     await m(req, res, next);
     res.end();
 
-    assert.equal(seo.getShouldRenderCache({
-      fullUrl: 'http://',
-      headers: {}
-    }), null);
+    assert.equal(
+      seo.getShouldRenderCache({
+        fullUrl: 'http://',
+        headers: {}
+      }),
+      null
+    );
   });
 });

@@ -1,7 +1,7 @@
-let client, windowId;
+let client, documentId;
 async function getListeners(type = '') {
   return (await client.send('DOMDebugger.getEventListeners', {
-    objectId: windowId
+    objectId: documentId
   })).listeners.filter(l => l.type.indexOf(type) >= 0);
 }
 
@@ -9,7 +9,8 @@ describe('Sifrr.Dom.Event', () => {
   before(async () => {
     await page.goto(`${PATH}/setup.html`);
     client = await page.target().createCDPSession();
-    windowId = (await client.send('Runtime.evaluate', { expression: 'window' })).result.objectId;
+    documentId = (await client.send('Runtime.evaluate', { expression: 'document' })).result
+      .objectId;
   });
 
   it('adds event listener on .add', async () => {

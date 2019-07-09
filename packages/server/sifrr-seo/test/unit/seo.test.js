@@ -1,7 +1,7 @@
 const SifrrSeo = require('../../src/sifrr.seo');
 const seo = new SifrrSeo(undefined, {
   ttl: 0.001,
-  maxCacheSize: 0.000010 // In MB, 10 Bytes
+  maxCacheSize: 0.00001 // In MB, 10 Bytes
 });
 
 describe('SifrrSeo', () => {
@@ -30,10 +30,14 @@ describe('SifrrSeo', () => {
       const next = sinon.spy();
       seo.shouldRenderCache['http://'] = false;
 
-      await m({
-        method: 'GET',
-        headers: {}
-      }, {}, next);
+      await m(
+        {
+          method: 'GET',
+          headers: {}
+        },
+        {},
+        next
+      );
 
       assert(next.calledOnce);
     });
@@ -76,16 +80,17 @@ describe('SifrrSeo', () => {
       assert(seo.cache);
     });
 
-    it('cache expires after ttl', async () => {
+    it('cache expires after ttl', done => {
       seo.cache.set('a', 'b');
       seo.cache.get('a', (err, res) => {
         assert.equal(res, 'b');
-      });
 
-      await delay(0.01);
-
-      seo.cache.get('a', (err, res) => {
-        assert.notExists(res);
+        delay(100).then(() => {
+          seo.cache.get('a', (err, res) => {
+            assert.notExists(res);
+          });
+          done();
+        });
       });
     });
 

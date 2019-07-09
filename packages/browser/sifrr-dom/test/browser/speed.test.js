@@ -42,7 +42,7 @@ const ExpectedLayoutCounts = {
   '1k-append': 1
 };
 
-pdescribe('Speed tests', async function() {
+describe('Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 
@@ -57,7 +57,7 @@ pdescribe('Speed tests', async function() {
 
     for (let i = 0; i < benchmarks.length; i++) {
       const bm = benchmarks[i];
-      it(`passes speed test for ${u} - ${bm}`, async () => {
+      it(`passes speed test for ${u.replace(PATH, '')} - ${bm}`, async () => {
         const results = await new BenchmarkRunner(
           [bm],
           { port, runs: runs, warmups: warmups, url: u },

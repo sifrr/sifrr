@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const Renderer = require('../../src/renderer');
 const renderer = new Renderer({ damn: true });
+
 const res = {
   headers: () => {
     return { 'content-type': 'asdsad' };
@@ -21,11 +22,13 @@ describe('Renderer', () => {
     sinon.stub(puppeteer, 'launch').resolves({ on: () => {} });
     await renderer.browserAsync();
 
-    assert(puppeteer.launch.calledWith({
-      headless: process.env.HEADLESS !== 'false',
-      args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
-      damn: true
-    }));
+    assert(
+      puppeteer.launch.calledWith({
+        headless: process.env.HEADLESS !== 'false',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        damn: true
+      })
+    );
   });
 
   it('close', async () => {
@@ -48,11 +51,14 @@ describe('Renderer', () => {
   });
 
   it('renders false if res is not html', async () => {
-    const r = new Renderer({
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }, {
-      cacheKey: (url) => url
-    });
+    const r = new Renderer(
+      {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      },
+      {
+        cacheKey: url => url
+      }
+    );
     r.isHTML = () => false;
 
     const res = await r.render('about:blank');

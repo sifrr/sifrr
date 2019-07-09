@@ -14,6 +14,10 @@ describe('sifrr-seo', () => {
       await page.goto(`${PATH}/`);
     });
 
+    after(async () => {
+      await page.setJavaScriptEnabled(true);
+    });
+
     it("doesn't have sifrr when js disabled", async () => {
       const sifrr = await page.evaluate(() => typeof Sifrr);
 
@@ -37,7 +41,6 @@ describe('sifrr-seo', () => {
 
   describe('js enabled', () => {
     before(async () => {
-      await page.setJavaScriptEnabled(true);
       await page.setUserAgent('UC Browser');
       await page.goto(`${PATH}/`);
     });

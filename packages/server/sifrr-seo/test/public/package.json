@@ -5,7 +5,7 @@
   "description": "Sifrr-Api Example",
   "main": "index.js",
   "scripts": {
-    "build": "echo ''"
+    "build": "yarn rollup -c"
   },
   "repository": {
     "type": "git",
@@ -22,11 +22,14 @@
   },
   "homepage": "https://github.com/sifrr/sifrr-seo-example#readme",
   "dependencies": {
+    "@webcomponents/shadycss": "^1.9.1",
+    "@webcomponents/shadydom": "^1.6.0",
     "compression": "^1.7.4",
     "express": "^4.17.1",
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
+    "@sifrr/dev": "^0.0.22",
     "eslint": "^5.12.0"
   }
 }

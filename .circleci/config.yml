@@ -12,7 +12,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6"
+            - '22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6'
       - restore_cache:
           keys:
             - sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
@@ -22,7 +22,7 @@ jobs:
       - save_cache:
           key: sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".git"
+            - '.git'
       - run:
           name: Yarn workspaces
           command: yarn config set workspaces-experimental true
@@ -41,14 +41,11 @@ jobs:
           name: Check chrome version
           command: google-chrome --version
       - run:
-          name: Add git user email and name
+          name: Add git user email and name and Update files
           command: |
-            git config --global user.email "aadityataparia@gmail.com"
+            git config --global user.email "aadityataparia@gmail.com" || exit 0
             git config --global user.name "Aaditya Taparia"
             git push --set-upstream origin $CIRCLE_BRANCH
-      - run:
-          name: Update dist files
-          command: |
             if [ "${CIRCLE_NODE_INDEX}" == "0" ]; then
               ./scripts/distribute
             fi

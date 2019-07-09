@@ -1,23 +1,27 @@
 const Seo = require('../../src/sifrr.seo');
-// Middleware
+/* istanbul ignore next */
+async function afterRender() {
+  // Wait till all sifrr elements are loaded
+  if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
+  await Sifrr.Dom.loading();
+}
+
 const seo = new Seo(['UC Browser'], {
   cacheKey: (url, headers) => url + (headers['x-user'] ? headers['x-user'] : ''),
   beforeRender: () => {
     // Force shadyDom (no shadow root)
+    // eslint-disable-next-line no-undef
     ShadyDOM = { force: true };
   },
-  afterRender: async () => {
-    // Wait till all sifrr elements are loaded
-    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-    await Sifrr.Dom.loading();
-  }
+  afterRender
 });
+
 seo.addUserAgent('Opera Mini');
 seo.setPuppeteerOption('headless', process.env.HEADLESS !== 'false');
 seo.shouldRender = (url, headers) => {
   return seo._isUserAgent(headers) && url.indexOf('elements') === -1;
 };
-// Middleware
+
 const express = require('express'),
   compression = require('compression'),
   serveStatic = require('serve-static'),
