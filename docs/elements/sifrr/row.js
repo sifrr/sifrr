@@ -1,1 +1,0 @@
-../../../packages/browser/sifrr-dom/test/public/elements/sifrr/row.js
