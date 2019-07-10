@@ -1,4 +1,4 @@
-const { App, writeHeaders } = require('../../../src/sifrr.server');
+const { App, writeHeaders, livereload } = require('../../../src/sifrr.server');
 const path = require('path');
 const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
 
@@ -29,39 +29,47 @@ app.get('/empty', res => {
 });
 
 app.post('/stream', res => {
-  res.onAborted(err => { if (err) throw Error(err); });
+  res.onAborted(err => {
+    if (err) throw Error(err);
+  });
 
   for (let h in headers) {
     writeHeaders(res, h, headers[h]);
   }
   res.writeHeader('content-type', 'application/json');
   if (typeof res.formData === 'function') {
-    res.formData({
-      // onFile pr tmpDir required else promise will not resolve if there are files
-      onFile: (fieldname, file) => {
-        file.resume();
-      },
-      onField: () => {}
-    }).then(resp => {
-      res.end(JSON.stringify(resp));
-    });
+    res
+      .formData({
+        // onFile pr tmpDir required else promise will not resolve if there are files
+        onFile: (fieldname, file) => {
+          file.resume();
+        },
+        onField: () => {}
+      })
+      .then(resp => {
+        res.end(JSON.stringify(resp));
+      });
   }
 });
 
 app.post('/tmpdir', res => {
-  res.onAborted(err => { if (err) throw Error(err); });
+  res.onAborted(err => {
+    if (err) throw Error(err);
+  });
 
   for (let h in headers) {
     writeHeaders(res, h, headers[h]);
   }
   res.writeHeader('content-type', 'application/json');
   if (typeof res.formData === 'function') {
-    res.formData({
-      tmpDir: path.join(__dirname, './public/tmp'),
-      filename: (f) => f.indexOf('all.js') > -1 ? 'some.js' : f
-    }).then(resp => {
-      res.end(JSON.stringify(resp));
-    });
+    res
+      .formData({
+        tmpDir: path.join(__dirname, './public/tmp'),
+        filename: f => (f.indexOf('all.js') > -1 ? 'some.js' : f)
+      })
+      .then(resp => {
+        res.end(JSON.stringify(resp));
+      });
   }
 });
 
@@ -81,8 +89,14 @@ app.file('/cache_compress', path.join(__dirname, 'public/cache.html'), {
 });
 
 app.folder('/', path.join(__dirname, '../'), {
-  filter: (path) => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
-  watch: true
+  filter: path => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
+  watch: true,
+  livereload: true
+});
+
+app.ws('/livereload', livereload.wsConfig);
+app.get('/livereload.js', res => {
+  res.end(livereload.jsCode(`${PATH.replace('http://', '')}/livereload`));
 });
 
 module.exports = app;

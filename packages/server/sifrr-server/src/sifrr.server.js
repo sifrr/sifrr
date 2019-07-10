@@ -5,5 +5,6 @@ module.exports = {
   getMime: require('./server/mime').getMime,
   writeHeaders: require('./server/utils').writeHeaders,
   sendFile: require('./server/sendfile'),
-  createCluster: require('./server/createcluster')
+  createCluster: require('./server/createcluster'),
+  livereload: require('./server/livereload')
 };

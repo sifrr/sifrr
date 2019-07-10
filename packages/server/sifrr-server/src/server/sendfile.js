@@ -1,5 +1,6 @@
 const fs = require('fs');
 const zlib = require('zlib');
+const watchedPaths = new Set();
 
 const compressions = {
   br: zlib.createBrotliCompress,
@@ -12,6 +13,12 @@ const bytes = 'bytes=';
 const { stob } = require('./utils');
 
 function sendFile(res, req, path, options) {
+  if (options && options.livereload && !watchedPaths.has(path)) {
+    watchedPaths.add(path);
+    const { sendSignal } = require('./livereload');
+    fs.watch(path, sendSignal);
+  }
+
   sendFileToRes(
     res,
     {

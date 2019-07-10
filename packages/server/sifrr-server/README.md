@@ -164,6 +164,32 @@ Array fields/files:
 - if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
 - if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
 
+### Live reload (experimental)
+
+Live reload, reloads browser page when static files are changed or a signal is sent.
+
+```js
+const { livereload, App } = require('@sifrr/server);
+
+const app = new App();
+app
+  .ws('/livereload', livereload.wsConfig)
+  // setup jscode with your websocket path and host
+  .get('/live.js', res => res.end(livereload.jsCode(`${host}/livereload`)))
+  .folder('/live', folderPath, {
+    livereload: true
+    // other sendFile options
+  });
+
+// now in your html, add live.js script tag
+// <script src='/live.js'></script>
+// now whever you update any file inside folderPath, browser page will refresh itself.
+// It only watches for changes inside that folder/file when sendFileOptions.livereload was `true`
+
+// send refresh signal programatically, maybe after you have compiled code or something
+livereload.sendSignal();
+```
+
 ### Load routes
 
 An example route file:

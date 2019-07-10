@@ -12,7 +12,9 @@ module.exports = {
   },
   post: {
     '/json': res => {
-      res.onAborted(err => { if (err) throw Error(err); });
+      res.onAborted(err => {
+        if (err) throw Error(err);
+      });
       res.writeHeader('access-control-allow-origin', '*');
       res.writeHeader('content-type', 'application/json');
 
