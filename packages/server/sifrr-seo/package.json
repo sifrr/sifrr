@@ -27,13 +27,13 @@
     "test-server": "yarn test -s"
   },
   "dependencies": {
-    "cache-manager": "^2.9.1",
+    "cache-manager": "^2.10.0",
     "puppeteer": "^1.16.0"
   },
   "peerDependencies": {},
   "devDependencies": {
     "@sifrr/dev": "^0.0.22",
-    "cache-manager": "^2.9.1",
+    "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7"
   },
   "files": [
