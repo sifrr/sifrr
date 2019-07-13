@@ -1,5 +1,46 @@
 const ObjConst = {}.constructor;
 
+function responseProgress(resp, onProgress) {
+  const contentLength = resp.headers.get('content-length');
+  const total = parseInt(contentLength, 10);
+  if (!total || !resp.body || !global.ReadableStream) {
+    onProgress({
+      total: 0,
+      percent: 100
+    });
+    return resp;
+  } else {
+    const reader = resp.body.getReader();
+    let loaded = 0;
+    return new Response(
+      new ReadableStream({
+        start(controller) {
+          const start = performance.now();
+          function read() {
+            return reader.read().then(({ done, value }) => {
+              if (done) {
+                controller.close();
+              } else {
+                loaded += value.byteLength;
+                onProgress({
+                  loaded,
+                  total,
+                  percent: (loaded / total) * 100,
+                  speed: loaded / (performance.now() - start),
+                  value
+                });
+                controller.enqueue(value);
+                return read();
+              }
+            });
+          }
+          return read();
+        }
+      })
+    );
+  }
+}
+
 class Request {
   constructor(url, options) {
     this._options = options;
@@ -7,71 +48,28 @@ class Request {
   }
 
   response() {
-    const me = this;
-    return fetch(this.url, this.options)
-      .then(resp => {
-        const contentType = resp.headers.get('content-type');
-        const isJson = contentType && contentType.includes('application/json');
-        if (resp.ok && typeof me._options.onProgress === 'function') {
-          const contentLength = resp.headers.get('content-length');
-          const total = parseInt(contentLength, 10);
-          if (!total || !resp.body || !ReadableStream) {
-            me._options.onProgress({
-              total: 0,
-              percent: 100
-            });
-          } else {
-            const reader = resp.body.getReader();
-            let loaded = 0;
-            resp = new Response(
-              new ReadableStream({
-                start(controller) {
-                  const start = performance.now();
-                  function read() {
-                    return reader.read().then(({ done, value }) => {
-                      if (done) {
-                        controller.close();
-                      } else {
-                        loaded += value.byteLength;
-                        me._options.onProgress({
-                          loaded: loaded,
-                          total: total,
-                          percent: (loaded / total) * 100,
-                          speed: loaded / (performance.now() - start),
-                          value
-                        });
-                        controller.enqueue(value);
-                        return read();
-                      }
-                    });
-                  }
-                  return read();
-                }
-              })
-            );
-          }
-        } else if (!resp.ok) {
-          if (typeof me._options.onProgress === 'function')
-            me._options.onProgress({ percent: 100 });
-          let error = Error(resp.statusText);
-          error.response = resp;
-          throw error;
-        }
-        return {
-          response: resp,
-          isJson
-        };
-      })
-      .then(({ response, isJson }) => {
-        if (isJson) return response.json();
-        return response;
-      });
+    const { onProgress = () => {} } = this._options;
+    return fetch(this.url, this.options).then(resp => {
+      const contentType = resp.headers.get('content-type');
+      const isJson = contentType && contentType.includes('application/json');
+      if (resp.ok) {
+        resp = responseProgress(resp, onProgress);
+      } else {
+        onProgress({ percent: 100 });
+        let error = Error(resp.statusText);
+        error.response = resp;
+        throw error;
+      }
+      if (isJson) return resp.json();
+      return resp;
+    });
   }
 
   get url() {
-    const params = this._options.params;
+    const { params, host } = this._options;
     if (params && Object.keys(params).length > 0) {
       return (
+        (host || '') +
         this._url +
         '?' +
         Object.keys(params)
@@ -84,13 +82,16 @@ class Request {
   }
 
   get options() {
+    const dOpts = this._options.defaultOptions || {};
+    delete this._options.defaultOptions;
     const options = Object.assign(
       {
-        redirect: 'follow'
+        redirect: 'follow',
+        ...dOpts
       },
       this._options
     );
-    options.headers = this._options.headers || {};
+    options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
     if (options.body && options.body.constructor === ObjConst) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
       options.body = JSON.stringify(options.body);

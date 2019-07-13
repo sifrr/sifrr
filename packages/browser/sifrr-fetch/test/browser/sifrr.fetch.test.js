@@ -111,14 +111,6 @@ describe('sifrr-fetch', () => {
     expect(resp).to.deep.equal('abcd');
   });
 
-  it('gets file request', async () => {
-    const resp = await getResponse('file', '/file', {}, true);
-    expect(resp).to.deep.equal('abcd');
-
-    const resp2 = await getResponse('file', '/file', undefined, true);
-    expect(resp2).to.deep.equal('abcd');
-  });
-
   it('throws error if response is not ok', async () => {
     expect(await getResponse('get', '/error')).to.equal('Not Found');
   });

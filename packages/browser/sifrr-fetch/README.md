@@ -79,6 +79,7 @@ const SFetch = require('@sifrr/fetch');
 }
 ```
 
+- **timeout** `time in ms` timeout for request
 - **before** `function` this function will be called with `{ url, options, method }` and should return modified `{ url, options, method }` which will be used to send requests
 - **after** `function` this function will be called with `response` and should return modified `response`
 - **use** `function` this function will be called with `{ url, options, method }` and resolve/return with response which will be returned, if this function errors, response will be fetched normally (use case: use it as a middleware for cache)
@@ -171,6 +172,19 @@ function cacheOrGet(url) {
     }
   });
 }
+```
+
+## Instance with default options
+
+```js
+const fetch = new Sifrr.Fetch(defaultOptions);
+
+// then use
+fetch.get;
+fetch.put;
+fetch.post;
+fetch.delete;
+fetch.graphql;
 ```
 
 ## WebSockets

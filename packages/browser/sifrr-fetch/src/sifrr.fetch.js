@@ -36,17 +36,13 @@ class SifrrFetch {
     return new WebSocket(url, protocol, fallback);
   }
 
-  static file(url, options = {}) {
-    options.headers = options.headers || {};
-    options.headers.accept = options.headers.accept || '*/*';
-    return this.request(url, options);
-  }
-
   static request(u, o = {}, m = 'GET') {
     let promise = Promise.resolve({ url: u, options: o, method: m });
     if (typeof o.before === 'function') (promise = promise.then(o.before)) && delete o.before;
+
     let current = 'then';
     if (typeof o.use === 'function') {
+      // if o.use errors, send request normally, else return
       current = 'catch';
       promise = promise.then(({ url, options, method }) => {
         return Promise.resolve(true)
@@ -62,15 +58,51 @@ class SifrrFetch {
       });
     }
     promise = promise[current](({ url, options, method }) => {
-      options.method = method;
-      return new Request(url, options).response();
+      options.method = options.method || method;
+      const response = new Request(url, options).response();
+      return Promise.race([
+        response,
+        options.timeout
+          ? new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('timeout')), options.timeout)
+            )
+          : response
+      ]);
     });
-    if (typeof o.after === 'function') (promise = promise.then(o.after)) && delete o.after;
+
+    if (typeof o.after === 'function') promise = promise.then(o.after);
     return promise;
+  }
+
+  constructor(defaultOptions = {}) {
+    this.defaultOptions = defaultOptions;
+  }
+
+  get(url, options) {
+    return this.constructor.get(url, this._tOptions(options));
+  }
+
+  post(url, options) {
+    return this.constructor.post(url, this._tOptions(options));
+  }
+
+  put(url, options) {
+    return this.constructor.put(url, this._tOptions(options));
+  }
+
+  delete(url, options) {
+    return this.constructor.delete(url, this._tOptions(options));
+  }
+
+  graphql(url, options) {
+    return this.constructor.graphql(url, this._tOptions(options));
+  }
+
+  _tOptions(options) {
+    options.defaultOptions = this.defaultOptions;
+    return options;
   }
 }
 
-SifrrFetch._middlewares = [];
 SifrrFetch.WebSocket = WebSocket;
-
 module.exports = SifrrFetch;
