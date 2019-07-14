@@ -1,23 +1,9 @@
 const Request = require('./request');
 const WebSocket = require('./websocket');
 
+const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE'];
+const isAbort = !!global.AbortController;
 class SifrrFetch {
-  static get(url, options) {
-    return this.request(url, options, 'GET');
-  }
-
-  static post(url, options) {
-    return this.request(url, options, 'POST');
-  }
-
-  static put(url, options) {
-    return this.request(url, options, 'PUT');
-  }
-
-  static delete(url, options) {
-    return this.request(url, options, 'DELETE');
-  }
-
   static graphql(url, options) {
     const { query, variables = {} } = options;
     delete options.query;
@@ -57,41 +43,32 @@ class SifrrFetch {
           });
       });
     }
+    let controller;
+    if (isAbort) controller = new AbortController();
     promise = promise[current](({ url, options, method }) => {
       options.method = options.method || method;
+      if (isAbort) options.signal = controller.signal;
       const response = new Request(url, options).response();
       return Promise.race([
         response,
         options.timeout
           ? new Promise((_, reject) =>
               setTimeout(() => reject(new Error('timeout')), options.timeout)
-            )
+            ).catch(e => {
+              if (isAbort) controller.abort();
+              throw e;
+            })
           : response
       ]);
     });
 
     if (typeof o.after === 'function') promise = promise.then(o.after);
+    if (isAbort) promise.abort = controller.abort.bind(controller);
     return promise;
   }
 
   constructor(defaultOptions = {}) {
     this.defaultOptions = defaultOptions;
-  }
-
-  get(url, options) {
-    return this.constructor.get(url, this._tOptions(options));
-  }
-
-  post(url, options) {
-    return this.constructor.post(url, this._tOptions(options));
-  }
-
-  put(url, options) {
-    return this.constructor.put(url, this._tOptions(options));
-  }
-
-  delete(url, options) {
-    return this.constructor.delete(url, this._tOptions(options));
   }
 
   graphql(url, options) {
@@ -103,6 +80,17 @@ class SifrrFetch {
     return options;
   }
 }
+
+httpMethods.forEach(m => {
+  const ml = m.toLowerCase();
+  SifrrFetch[ml] = function(url, options) {
+    return this.request(url, options, m);
+  };
+
+  SifrrFetch.prototype[ml] = function(url, options) {
+    return this.constructor[ml](url, this._tOptions(options));
+  };
+});
 
 SifrrFetch.WebSocket = WebSocket;
 module.exports = SifrrFetch;

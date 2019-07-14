@@ -16,4 +16,10 @@ server.post('/post', async res => {
   res.end(body);
 });
 
+server.get('timeout', async res => {
+  res.onAborted(global.console.error);
+  await new Promise(res => setTimeout(res, 1000));
+  res.end('');
+});
+
 module.exports = server;

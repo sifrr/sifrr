@@ -15,13 +15,16 @@ const server = express();
 // Show total request time
 if (ENV === 'development') {
   let time;
-  server.use(function (req, res, next) {
+  server.use(function(req, res, next) {
     time = Date.now();
     function afterResponse() {
       res.removeListener('finish', afterResponse);
 
       // action after response
-      global.console.log('\x1b[36m%s\x1b[0m', `Request '${req.originalUrl}' took: ${Date.now() - time}ms`);
+      global.console.log(
+        '\x1b[36m%s\x1b[0m',
+        `Request '${req.originalUrl}' took: ${Date.now() - time}ms`
+      );
     }
 
     res.on('finish', afterResponse);
@@ -46,16 +49,25 @@ server.options('/*', (req, res) => {
 });
 
 server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({
-  extended: true
-}));
+server.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
 
 // this base path is added before each route (in addition to base paths defined in individual route files)
-loadRoutes(server, path.join(__dirname, './routes'), { basePath: '/api' /* , ignore: [ 'user.js' ] */ });
+loadRoutes(server, path.join(__dirname, './routes'), {
+  basePath: '/api' /* , ignore: [ 'user.js' ] */
+});
 
 server.post('/graphql', (req, res) => {
   const vars = reqToVariables(req, { allowed: ['query', 'variables'] });
-  etg.resolve(vars.query, vars.variables, { [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize), random: 1 }).then((resp) => res.json(resp));
+  etg
+    .resolve(vars.query, vars.variables, {
+      [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize),
+      random: 1
+    })
+    .then(resp => res.json(resp));
 });
 
 server.get('/sifrr.fetch.js', (req, res) => {
@@ -67,16 +79,18 @@ server.get('/graphiql', (req, res) => {
 });
 
 if (ENV === 'development' || ENV === 'test') {
-  server.use(function(req, res){
+  server.use(function(req, res) {
     res.status(404);
 
     let availRoutes = '';
-    server._router.stack.forEach(function(a){
+    server._router.stack.forEach(function(a) {
       const route = a.route;
-      if(route){
-        route.stack.forEach(function(r){
+      if (route) {
+        route.stack.forEach(function(r) {
           const method = r.method.toUpperCase();
-          availRoutes += `<tr><td><strong>${method}</strong></td><td>${method == 'GET' ? `<a href="${route.path}">` : ''}${route.path}</a></td><tr>`;
+          availRoutes += `<tr><td><strong>${method}</strong></td><td>${
+            method == 'GET' ? `<a href="${route.path}">` : ''
+          }${route.path}</a></td><tr>`;
         });
       }
     });
@@ -91,15 +105,14 @@ ${availRoutes}
 </tbody>
 </table>
 <script src="/sifrr.fetch.js" charset="utf-8"></script>
-</body>`
-    );
+</body>`);
   });
 }
 
 let ss;
 
 module.exports = {
-  listen: (port) => ss = server.listen(port),
+  listen: port => (ss = server.listen(port)),
   close: () => {
     ss && ss.close();
   }

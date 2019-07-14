@@ -11,14 +11,14 @@ describe('Fetch', () => {
   });
 
   it('calls constructor method with default options', () => {
-    mock.expects('get').withExactArgs('/ok', {
+    mock.expects('post').withExactArgs('/ok', {
       body: {},
       defaultOptions: {
         host: 'ok',
         timeout: 5000
       }
     });
-    fetch.get('/ok', {
+    fetch.post('/ok', {
       body: {}
     });
     mock.verify();

@@ -10,14 +10,16 @@ if (cluster.isMaster) {
     cluster.fork();
   }
 
-  cluster.on('disconnect', (worker) => {
+  cluster.on('disconnect', worker => {
     process.stdout.write(`worker ${worker.process.pid} disconnected \n`);
     cluster.fork();
   });
 } else {
-  http.createServer((req, res) => {
-    if (req.method === 'GET' && req.url.match(/\/.*/)) {
-      res.end('Hello World!');
-    }
-  }).listen(3000, () => process.stdout.write(`listening on 3000, process ${process.pid} \n`));
+  http
+    .createServer((req, res) => {
+      if (req.method === 'GET' && req.url.match(/\/.*/)) {
+        res.end('Hello World!');
+      }
+    })
+    .listen(3000, () => process.stdout.write(`listening on 3000, process ${process.pid} \n`));
 }

@@ -204,4 +204,12 @@ describe('sifrr-fetch', () => {
     });
     expect(resp2).to.deep.equal({ a: 'hijacked body', b: 'hijack part 3' });
   });
+
+  it('times out after timeout', async () => {
+    const error = await page.evaluate(async path => {
+      return await Sifrr.Fetch.get(`${path}/timeout`, { timeout: 100 }).catch(err => err.message);
+    }, PATH);
+
+    expect(error).to.equal('timeout');
+  });
 });

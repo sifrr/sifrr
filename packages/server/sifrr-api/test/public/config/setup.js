@@ -14,7 +14,8 @@ module.exports = (saveSchema = true) => {
   // Available globally (also in routes)
   global.graphqlSchema = createSchemaFromModels(gqModels, {
     query: {
-      count: { // Add extra query 'count' just for example
+      count: {
+        // Add extra query 'count' just for example
         args: '',
         resolver: (_, __, ctx) => {
           return ctx.count || 0;
