@@ -1,9 +1,11 @@
 language: node_js
-before_install: yarn config set workspaces-experimental true && yarn config set ignore-engines true
-script: yarn test
+before_install:
+  - npm install -g yarn
+  - yarn config set workspaces-experimental true && yarn config set ignore-engines true
+script: PARALLEL=true yarn test
 cache: yarn
 node_js:
-  - '12.6.0'
+  - '12.7.0'
 
 branches:
   only:
