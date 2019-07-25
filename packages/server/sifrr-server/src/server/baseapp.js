@@ -7,6 +7,7 @@ const chokidar = require('chokidar');
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
 const loadroutes = require('./loadroutes');
+const graphql = require('./graphql');
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
@@ -114,6 +115,13 @@ class BaseApp {
 
       handler(res, req);
     });
+    return this;
+  }
+
+  graphql(path, schema, contextFxn) {
+    const handler = graphql(schema, contextFxn);
+    this.post(path, handler);
+    this.get(path, handler);
     return this;
   }
 

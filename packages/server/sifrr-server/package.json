@@ -29,9 +29,11 @@
   "dependencies": {
     "busboy": "^0.3.0",
     "chokidar": "^3.0.1",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "query-string": "^6.8.1"
   },
   "peerDependencies": {
+    "graphql": "^14.4.2",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
   },
   "devDependencies": {

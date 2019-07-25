@@ -5,7 +5,7 @@ const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE']
 const isAbort = !!global.AbortController;
 class SifrrFetch {
   static graphql(url, options) {
-    const { query, variables = {} } = options;
+    const { query, variables } = options;
     delete options.query;
     delete options.variables;
     options.headers = options.headers || {};

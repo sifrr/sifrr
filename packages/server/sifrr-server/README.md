@@ -11,6 +11,7 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 ## How to use
 
 Do `npm i @sifrr/server` or `yarn add @sifrr/server` or add the package to your `package.json` file.
+And `npm i uNetworking/uWebSockets.js#v15.11.0` or `yarn add uNetworking/uWebSockets.js#v15.11.0` to install uWebSockets, which is a peerDependency needed.
 
 ## Api
 
@@ -164,6 +165,46 @@ Array fields/files:
 - if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
 - if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
 
+### graphql server
+
+```js
+function contextFxn(res, err) {
+  // return context value
+  return {
+    user: {
+      id: 1
+    }
+  }
+}
+
+const graphqlSchema = /* get graphql executable schema from somewhere (Javascript one, not graphql dsl) */;
+
+app.graphql('/graphql', graphqlSchema, contextFxn);
+```
+
+It supports:
+
+- GET requests with query params (`query` and `variables`) eg. `/graphql?query=query($id: String) { user(id: $id) { id \n name } }&variables={"id":"a"}`
+
+- POST requests with query params (`query` and `variables`) eg. `/graphql?query=query($id: String) { user(id: $id) { id \n name } }&variables={"id":"a"}`
+
+- POST requests with json body (containing `query` and `variables`) eg body:
+
+```js
+{
+  query: `
+    query($id: String) {
+      user(id: $id) {
+        id
+        name
+      }
+    }`,
+  variables: {
+    id: 'b'
+  }
+}
+```
+
 ### Live reload (experimental)
 
 Live reload, reloads browser page when static files are changed or a signal is sent.
@@ -279,31 +320,3 @@ From [this file](./test/browser/speed.test.js)
 ## Examples
 
 Are available in [test/public/benchmarks/sifrr.js](./test/public/benchmarks/sifrr.js)
-
-### graphql server
-
-```js
-function handleError(res, err) {
-  res.writeStatus('500 Internal Server Error');
-  res.end(JSON.stringify({ name: err.name, message: err.message }));
-}
-
-app.post('/graphql', res => {
-  res.onAborted(err => handleError(res, err));
-
-  res
-    .json()
-    .then(({ query, variables }) =>
-      graphql({
-        schema: executableSchema,
-        source: query,
-        variableValues: variables,
-        context: {
-          /* set context */
-        }
-      })
-    )
-    .then(data => res.end(JSON.stringify(data)))
-    .catch(err => handleError(res, err));
-});
-```
