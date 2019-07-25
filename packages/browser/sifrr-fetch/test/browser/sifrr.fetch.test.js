@@ -103,7 +103,7 @@ describe('sifrr-fetch', () => {
 
     // Default empty variables
     const resp2 = await getResponse('graphql', '/graphql', { query: 'query { hello }' });
-    expect(resp2.body).to.deep.equal({ query: 'query { hello }', variables: {} });
+    expect(resp2.body).to.deep.equal({ query: 'query { hello }' });
   });
 
   it('gets text if content type is not application/json', async () => {
