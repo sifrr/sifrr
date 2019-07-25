@@ -215,20 +215,18 @@ const { livereload, App } = require('@sifrr/server);
 const app = new App();
 app
   .ws('/livereload', livereload.wsConfig)
-  // setup jscode with your websocket path and host
-  .get('/live.js', res => res.end(livereload.jsCode(`${host}/livereload`)))
   .folder('/live', folderPath, {
     livereload: true
     // other sendFile options
   });
 
-// now in your html, add live.js script tag
-// <script src='/live.js'></script>
-// now whever you update any file inside folderPath, browser page will refresh itself.
-// It only watches for changes inside that folder/file when sendFileOptions.livereload was `true`
-
 // send refresh signal programatically, maybe after you have compiled code or something
 livereload.sendSignal();
+
+// then in your frontend js file
+import { jsCode } from '@sifrr/server/src/livereload';
+
+jsCode(`ws://${host}/livereload`); // probable put this inside if development env condition
 ```
 
 ### Load routes

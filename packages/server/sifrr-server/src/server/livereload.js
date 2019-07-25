@@ -24,46 +24,46 @@ const wsConfig = {
   }
 };
 
-const jsCode = path => `
-  (() => {
-    let ws, ttr = 500, timeout;
-    
-    function newWsConnection() {
-      ws = new WebSocket("ws://${path}");
-      ws.onopen = function(event) {
-        ttr = 500;
-        checkMessage();
-        console.log('watching for file changes through sifrr-server livereload mode.');
-      };
-      ws.onmessage = function(event) {
-        if (JSON.parse(event.data)) {
-          console.log('Files changed, refreshing page.');
-          location.reload();
-        }
-      };
-      ws.onerror = (e) => {
-        console.error('Webosocket error: ', e);
-        console.log('Retrying after ', ttr / 4, 'ms');
-        ttr *= 4;
-      };
-      ws.onclose = (e) => {
-        console.error(\`Webosocket closed with code \${e.code} error \${e.message}\`);
-      };
-    }
+const jsCode = path => {
+  let ws,
+    ttr = 500,
+    timeout;
 
-    function checkMessage() {
-      if (!ws) return;
-      if (ws.readyState === WebSocket.OPEN) ws.send('');
-      else if (ws.readyState === WebSocket.CLOSED) newWsConnection();
+  function newWsConnection() {
+    ws = new WebSocket(path);
+    ws.onopen = function() {
+      ttr = 500;
+      checkMessage();
+      console.log('watching for file changes through sifrr-server livereload mode.');
+    };
+    ws.onmessage = function(event) {
+      if (JSON.parse(event.data)) {
+        console.log('Files changed, refreshing page.');
+        location.reload();
+      }
+    };
+    ws.onerror = e => {
+      console.error('Webosocket error: ', e);
+      console.log('Retrying after ', ttr / 4, 'ms');
+      ttr *= 4;
+    };
+    ws.onclose = e => {
+      console.error(`Webosocket closed with code ${e.code} error ${e.message}`);
+    };
+  }
 
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(checkMessage, ttr);
-    }
+  function checkMessage() {
+    if (!ws) return;
+    if (ws.readyState === WebSocket.OPEN) ws.send('');
+    else if (ws.readyState === WebSocket.CLOSED) newWsConnection();
 
-    newWsConnection();
-    setTimeout(checkMessage, ttr);
-  })();
-`;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(checkMessage, ttr);
+  }
+
+  newWsConnection();
+  setTimeout(checkMessage, ttr);
+};
 
 const sendSignal = (type, path) => {
   console.log(type, 'signal for file: ', path);

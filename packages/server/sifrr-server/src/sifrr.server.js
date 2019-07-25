@@ -6,5 +6,6 @@ module.exports = {
   writeHeaders: require('./server/utils').writeHeaders,
   sendFile: require('./server/sendfile'),
   createCluster: require('./server/createcluster'),
-  livereload: require('./server/livereload')
+  livereload: require('./server/livereload'),
+  livereloadjs: require('./server/livereload').jsCode
 };

@@ -95,9 +95,6 @@ app.folder('/', path.join(__dirname, '../'), {
 });
 
 app.ws('/livereload', livereload.wsConfig);
-app.get('/livereload.js', res => {
-  res.end(livereload.jsCode(`${PATH.replace('http://', '')}/livereload`));
-});
 
 // graphql
 const graphql = require('graphql');

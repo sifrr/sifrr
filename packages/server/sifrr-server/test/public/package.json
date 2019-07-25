@@ -5,8 +5,7 @@
   "description": "Sifrr-Server Test server",
   "main": "index.js",
   "scripts": {
-    "start": "node server",
-    "build": "echo ''"
+    "build": "yarn rollup -c"
   },
   "keywords": [
     "Sifrr",
@@ -25,6 +24,7 @@
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
   },
   "devDependencies": {
-    "eslint": "^5.12.0"
+    "eslint": "^5.12.0",
+    "@sifrr/dev": "^0.0.26"
   }
 }
