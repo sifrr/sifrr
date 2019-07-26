@@ -7,5 +7,5 @@ module.exports = {
   sendFile: require('./server/sendfile'),
   createCluster: require('./server/createcluster'),
   livereload: require('./server/livereload'),
-  livereloadjs: require('./server/livereload').jsCode
+  livereloadjs: require('./server/livereloadjs')
 };

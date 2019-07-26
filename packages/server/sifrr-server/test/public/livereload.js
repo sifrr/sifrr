@@ -1,28 +1,7 @@
 (function () {
   'use strict';
 
-  const websockets = {};
-  let id = 0;
-  const wsConfig = {
-    open: ws => {
-      websockets[id] = {
-        dirty: false
-      };
-      ws.id = id;
-      console.log('websocket connected: ', id);
-      id++;
-    },
-    message: ws => {
-      ws.send(JSON.stringify(websockets[ws.id].dirty));
-      websockets[ws.id].dirty = false;
-    },
-    close: (ws, code, message) => {
-      delete websockets[ws.id];
-      console.log("websocket disconnected with code ".concat(code, " and message ").concat(message, ":"), ws.id, websockets);
-    }
-  };
-
-  const jsCode = path => {
+  var livereloadjs = path => {
     let ws,
         ttr = 500,
         timeout;
@@ -65,20 +44,6 @@
     setTimeout(checkMessage, ttr);
   };
 
-  const sendSignal = (type, path) => {
-    console.log(type, 'signal for file: ', path);
-
-    for (let i in websockets) websockets[i].dirty = true;
-  };
-
-  var livereload = {
-    websockets,
-    wsConfig,
-    jsCode,
-    sendSignal
-  };
-  var livereload_3 = livereload.jsCode;
-
   const loc = window.location;
   let uri;
 
@@ -89,7 +54,7 @@
   }
 
   uri += '//' + loc.host + '/livereload';
-  livereload_3(uri);
+  livereloadjs(uri);
 
 }());
 //# sourceMappingURL=livereload.js.map

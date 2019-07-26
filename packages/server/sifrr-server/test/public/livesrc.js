@@ -1,4 +1,4 @@
-import { jsCode } from '../../src/server/livereload';
+import jsCode from '../../src/server/livereloadjs';
 
 const loc = window.location;
 let uri;

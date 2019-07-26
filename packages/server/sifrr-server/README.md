@@ -5,7 +5,7 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 ## Features
 
 - Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
-- Simple static file serving with conditional last-modified, compression, cache support
+- Simple static file serving with conditional last-modified, compression, cache, live reload support
 - Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
 
 ## How to use
@@ -216,7 +216,7 @@ const app = new App();
 app
   .ws('/livereload', livereload.wsConfig)
   .folder('/live', folderPath, {
-    livereload: true
+    livereload: true // ideally true if development
     // other sendFile options
   });
 
@@ -224,9 +224,9 @@ app
 livereload.sendSignal();
 
 // then in your frontend js file
-import { jsCode } from '@sifrr/server/src/livereload';
+import livereload from '@sifrr/server/src/livereloadjs';
 
-jsCode(`ws://${host}/livereload`); // probable put this inside if development env condition
+livereload(`ws://${host}/livereload`); // probably put this inside if development env condition
 ```
 
 ### Load routes
