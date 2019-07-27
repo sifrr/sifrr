@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 DIRS="${1%\"}"
 DIRS="${DIRS#\"}"
 
