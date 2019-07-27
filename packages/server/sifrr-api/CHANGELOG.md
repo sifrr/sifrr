@@ -1,8 +1,9 @@
-## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.6) (2019-07-27)
 
 
 ### Features
 
+* add queries,mutations,attrs easily using getters ([9d15a66](https://github.com/sifrr/sifrr/commit/9d15a66))
 * association works in sequelize create resolver ([b1e354e](https://github.com/sifrr/sifrr/commit/b1e354e))
 * make connection query work ([4f753c0](https://github.com/sifrr/sifrr/commit/4f753c0))
 

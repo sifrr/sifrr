@@ -1,9 +1,10 @@
-## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.6) (2019-07-27)
 
 
 ### Features
 
 * add events on activation and deactivation ([16a8911](https://github.com/sifrr/sifrr/commit/16a8911))
+* add json support in data-sifrr-elements ([fc48a62](https://github.com/sifrr/sifrr/commit/fc48a62))
 * don't add Route to Dom, add to Sifrr.Route ([8bde333](https://github.com/sifrr/sifrr/commit/8bde333))
 
 

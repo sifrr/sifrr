@@ -1,68 +1,16 @@
-## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
-
-
-### Bug Fixes
-
-* **sifrr-server:** abort passing stream when compressed ([7462264](https://github.com/sifrr/sifrr/commit/7462264))
-* **sifrr-server:** fix mutable headers issue ([026c675](https://github.com/sifrr/sifrr/commit/026c675))
-* **sifrr-server:** return this after close ([e992c38](https://github.com/sifrr/sifrr/commit/e992c38))
-* **sifrr-storage:** fix bug of not returning falsy values in indexeddb ([5dd8521](https://github.com/sifrr/sifrr/commit/5dd8521))
-
-
-### Features
-
-* **sifrr-api:** association works in sequelize create resolver ([b1e354e](https://github.com/sifrr/sifrr/commit/b1e354e))
-* **sifrr-api:** make connection query work ([4f753c0](https://github.com/sifrr/sifrr/commit/4f753c0))
-* **sifrr-cli:** update to use import syntax ([81e0f34](https://github.com/sifrr/sifrr/commit/81e0f34))
-* **sifrr-dom:** add js execution function ([0186437](https://github.com/sifrr/sifrr/commit/0186437))
-* **sifrr-dom:** add Listener can take element as well ([e7662d4](https://github.com/sifrr/sifrr/commit/e7662d4))
-* **sifrr-dom:** add root reference in repeated refs ([d5fbd62](https://github.com/sifrr/sifrr/commit/d5fbd62))
-* **sifrr-dom:** add syncedAttrs ([d9dc170](https://github.com/sifrr/sifrr/commit/d9dc170))
-* **sifrr-dom:** add two way binding between element states ([bd20eab](https://github.com/sifrr/sifrr/commit/bd20eab))
-* **sifrr-dom:** don't give error if element has no state ([e99e5ea](https://github.com/sifrr/sifrr/commit/e99e5ea))
-* **sifrr-dom:** make deep twoway binding work ([d9ba844](https://github.com/sifrr/sifrr/commit/d9ba844))
-* **sifrr-dom:** set connected status for element ([014df65](https://github.com/sifrr/sifrr/commit/014df65))
-* **sifrr-dom:** set global sifrr.dom on setup ([4335bbd](https://github.com/sifrr/sifrr/commit/4335bbd))
-* **sifrr-dom:** strings also work as element template ([bf96a41](https://github.com/sifrr/sifrr/commit/bf96a41))
-* **sifrr-dom:** warn if name already taken ([098d54e](https://github.com/sifrr/sifrr/commit/098d54e))
-* **sifrr-fetch:** add speed as second parameter in onProgress fxn ([10d0419](https://github.com/sifrr/sifrr/commit/10d0419))
-* **sifrr-fetch:** take options in fallback paramete in ws ([b0d76e2](https://github.com/sifrr/sifrr/commit/b0d76e2))
-* **sifrr-route:** add events on activation and deactivation ([16a8911](https://github.com/sifrr/sifrr/commit/16a8911))
-* **sifrr-route:** don't add Route to Dom, add to Sifrr.Route ([8bde333](https://github.com/sifrr/sifrr/commit/8bde333))
-* **sifrr-server:** add option to change filename for tmpdir ([c2a9330](https://github.com/sifrr/sifrr/commit/c2a9330))
-* **sifrr-server:** add optional caching  ([#106](https://github.com/sifrr/sifrr/issues/106)) ([cf74306](https://github.com/sifrr/sifrr/commit/cf74306))
-* **sifrr-server:** change ext methods to mimes/getMime ([724ecb5](https://github.com/sifrr/sifrr/commit/724ecb5))
-* **sifrr-server:** clone connection with same resolver if none given ([a3ef846](https://github.com/sifrr/sifrr/commit/a3ef846))
-* **sifrr-server:** make compress: false as default ([af95e82](https://github.com/sifrr/sifrr/commit/af95e82))
-* **sifrr-storage:** add keys() method ([d23ea59](https://github.com/sifrr/sifrr/commit/d23ea59))
-* **sifrr-storage:** add support for ArrayBuffer, TypedArray data types ([40b62e9](https://github.com/sifrr/sifrr/commit/40b62e9))
-
-
-### Performance Improvements
-
-* **sifrr-dom:** cache text node values ([45e6531](https://github.com/sifrr/sifrr/commit/45e6531))
-* **sifrr-dom:** iterate backwards in arrays ([fe5efa5](https://github.com/sifrr/sifrr/commit/fe5efa5))
-* **sifrr-dom:** trigger update only when there is listener ([6a736d9](https://github.com/sifrr/sifrr/commit/6a736d9))
-* **sifrr-dom:** use array state maps for events and attributes ([cfdd514](https://github.com/sifrr/sifrr/commit/cfdd514))
-* **sifrr-storage:** add speed tests ([323dbdf](https://github.com/sifrr/sifrr/commit/323dbdf))
-* **sifrr-storage:** improve performance of localstorage ([8254ca1](https://github.com/sifrr/sifrr/commit/8254ca1))
-* **sifrr-storage:** use outer keys instead of inline keys ([04291c3](https://github.com/sifrr/sifrr/commit/04291c3))
-
-
-
-## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-08 01:10:18 +0900)
+## [0.0.4](https://github.com/sifrr/sifrr/compare/v0.0.3...v0.0.4) (2019-04-07)
 
 
 ### Bug Fixes
 
 * **sifrr-dom:** fix event error message ([70c510f](https://github.com/sifrr/sifrr/commit/70c510f))
+* **sifrr-dom:** fix keyed couldn't add elements in front ([efbced4](https://github.com/sifrr/sifrr/commit/efbced4))
+* **sifrr-dom:** only bind event attribute if it has ${} ([2bc019e](https://github.com/sifrr/sifrr/commit/2bc019e))
 * **sifrr-dom:** remove dependency on isHtml from nextNode ([2e116d7](https://github.com/sifrr/sifrr/commit/2e116d7))
+* **sifrr-dom:** treat repeating elements as html bindings ([96103d6](https://github.com/sifrr/sifrr/commit/96103d6))
 * **sifrr-dom:** use diff TW in different creators ([bc05b8f](https://github.com/sifrr/sifrr/commit/bc05b8f))
 * **sifrr-fetch:** don't set content-type if already set ([e9509c8](https://github.com/sifrr/sifrr/commit/e9509c8))
 * tests ([afabbe9](https://github.com/sifrr/sifrr/commit/afabbe9))
-* **sifrr-dom:** fix keyed couldn't add elements in front ([efbced4](https://github.com/sifrr/sifrr/commit/efbced4))
-* **sifrr-dom:** only bind event attribute if it has ${} ([2bc019e](https://github.com/sifrr/sifrr/commit/2bc019e))
-* **sifrr-dom:** treat repeating elements as html bindings ([96103d6](https://github.com/sifrr/sifrr/commit/96103d6))
 * **sifrr-server:** content-length for ranged responses ([6612526](https://github.com/sifrr/sifrr/commit/6612526))
 * **sifrr-server:** don't extend constructor ([9038a1e](https://github.com/sifrr/sifrr/commit/9038a1e))
 * **sifrr-server:** fix serving from basePath ([4d04976](https://github.com/sifrr/sifrr/commit/4d04976))
@@ -117,7 +65,7 @@
 
 
 
-## [0.0.3](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha2...v0.0.3) (2019-03-05 23:44:39 +0900)
+## [0.0.3](https://github.com/sifrr/sifrr/compare/v0.0.1-alpha2...v0.0.3) (2019-03-05)
 
 
 ### Bug Fixes
@@ -155,11 +103,11 @@
 * **sifrr-seo:** Fix error on node 8 ([7db1ab2](https://github.com/sifrr/sifrr/commit/7db1ab2))
 * **sifrr-seo:** Fix pending resolver bug ([1db1e95](https://github.com/sifrr/sifrr/commit/1db1e95))
 * **sifrr-seo:** Fix variables not parsing ([db201f5](https://github.com/sifrr/sifrr/commit/db201f5))
+* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
 * **sifrr-seo:** Move puppeteer config to renderer ([59276a6](https://github.com/sifrr/sifrr/commit/59276a6))
 * **sifrr-seo:** Pass rendering error to express's next ([8663605](https://github.com/sifrr/sifrr/commit/8663605))
 * **sifrr-storage:** Check for openDatabase in webSQL ([d92d437](https://github.com/sifrr/sifrr/commit/d92d437))
 * **sifrr-storage:** Replace unnecessary let with const ([5396521](https://github.com/sifrr/sifrr/commit/5396521))
-* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc697))
 * **sifrr-storage:** Return null if null ([aa8e7ba](https://github.com/sifrr/sifrr/commit/aa8e7ba))
 
 
@@ -221,7 +169,7 @@
 
 
 
-## 0.0.1-alpha2 (2019-01-10 13:40:20 +0900)
+## 0.0.1-alpha2 (2019-01-10)
 
 
 

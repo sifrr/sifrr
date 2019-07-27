@@ -1,4 +1,4 @@
-## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.6) (2019-07-27)
 
 
 ### Bug Fixes
@@ -10,11 +10,19 @@
 
 ### Features
 
+* add createCluster function ([98bca3a](https://github.com/sifrr/sifrr/commit/98bca3a))
+* add graphql server to sifrr-server ([d5efcc2](https://github.com/sifrr/sifrr/commit/d5efcc2))
+* add livereload feature (experimental) ([fb1005b](https://github.com/sifrr/sifrr/commit/fb1005b))
 * add option to change filename for tmpdir ([c2a9330](https://github.com/sifrr/sifrr/commit/c2a9330))
 * add optional caching  ([#106](https://github.com/sifrr/sifrr/issues/106)) ([cf74306](https://github.com/sifrr/sifrr/commit/cf74306))
+* add options to overwrite/fail on dup static route ([c515745](https://github.com/sifrr/sifrr/commit/c515745))
+* cache works for compressed file as well ([c0821e0](https://github.com/sifrr/sifrr/commit/c0821e0))
 * change ext methods to mimes/getMime ([724ecb5](https://github.com/sifrr/sifrr/commit/724ecb5))
 * clone connection with same resolver if none given ([a3ef846](https://github.com/sifrr/sifrr/commit/a3ef846))
+* close watchers on server close ([0cca0a1](https://github.com/sifrr/sifrr/commit/0cca0a1))
 * make compress: false as default ([af95e82](https://github.com/sifrr/sifrr/commit/af95e82))
+* make live reload js importable ([9c29147](https://github.com/sifrr/sifrr/commit/9c29147))
+* update uWS.js to 15.11.0 ([dc81e97](https://github.com/sifrr/sifrr/commit/dc81e97))
 
 
 
