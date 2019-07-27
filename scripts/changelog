@@ -17,4 +17,7 @@ loadDir({
   deep: 1
 });
 
-generateChangelog();
+generateChangelog({
+  changelogFile: path.join(__dirname, '../CHANGELOG.md'),
+  outputUnreleased: true
+});

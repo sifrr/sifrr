@@ -1,4 +1,8 @@
-## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.6) (2019-07-27)
+# Unreleased (2019-07-27)
+
+
+
+## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.5...v0.0.6) (2019-07-27 19:15:42 +0000)
 
 
 ### Bug Fixes
@@ -10,11 +14,19 @@
 
 * add before and after hooks ([9619e41](https://github.com/sifrr/sifrr/commit/9619e41))
 * add more progress options ([d674726](https://github.com/sifrr/sifrr/commit/d674726))
-* add speed as second parameter in onProgress fxn ([10d0419](https://github.com/sifrr/sifrr/commit/10d0419))
 * add use hook ([7f3e6b8](https://github.com/sifrr/sifrr/commit/7f3e6b8))
 * take fallback function as parameter in wsfetch ([52743b3](https://github.com/sifrr/sifrr/commit/52743b3))
-* take options in fallback paramete in ws ([b0d76e2](https://github.com/sifrr/sifrr/commit/b0d76e2))
 * works with node also ([71e4337](https://github.com/sifrr/sifrr/commit/71e4337))
+
+
+
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+
+
+### Features
+
+* add speed as second parameter in onProgress fxn ([10d0419](https://github.com/sifrr/sifrr/commit/10d0419))
+* take options in fallback paramete in ws ([b0d76e2](https://github.com/sifrr/sifrr/commit/b0d76e2))
 
 
 

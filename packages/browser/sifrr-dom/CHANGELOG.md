@@ -1,4 +1,8 @@
-## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.6) (2019-07-27)
+# Unreleased (2019-07-27)
+
+
+
+## [0.0.6](https://github.com/sifrr/sifrr/compare/v0.0.5...v0.0.6) (2019-07-27 19:15:42 +0000)
 
 
 ### Bug Fixes
@@ -10,6 +14,18 @@
 
 * add `root` property which gives parent sifrr element ([f5c5c9d](https://github.com/sifrr/sifrr/commit/f5c5c9d))
 * add basic hooks ([f5208e1](https://github.com/sifrr/sifrr/commit/f5208e1))
+* make hooks work with other types, array too ([c068fb3](https://github.com/sifrr/sifrr/commit/c068fb3))
+* rename hook to store ([4981b71](https://github.com/sifrr/sifrr/commit/4981b71))
+* set custom name for element on register ([1e5435b](https://github.com/sifrr/sifrr/commit/1e5435b))
+* template can take (html, style) as argument ([2a17d08](https://github.com/sifrr/sifrr/commit/2a17d08))
+
+
+
+## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+
+
+### Features
+
 * add js execution function ([0186437](https://github.com/sifrr/sifrr/commit/0186437))
 * add Listener can take element as well ([e7662d4](https://github.com/sifrr/sifrr/commit/e7662d4))
 * add root reference in repeated refs ([d5fbd62](https://github.com/sifrr/sifrr/commit/d5fbd62))
@@ -17,13 +33,9 @@
 * add two way binding between element states ([bd20eab](https://github.com/sifrr/sifrr/commit/bd20eab))
 * don't give error if element has no state ([e99e5ea](https://github.com/sifrr/sifrr/commit/e99e5ea))
 * make deep twoway binding work ([d9ba844](https://github.com/sifrr/sifrr/commit/d9ba844))
-* make hooks work with other types, array too ([c068fb3](https://github.com/sifrr/sifrr/commit/c068fb3))
-* rename hook to store ([4981b71](https://github.com/sifrr/sifrr/commit/4981b71))
 * set connected status for element ([014df65](https://github.com/sifrr/sifrr/commit/014df65))
-* set custom name for element on register ([1e5435b](https://github.com/sifrr/sifrr/commit/1e5435b))
 * set global sifrr.dom on setup ([4335bbd](https://github.com/sifrr/sifrr/commit/4335bbd))
 * strings also work as element template ([bf96a41](https://github.com/sifrr/sifrr/commit/bf96a41))
-* template can take (html, style) as argument ([2a17d08](https://github.com/sifrr/sifrr/commit/2a17d08))
 * warn if name already taken ([098d54e](https://github.com/sifrr/sifrr/commit/098d54e))
 
 
