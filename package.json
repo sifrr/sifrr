@@ -5,7 +5,7 @@
     "packages/*/*",
     "packages/*/*/test/public"
   ],
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "a fullstack nodeJS/vanillaJS framework",
   "license": "MIT",
   "browserslist": [
@@ -51,5 +51,8 @@
     "@sifrr/dev": "^0.0.26",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7"
+  },
+  "resolutions": {
+    "@sifrr/server": "file:./packages/server/sifrr-server"
   }
 }
