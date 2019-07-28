@@ -1,7 +1,8 @@
 const queryString = require('query-string');
-const { graphql } = require('graphql');
 
 module.exports = function graphqlRoute(schema, contextFxn = () => undefined) {
+  const { graphql } = require('graphql');
+
   return async (res, req) => {
     res.onAborted(console.error);
 
