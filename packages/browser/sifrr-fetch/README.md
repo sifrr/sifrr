@@ -4,11 +4,10 @@
 
 ## Size
 
-| Type                                           |                                                                                                                          Size                                                                                                                          |
-| :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Normal (`dist/sifrr.fetch.js`)                 |                   [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.js)                    |
-| Minified (`dist/sifrr.fetch.min.js`)           |              [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.min.js)               |
-| Minified + Gzipped (`dist/sifrr.fetch.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-fetch/dist/sifrr.fetch.min.js) |
+| Type                                           |                           Size                           |
+| :--------------------------------------------- | :------------------------------------------------------: |
+| Minified (`dist/sifrr.fetch.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/fetch)   |
+| Minified + Gzipped (`dist/sifrr.fetch.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/fetch) |
 
 ## How to use
 
