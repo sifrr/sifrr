@@ -1,4 +1,4 @@
-const Request = require('../../src/request');
+const Request = require('../../src/request').default;
 
 describe('Request', () => {
   it('options', () => {

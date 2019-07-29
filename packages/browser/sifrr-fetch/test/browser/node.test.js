@@ -1,5 +1,5 @@
 global.fetch = require('node-fetch');
-const fetch = require('../../src/sifrr.fetch');
+const fetch = require('../../src/sifrr.fetch').default;
 
 describe('works with node', () => {
   it('gets request', async () => {

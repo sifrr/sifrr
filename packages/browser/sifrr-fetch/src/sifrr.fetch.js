@@ -1,8 +1,8 @@
-const Request = require('./request');
-const WebSocket = require('./websocket');
+import Request from './request';
+import Socket from './socket';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE'];
-const isAbort = !!global.AbortController;
+const isAbort = !!window.AbortController;
 class SifrrFetch {
   static graphql(url, options) {
     const { query, variables } = options;
@@ -92,5 +92,7 @@ httpMethods.forEach(m => {
   };
 });
 
-SifrrFetch.WebSocket = WebSocket;
-module.exports = SifrrFetch;
+SifrrFetch.Socket = Socket;
+
+export { SifrrFetch as Fetch, Socket };
+export default SifrrFetch;

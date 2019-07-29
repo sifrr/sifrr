@@ -1,4 +1,4 @@
-class WebSocket {
+class Socket {
   constructor(
     url,
     protocol,
@@ -91,4 +91,4 @@ class WebSocket {
   onmessage() {}
 }
 
-module.exports = WebSocket;
+export default Socket;

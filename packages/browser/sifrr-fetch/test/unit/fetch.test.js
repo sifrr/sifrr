@@ -1,4 +1,4 @@
-const Fetch = require('../../src/sifrr.fetch');
+const Fetch = require('../../src/sifrr.fetch').Fetch;
 let fetch, mock;
 
 describe('Fetch', () => {

@@ -46,6 +46,10 @@ window.Sifrr.Fetch = require('@sifrr/fetch');
 import Fetch from '@sifrr/fetch';
 window.Sifrr = window.Sifrr || {};
 window.Sifrr.Fetch = Fetch;
+
+// or
+import { Fetch, Socket } from '@sifrr/fetch';
+// and use as Sifrr.Fetch or Sifrr.Fetch.Socket
 ```
 
 #### With node
@@ -197,7 +201,7 @@ Automatic connection retries, calls fallback on message sending failure/error
 
 ```js
 // Open a socket
-const socket = Sifrr.Fetch.socket(url, protocols, fallback /* (message) => 'fallback response' */);
+const socket = new Sifrr.Fetch.Socket(url, protocols, fallback /* (message) => 'fallback response' */);
 // send a message
 socket.send(message [, type]).then(resp => {
   // do something
@@ -224,7 +228,11 @@ socket.send(message [, type]).then(resp => {
 
 ```js
 // Open a socket
-const socket = Sifrr.Fetch.socket(url, protocols, fallback /* (message) => 'fallback response' */);
+const socket = new Sifrr.Fetch.Socket(
+  url,
+  protocols,
+  fallback /* (message) => 'fallback response' */
+);
 // send a message
 socket.sendRaw(message);
 ```

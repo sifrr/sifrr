@@ -3,7 +3,7 @@ const ObjConst = {}.constructor;
 function responseProgress(resp, onProgress) {
   const contentLength = resp.headers.get('content-length');
   const total = parseInt(contentLength, 10);
-  if (!total || !resp.body || !global.ReadableStream) {
+  if (!total || !resp.body || !window.ReadableStream) {
     onProgress({
       total: 0,
       percent: 100
@@ -100,4 +100,4 @@ class Request {
   }
 }
 
-module.exports = Request;
+export default Request;

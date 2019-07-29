@@ -31,6 +31,19 @@ const footer = '/*! (c) @aadityataparia */';
 function moduleConfig(name, root, minify = false, isModule = false) {
   const filename = name.toLowerCase();
   const banner = `/*! ${name} v${version} - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */`;
+  const mergeConfig = {
+    output: {
+      banner,
+      footer,
+      globals
+    },
+    external
+  };
+
+  if (!isModule) {
+    mergeConfig.output.outro = 'if (exports.default) exports = exports.default;';
+  }
+
   return getRollupConfig(
     {
       name,
@@ -40,14 +53,7 @@ function moduleConfig(name, root, minify = false, isModule = false) {
       minify,
       type: isModule ? 'module' : 'browser'
     },
-    {
-      output: {
-        banner,
-        footer,
-        globals
-      },
-      external
-    }
+    mergeConfig
   );
 }
 
