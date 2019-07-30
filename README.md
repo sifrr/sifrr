@@ -21,6 +21,8 @@
 
 This repository is a monorepo managed using yarn workspaces. This means there are [multiple packages](#packages) managed in this codebase, even though they are published to NPM as separate packages. They will always have same latest version and are released together.
 
+Note that for 0.x releases of this library, the API is not considered stable yet and may break between minor releases. After 1.0, Semantic Versioning will be followed.
+
 ## Packages
 
 ### Browser (VanillaJS)
