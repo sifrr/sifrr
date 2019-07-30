@@ -1,14 +1,22 @@
-const JsonExt = require('../utils/json');
+import { stringify, parse } from '../utils/json';
+
 const jsonConstructor = {}.constructor;
+const defaultOptions = {
+  priority: [],
+  name: 'SifrrStorage',
+  version: 1,
+  description: 'Sifrr Storage',
+  size: 5 * 1024 * 1024
+};
 
 class Storage {
   constructor(options = {}) {
-    this._options = options;
+    this.type = this.constructor.type;
+    this._options = Object.assign({}, defaultOptions, options);
     this.name = this._options.name;
     this.version = this._options.version;
     this.tableName = this.name + this.version;
     this.description = this._options.description;
-    this.type = this.constructor.type;
   }
 
   _parseKeyValue(key, value) {
@@ -58,18 +66,8 @@ class Storage {
     this.table = {};
   }
 
-  _isEqual(options, type) {
-    if (this.tableName == options.name + options.version && this.type == type) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  isSupported(force = true) {
-    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
-      return true;
-    } else if (window && typeof this.store !== 'undefined') {
+  _isEqual(other) {
+    if (this.tableName == other.tableName && this.type == other.type) {
       return true;
     } else {
       return false;
@@ -100,13 +98,38 @@ class Storage {
     return Promise.resolve(this._clear());
   }
 
+  isSupported(force = true) {
+    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
+      return true;
+    } else if (window && typeof this.store !== 'undefined') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   static stringify(data) {
-    return JsonExt.stringify(data);
+    return stringify(data);
   }
 
   static parse(data) {
-    return JsonExt.parse(data);
+    return parse(data);
+  }
+
+  static _add(instance) {
+    this._all = this._all || [];
+    this._all.push(instance);
+  }
+
+  static _matchingInstance(otherInstance) {
+    const all = this._all || [],
+      length = all.length;
+    for (let i = 0; i < length; i++) {
+      if (all[i]._isEqual(otherInstance)) return all[i];
+    }
+    this._add(otherInstance);
+    return otherInstance;
   }
 }
 
-module.exports = Storage;
+export default Storage;

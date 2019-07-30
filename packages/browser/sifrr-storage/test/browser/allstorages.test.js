@@ -1,4 +1,4 @@
-const SifrrStorage = require('../../src/sifrr.storage');
+const SifrrStorage = require('../../src/sifrr.storage').default;
 
 for (let key in SifrrStorage.availableStores) {
   describe(`${key} in browser`, () => {
@@ -43,7 +43,7 @@ for (let key in SifrrStorage.availableStores) {
       assert.equal(result, true);
     });
 
-    it(`${key}.all gives all storage`, async () => {
+    it(`${key}.all gives all data`, async () => {
       const result = await page.evaluate(async key => {
         try {
           new Function(`save_${key}();`)();

@@ -1,8 +1,9 @@
-const Storage = require('./storage');
+import Storage from './storage';
 
 class LocalStorage extends Storage {
   constructor(options) {
     super(options);
+    return this.constructor._matchingInstance(this);
   }
 
   _parsedData() {
@@ -51,4 +52,4 @@ class LocalStorage extends Storage {
   }
 }
 
-module.exports = LocalStorage;
+export default LocalStorage;

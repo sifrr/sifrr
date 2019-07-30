@@ -1,4 +1,4 @@
-const Storage = require('./storage');
+import Storage from './storage';
 const date = new Date(0).toUTCString();
 const equal = '%3D',
   equalRegex = new RegExp(equal, 'g');
@@ -6,6 +6,7 @@ const equal = '%3D',
 class Cookies extends Storage {
   constructor(options) {
     super(options);
+    return this.constructor._matchingInstance(this);
   }
 
   _parsedData() {
@@ -53,4 +54,4 @@ class Cookies extends Storage {
   }
 }
 
-module.exports = Cookies;
+export default Cookies;

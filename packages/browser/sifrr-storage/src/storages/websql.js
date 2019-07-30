@@ -1,9 +1,9 @@
-const Storage = require('./storage');
+import Storage from './storage';
 
 class WebSQL extends Storage {
   constructor(options) {
     super(options);
-    this.createStore();
+    return this.constructor._matchingInstance(this);
   }
 
   _parsedData() {
@@ -37,12 +37,10 @@ class WebSQL extends Storage {
   }
 
   get store() {
-    return window.openDatabase('ss', 1, this._options.description, this._options.size);
-  }
-
-  createStore() {
-    if (!window || typeof window.openDatabase !== 'function') return;
-    return this.execSql(`CREATE TABLE IF NOT EXISTS ${this.tableName} (key unique, value)`);
+    if (this._store) return this._store;
+    this._store = window.openDatabase('ss', 1, this._options.description, this._options.size);
+    this.execSql(`CREATE TABLE IF NOT EXISTS ${this.tableName} (key unique, value)`);
+    return this._store;
   }
 
   execSql(query, args = []) {
@@ -70,4 +68,4 @@ class WebSQL extends Storage {
   }
 }
 
-module.exports = WebSQL;
+export default WebSQL;

@@ -6,17 +6,17 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 
 | Type                                             |                                                                                                                              Size                                                                                                                              |
 | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Normal (`dist/sifrr.storage.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.js)                   |
-| Minified (`dist/sifrr.storage.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js)              |
+| Normal (`dist/sifrr.storage.js`)                 |                   [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.js)                    |
+| Minified (`dist/sifrr.storage.min.js`)           |              [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js)               |
 | Minified + Gzipped (`dist/sifrr.storage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js) |
 
 ## Types of storages available (in default priority order)
 
--   IndexedDB (Persisted - on page refresh or open/close)
--   WebSQL (Persisted - on page refresh or open/close)
--   LocalStorage (Persisted - on page refresh or open/close)
--   Cookies (Persisted - on page refresh or open/close), Sent to server with every request
--   JsonStorage (In memory - deleted on page refresh or open/close)
+- IndexedDB (Persisted - on page refresh or open/close)
+- WebSQL (Persisted - on page refresh or open/close)
+- LocalStorage (Persisted - on page refresh or open/close)
+- Cookies (Persisted - on page refresh or open/close), Sent to server with every request
+- JsonStorage (In memory - deleted on page refresh or open/close)
 
 ## How to use
 
@@ -57,6 +57,10 @@ const Storage = require('@sifrr/storage');
 ```js
 import Storage from '@sifrr/storage';
 // use Storage instead of Sifrr.Storage in examples if you are using this
+
+// or
+// if you want to use one type of store without support checking based on priority
+import { IndexedDB, WebSQL, LocalStorage, Cookies, JsonStorage } from '@sifrr/storage';
 ```
 
 ## API
@@ -65,17 +69,17 @@ Sifrr.Storage uses Promises.
 
 ### Initialization
 
--   Initialize a storage with a type
+- Initialize a storage with a type
 
 ```js
-let storage = new Sifrr.Storage(type)
+let storage = new Sifrr.Storage(type);
 ```
 
 where type is one of `indexeddb`, `websql`, `localstorage`, `cookies`, `jsonstorage`.
 
 _Note_: If that type is not supported in the browser, then first supported storage will be selected based on priority order.
 
--   Initialize with options
+- Initialize with options
 
 ```js
 // Options with default values
@@ -85,8 +89,8 @@ let options = {
   version: 1, // version number (integer / float / string), 1 is treated same as '1'
   desciption: 'Sifrr Storage', // description (text)
   size: 5 * 1024 * 1024 // Max db size in bytes only for websql (integer)
-}
-storage = new Sifrr.Storage(options)
+};
+storage = new Sifrr.Storage(options);
 ```
 
 **Initializing with same priority, name and version will give same instance.**
@@ -105,11 +109,15 @@ storage.version; // version number
 // insert single key-value
 let key = 'key';
 let value = { value: 'value' };
-storage.set(key, value).then(() => {/* Do something here */});
+storage.set(key, value).then(() => {
+  /* Do something here */
+});
 
 // insert multiple key-values
-let data = { a: 'b', c: { d: 'e' } }
-storage.set(data).then(() => {/* Do something here */});
+let data = { a: 'b', c: { d: 'e' } };
+storage.set(data).then(() => {
+  /* Do something here */
+});
 ```
 
 **Note** Cookies are trucated after ~628 characters in chrome (total of key + value characters), other browsers may tructae at other values as well. Use cookies for small data only
@@ -124,20 +132,24 @@ storage.store = `key=value; expires=...; path=/`;
 
 ```js
 // get single key-value
-storage.get('key').then((value) => console.log(value)); // > { key: { value: 'value' } }
+storage.get('key').then(value => console.log(value)); // > { key: { value: 'value' } }
 
 // get multiple key-values
-storage.get(['a', 'c']).then((value) => console.log(value)); // > { a: 'b', c: { d: 'e' } }
+storage.get(['a', 'c']).then(value => console.log(value)); // > { a: 'b', c: { d: 'e' } }
 ```
 
 ### Deleting a key
 
 ```js
 // delete single key-value
-storage.del('key').then(() => {/* Do something here */});
+storage.del('key').then(() => {
+  /* Do something here */
+});
 
 // delete multiple key-values
-storage.del(['a', 'c']).then(() => {/* Do something here */});
+storage.del(['a', 'c']).then(() => {
+  /* Do something here */
+});
 ```
 
 ### Updating a key
@@ -147,13 +159,13 @@ storage.del(['a', 'c']).then(() => {/* Do something here */});
 ### Get all data in table
 
 ```js
-storage.all().then((data) => console.log(data)); // > { key: { value: 'value' }, a: 'b', c: { d: 'e' } }
+storage.all().then(data => console.log(data)); // > { key: { value: 'value' }, a: 'b', c: { d: 'e' } }
 ```
 
 ### Get all keys in table
 
 ```js
-storage.keys().then((keys) => console.log(keys)); // > ['key', 'a', 'c']
+storage.keys().then(keys => console.log(keys)); // > ['key', 'a', 'c']
 ```
 
 ### Clear table
@@ -161,7 +173,7 @@ storage.keys().then((keys) => console.log(keys)); // > ['key', 'a', 'c']
 ```js
 storage.clear().then(() => {
   // checking if data is deleted
-  storage.all().then((data) => console.log(data)); // > {}
+  storage.all().then(data => console.log(data)); // > {}
 });
 ```
 
@@ -181,25 +193,25 @@ should be `string`
 
 can be any of these types:
 
--   `Array`,
--   `ArrayBuffer`,
--   `Blob`,
--   `Float32Array`,
--   `Float64Array`,
--   `Int8Array`,
--   `Int16Array`,
--   `Int32Array`,
--   `Number`,
--   `Object`,
--   `Uint8Array`,
--   `Uint16Array`,
--   `Uint32Array`,
--   `Uint8ClampedArray`,
--   `String`
+- `Array`,
+- `ArrayBuffer`,
+- `Blob`,
+- `Float32Array`,
+- `Float64Array`,
+- `Int8Array`,
+- `Int16Array`,
+- `Int32Array`,
+- `Number`,
+- `Object`,
+- `Uint8Array`,
+- `Uint16Array`,
+- `Uint32Array`,
+- `Uint8ClampedArray`,
+- `String`
 
 ### Gotchas
 
--   When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
--   Since object[key] is `undefined` when key is not present in the object, `undefined` is not supported as a value.
--   `null` value has buggy behaviour in localstorage, as it returns `null` when value is not present.
--   If you want to save falsy values, you can save `false` or `0` which are supported by all storages.
+- When using localStorage, websql or cookies, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved, and might affect performance.
+- Since object[key] is `undefined` when key is not present in the object, `undefined` is not supported as a value.
+- `null` value has buggy behaviour in localstorage, as it returns `null` when value is not present.
+- If you want to save falsy values, you can save `false` or `0` which are supported by all storages.

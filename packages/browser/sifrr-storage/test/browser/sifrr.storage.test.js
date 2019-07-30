@@ -1,4 +1,4 @@
-const SifrrStorage = require('../../src/sifrr.storage');
+const SifrrStorage = require('../../src/sifrr.storage').default;
 
 describe('Sifrr.Storage in browser', () => {
   before(async () => {
@@ -13,6 +13,7 @@ describe('Sifrr.Storage in browser', () => {
         return e;
       }
     });
+
     expect(result).to.have.all.keys(Object.keys(SifrrStorage.availableStores));
   });
 

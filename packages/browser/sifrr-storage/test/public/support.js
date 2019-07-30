@@ -15,7 +15,7 @@ function save_websql() {
 }
 
 function save_indexeddb() {
-  let req = indexedDB.deleteDatabase('SifrrStorage1');
+  indexedDB.deleteDatabase('SifrrStorage1');
   let request = indexedDB.open('SifrrStorage1', 1);
   request.onupgradeneeded = function(event) {
     let db = event.target.result;
@@ -29,7 +29,7 @@ function save_indexeddb() {
 
 function save_jsonstorage() {
   let storage = new Sifrr.Storage('jsonstorage');
-  storage.set('a', 'b');
+  storage._table = { a: 'b' };
 }
 
 function arrayEqual(buf1, buf2) {

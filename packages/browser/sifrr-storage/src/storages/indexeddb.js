@@ -1,8 +1,9 @@
-const Storage = require('./storage');
+import Storage from './storage';
 
 class IndexedDB extends Storage {
   constructor(options) {
     super(options);
+    return this.constructor._matchingInstance(this);
   }
 
   _parsedData() {
@@ -66,4 +67,4 @@ class IndexedDB extends Storage {
   }
 }
 
-module.exports = IndexedDB;
+export default IndexedDB;

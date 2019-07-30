@@ -1,17 +1,25 @@
-const Storage = require('./storage');
+import Storage from './storage';
 
 class JsonStorage extends Storage {
-  constructor(options, data = {}) {
+  constructor(options) {
     super(options);
-    this.table = Storage.parse(data);
+    return this.constructor._matchingInstance(this);
   }
 
   _parsedData() {
     return this.table;
   }
 
+  get table() {
+    return this._table || {};
+  }
+
+  set table(v) {
+    this._table = v;
+  }
+
   get store() {
-    return this.table;
+    return true;
   }
 
   static get type() {
@@ -19,4 +27,4 @@ class JsonStorage extends Storage {
   }
 }
 
-module.exports = JsonStorage;
+export default JsonStorage;

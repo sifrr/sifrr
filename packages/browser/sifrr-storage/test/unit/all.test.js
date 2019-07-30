@@ -1,7 +1,6 @@
-const SifrrStorage = require('../../src/sifrr.storage');
-const JsonStorage = require('../../src/storages/jsonstorage'),
-  JSONP = require('../../src/utils/json'),
-  Storage = require('../../src/storages/storage');
+const SifrrStorage = require('../../src/sifrr.storage').default;
+const JSONP = require('../../src/utils/json'),
+  Storage = require('../../src/storages/storage').default;
 
 describe('SifrrStorage', () => {
   describe('#new', () => {
@@ -39,43 +38,6 @@ describe('SifrrStorage', () => {
       expect(() => new SifrrStorage()).to.throw();
 
       sinon.restore();
-    });
-  });
-
-  describe('#all', () => {
-    it('should return all instances there are', () => {
-      SifrrStorage.all = [];
-      new SifrrStorage({ priority: ['cookies'] });
-      new SifrrStorage({ priority: ['indexeddb'] });
-      assert.equal(SifrrStorage.all.length, 2);
-    });
-  });
-
-  describe('#json', () => {
-    it('should return jsonstorage', () => {
-      let x = SifrrStorage.json({ a: 'b' });
-      assert.equal(x.type, 'jsonstorage');
-    });
-  });
-});
-
-describe('JsonStorage', () => {
-  let options = {
-    name: 'SifrrStorage',
-    version: 1
-  };
-
-  describe('#new', () => {
-    it('should parse provided string', () => {
-      let x = new JsonStorage(options, '{"a": "b"}');
-      assert.equal(x.store['a'], 'b');
-      let y = new JsonStorage(options, '[{"a": "b"}]');
-      assert.equal(y.store[0]['a'], 'b');
-    });
-
-    it('should not parse provided object', () => {
-      let x = new JsonStorage(options, { a: 'b' });
-      assert.equal(x.store['a'], 'b');
     });
   });
 });
