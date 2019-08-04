@@ -4,11 +4,10 @@ History API based Routing library for building One Page Applications with sifrr.
 
 ## Size
 
-| Type                                           |                                                                                                                          Size                                                                                                                          |
-| :--------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Normal (`dist/sifrr.route.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.js)                   |
-| Minified (`dist/sifrr.route.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js)              |
-| Minified + Gzipped (`dist/sifrr.route.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-route/dist/sifrr.route.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-route/dist/sifrr.route.min.js) |
+| Type                                           |                           Size                           |
+| :--------------------------------------------- | :------------------------------------------------------: |
+| Minified (`dist/sifrr.route.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/route)   |
+| Minified + Gzipped (`dist/sifrr.route.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/route) |
 
 ### Browser API support needed for
 
@@ -27,12 +26,19 @@ History API based Routing library for building One Page Applications with sifrr.
   import '@sifrr/route';
 </script>
 <!-- OR ES6 modules and using CDN -->
-<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8" type="module"></script>
+<script
+  src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js"
+  charset="utf-8"
+  type="module"
+></script>
 <!-- OR without module -->
-<script src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js" charset="utf-8"></script>
+<script
+  src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js"
+  charset="utf-8"
+></script>
 ```
 
--   You also need to take care in your server configuration that correct html file is served for all sifrr-routes.
+- You also need to take care in your server configuration that correct html file is served for all sifrr-routes.
 
 Good way can be to serve `index.html` to all routes and define all routes in this file.
 
@@ -41,43 +47,43 @@ Good way can be to serve `index.html` to all routes and define all routes in thi
 Add sifrr-route tag in your html, this will only be shown when `window.location.pathname` is same as `path` unless it has `target` attribute and it is not equal to `_self` or link is of some other domain.
 
 ```html
-<sifrr-route path='/some-path'>
+<sifrr-route path="/some-path">
   <!-- Contents -->
 </sifrr-route>
 ```
 
 Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname. If you want the page to reload add `target='_top'` to `a` tag.
 
--   You can use `sifrr-route` inside another `sifrr-route`.
+- You can use `sifrr-route` inside another `sifrr-route`.
 
--   you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
+- you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
 
--   URL Query string is not matched
+- URL Query string is not matched
 
--   You can also you special syntax if you want to parse pathname and use it:
+- You can also you special syntax if you want to parse pathname and use it:
 
-    -   `:alphanumeric` matches anything without `/` as alphanumeric variable.
+  - `:alphanumeric` matches anything without `/` as alphanumeric variable.
 
-    -   `*` matches anything without `/` as star variable.
+  - `*` matches anything without `/` as star variable.
 
-    -   `**` matches everything
-        eg. `/:x/*/**/mnop/*/:k` will match `/new/def/ghi/klm/mnop/sdf/klm` and parse it as
+  - `**` matches everything
+    eg. `/:x/*/**/mnop/*/:k` will match `/new/def/ghi/klm/mnop/sdf/klm` and parse it as
 
-    ```js
-      {
-        '*': [ "def", "sdf" ],
-        '**': [ "ghi/klm" ],
-        x: "new",
-        k: "klm"
-      }
-    ```
+  ```js
+    {
+      '*': [ "def", "sdf" ],
+      '**': [ "ghi/klm" ],
+      x: "new",
+      k: "klm"
+    }
+  ```
 
-    and make `sifrr-route` tag with `path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
+  and make `sifrr-route` tag with `path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
 
 ### Class
 
--   Sifrr-routes matching `window.location.pathname` will have `active` class
--   Sifrr-routes not matching `window.location.pathname` will not have `active` class. You can add animations etc, based on this.
+- Sifrr-routes matching `window.location.pathname` will have `active` class
+- Sifrr-routes not matching `window.location.pathname` will not have `active` class. You can add animations etc, based on this.
 
 ### State of element
 
@@ -100,7 +106,7 @@ Any child elements with `[data-sifrr-route-state="true"]` will get passed state 
 eg.
 
 ```html
-<sifrr-route id="complex" path='/test/:id' data-sifrr-elements='sifrr-test'>
+<sifrr-route id="complex" path="/test/:id" data-sifrr-elements="sifrr-test">
   Route state check
   <sifrr-test data-sifrr-route-state="true"></sifrr-test>
 </sifrr-route>
@@ -114,7 +120,6 @@ When window location path is `/test/1`, sifrr-route's state will be `{ id: 1 }` 
 
 ```css
 sifrr-route {
-
 }
 sifrr-route.active {
   opacity: 0;

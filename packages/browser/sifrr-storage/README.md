@@ -4,11 +4,10 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 
 ## Size
 
-| Type                                             |                                                                                                                              Size                                                                                                                              |
-| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Normal (`dist/sifrr.storage.js`)                 |                   [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.js)                    |
-| Minified (`dist/sifrr.storage.min.js`)           |              [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js)               |
-| Minified + Gzipped (`dist/sifrr.storage.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-storage/dist/sifrr.storage.min.js) |
+| Type                                             |                            Size                            |
+| :----------------------------------------------- | :--------------------------------------------------------: |
+| Minified (`dist/sifrr.storage.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/storage)   |
+| Minified + Gzipped (`dist/sifrr.storage.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/storage) |
 
 ## Types of storages available (in default priority order)
 

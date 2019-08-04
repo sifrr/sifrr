@@ -7,6 +7,7 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 - Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
 - Simple static file serving with conditional last-modified, compression, cache, live reload support
 - Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
+- easy graphql server
 
 ## How to use
 

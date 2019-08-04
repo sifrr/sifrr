@@ -4,30 +4,27 @@ A ~6KB :zap: fast DOM framework for creating web user interfaces using Custom El
 
 Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ease-of-use and features of a full fledged JS framework like css scoping (shadow root), events, reconciliation etc.
 
-**Example:** <https://sifrr.github.io/sifrr/docs/speedtest.html>
-
 ## Size
 
-| Type                                         |                                                                                                                      Size                                                                                                                      |
-| :------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Normal (`dist/sifrr.dom.js`)                 |                    [![Normal](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.js)                   |
-| Minified (`dist/sifrr.dom.min.js`)           |               [![Minified](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js)              |
-| Minified + Gzipped (`dist/sifrr.dom.min.js`) | [![Minified + Gzipped](https://img.badgesize.io/sifrr/sifrr/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js?compression=gzip&maxAge=600)](https://github.com/sifrr/sifrr/blob/master/packages/browser/sifrr-dom/dist/sifrr.dom.min.js) |
+| Type                                         |                          Size                          |
+| :------------------------------------------- | :----------------------------------------------------: |
+| Minified (`dist/sifrr.dom.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/dom)   |
+| Minified + Gzipped (`dist/sifrr.dom.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/dom) |
 
 ## Tradeoffs
 
--   :+1: Small Size
--   :+1: Use latest web API standards (custom elements v1)
--   :+1: CSS scoping with shadow root
--   :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
--   :+1: Small learning curve, as you use only HTML, CSS, and JS (you can use other things too if you want to though)
--   :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM,
--   :+1: still [fast(er)](#performance-comparison) (just ~10-20% slower than vanillaJS)
--   :-1: No virtual Dom (if that matters to you)
--   :+1: Low memory usage (just ~10-20% more than vanillaJS)
--   :+1: Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
--   :+1: has Keyed implementation
--   :+1: In-built Synthetic event listeners and custom events
+- :+1: Small Size
+- :+1: Use latest web API standards (custom elements v1)
+- :+1: CSS scoping with shadow root
+- :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
+- :+1: Small learning curve, as you use only HTML, CSS, and JS (you can use other things too if you want to though)
+- :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM,
+- :+1: still [fast(er)](#performance-comparison) (just ~10-20% slower than vanillaJS)
+- :-1: No virtual Dom (if that matters to you)
+- :+1: Low memory usage (just ~10-20% more than vanillaJS)
+- :+1: Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
+- :+1: has Keyed implementation
+- :+1: In-built Synthetic event listeners and custom events
 
 ## Performance Comparison
 
@@ -96,7 +93,7 @@ const config = {
   baseUrl: '', // base url for sifrr elements, should start with '/' and should not end with '/'
   useShadowRoot: true, // use shadow root by default or not
   events: [] // synthetic event listerners to add, read more in Synthetic Events section
-}
+};
 // Set up Sifrr-Dom
 Sifrr.Dom.setup(config);
 ```
@@ -118,7 +115,7 @@ Sifrr.Dom.setup(config);
   </style>
   <!-- Contents for element, this in binding ${} refers to the custom element itself -->
   <!-- Bindings are updated automatically on state change -->
-  <p attr=${this.state.attr}>${this.state.id}</p>
+  <p attr="${this.state.attr}">${this.state.id}</p>
   <p>${this.data()}</p>
   <!-- If you are using any custom methods in bindings, it is better they are based on state so that they are updated on state change -->
 </template>
@@ -135,7 +132,7 @@ Sifrr.Dom.setup(config);
     // default state for this element
     id: 1,
     attr: 'abcd'
-  }
+  };
   Sifrr.Dom.register(CustomTag, options);
   // options: `dependsOn` -> Array of custom element tag names to load before registering this element, eg. `custom-tag`
   // `extends` -> tag name of extended html element
@@ -166,7 +163,7 @@ CustomTag.defaultState = {
   // default state for this element, recommended to give a default state
   id: 1,
   attr: 'abcd'
-}
+};
 Sifrr.Dom.register(CustomTag);
 module.exports = CustomTag;
 ```
@@ -180,9 +177,9 @@ module.exports = CustomTag;
 
 const config = {
   baseUrl: ''
-}
+};
 // Requires Fetch API
-Sifrr.Dom.load('custom-tag', config = { url, js: true });
+Sifrr.Dom.load('custom-tag', (config = { url, js: true }));
 // If url is given in config, custom-tag element is loaded from that url, else
 // custom-tag element is loaded from ${baseUrl}/elements/custom/tag.js (if js === true)
 // or ${baseUrl}/elements/custom/tag.html (if js === false)
@@ -203,13 +200,13 @@ Sifrr.Dom.load('custom-tag', config = { url, js: true });
 
 ```js
 // index.html
-<script src="${baseUrl}/elements/custom/tag"></script>
+<script src="${baseUrl}/elements/custom/tag" />
 ```
 
 4.  HTML imports - html elements only (not recommended - deprecated by browsers)
 
 ```html
-<link rel="import" href="${baseUrl}/elements/custom/tag.html">
+<link rel="import" href="${baseUrl}/elements/custom/tag.html" />
 ```
 
 #### Rendering
@@ -220,7 +217,7 @@ This html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title></title>
   </head>
   <body>
@@ -237,20 +234,20 @@ will render to
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title></title>
   </head>
   <body>
     <custom-tag>
       #shadow-root
       <!-- Content will be rendered in shadow root if useShadowRoot is set to true in setup config -->
-        <style media="screen">
-          p {
-            color: blue; // Only applies to p inside this element
-          }
-        </style>
-        <p>1</p>
-        <p attr="abcd">2</p>
+      <style media="screen">
+        p {
+          color: blue; // Only applies to p inside this element
+        }
+      </style>
+      <p>1</p>
+      <p attr="abcd">2</p>
     </custom-tag>
     <script src="index.js" charset="utf-8"></script>
   </body>
@@ -261,7 +258,7 @@ will render to
 
 ```js
 const customtag = window.querySelector('custom-tag');
-customtag.state = { id: 2, attr: 'xyz' }
+customtag.state = { id: 2, attr: 'xyz' };
 // Note: state is functionally immutable, hence doing `customtag.state.id = 2` won't work
 // You need to set state to new value every time you need to change state, but don't
 // worry. Only new values provided are updated, other values remain same as they were.
@@ -272,8 +269,8 @@ This will change custom-tag to
 ```html
 <custom-tag>
   #shadow-root
-    <p attr="xyz">2</p>
-    <p>4</p>
+  <p attr="xyz">2</p>
+  <p>4</p>
 </custom-tag>
 ```
 
@@ -295,7 +292,7 @@ customtag.update();
 const config = {
   baseUrl: '/',
   useShadowRoot: false
-}
+};
 Sifrr.Dom.setup(config);
 ```
 
@@ -364,20 +361,20 @@ class CustomTag extends Sifrr.Dom.Element {
 #### Clearing state of element
 
 ```js
-customtag.clearState() // Not recommended to avoid blank/undefined bindings
+customtag.clearState(); // Not recommended to avoid blank/undefined bindings
 ```
 
 #### Query selectors for custom element content
 
 ```js
 // querySelector
-customtag.$(selector, /* shadowRoot = default: true if element uses shadow root else false */);
+customtag.$(selector /* shadowRoot = default: true if element uses shadow root else false */);
 // querySelectorAll
-customtag.$$(selector, /* shadowRoot = default: true if element uses shadow root else false */);
+customtag.$$(selector /* shadowRoot = default: true if element uses shadow root else false */);
 // If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
 ```
 
-Sifrr adds $ and $$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
+Sifrr adds $ and $\$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
 
 ### Synthetic events
 
@@ -412,30 +409,30 @@ Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 
 ```js
 // template function can take html string
-Sifrr.Dom.template('<p></p>')
+Sifrr.Dom.template('<p></p>');
 // <template>
 //   <p></p>
 // </template>
 
 // template function can take template html string
-Sifrr.Dom.template`<p></p>`
+Sifrr.Dom.template`<p></p>`;
 // <template>
 //   <p></p>
 // </template>
 
 // template function can take html element or array of elements
-Sifrr.Dom.template(document.createElement('p'))
+Sifrr.Dom.template(document.createElement('p'));
 // <template>
 //   <p></p>
 // </template>
-Sifrr.Dom.template([document.createElement('p'), document.createElement('p')])
+Sifrr.Dom.template([document.createElement('p'), document.createElement('p')]);
 // <template>
 //   <p></p>
 //   <p></p>
 // </template>
 
 // template function can take html string and style string
-Sifrr.Dom.template('<p></p>', 'div { width: 100% }')
+Sifrr.Dom.template('<p></p>', 'div { width: 100% }');
 // <template>
 //   <style>
 //     div { width: 100% }
@@ -502,7 +499,7 @@ this will render
 ```html
 <!-- inside template -->
 <!-- One Way bindings to value, updates value/content when state is changed -->
-<input value=${this.state.input}>
+<input value="${this.state.input}" />
 <select value="${this.state.select}">
   <!-- options -->
 </select>
@@ -512,17 +509,16 @@ this will render
 </div>
 
 <!-- One Way bindings from value, updates state when value/content is changed (on input/change event) -->
-<input data-sifrr-bind="input">
+<input data-sifrr-bind="input" />
 <select data-sifrr-bind="select">
   <!-- options -->
 </select>
 <textarea data-sifrr-bind="textarea"></textarea>
-<div contenteditable data-sifrr-bind="elements">
-</div>
+<div contenteditable data-sifrr-bind="elements"></div>
 
 <!-- Both together -->
-<input value=${this.state.input} data-sifrr-bind="input">
-<select value="${this.state.select}"  data-sifrr-bind="select">
+<input value="${this.state.input}" data-sifrr-bind="input" />
+<select value="${this.state.select}" data-sifrr-bind="select">
   <!-- options -->
 </select>
 <textarea data-sifrr-bind="textarea">${this.state.textarea}</textarea>
@@ -536,16 +532,16 @@ this will render
 ```html
 <!-- inside template -->
 <!-- One Way bindings to `some-element`'s state, updates state of `some-element` when parent's state is changed -->
-<some-element _state=${this.state.someElementState}><some-element>
-
-
-<!-- One Way bindings from `some-element`'s state, updates parent's state when state of `some-element` is changed -->
-<some-element data-sifrr-bind="someElementState"><some-element>
-
-
-<!-- Both together -->
-<!-- This automatically syncs parent's state.someElementState and `some-element`'s state' -->
-<some-element _state=${this.state.someElementState} data-sifrr-bind="someElementState"><some-element>
+<some-element _state="${this.state.someElementState}"
+  ><some-element>
+    <!-- One Way bindings from `some-element`'s state, updates parent's state when state of `some-element` is changed -->
+    <some-element data-sifrr-bind="someElementState"
+      ><some-element>
+        <!-- Both together -->
+        <!-- This automatically syncs parent's state.someElementState and `some-element`'s state' -->
+        <some-element _state="${this.state.someElementState}" data-sifrr-bind="someElementState"
+          ><some-element></some-element></some-element></some-element></some-element></some-element
+></some-element>
 ```
 
 #### Repeating a dom for Array
@@ -597,14 +593,16 @@ then, `<custom-tag></custom-tag>` will render:
   <div data-sifrr-key="id">
     <custom-array>
       #shadow-root
-        <p>1</p>
+      <p>1</p>
     </custom-array>
     <custom-array>
       #shadow-root
-        <p>2</p>
+      <p>2</p>
     </custom-array>
-  <div>
-<custom-tag>
+    <div>
+      <custom-tag></custom-tag>
+    </div></div
+></custom-tag>
 ```
 
 ##### Repeating normal element
@@ -643,8 +641,10 @@ then, `<custom-tag></custom-tag>` will render:
     <div>
       <p>2</p>
     </div>
-  <div>
-<custom-tag>
+    <div>
+      <custom-tag></custom-tag>
+    </div></div
+></custom-tag>
 ```
 
 #### Extending another html element (doesn't work in safari)
@@ -674,13 +674,13 @@ const someStore = new Sifrr.Dom.Store({ initial: 'value' });
 // sync with a sifrr element
 class CustomElement {
   get template() {
-    return '<p>${this.stores.some.value.initial}</p>' // <p>value</p>
+    return '<p>${this.stores.some.value.initial}</p>'; // <p>value</p>
   }
 
   get stores() {
     return {
       some: someStore // updating any stores added here will update this element
-    }
+    };
   }
 }
 
@@ -700,17 +700,17 @@ someStore.addListener(() => {
 
 #### slots
 
--   Slots work same as it would in web components, but note that bindings in slot elements won't work
+- Slots work same as it would in web components, but note that bindings in slot elements won't work
 
 ## Example elements
 
--   <https://github.com/sifrr/sifrr-elements>
+- <https://github.com/sifrr/sifrr-elements>
 
 ## More readings
 
--   <https://developers.google.com/web/fundamentals/web-components/customelements>
+- <https://developers.google.com/web/fundamentals/web-components/customelements>
 
 ## Special thanks to
 
--   <https://github.com/Freak613/stage0> for optimization bindings and reconciliation algorithm
--   <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)
+- <https://github.com/Freak613/stage0> for optimization bindings and reconciliation algorithm
+- <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)
