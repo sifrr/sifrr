@@ -6,6 +6,8 @@ script: PARALLEL=true yarn test
 cache: yarn
 node_js:
   - '12.7.0'
+services:
+  - mysql
 
 branches:
   only:
