@@ -39,7 +39,7 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.26",
+    "@sifrr/dev": "^0.0.27",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7",
     "@babel/plugin-proposal-class-properties": "^7.5.5"
