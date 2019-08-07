@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-const { makeEqual } = require('./makeequal');
+import { makeEqual } from './makeequal';
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
@@ -11,7 +11,7 @@ const { makeEqual } = require('./makeequal');
 // How this implementation differs from others, is that it's working with data directly,
 // without maintaining nodes arrays, and manipulates dom only when required
 
-function makeChildrenEqualKeyed(parent, newData, createFn, key) {
+export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   const newL = newData.length,
     oldL = parent.childNodes.length;
 
@@ -188,7 +188,7 @@ function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L368
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
-function longestPositiveIncreasingSubsequence(ns, newStart) {
+export function longestPositiveIncreasingSubsequence(ns, newStart) {
   let seq = [],
     is = [],
     l = -1,
@@ -236,8 +236,3 @@ function findGreatestIndexLEQ(seq, n) {
 
   return lo;
 }
-
-module.exports = {
-  makeChildrenEqualKeyed,
-  longestPositiveIncreasingSubsequence
-};

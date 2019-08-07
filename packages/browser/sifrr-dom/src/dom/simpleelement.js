@@ -1,7 +1,7 @@
-const template = require('./template');
-const update = require('./update');
-const { collect, create } = require('./ref');
-const creator = require('./creator');
+import template from './template';
+import update from './update';
+import { collect, create } from './ref';
+import creator from './creator';
 
 function sifrrClone(newState) {
   // this = content
@@ -14,7 +14,7 @@ function sifrrClone(newState) {
   return clone;
 }
 
-function SimpleElement(content, defaultState = null) {
+export default function SimpleElement(content, defaultState = null) {
   const templ = template(content);
   content = templ.content.firstElementChild || templ.content.firstChild;
   // Already sifrr element
@@ -46,5 +46,3 @@ function SimpleElement(content, defaultState = null) {
   };
   return content;
 }
-
-module.exports = SimpleElement;

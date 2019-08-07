@@ -1,5 +1,5 @@
 // Attribute related gotchas
-module.exports = (element, name, newValue) => {
+export default (element, name, newValue) => {
   if (newValue === false || newValue === null || newValue === undefined)
     element.hasAttribute(name) && element.removeAttribute(name);
   else if (name === 'class') element.className = newValue;

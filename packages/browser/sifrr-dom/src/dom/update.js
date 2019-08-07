@@ -1,11 +1,11 @@
-const { makeChildrenEqual } = require('./makeequal');
-const { makeChildrenEqualKeyed } = require('./keyed');
-const updateAttribute = require('./updateattribute');
-const { evaluateBindings } = require('./bindings');
-const { TEMPLATE, KEY_ATTR } = require('./constants');
-const shouldMerge = require('../utils/shouldmerge');
+import { makeChildrenEqual } from './makeequal';
+import { makeChildrenEqualKeyed } from './keyed';
+import updateAttribute from './updateattribute';
+import { evaluateBindings } from './bindings';
+import { TEMPLATE, KEY_ATTR } from './constants';
+import shouldMerge from '../utils/shouldmerge';
 
-function update(element, stateMap) {
+export default function update(element, stateMap) {
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
   for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
@@ -92,5 +92,3 @@ function update(element, stateMap) {
     }
   }
 }
-
-module.exports = update;

@@ -1,7 +1,7 @@
-const { BIND_ATTR } = require('./constants');
-const shouldMerge = require('../utils/shouldmerge');
+import { BIND_ATTR } from './constants';
+import shouldMerge from '../utils/shouldmerge';
 
-module.exports = e => {
+export default e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
 
   if (!target.hasAttribute(BIND_ATTR) || target._root === null) return;

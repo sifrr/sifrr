@@ -1,8 +1,11 @@
-const template = require('./template');
+import template from './template';
+import config from './config';
 
-class Loader {
+export default class Loader {
+  static all = {};
+
   constructor(elemName, url) {
-    if (!window.fetch) throw Error('Sifrr.Dom.load requires Fetch API to work.');
+    if (!window.fetch) throw Error('Sifrr.Dom.load requires window.fetch API to work.');
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
     Loader.all[this.elementName] = this;
@@ -16,10 +19,8 @@ class Loader {
     } else {
       return (
         (this._exec = this.constructor.executeJS(this.getUrl('js')).catch(e => {
-          window.console.error(e);
-          window.console.log(
-            `JS file for '${this.elementName}' gave error. Trying to get html file.`
-          );
+          console.error(e);
+          console.log(`JS file for '${this.elementName}' gave error. Trying to get html file.`);
           return this.constructor.executeHTML(this.getUrl('html'), this);
         })),
         this._exec
@@ -29,10 +30,7 @@ class Loader {
 
   getUrl(type = 'js') {
     return (
-      this.url ||
-      `${window.Sifrr.Dom.config.baseUrl + '/'}elements/${this.elementName
-        .split('-')
-        .join('/')}.${type}`
+      this.url || `${config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`
     );
   }
 
@@ -71,7 +69,3 @@ class Loader {
     });
   }
 }
-
-Loader.all = {};
-
-module.exports = Loader;

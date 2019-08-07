@@ -1,6 +1,6 @@
 describe('twowaybind', () => {
   it('takes composedPath if exists', () => {
-    const twoWayBind = require('../../../src/dom/twowaybind');
+    const twoWayBind = require('../../../src/dom/twowaybind').default;
 
     const target = {
       _root: { state: {}, _state: {}, isSifrr: true },

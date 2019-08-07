@@ -1,8 +1,8 @@
-const updateAttribute = require('./updateattribute');
-const shouldMerge = require('../utils/shouldmerge');
-const { TEXT_NODE, COMMENT_NODE } = require('./constants');
+import updateAttribute from './updateattribute';
+import shouldMerge from '../utils/shouldmerge';
+import { TEXT_NODE, COMMENT_NODE } from './constants';
 
-function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
+export function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
   const newL = newChildren.length,
     oldL = parent.childNodes.length;
   // Lesser children now
@@ -46,7 +46,7 @@ function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
   }
 }
 
-function makeEqual(oldNode, newNode) {
+export function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
     if (shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
     return oldNode;
@@ -83,8 +83,3 @@ function makeEqual(oldNode, newNode) {
 
   return oldNode;
 }
-
-module.exports = {
-  makeEqual,
-  makeChildrenEqual
-};

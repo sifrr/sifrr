@@ -1,8 +1,8 @@
-const simpleElement = require('./simpleelement');
-const { getStringBindingFxn } = require('./bindings');
-const { KEY_ATTR, REPEAT_ATTR, DEFAULT_STATE_ATTR } = require('./constants');
+import simpleElement from './simpleelement';
+import { getStringBindingFxn } from './bindings';
+import { KEY_ATTR, REPEAT_ATTR, DEFAULT_STATE_ATTR } from './constants';
 
-module.exports = (sm, el) => {
+export default (sm, el) => {
   sm.type = 3;
   let defaultState;
   if (el.hasAttribute(DEFAULT_STATE_ATTR))

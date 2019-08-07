@@ -1,6 +1,6 @@
-const { OUTER_REGEX, STATE_REGEX } = require('./constants');
+import { OUTER_REGEX, STATE_REGEX } from './constants';
 
-function replacer(match) {
+export function replacer(match) {
   let f;
   if (match.indexOf('return ') > -1) {
     f = match;
@@ -15,7 +15,7 @@ function replacer(match) {
   }
 }
 
-function evaluate(fxn, el) {
+export function evaluate(fxn, el) {
   try {
     if (typeof fxn === 'string') return fxn;
     else return fxn.call(el);
@@ -29,30 +29,26 @@ function evaluate(fxn, el) {
   }
 }
 
-const Bindings = {
-  getBindingFxns: string => {
-    const splitted = string.split(OUTER_REGEX),
-      l = splitted.length,
-      ret = [];
-    for (let i = 0; i < l; i++) {
-      if (splitted[i][0] === '$' && splitted[i][1] === '{') {
-        ret.push(replacer(splitted[i].slice(2, -1)));
-      } else if (splitted[i]) ret.push(splitted[i]);
-    }
-    if (ret.length === 1) return ret[0];
-    return ret;
-  },
-  getStringBindingFxn: string => {
-    const match = string.match(STATE_REGEX);
-    if (match) return match[1];
-    return Bindings.getBindingFxns(string);
-  },
-  evaluateBindings: (fxns, element) => {
-    if (typeof fxns === 'function') return evaluate(fxns, element);
-    return fxns.map(fxn => evaluate(fxn, element)).join('');
-  },
-  evaluate: evaluate,
-  replacer: replacer
+export const getBindingFxns = string => {
+  const splitted = string.split(OUTER_REGEX),
+    l = splitted.length,
+    ret = [];
+  for (let i = 0; i < l; i++) {
+    if (splitted[i][0] === '$' && splitted[i][1] === '{') {
+      ret.push(replacer(splitted[i].slice(2, -1)));
+    } else if (splitted[i]) ret.push(splitted[i]);
+  }
+  if (ret.length === 1) return ret[0];
+  return ret;
 };
 
-module.exports = Bindings;
+export const getStringBindingFxn = string => {
+  const match = string.match(STATE_REGEX);
+  if (match) return match[1];
+  return getBindingFxns(string);
+};
+
+export const evaluateBindings = (fxns, element) => {
+  if (typeof fxns === 'function') return evaluate(fxns, element);
+  return fxns.map(fxn => evaluate(fxn, element)).join('');
+};

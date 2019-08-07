@@ -1,7 +1,7 @@
-const shouldMerge = require('../utils/shouldmerge');
+import shouldMerge from '../utils/shouldmerge';
 const objCon = {}.constructor;
 
-class Store {
+export default class Store {
   constructor(initial) {
     this.value = initial;
     this.listeners = [];
@@ -19,5 +19,3 @@ class Store {
     this.listeners.push(listener);
   }
 }
-
-module.exports = Store;

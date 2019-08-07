@@ -1,14 +1,14 @@
-const { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } = require('./constants');
-const repeatref = require('./repeatref');
+import { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } from './constants';
+import repeatref from './repeatref';
 // ref types:
 // 0: state
 // 1: text
 // 2: html
 // 3: arrayToDom
-const { getBindingFxns, getStringBindingFxn } = require('./bindings');
-const updateAttribute = require('./updateattribute');
+import { getBindingFxns, getStringBindingFxn } from './bindings';
+import updateAttribute from './updateattribute';
 
-function creator(el, defaultState) {
+export default function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
     if (x.indexOf('${') > -1) {
@@ -74,5 +74,3 @@ function creator(el, defaultState) {
   }
   return 0;
 }
-
-module.exports = creator;

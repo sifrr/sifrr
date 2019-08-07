@@ -1,9 +1,9 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 
-const { TEXT_NODE, TREE_WALKER } = require('./constants');
+import { TEXT_NODE, TREE_WALKER } from './constants';
 const TW_SHARED = TREE_WALKER();
 
-function collect(element, stateMap) {
+export function collect(element, stateMap) {
   const l = stateMap.length,
     refs = new Array(l);
   TW_SHARED.currentNode = element;
@@ -15,7 +15,7 @@ function collect(element, stateMap) {
   return refs;
 }
 
-function create(node, fxn, passedArg) {
+export function create(node, fxn, passedArg) {
   const TW = TREE_WALKER();
   let indices = [],
     ref,
@@ -40,8 +40,3 @@ function create(node, fxn, passedArg) {
   }
   return indices;
 }
-
-module.exports = {
-  collect,
-  create
-};

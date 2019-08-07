@@ -1,6 +1,6 @@
-const { TEMPLATE } = require('./constants');
+import { TEMPLATE } from './constants';
 
-module.exports = (str, ...extra) => {
+export default (str, ...extra) => {
   if (str.tagName && str.tagName === 'TEMPLATE') return str;
   let isString = false;
   const tmp = TEMPLATE();

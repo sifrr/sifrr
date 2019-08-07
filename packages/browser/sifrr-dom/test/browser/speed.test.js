@@ -55,10 +55,11 @@ pdescribe('Speed tests', async function() {
 
   for (let j = 0; j < urls.length; j++) {
     const u = urls[j];
+    const shortu = u.replace(url, '');
 
     for (let i = 0; i < benchmarks.length; i++) {
       const bm = benchmarks[i];
-      it(`passes speed test for ${u.replace(PATH, '')} - ${bm}`, async () => {
+      it(`passes speed test for ${shortu} - ${bm}`, async () => {
         const results = await new BenchmarkRunner(
           [bm],
           { port, runs: runs, warmups: warmups, url: u },
@@ -72,7 +73,6 @@ pdescribe('Speed tests', async function() {
           `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`
         );
 
-        const shortu = u.split('/').pop();
         compare[bm] = compare[bm] || {};
         compare[bm][shortu] = bmd['TaskDuration'];
       });

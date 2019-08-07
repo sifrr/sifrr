@@ -1,10 +1,10 @@
-const { collect, create } = require('./ref');
-const creator = require('./creator');
-const update = require('./update');
-const Loader = require('./loader');
-const { trigger } = require('./event');
-const template = require('./template');
-const { BIND_ATTR, STATE_ATTR } = require('./constants');
+import { collect, create } from './ref';
+import creator from './creator';
+import update from './update';
+import Loader from './loader';
+import { trigger } from './event';
+import template from './template';
+import { BIND_ATTR, STATE_ATTR } from './constants';
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -165,4 +165,4 @@ function elementClassFactory(baseClass) {
   };
 }
 
-module.exports = elementClassFactory(window.HTMLElement);
+export default elementClassFactory(window.HTMLElement);
