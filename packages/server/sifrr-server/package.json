@@ -40,7 +40,8 @@
     "@sifrr/dev": "^0.0.26",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5"
   },
   "files": [
     "bin",

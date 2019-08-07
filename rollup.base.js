@@ -28,19 +28,20 @@ const globals = {
 };
 const footer = '/*! (c) @aadityataparia */';
 
-function moduleConfig(name, root, minify = false, isModule = false) {
+function moduleConfig(name, root, minify = false, type) {
   const filename = name.toLowerCase();
   const banner = `/*! ${name} v${version} - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */`;
   const mergeConfig = {
     output: {
       banner,
       footer,
-      globals
+      globals,
+      exports: 'named'
     },
     external
   };
 
-  if (!isModule) {
+  if (type === 'browser') {
     mergeConfig.output.outro = 'if (exports.default) exports = exports.default;';
   }
 
@@ -51,7 +52,7 @@ function moduleConfig(name, root, minify = false, isModule = false) {
       outputFolder: path.join(root, './dist'),
       outputFileName: filename,
       minify,
-      type: isModule ? 'module' : 'browser'
+      type
     },
     mergeConfig
   );
@@ -60,10 +61,13 @@ function moduleConfig(name, root, minify = false, isModule = false) {
 module.exports = (name, __dirname, isBrowser = true) => {
   let ret = [];
   if (isBrowser) {
-    ret = [moduleConfig(name, __dirname), moduleConfig(name, __dirname, true)];
+    ret = [
+      moduleConfig(name, __dirname, true, 'browser'),
+      moduleConfig(name, __dirname, false, 'browser')
+    ];
   }
-  ret.push(moduleConfig(name, __dirname, false, true));
-  ret.push(moduleConfig(name, __dirname, true, true));
+  ret.push(moduleConfig(name, __dirname, false, 'cjs'));
+  ret.push(moduleConfig(name, __dirname, false, 'module'));
 
   return ret;
 };

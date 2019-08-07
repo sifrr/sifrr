@@ -12,9 +12,9 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "src/sifrr.fetch.js",
-  "module": "dist/sifrr.fetch.module.js",
-  "browser": "dist/sifrr.fetch.js",
+  "main": "dist/sifrr.fetch.cjs.js",
+  "module": "src/sifrr.fetch.js",
+  "browser": "dist/sifrr.fetch.min.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -38,7 +38,8 @@
     "@sifrr/dev": "^0.0.26",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5"
   },
   "files": [
     "bin",

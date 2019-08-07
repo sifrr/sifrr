@@ -29,7 +29,9 @@ module.exports = function(folder, isBrowser) {
   };
 
   if (isBrowser) {
-    pkgToMerge.browser = `dist/${jsFileName}.js`;
+    pkgToMerge.module = `src/${jsFileName}.js`;
+    pkgToMerge.main = `dist/${jsFileName}.cjs.js`;
+    pkgToMerge.browser = `dist/${jsFileName}.min.js`;
     pkgToMerge.browserslist = pkg.browserslist;
   }
 

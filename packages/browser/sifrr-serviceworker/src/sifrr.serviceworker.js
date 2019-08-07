@@ -186,4 +186,5 @@ class SW {
   }
 }
 
-module.exports = SW;
+export { SW as ServiceWorker };
+export default SW;

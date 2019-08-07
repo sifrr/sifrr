@@ -47,11 +47,12 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "dependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.26",
+    "@sifrr/dev": "^0.0.27",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7"
   },
   "resolutions": {
-    "@sifrr/server": "file:./packages/server/sifrr-server"
+    "@sifrr/server": "file:./packages/server/sifrr-server",
+    "@sifrr/fetch": "file:./packages/browser/sifrr-fetch"
   }
 }

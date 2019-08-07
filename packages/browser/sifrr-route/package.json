@@ -12,9 +12,9 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "src/sifrr.route.js",
-  "module": "dist/sifrr.route.module.js",
-  "browser": "dist/sifrr.route.js",
+  "main": "dist/sifrr.route.cjs.js",
+  "module": "src/sifrr.route.js",
+  "browser": "dist/sifrr.route.min.js",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -40,7 +40,8 @@
   "devDependencies": {
     "@sifrr/dev": "^0.0.26",
     "cache-manager": "^2.10.0",
-    "loadtest": "^3.0.7"
+    "loadtest": "^3.0.7",
+    "@babel/plugin-proposal-class-properties": "^7.5.5"
   },
   "files": [
     "bin",

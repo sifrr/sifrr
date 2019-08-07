@@ -125,9 +125,8 @@ app.folder('/example', folder, options);
 `overwriteRoute`: if set to `true`, it will overwrite old pattern if same pattern is added.
 `failOnDuplicateRoute`: if set to `true`, it will throw error if you try add same pattern again.
 By default, it will serve the file you added first with a pattern.
-
-There is one more option available for `folder` with all the sendFile options:
 `watch`: if it is `true`, it will watch for new Files / deleted files and serve/unserve them as needed.
+`livereload`: default: `false`, [more details here](#live-reload-experimental)
 
 ### Post requests
 
