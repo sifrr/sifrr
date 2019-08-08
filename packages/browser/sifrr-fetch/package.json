@@ -35,11 +35,12 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@sifrr/dev": "^0.0.27",
+    "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
     "loadtest": "^3.0.7",
-    "node-fetch": "^2.6.0",
-    "@babel/plugin-proposal-class-properties": "^7.5.5"
+    "node-fetch": "^2.6.0"
   },
   "files": [
     "bin",

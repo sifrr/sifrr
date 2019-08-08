@@ -18,7 +18,9 @@ module.exports = function(folder, isBrowser) {
     author: pkg.author,
     bugs: pkg.bugs,
     homepage: pkg.homepage,
-    devDependencies: Object.assign(pkgFile.devDependencies, pkg.devDependencies),
+    devDependencies: orderedDependencies(
+      Object.assign(pkgFile.devDependencies, pkg.devDependencies)
+    ),
     scripts: {
       test: `node ../../../scripts/test/run.js ${folder}`,
       build: 'yarn rollup -c',
@@ -39,16 +41,8 @@ module.exports = function(folder, isBrowser) {
     pkgToMerge.scripts = Object.assign(pkgFile.scripts, pkgToMerge.scripts);
 
     // change peerDependencies & dependencies
-    pkgFile.peerDependencies = dependencyVersion(
-      pkgFile.peerDependencies,
-      pkgToMerge.devDependencies,
-      pkg.version
-    );
-    pkgFile.dependencies = dependencyVersion(
-      pkgFile.dependencies,
-      pkgToMerge.devDependencies,
-      pkg.version
-    );
+    pkgFile.peerDependencies = orderedDependencies(pkgFile.peerDependencies);
+    pkgFile.dependencies = orderedDependencies(pkgFile.dependencies);
 
     Object.assign(pkgFile, pkgToMerge);
     fs.writeFileSync(__dirname + '/' + pkgFileString, stringify(pkgFile) + '\n');
@@ -69,14 +63,13 @@ module.exports = getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s =>
   process.stdout.write('Done: rollup.config.js \n');
 };
 
-function dependencyVersion(dependencies, devDependencies, version) {
-  for (let dep in dependencies) {
-    if (dep.indexOf('@sifrr') >= 0) {
-      dependencies[dep] = version;
-    } else {
-      dependencies[dep] = devDependencies[dep] || dependencies[dep];
-    }
-  }
+function orderedDependencies(dependencies) {
+  const ordered = {};
+  Object.keys(dependencies)
+    .sort()
+    .forEach(function(key) {
+      ordered[key] = dependencies[key];
+    });
 
-  return dependencies;
+  return ordered;
 }
