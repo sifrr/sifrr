@@ -37,7 +37,7 @@ export default class Loader {
   static getFile(url) {
     return window.fetch(url).then(resp => {
       if (resp.ok) return resp.text();
-      else throw Error(`${this.getUrl('html')} - ${resp.status} ${resp.statusText}`);
+      else throw Error(`${url} - ${resp.status} ${resp.statusText}`);
     });
   }
 

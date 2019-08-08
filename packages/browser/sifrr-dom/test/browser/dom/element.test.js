@@ -242,4 +242,44 @@ describe('Sifrr.Dom.Element', () => {
       });
     });
   });
+
+  describe('root', () => {
+    it('gives root element with shadow root', async () => {
+      const res = await page.evaluate(() => {
+        const parent = document.createElement('element-nods-sr');
+        document.body.appendChild(parent);
+        const child = document.createElement('element-nods-sr');
+        parent.shadowRoot.appendChild(child);
+        child.root;
+
+        return child.root === parent;
+      });
+
+      assert(res);
+    });
+
+    it('gives root element without shadow root', async () => {
+      const res = await page.evaluate(() => {
+        const parent = document.createElement('element-nods-nosr');
+        document.body.appendChild(parent);
+        const child = document.createElement('element-nods-nosr');
+        parent.appendChild(child);
+
+        return child.root === parent;
+      });
+
+      assert(res);
+    });
+
+    it('returns undefined if no root', async () => {
+      const res = await page.evaluate(() => {
+        const child = document.createElement('element-nods-nosr');
+        document.body.appendChild(child);
+
+        return child.root === undefined;
+      });
+
+      assert(res);
+    });
+  });
 });

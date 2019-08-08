@@ -154,11 +154,10 @@ function elementClassFactory(baseClass) {
     }
 
     get root() {
-      if (this._root === undefined) {
+      if (!this._root) {
         let root = this.parentNode;
         while (root && !root.isSifrr) root = root.parentNode || root.host;
-        if (root) this._root = root;
-        else this._root = null;
+        if (root && root.isSifrr) this._root = root;
       }
       return this._root;
     }
