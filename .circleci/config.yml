@@ -51,7 +51,7 @@ jobs:
             fi
       - run:
           name: Run tests
-          command: PARALLEL=true COVERAGE=true LCOV=true yarn test -j
+          command: PARALLEL=true COVERAGE=true LCOV=true yarn test
       - run:
           name: Setup Code Climate & send report
           command: |
