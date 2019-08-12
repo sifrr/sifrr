@@ -56,6 +56,6 @@
   "resolutions": {
     "@sifrr/server": "file:./packages/server/sifrr-server",
     "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
-    "@sifrr/dev": "0.0.26"
+    "@sifrr/dev": "0.0.27"
   }
 }
