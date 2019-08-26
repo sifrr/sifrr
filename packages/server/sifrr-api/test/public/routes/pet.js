@@ -1,4 +1,11 @@
-const { reqToVariables } = require('../../../src/sifrr.api');
+const { reqToVariables } = require('@sifrr/api');
+const { getQuery, writeHeaders } = require('@sifrr/server');
+
+function setHeaders(res) {
+  writeHeaders(res, {
+    'content-type': 'application/json'
+  });
+}
 
 module.exports = {
   // basePath is optional, by default it is '', it can also be an array of basePaths like ['/v1', '/v2']
@@ -6,8 +13,12 @@ module.exports = {
   // '/v1' means each path will have /api/v1 (from loadRoutes) /api is added from loadRoutes
   basePath: '/v1',
   post: {
-    '/pet': (req, res) => {
-      etg.resolve(`
+    '/pet': (res, req) => {
+      res.onAborted(console.error);
+      setHeaders(res);
+      etg
+        .resolve(
+          `
         mutation($name: String!, $ownerId: Int!) {
           createPet(name: $name, ownerId: $ownerId) {
             id
@@ -18,10 +29,18 @@ module.exports = {
             }
           }
         }
-      `, reqToVariables(req, { allowed: ['name', 'ownerId'] }), { random: 1 }).then(data => res.json(data));
+      `,
+          reqToVariables(getQuery(req), { allowed: ['name', 'ownerId'] }),
+          { random: 1 }
+        )
+        .then(data => res.end(JSON.stringify(data)));
     },
-    '/petAndOwner': (req, res) => {
-      etg.resolve(`
+    '/petAndOwner': (res, req) => {
+      res.onAborted(console.error);
+      setHeaders(res);
+      etg
+        .resolve(
+          `
         mutation($name: String!, $owner__name: String!) {
           createPetAndOwner(name: $name, owner__name: $owner__name) {
             id
@@ -32,12 +51,20 @@ module.exports = {
             }
           }
         }
-      `, reqToVariables(req, { allowed: ['name', 'owner__name'] }), { random: 1 }).then(data => res.json(data));
+      `,
+          reqToVariables(getQuery(req), { allowed: ['name', 'owner__name'] }),
+          { random: 1 }
+        )
+        .then(data => res.end(JSON.stringify(data)));
     }
   },
   get: {
-    '/pets': (req, res) => {
-      etg.resolve(`
+    '/pets': (res, req) => {
+      res.onAborted(console.error);
+      setHeaders(res);
+      etg
+        .resolve(
+          `
         query($where: SequelizeJSON, $id: Int) {
           getPet(where: $where, id: $id) {
             id
@@ -48,10 +75,18 @@ module.exports = {
             }
           }
         }
-      `, reqToVariables(req, { allowed: ['where', 'id'] }), { random: 1 }).then(data => res.json(data));
+      `,
+          reqToVariables(getQuery(req), { allowed: ['where', 'id'] }),
+          { random: 1 }
+        )
+        .then(data => res.end(JSON.stringify(data)));
     },
-    '/pet/:id': (req, res) => {
-      etg.resolve(`
+    '/pet/:id': (res, req) => {
+      res.onAborted(console.error);
+      setHeaders(res);
+      etg
+        .resolve(
+          `
         query($id: Int!) {
           getPet(id: $id) {
             id
@@ -62,7 +97,13 @@ module.exports = {
             }
           }
         }
-      `, reqToVariables(req), { random: 1 }).then(data => res.json(data));
+      `,
+          {
+            id: req.getParameter(0)
+          },
+          { random: 1 }
+        )
+        .then(data => res.end(JSON.stringify(data)));
     }
   }
 };

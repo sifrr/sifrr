@@ -1,7 +1,8 @@
+global.fetch = require('node-fetch');
+const { Fetch } = require('@sifrr/fetch');
+
 function getReq(url) {
-  return page.evaluate(url => {
-    return Sifrr.Fetch.get(url);
-  }, PATH + url);
+  return Fetch.get(PATH + url);
 }
 
 describe('GraphqlExecutor', () => {

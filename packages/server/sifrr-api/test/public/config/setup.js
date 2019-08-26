@@ -2,7 +2,7 @@
 module.exports = (saveSchema = true) => {
   global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 
-  const { createSchemaFromModels, GraphqlExecutor } = require('../../../src/sifrr.api');
+  const { createSchemaFromModels, GraphqlExecutor } = require('@sifrr/api');
   const path = require('path');
 
   const models = require('../models');
@@ -26,7 +26,7 @@ module.exports = (saveSchema = true) => {
     extra: 'scalar Random', // Add scalar Random as we have returnType Random for 'count'
     schemaPath: saveSchema ? path.join(__dirname, '../db/schema.graphql') : ''
   });
-  global.etg = new GraphqlExecutor(graphqlSchema);
+  global.etg = new GraphqlExecutor(global.graphqlSchema);
 
   Object.assign(global, models);
 };

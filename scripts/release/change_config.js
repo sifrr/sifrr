@@ -18,9 +18,7 @@ module.exports = function(folder, isBrowser) {
     author: pkg.author,
     bugs: pkg.bugs,
     homepage: pkg.homepage,
-    devDependencies: orderedDependencies(
-      Object.assign(pkgFile.devDependencies, pkg.devDependencies)
-    ),
+    devDependencies: orderedDependencies(pkg.devDependencies),
     scripts: {
       test: `node ../../../scripts/test/run.js ${folder}`,
       build: 'yarn rollup -c',

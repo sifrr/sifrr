@@ -14,9 +14,9 @@ module.exports = {
       res.json({ user: 1 });
     },
     '/nuser': (req, res) => {
-      res.send(JSON.stringify({ pid: process.pid }));
+      res.end(JSON.stringify({ pid: process.pid }));
     },
-    '/wsuser': (res) => {
+    '/wsuser': res => {
       // To make respose size equal to express
       res
         .writeHeader('Connection', 'keep-alive')

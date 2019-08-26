@@ -26,19 +26,19 @@
   },
   "homepage": "https://github.com/sifrr/sifrr-api-example#readme",
   "dependencies": {
+    "@sifrr/api": "file:../../",
     "@sifrr/cli": "file:../../../sifrr-cli",
-    "body-parser": "^1.18.3",
+    "@sifrr/server": "file:../../../sifrr-server",
     "dataloader-sequelize": "^2.0.1",
-    "express": "^4.16.4",
-    "graphql-relay": "^0.6.0",
     "graphql-sequelize": "^9.3.1",
-    "mkdirp": "^0.5.1",
     "mysql2": "^1.6.4",
     "sequelize": "^5.16.0",
-    "sequelize-cli": "^5.4.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
+    "sequelize-cli": "^5.4.0"
   },
   "devDependencies": {
     "eslint": "^6.0.1"
+  },
+  "resolutions": {
+    "graphql": "file:../../../../../node_modules/graphql"
   }
 }

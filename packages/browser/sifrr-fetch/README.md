@@ -43,9 +43,6 @@ window.Sifrr.Fetch = require('@sifrr/fetch');
 
 ```js
 import Fetch from '@sifrr/fetch';
-window.Sifrr = window.Sifrr || {};
-window.Sifrr.Fetch = Fetch;
-
 // or
 import { Fetch, Socket } from '@sifrr/fetch';
 // and use as Sifrr.Fetch or Sifrr.Fetch.Socket
@@ -56,7 +53,7 @@ import { Fetch, Socket } from '@sifrr/fetch';
 ```js
 // set global.fetch
 global.fetch = require('node-fetch);
-const SFetch = require('@sifrr/fetch');
+const { Fetch } = require('@sifrr/fetch');
 // use SFetch.get, post etc,
 global.WebSocket = require('isomorphic-ws');
 const { Socket } = require('@sifrr/fetch');
@@ -77,10 +74,11 @@ const { Socket } = require('@sifrr/fetch');
 ```js
 {
   loaded, // loaded bytes
-    total, // total bytes (0 if response doesn't have content length)
-    percent, // progress precentage
-    speed, // speed in kbps
-    value; // chunk value
+  total, // total bytes (0 if response doesn't have content length)
+  percent, // progress precentage
+  speed, // speed in kbps
+  value,
+  ... // chunk value
 }
 ```
 

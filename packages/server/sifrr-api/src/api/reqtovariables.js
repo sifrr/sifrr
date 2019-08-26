@@ -1,9 +1,6 @@
 const filter = require('../utils/filterobject');
 
-function reqToVariables(req, { allowed = [] } = {}) {
-  let args = {};
-  Object.assign(args, req.query, req.body, req.params);
-
+function reqToVariables(args, { allowed = [] } = {}) {
   if (allowed.length > 0) args = filter(args, arg => allowed.indexOf(arg) >= 0);
 
   for (let arg in args) {

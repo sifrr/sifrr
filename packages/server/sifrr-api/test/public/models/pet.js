@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../sequelize');
-const { SequelizeModel } = require('../../../src/sifrr.api');
+const { SequelizeModel } = require('@sifrr/api');
 
 class Pet extends SequelizeModel {
   static init() {
@@ -97,7 +97,7 @@ class Pet extends SequelizeModel {
 
     // Add extra attributes to pet connection
     this.graphqlConnection.addAttribute('total', {
-      resolver: (_) => {
+      resolver: _ => {
         return _.source.countPets();
       },
       returnType: 'Int',

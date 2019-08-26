@@ -1,11 +1,8 @@
+global.fetch = require('node-fetch');
+const { Fetch } = require('@sifrr/fetch');
+
 function request(type, url) {
-  return page.evaluate(
-    (url, type) => {
-      return Sifrr.Fetch[type](url);
-    },
-    PATH + url,
-    type
-  );
+  return Fetch[type](PATH + url);
 }
 
 describe('SequelizeModel', () => {
