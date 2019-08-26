@@ -20,3 +20,6 @@ typings/
 .next
 dist
 .DS_Store
+
+# test yarns
+**/test/public/yarn.lock
