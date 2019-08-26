@@ -6,7 +6,7 @@ class Socket {
   ) {
     this.url = url;
     this.protocol = protocol;
-    this._fallback = !window.WebSocket;
+    this._fallback = !WebSocket;
     this.fallback = fallback;
     this.id = 1;
     this._requests = {};
@@ -38,14 +38,14 @@ class Socket {
         });
       })
       .catch(e => {
-        window.console.error(e);
+        console.error(e);
         return this.fallback(original);
       });
   }
 
   _openSocket() {
     if (!this.ws) {
-      this.ws = new window.WebSocket(this.url, this.protocol);
+      this.ws = new WebSocket(this.url, this.protocol);
       this.ws.onopen = this.onopen.bind(this);
       this.ws.onerror = this.onerror.bind(this);
       this.ws.onclose = this.onclose.bind(this);
@@ -60,14 +60,14 @@ class Socket {
     return new Promise((res, rej) => {
       function waiting() {
         if (me.ws.readyState === me.ws.CONNECTING) {
-          window.requestAnimationFrame(waiting);
+          setTimeout(waiting, 100);
         } else if (me.ws.readyState !== me.ws.OPEN) {
           rej(Error(`Failed to open socket on ${me.url}`));
         } else {
           res(me.ws);
         }
       }
-      window.requestAnimationFrame(waiting);
+      waiting();
     });
   }
 

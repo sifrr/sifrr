@@ -8,7 +8,7 @@ if (index !== -1) {
 }
 global.ENV = port ? 'development' : 'test';
 
-const uWS = require('uWebSockets.js');
+const { App } = require('@sifrr/server');
 const fs = require('fs');
 const path = require('path');
 const Busboy = require('busboy');
@@ -18,11 +18,10 @@ function webSocketServer(port) {
   const connections = {};
   let id = 0;
 
-  const app = uWS.App();
+  const app = new App();
   app
     .ws('/*', {
       /* Options */
-      compression: uWS.SHARED_COMPRESSOR,
       maxPayloadLength: 1 * 1024 * 1024,
       idleTimeout: 120,
       /* Handlers */

@@ -2,16 +2,16 @@
 
 Opinionated way of creating normal apis or GraphQL apis using these amazing libraries:
 
--   [graphql](https://github.com/graphql/graphql-js)
--   [sequelize](https://github.com/sequelize/sequelize)
--   [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
--   [graphql-tools](https://github.com/apollographql/graphql-tools)
+- [graphql](https://github.com/graphql/graphql-js)
+- [sequelize](https://github.com/sequelize/sequelize)
+- [graphql-sequelize](https://github.com/mickhansen/graphql-sequelize)
+- [graphql-tools](https://github.com/apollographql/graphql-tools)
 
 ## Why use sifrr-api
 
--   This library is mainly to make development of graphQL APIs easier, avoiding manually creating schema/resolvers.
--   Serving graphQL query results easily in route based APIs.
--   Serve both type of APIs at once without duplicating most of the code.
+- This library is mainly to make development of graphQL APIs easier, avoiding manually creating schema/resolvers.
+- Serving graphQL query results easily in route based APIs.
+- Serve both type of APIs at once without duplicating most of the code.
 
 Fully working example [here](https://github.com/sifrr/sifrr-api-demo).
 
@@ -22,7 +22,7 @@ You should know basics of graphql and sequelize to use this.
 
 ### Model
 
--   Sifrr Api SequelizeModel extends Sequelize.model but has more added features that creates type definition automatically, and adds easier way to add query/mutation resolvers. Your graphql config is fully customizable.
+- Sifrr Api SequelizeModel extends Sequelize.model but has more added features that creates type definition automatically, and adds easier way to add query/mutation resolvers. Your graphql config is fully customizable.
 
 ```js
 const { SequelizeModel } = require('@sifrr/api')
@@ -78,7 +78,7 @@ class User extends Model {
       allowed: ['id', 'name']
     });
 
-    // Add resolvers for extra fields (type)
+    // Add resolvers for extra fields (type(type: String))
     this.addAttr('type', {
       resolver: (_, args) => {
         return args.type + _.name;
@@ -95,7 +95,7 @@ class User extends Model {
       args: this.gqArgs(), // default graphql-sequelize arguments (keys, limit, order, where, etc.)
       resolver: this.customResolver.bind(this),
       returnType: `[${this.graphqlModel.type}]`,
-      description: 'Get one Pet.'
+      description: 'Get one User.'
     });
 
     // Mutation Resolvers

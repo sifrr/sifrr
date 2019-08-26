@@ -58,6 +58,8 @@ import { Fetch, Socket } from '@sifrr/fetch';
 global.fetch = require('node-fetch);
 const SFetch = require('@sifrr/fetch');
 // use SFetch.get, post etc,
+global.WebSocket = require('isomorphic-ws');
+const { Socket } = require('@sifrr/fetch');
 ```
 
 **Note**: You can not use websockets with node
