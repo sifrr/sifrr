@@ -32,6 +32,9 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
+"@sifrr/fetch@file:../../../../browser/sifrr-fetch":
+  version "0.0.6"
+
 "@sifrr/server@file:../../../sifrr-server":
   version "0.0.6"
   dependencies:

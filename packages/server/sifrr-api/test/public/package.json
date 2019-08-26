@@ -29,6 +29,7 @@
     "@sifrr/api": "file:../../",
     "@sifrr/cli": "file:../../../sifrr-cli",
     "@sifrr/server": "file:../../../sifrr-server",
+    "@sifrr/fetch": "file:../../../../browser/sifrr-fetch",
     "dataloader-sequelize": "^2.0.1",
     "graphql-sequelize": "^9.3.1",
     "mysql2": "^1.6.4",
