@@ -308,10 +308,10 @@ d@1:
   dependencies:
     es5-ext "^0.10.9"
 
-dataloader-sequelize@^1.7.9:
-  version "1.7.10"
-  resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-1.7.10.tgz#91ed03627d14e36cd1fe35da80e28886f5da0aab"
-  integrity sha512-WLCzL1J7P19msP9gB2gBLcTxkOTaZRH84mcISNVoYtvblWv3i9992CzU40n6KdTecmlmuGeSQ2Rw9y9yxK/PWw==
+dataloader-sequelize@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-2.0.1.tgz#5773a54c26bcfbf4edf5dea59a194e26b993878d"
+  integrity sha512-Xytq9OMS6grXAu2697iClAKxVKJQDb1ylgXF/CFmVPfSl+KgPZhr+0cHIKf5pEgnnVp5mIDaKXUDNAbCJPvEwg==
   dependencies:
     dataloader "^1.2.0"
     lodash "^4.15.0"
