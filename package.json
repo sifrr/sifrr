@@ -2,8 +2,7 @@
   "name": "sifrr",
   "private": true,
   "workspaces": [
-    "packages/*/*",
-    "packages/*/*/test/public"
+    "packages/*/*"
   ],
   "version": "0.0.6",
   "description": "a fullstack nodeJS/vanillaJS framework",
