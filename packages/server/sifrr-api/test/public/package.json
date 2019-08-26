@@ -39,6 +39,6 @@
     "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
   },
   "devDependencies": {
-    "eslint": "^5.12.0"
+    "eslint": "^6.0.1"
   }
 }
