@@ -1,3 +1,5 @@
+const queryString = require('query-string');
+
 module.exports = {
   App: require('./server/app'),
   SSLApp: require('./server/sslapp'),
@@ -7,5 +9,8 @@ module.exports = {
   sendFile: require('./server/sendfile'),
   createCluster: require('./server/createcluster'),
   livereload: require('./server/livereload'),
-  livereloadjs: require('./server/livereloadjs')
+  livereloadjs: require('./server/livereloadjs'),
+  getQuery: req => {
+    return queryString.parse(req.getQuery());
+  }
 };
