@@ -28,7 +28,7 @@
   "dependencies": {
     "@sifrr/cli": "file:../../../sifrr-cli",
     "body-parser": "^1.18.3",
-    "dataloader-sequelize": "^1.7.9",
+    "dataloader-sequelize": "^2.0.1",
     "express": "^4.16.4",
     "graphql-relay": "^0.6.0",
     "graphql-sequelize": "^9.3.1",
