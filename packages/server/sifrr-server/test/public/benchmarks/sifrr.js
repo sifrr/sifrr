@@ -137,6 +137,6 @@ const queryType = new graphql.GraphQLObjectType({
 
 const schema = new graphql.GraphQLSchema({ query: queryType });
 
-app.graphql('/graphql', schema);
+app.graphql('/graphql', schema, () => ({}), graphql.graphql);
 
 module.exports = app;
