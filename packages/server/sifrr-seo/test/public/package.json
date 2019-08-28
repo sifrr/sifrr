@@ -24,7 +24,7 @@
   "dependencies": {
     "@webcomponents/shadycss": "^1.9.1",
     "@webcomponents/shadydom": "^1.6.0",
-    "compression": "^1.7.4",
+    "@sifrr/dom": "file:../../../../browser/sifrr-dom",
     "express": "^4.17.1",
     "serve-static": "^1.14.1"
   },

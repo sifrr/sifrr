@@ -84,6 +84,6 @@ describe('websockets', () => {
     global.console.table(result);
     expect(result.socket.total).to.equal(result.fetch.total);
     expect(result.socket.size).to.equal(result.fetch.size);
-    expect(result.socket.time).to.be.at.most(result.fetch.time / 3);
+    expect(result.socket.time).to.be.at.most(result.fetch.time);
   });
 });

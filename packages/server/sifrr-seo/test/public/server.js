@@ -2,8 +2,8 @@ const Seo = require('../../src/sifrr.seo');
 /* istanbul ignore next */
 async function afterRender() {
   // Wait till all sifrr elements are loaded
-  if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-  await Sifrr.Dom.loading();
+  if (typeof window.Sifrr === 'undefined' || typeof window.Sifrr.Dom === 'undefined') return false;
+  await window.Sifrr.Dom.loading();
 }
 
 const seo = new Seo(['UC Browser'], {
@@ -23,7 +23,6 @@ seo.shouldRender = (url, headers) => {
 };
 
 const express = require('express'),
-  compression = require('compression'),
   serveStatic = require('serve-static'),
   path = require('path');
 
@@ -59,7 +58,6 @@ process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
 
 // export server for importing
 server.use(seo.getExpressMiddleware(expressReq => `${PATH}${expressReq.originalUrl}`));
-server.use(compression());
 server.get('/xuser', (req, res) => {
   res.set('content-type', 'text/html');
   res.send(`

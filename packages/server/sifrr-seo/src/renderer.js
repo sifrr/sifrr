@@ -5,6 +5,7 @@ const PageRequest = require('./pagerequest');
 // 1: launching
 // 2: launched
 
+const prohibitedHeaders = ['user-agent', 'host'];
 class Renderer {
   constructor(puppeteerOptions = {}, options = {}) {
     this.status = 0;
@@ -46,7 +47,8 @@ class Renderer {
         const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
         await fetches.addListener;
 
-        delete headers['user-agent'];
+        prohibitedHeaders.forEach(h => delete headers[h]);
+
         await newp.setExtraHTTPHeaders(headers);
         if (me.options.beforeRender) {
           /* istanbul ignore next */
