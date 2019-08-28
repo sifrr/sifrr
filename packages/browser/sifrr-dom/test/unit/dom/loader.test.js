@@ -6,11 +6,11 @@ describe('Loader', () => {
   });
 
   it('throws error if fetch is not present', () => {
-    const fetch = window.fetch;
-    window.fetch = undefined;
+    const fetch = global.fetch;
+    global.fetch = undefined;
 
     expect(() => new Loader()).to.throw();
-    window.fetch = fetch;
+    global.fetch = fetch;
   });
 
   it('returns loader if already present', () => {

@@ -36,9 +36,9 @@ const before = function() {
       log: sinon.stub(),
       error: sinon.stub(),
       warn: sinon.stub()
-    },
-    fetch: () => {}
+    }
   };
+  global.fetch = () => {};
 };
 
 // Check if need coverage
