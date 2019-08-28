@@ -32,27 +32,33 @@ const { App, SSLApp } = require('@sifrr/server');
 ### createCluster
 
 ```js
-const { createCluster, App } = require('@sifrr/server');
+const { Cluster, App } = require('@sifrr/server');
 const app = new App();
 // do something on app
 const app2 = new App();
 // do something on app2
-createCluster({
-  apps: [
-    {
-      app: app,
-      port: 12345
-    },
-    {
-      app: app2,
-      ports: [12346, 12347]
-    }
-  ],
-  onListen: (uwsSocket, port) => {
-    // this = app for port
-    console.log(this, `is listening on port ${port}`);
+const cluster = new Cluster([
+  {
+    app: app,
+    port: 12345
+  },
+  {
+    app: app2,
+    ports: [12346, 12347]
   }
+]);
+
+// listen on all ports
+cluster.listen((uwsSocket, port) => {
+  // this = app for port
+  console.log(this, `is listening on port ${port}`);
 });
+
+// close all ports
+cluster.close();
+
+// close specific port
+cluster.close(port);
 ```
 
 ### writeHeaders

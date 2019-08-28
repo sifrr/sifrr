@@ -133,32 +133,37 @@ class BaseApp {
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, socket => {
-        this._sockets.push(socket);
+        this._sockets[p] = socket;
         cb(socket);
       });
     } else {
       this._listen(h, socket => {
-        this._sockets.push(socket);
+        this._sockets[h] = socket;
         p(socket);
       });
     }
     return this;
   }
 
-  close() {
+  close(port = null) {
     for (let f in this._watched) {
       this._watched[f].close();
     }
-    this._sockets.forEach(s => {
-      uWS.us_listen_socket_close(s);
-    });
-    this._sockets = [];
+    if (port) {
+      this._sockets[port] && uWS.us_listen_socket_close(this._sockets[port]);
+      delete this._sockets[port];
+    } else {
+      for (let p in this._sockets) {
+        uWS.us_listen_socket_close(this._sockets[p]);
+        delete this._sockets[p];
+      }
+    }
     return this;
   }
 }
 
 BaseApp.prototype._staticPaths = {};
 BaseApp.prototype._watched = {};
-BaseApp.prototype._sockets = [];
+BaseApp.prototype._sockets = {};
 
 module.exports = BaseApp;
