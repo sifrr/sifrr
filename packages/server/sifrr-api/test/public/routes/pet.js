@@ -99,7 +99,7 @@ module.exports = {
         }
       `,
           {
-            id: req.getParameter(0)
+            id: parseInt(req.getParameter(0))
           },
           { random: 1 }
         )
