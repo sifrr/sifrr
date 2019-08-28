@@ -2,6 +2,9 @@ version: 2.1
 
 commands:
   run_tests:
+    parameters:
+      version:
+        type: string
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -21,18 +24,20 @@ commands:
           command: yarn config set workspaces-experimental true
       - restore_cache:
           keys:
-            - sifrr-v4-yarn-{{ checksum "yarn.lock" }}
-            - sifrr-v4-yarn-
+            - sifrr-v4-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
+            - sifrr-v4-yarn-<< parameters.version >>-
       - run:
           name: Yarn install
           command: yarn install
       - save_cache:
-          key: sifrr-v4-yarn-{{ checksum "yarn.lock" }}
+          key: sifrr-v4-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - run:
-          name: Check chrome version
-          command: google-chrome --version
+          name: Check versions
+          command: |
+            node -v
+            google-chrome --version
       - run:
           name: Add git user email and name and Update files
           command: |
@@ -76,7 +81,9 @@ jobs:
           MYSQL_DATABASE: sifrr_test
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
     steps:
-      - run_tests
+      - run_tests:
+          version: node10
+
   build_and_test_node12:
     working_directory: ~/sifrr
     docker:
@@ -87,7 +94,8 @@ jobs:
           MYSQL_DATABASE: sifrr_test
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
     steps:
-      - run_tests
+      - run_tests:
+          version: node12
 
 workflows:
   version: 2
