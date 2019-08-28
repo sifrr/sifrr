@@ -38,8 +38,5 @@
   },
   "devDependencies": {
     "eslint": "^6.0.1"
-  },
-  "resolutions": {
-    "graphql": "file:../../../../../node_modules/graphql"
   }
 }

@@ -80,7 +80,7 @@ jobs:
   build_and_test_node12:
     working_directory: ~/sifrr
     docker:
-      - image: circleci/node:12.8.0-browsers
+      - image: circleci/node:12.7.0-browsers
       - image: mysql:5.6
         command: --character-set-server=utf8mb4 --innodb_file_per_table --innodb_large_prefix --innodb_file_format=barracuda
         environment:
