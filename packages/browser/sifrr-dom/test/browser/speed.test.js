@@ -43,7 +43,7 @@ const ExpectedLayoutCounts = {
 };
 
 // eslint-disable-next-line no-undef
-describe('Speed tests', async function() {
+pdescribe(__filename, 'Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 

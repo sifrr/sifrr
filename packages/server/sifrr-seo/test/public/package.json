@@ -29,7 +29,7 @@
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
-    "@sifrr/dev": "^0.0.28",
+    "@sifrr/dev": "^0.0.29",
     "eslint": "^6.0.1"
   }
 }
