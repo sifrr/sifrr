@@ -7,7 +7,7 @@ module.exports = {
   getMime: require('./server/mime').getMime,
   writeHeaders: require('./server/utils').writeHeaders,
   sendFile: require('./server/sendfile'),
-  createCluster: require('./server/createcluster'),
+  Cluster: require('./server/cluster'),
   livereload: require('./server/livereload'),
   livereloadjs: require('./server/livereloadjs'),
   getQuery: req => {

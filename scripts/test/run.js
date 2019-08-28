@@ -4,6 +4,12 @@ const path = require('path');
 const before = function() {
   const sinon = require('sinon');
 
+  global.sleep = time => {
+    return new Promise(res => {
+      setTimeout(res, time);
+    });
+  };
+
   // Stub window in unit tests
   global.window = {
     document: {
