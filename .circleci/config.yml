@@ -49,7 +49,7 @@ commands:
             fi
       - run:
           name: Run tests
-          command: PARALLEL=true COVERAGE=true yarn test
+          command: PARALLEL=true COVERAGE=true LCOV=true yarn test -j
       - run:
           name: Setup Code Climate & send report
           command: |
