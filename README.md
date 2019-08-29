@@ -81,11 +81,6 @@ For eg.
 
 Sifrr officially supports node v10 (LTS), v12 (current). Other versions might work for some packages.
 
-| Node Version | CI Status                                                                                                                |
-| :----------- | :----------------------------------------------------------------------------------------------------------------------- |
-| v10.16.0     | [![](https://img.shields.io/circleci/project/github/sifrr/sifrr/master.svg)](https://circleci.com/gh/sifrr/sifrr)        |
-| v12.4.0      | [![](https://travis-matrix-badges.herokuapp.com/repos/sifrr/sifrr/branches/master/1)](https://travis-ci.org/sifrr/sifrr) |
-
 ## Browser Support (browser packages)
 
 Sifrr browser packages officially supports these browser versions (for dist files):
