@@ -25,6 +25,6 @@
   },
   "devDependencies": {
     "eslint": "^6.0.1",
-    "@sifrr/dev": "^0.0.29"
+    "@sifrr/dev": "^0.0.30"
   }
 }
