@@ -3664,10 +3664,10 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-3.0.7.tgz#2e2a2751732b93a320a28e63b6972effa7626255"
-  integrity sha512-ZrgY5bxPP8Gs+aJQV8TcmdPEuqIKd0ok52xo80nSNPDr7lWc1LxTz3BRk7XRNCESusxnQG5DeE9EqZMEC9Co9g==
+loadtest@^3.0.8:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-3.0.8.tgz#8c8edd012bc3efbc96759697abb97523be8894ee"
+  integrity sha512-GHfhNn1Zvy8YajMhwJdr70FnnTVJlczyKt+Q1BekUqR3Id0mT0OBwSymOvzMKCPnJcXQPH9YW5YzOw/aPmY0uA==
   dependencies:
     agentkeepalive "^2.0.3"
     https-proxy-agent "^2.2.1"
