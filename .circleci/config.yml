@@ -36,7 +36,9 @@ commands:
       - run:
           name: Check versions
           command: |
+            set -ex
             node -v
+            yarn -v
             google-chrome --version
       - run:
           name: Add git user email and name and Update files
@@ -98,7 +100,7 @@ jobs:
           version: node12
 
 workflows:
-  version: 2
+  version: 2.1
   build_and_test:
     jobs:
       - build_and_test_node10
