@@ -4,7 +4,7 @@ import update from './update';
 import Loader from './loader';
 import { trigger } from './event';
 import template from './template';
-import { BIND_ATTR, STATE_ATTR } from './constants';
+import { BIND_ATTR } from './constants';
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -13,7 +13,7 @@ function elementClassFactory(baseClass) {
     }
 
     static get observedAttributes() {
-      return [STATE_ATTR].concat(this.observedAttrs()).concat(this.syncedAttrs());
+      return this.observedAttrs().concat(this.syncedAttrs());
     }
 
     static syncedAttrs() {
@@ -77,7 +77,7 @@ function elementClassFactory(baseClass) {
         this.appendChild(this.__content);
         delete this.__content;
       }
-      if (!this.hasAttribute(STATE_ATTR)) this.update();
+      this.update();
       this.onConnect();
     }
 
@@ -91,9 +91,6 @@ function elementClassFactory(baseClass) {
     onDisconnect() {}
 
     attributeChangedCallback(attrName, oldVal, newVal) {
-      if (attrName === STATE_ATTR) {
-        this.state = JSON.parse(newVal);
-      }
       if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {
         this[attrName] = newVal;
       }
@@ -103,10 +100,18 @@ function elementClassFactory(baseClass) {
     onAttributeChange() {}
 
     get state() {
+      return this.getState();
+    }
+
+    getState() {
       return this._state;
     }
 
     set state(v) {
+      this.setState(v);
+    }
+
+    setState(v) {
       if (!this._state) return;
       if (this._state !== v) Object.assign(this._state, v);
       this.update();
@@ -119,7 +124,7 @@ function elementClassFactory(baseClass) {
       this.beforeUpdate();
       update(this);
       if (this._update || this.triggerUpdate || this.hasAttribute(BIND_ATTR)) {
-        trigger(this, 'update', { detail: { state: this.state } });
+        trigger(this, 'update', { detail: { state: this._state } });
       }
       this.onUpdate();
     }

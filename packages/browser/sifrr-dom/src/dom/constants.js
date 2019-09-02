@@ -17,4 +17,3 @@ export const REPEAT_ATTR = 'data-sifrr-repeat';
 export const KEY_ATTR = 'data-sifrr-key';
 export const BIND_ATTR = 'data-sifrr-bind';
 export const DEFAULT_STATE_ATTR = 'data-sifrr-default-state';
-export const STATE_ATTR = 'data-sifrr-state';

@@ -4,7 +4,7 @@ import shouldMerge from '../utils/shouldmerge';
 export default e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
 
-  if (!target.hasAttribute(BIND_ATTR) || target._root === null) return;
+  if (!target.hasAttribute(BIND_ATTR)) return;
   if (e.type === 'update' && !target._sifrrEventSet) return;
 
   const value = target.value || target._state || target.textContent;
@@ -16,8 +16,8 @@ export default e => {
     target._root = root;
     const prop = target.getAttribute(BIND_ATTR);
     if (shouldMerge(value, root._state[prop])) {
-      if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
-      else root.state = { [prop]: value };
+      if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
+      else root.setState && root.setState({ [prop]: value });
     }
   } else target._root = null;
 };
