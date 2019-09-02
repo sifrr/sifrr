@@ -101,10 +101,9 @@
 	const STATE_REGEX = /^\$\{this\.state\.([a-zA-Z0-9_$]+)\}$/;
 	const HTML_ATTR = 'data-sifrr-html';
 	const REPEAT_ATTR = 'data-sifrr-repeat';
-	const KEY_ATTR = 'data-sifrr-key';
+	const KEY_ATTR = ':key';
 	const BIND_ATTR = 'data-sifrr-bind';
 	const DEFAULT_STATE_ATTR = 'data-sifrr-default-state';
-	const STATE_ATTR = 'data-sifrr-state';
 
 	const TW_SHARED = TREE_WALKER();
 	function collect(element, stateMap) {
@@ -223,7 +222,7 @@
 	}
 	function makeEqual(oldNode, newNode) {
 	  if (!newNode.nodeType) {
-	    if (shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
+	    if (shouldMerge(oldNode.state, newNode)) oldNode.setState(newNode);
 	    return oldNode;
 	  }
 	  if (oldNode.nodeName !== newNode.nodeName) {
@@ -234,7 +233,7 @@
 	    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
 	    return oldNode;
 	  }
-	  if (newNode.state) oldNode.state = newNode.state;
+	  if (newNode.state) oldNode.setState && oldNode.setState(newNode.state);
 	  const oldAttrs = oldNode.attributes,
 	    newAttrs = newNode.attributes;
 	  for (let i = newAttrs.length - 1; i > -1; --i) {
@@ -485,40 +484,46 @@
 	    const data = stateMap[i].ref,
 	      dom = element._refs[i];
 	    if (data.type === 0) {
-	      if (dom.__data != element._state[data.text])
-	        dom.data = dom.__data = element._state[data.text];
+	      if (dom.__data != element.state[data.text]) dom.data = dom.__data = element.state[data.text];
 	      continue;
 	    } else if (data.type === 1) {
 	      const newValue = evaluateBindings(data.text, element);
 	      if (dom.data != newValue) dom.data = newValue;
 	      continue;
 	    }
-	    if (data.events) {
-	      if (!dom._sifrrEventSet) {
+	    if (!dom._sifrrEventSet) {
+	      if (data.events) {
 	        for (let i = data.events.length - 1; i > -1; --i) {
 	          const ev = data.events[i];
 	          dom[ev[0]] = evaluateBindings(ev[1], element);
 	        }
 	        dom._root = element;
-	        dom._sifrrEventSet = true;
 	      }
-	      if (data.events.__sb) {
-	        const newState = evaluateBindings(data.events.__sb, element);
-	        if (shouldMerge(newState, dom._state)) dom.state = newState;
+	      dom._sifrrEventSet = true;
+	    }
+	    if (data.state) {
+	      const newState = evaluateBindings(data.state, element);
+	      if (dom.setState && shouldMerge(newState, dom.state)) dom.setState(newState);
+	      else dom['state'] = newState;
+	    }
+	    if (data.props) {
+	      for (let i = data.props.length - 1; i > -1; --i) {
+	        const newValue = evaluateBindings(data.props[i][1], element);
+	        if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
 	      }
 	    }
 	    if (data.attributes) {
 	      for (let i = data.attributes.length - 1; i > -1; --i) {
 	        const attr = data.attributes[i];
 	        let newValue;
-	        if (attr[1] === 0) newValue = element._state[attr[2]];
+	        if (attr[1] === 0) newValue = element.state[attr[2]];
 	        else newValue = evaluateBindings(attr[2], element);
 	        updateAttribute(dom, attr[0], newValue);
 	      }
 	    }
 	    if (data.text === undefined) continue;
 	    let newValue;
-	    if (typeof data.text === 'string') newValue = element._state[data.text];
+	    if (typeof data.text === 'string') newValue = element.state[data.text];
 	    else newValue = evaluateBindings(data.text, element);
 	    if (!newValue || newValue.length === 0) dom.textContent = '';
 	    else if (data.type === 3) {
@@ -555,8 +560,9 @@
 	  const clone = this.cloneNode(true);
 	  clone.root = this._root;
 	  clone._refs = collect(clone, this.stateMap);
-	  clone._state = Object.assign({}, this.defaultState, newState);
-	  Object.defineProperty(clone, 'state', this.stateProps);
+	  clone.state = Object.assign({}, this.defaultState, newState);
+	  clone.getState = this.stateProps.getState;
+	  clone.setState = this.stateProps.setState;
 	  update(clone, this.stateMap);
 	  return clone;
 	}
@@ -580,12 +586,13 @@
 	  content.stateMap = create(content, creator, defaultState);
 	  content.sifrrClone = sifrrClone;
 	  content.stateProps = {
-	    get: function() {
-	      return this._state;
-	    },
-	    set: function(v) {
-	      if (this._state !== v) Object.assign(this._state, v);
+	    setState: function(v) {
+	      if (!this.state) return;
+	      if (this.state !== v) Object.assign(this.state, v);
 	      update(this, content.stateMap);
+	    },
+	    getState: function() {
+	      return this.state;
 	    }
 	  };
 	  return content;
@@ -636,12 +643,20 @@
 	      l = attrs.length;
 	    const attrStateMap = [];
 	    const eventMap = [];
+	    const propMap = [];
 	    for (let i = 0; i < l; i++) {
 	      const attribute = attrs[i];
-	      if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
-	        if (attribute.name === '_state') eventMap.__sb = getBindingFxns(attribute.value);
-	        else eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-	      } else if (attribute.value.indexOf('${') > -1) {
+	      if (attribute.value.indexOf('${') < 0) continue;
+	      if (attribute.name[0] === '_') {
+	        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
+	      } else if (attribute.name[0] === ':' && attribute.name[0] !== ':key') {
+	        if (attribute.name.substr(1) === 'state') {
+	          sm['state'] = getBindingFxns(attribute.value);
+	        } else {
+	          propMap.push([attribute.name.substr(1), getBindingFxns(attribute.value)]);
+	        }
+	        el.removeAttribute(attribute.name);
+	      } else {
 	        const binding = getStringBindingFxn(attribute.value);
 	        if (typeof binding !== 'string') {
 	          attrStateMap.push([attribute.name, 1, binding]);
@@ -651,7 +666,8 @@
 	        }
 	      }
 	    }
-	    if (eventMap.length > 0 || eventMap.__sb) sm.events = eventMap;
+	    if (eventMap.length > 0) sm.events = eventMap;
+	    if (propMap.length > 0) sm.props = propMap;
 	    if (attrStateMap.length > 0) sm.attributes = attrStateMap;
 	    if (Object.keys(sm).length > 0) return sm;
 	  }
@@ -667,7 +683,6 @@
 	class Loader {
 	  constructor(elemName, url) {
 	    if (!fetch) throw Error('Sifrr.Dom.load requires window.fetch API to work.');
-	    this.constructor.all = this.constructor.all || {};
 	    if (this.constructor.all[elemName]) return this.constructor.all[elemName];
 	    this.elementName = elemName;
 	    this.constructor.all[this.elementName] = this;
@@ -726,6 +741,7 @@
 	    });
 	  }
 	}
+	Loader.all = {};
 
 	const SYNTHETIC_EVENTS = {};
 	const listenOpts = { capture: true, passive: true };
@@ -804,7 +820,7 @@
 	      return elementClassFactory(htmlElementClass);
 	    }
 	    static get observedAttributes() {
-	      return [STATE_ATTR].concat(this.observedAttrs()).concat(this.syncedAttrs());
+	      return this.observedAttrs().concat(this.syncedAttrs());
 	    }
 	    static syncedAttrs() {
 	      return [];
@@ -834,12 +850,12 @@
 	    }
 	    constructor() {
 	      super();
-	      let stores = this.stores;
+	      const stores = this.stores;
 	      if (stores) {
 	        for (let h in stores) stores[h].addListener(this.update.bind(this));
 	      }
 	      if (this.constructor.ctemp) {
-	        this._state = Object.assign({}, this.constructor.defaultState, this.state);
+	        this.state = Object.assign({}, this.constructor.defaultState, this.state);
 	        const content = this.constructor.ctemp.content.cloneNode(true);
 	        this._refs = collect(content, this.constructor.stateMap);
 	        if (this.constructor.useShadowRoot) {
@@ -860,7 +876,7 @@
 	        this.appendChild(this.__content);
 	        delete this.__content;
 	      }
-	      if (!this.hasAttribute(STATE_ATTR)) this.update();
+	      this.update();
 	      this.onConnect();
 	    }
 	    onConnect() {}
@@ -870,21 +886,18 @@
 	    }
 	    onDisconnect() {}
 	    attributeChangedCallback(attrName, oldVal, newVal) {
-	      if (attrName === STATE_ATTR) {
-	        this.state = JSON.parse(newVal);
-	      }
 	      if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {
 	        this[attrName] = newVal;
 	      }
 	      this.onAttributeChange(attrName, oldVal, newVal);
 	    }
 	    onAttributeChange() {}
-	    get state() {
-	      return this._state;
+	    getState() {
+	      return this.state;
 	    }
-	    set state(v) {
-	      if (!this._state) return;
-	      if (this._state !== v) Object.assign(this._state, v);
+	    setState(v) {
+	      if (!this.state) return;
+	      if (this.state !== v) Object.assign(this.state, v);
 	      this.update();
 	      this.onStateChange();
 	    }
@@ -905,11 +918,11 @@
 	    }
 	    sifrrClone(state) {
 	      const clone = this.cloneNode(false);
-	      clone._state = state;
+	      clone.state = state;
 	      return clone;
 	    }
 	    clearState() {
-	      this._state = {};
+	      this.state = {};
 	      this.update();
 	    }
 	    $(args, sr = true) {
@@ -934,18 +947,18 @@
 
 	const twoWayBind = e => {
 	  const target = e.composedPath ? e.composedPath()[0] : e.target;
-	  if (!target.hasAttribute(BIND_ATTR) || target._root === null) return;
+	  if (!target.hasAttribute(BIND_ATTR)) return;
 	  if (e.type === 'update' && !target._sifrrEventSet) return;
-	  const value = target.value || target._state || target.textContent;
+	  const value = target.value || target.state || target.textContent;
 	  if (target.firstChild) target.firstChild.__data = value;
 	  let root = target._root || target.root || target.parentNode;
 	  while (root && !root.isSifrr) root = root.parentNode || root.host;
 	  if (root) {
 	    target._root = root;
 	    const prop = target.getAttribute(BIND_ATTR);
-	    if (shouldMerge(value, root._state[prop])) {
-	      if (e.type === 'update') target._root.state = { [prop]: Object.assign({}, value) };
-	      else root.state = { [prop]: value };
+	    if (shouldMerge(value, root.state[prop])) {
+	      if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
+	      else root.setState && root.setState({ [prop]: value });
 	    }
 	  } else target._root = null;
 	};
