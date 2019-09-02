@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <parent-element></parent-element>
+    <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script>
+      Sifrr.Dom.setup();
+
+      class ParentElement extends Sifrr.Dom.Element {
+        static get template() {
+          return `<child-element :state="\${{ text: this.state.abcd }}" :callUpdate="\${this.callUpdate.bind(this)}"></child-element>`;
+        }
+
+        callUpdate() {
+          console.log(this);
+        }
+      }
+
+      ParentElement.defaultState = {
+        abcd: 'ok'
+      };
+
+      class ChildElement extends Sifrr.Dom.Element {
+        static get template() {
+          return `\${this.state.text}`;
+        }
+
+        onConnect() {
+          console.log(this.callUpdate);
+        }
+
+        onStateChange() {
+          console.log(this.state);
+        }
+      }
+
+      Sifrr.Dom.register(ParentElement);
+      Sifrr.Dom.register(ChildElement);
+      Sifrr.Dom.load('twoway-input');
+    </script>
+  </body>
+</html>

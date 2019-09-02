@@ -3,7 +3,13 @@ describe('twowaybind', () => {
     const twoWayBind = require('../../../src/dom/twowaybind').default;
 
     const target = {
-      _root: { state: {}, _state: {}, isSifrr: true },
+      _root: {
+        _state: {},
+        isSifrr: true,
+        setState: function(v) {
+          Object.assign(this._state, v);
+        }
+      },
       hasAttribute: () => true,
       getAttribute: () => 'stt',
       value: 'value'
@@ -13,6 +19,6 @@ describe('twowaybind', () => {
     };
     twoWayBind(event);
 
-    assert.equal(target._root.state.stt, 'value');
+    assert.equal(target._root._state.stt, 'value');
   });
 });

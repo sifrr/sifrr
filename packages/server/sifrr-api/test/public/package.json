@@ -16,7 +16,6 @@
     "Sifrr",
     "api",
     "graphql",
-    "express",
     "sequelize"
   ],
   "author": "@aadityataparia",

@@ -26,18 +26,29 @@ export default function update(element, stateMap) {
     }
 
     // events
-    if (data.events) {
-      if (!dom._sifrrEventSet) {
+    if (!dom._sifrrEventSet) {
+      if (data.events) {
         for (let i = data.events.length - 1; i > -1; --i) {
           const ev = data.events[i];
           dom[ev[0]] = evaluateBindings(ev[1], element);
         }
         dom._root = element;
-        dom._sifrrEventSet = true;
       }
-      if (data.events.__sb) {
-        const newState = evaluateBindings(data.events.__sb, element);
-        if (shouldMerge(newState, dom._state)) dom.state = newState;
+      dom._sifrrEventSet = true;
+    }
+
+    // state
+    if (data.state) {
+      const newState = evaluateBindings(data.state, element);
+      if (dom.setState && shouldMerge(newState, dom._state)) dom.setState(newState);
+      else dom['state'] = newState;
+    }
+
+    // props
+    if (data.props) {
+      for (let i = data.props.length - 1; i > -1; --i) {
+        const newValue = evaluateBindings(data.props[i][1], element);
+        if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
       }
     }
 

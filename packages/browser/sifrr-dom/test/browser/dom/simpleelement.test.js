@@ -22,25 +22,23 @@ describe('Sifrr.Dom.SimpleElement', () => {
   });
 
   it('renders again when state is changed', async () => {
-    /* eslint-disable no-undef */
     await page.evaluate(() => {
-      seState.state = { p: 'new' };
+      seState.setState({ p: 'new' });
       return seState.innerHTML;
     });
     // double render shouldn't change anything
     const inner = await page.evaluate(() => {
-      seState.state = { p: 'new' };
+      seState.setState({ p: 'new' });
       return seState.innerHTML;
     });
     const data = await page.evaluate(() => {
-      seTextState.state = { text: 'newyay' };
+      seTextState.setState({ text: 'newyay' });
       return seTextState.data;
     });
     const nulled = await page.evaluate(() => {
-      seState.state = { p: null };
+      seState.setState({ p: null });
       return seState.innerHTML;
     });
-    /* eslint-enable no-undef */
 
     expect(inner).to.eq('new');
     expect(data).to.eq('newyay');
@@ -48,15 +46,13 @@ describe('Sifrr.Dom.SimpleElement', () => {
   });
 
   it('works with attributes', async () => {
-    /* eslint-disable no-undef */
     const state = await page.evaluate(() => {
-      seAttr.state = { attr: 'attrvalue', class: 'cls' };
+      seAttr.setState({ attr: 'attrvalue', class: 'cls' });
       return {
         attr: seAttr.querySelector('p').dataset.attr,
         class: seAttr.querySelector('p').className
       };
     });
-    /* eslint-enable no-undef */
 
     expect(state).to.deep.eq({
       attr: 'attrvalue',
@@ -65,25 +61,21 @@ describe('Sifrr.Dom.SimpleElement', () => {
   });
 
   it('Negative state attributes are removed', async () => {
-    /* eslint-disable no-undef */
     const hasClass = await page.evaluate(() => {
-      seAttr.state = { class: null };
+      seAttr.setState({ class: null });
       return seAttr.querySelector('p').hasAttribute('class');
     });
-    /* eslint-enable no-undef */
 
     expect(hasClass).to.eq(false);
   });
 
   it('only updates binding when state is changed', async () => {
-    /* eslint-disable no-undef */
     const same = await page.evaluate(() => {
       const span1 = seExtra.querySelector('span');
-      seExtra.state = { p: 'new' };
+      seExtra.setState({ p: 'new' });
       const span2 = seExtra.querySelector('span');
       return span1 === span2;
     });
-    /* eslint-enable no-undef */
 
     expect(same).to.eq(true);
   });
@@ -161,17 +153,15 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
 
     it("doesn't update original when clone is updated", async () => {
-      /* eslint-disable no-undef */
       const same = await page.evaluate(() => {
-        seClone.state = { some: 'cloned' };
+        seClone.setState({ some: 'cloned' });
 
         return {
-          stateEqual: seClone.state === seComplex.state,
+          stateEqual: seClone._state === seComplex._state,
           cloneText: seClone.childNodes[1].data,
           textEqual: seClone.childNodes[1].data === seComplex.childNodes[1].data
         };
       });
-      /* eslint-enable no-undef */
 
       expect(same).to.deep.equal({
         stateEqual: false,
@@ -181,7 +171,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
 
     it('clones state if given', async () => {
-      const eq = await page.evaluate('seStateClone.state.p');
+      const eq = await page.evaluate('seStateClone._state.p');
 
       expect(eq).to.eq('default');
     });

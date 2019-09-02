@@ -48,7 +48,7 @@ export function makeChildrenEqual(parent, newChildren, createFn, isNode = false)
 
 export function makeEqual(oldNode, newNode) {
   if (!newNode.nodeType) {
-    if (shouldMerge(oldNode._state, newNode)) oldNode.state = newNode;
+    if (shouldMerge(oldNode._state, newNode)) oldNode.setState(newNode);
     return oldNode;
   }
 
@@ -64,7 +64,7 @@ export function makeEqual(oldNode, newNode) {
   }
 
   // copy sifrr state
-  if (newNode.state) oldNode.state = newNode.state;
+  if (newNode._state) oldNode.setState && oldNode.setState(newNode._state);
 
   // copy Attributes
   const oldAttrs = oldNode.attributes,

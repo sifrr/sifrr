@@ -46,14 +46,21 @@ export default function creator(el, defaultState) {
       l = attrs.length;
     const attrStateMap = [];
     const eventMap = [];
+    const propMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.name[0] === '_' && attribute.value.indexOf('${') > -1) {
+      if (attribute.value.indexOf('${') < 0) continue;
+      if (attribute.name[0] === '_') {
         // state binding
-        if (attribute.name === '_state') eventMap.__sb = getBindingFxns(attribute.value);
-        // Array contents -> 0: name, 1: binding
-        else eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-      } else if (attribute.value.indexOf('${') > -1) {
+        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
+      } else if (attribute.name[0] === ':') {
+        if (attribute.name.substr(1) === 'state') {
+          sm.state = getBindingFxns(attribute.value);
+        } else {
+          // Array contents -> 0: property name, 1: binding
+          propMap.push([attribute.name.substr(1), getBindingFxns(attribute.value)]);
+        }
+      } else {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
         const binding = getStringBindingFxn(attribute.value);
         // Array contents -> 0: name, 1: type, 2: binding
@@ -67,7 +74,8 @@ export default function creator(el, defaultState) {
         }
       }
     }
-    if (eventMap.length > 0 || eventMap.__sb) sm.events = eventMap;
+    if (eventMap.length > 0) sm.events = eventMap;
+    if (propMap.length > 0) sm.props = propMap;
     if (attrStateMap.length > 0) sm.attributes = attrStateMap;
 
     if (Object.keys(sm).length > 0) return sm;
