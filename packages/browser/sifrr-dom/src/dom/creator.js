@@ -42,7 +42,7 @@ export default function creator(el, defaultState) {
       repeatref(sm, el);
     }
     // attributes
-    const attrs = el.attributes,
+    const attrs = Array.prototype.slice.call(el.attributes),
       l = attrs.length;
     const attrStateMap = [];
     const eventMap = [];

@@ -22,7 +22,7 @@ describe('Update and updateAttribute', () => {
     });
   });
 
-  it.only('works with props', async () => {
+  it('works with props', async () => {
     const propValue = await page.evaluate(() => su.$('#props').prop);
     const stateValue = await page.evaluate(() => su.$('#props').state);
     await setState({ inner: { bang: 'bang' } });
