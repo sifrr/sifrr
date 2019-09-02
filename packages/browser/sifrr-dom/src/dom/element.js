@@ -35,7 +35,7 @@ function elementClassFactory(baseClass) {
         if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
-        this.stateMap = create(this._ctemp.content, creator, this.defaultState);
+        this.stateMap = create(this._ctemp.content, creator, this.defaultState, this);
       }
       return this._ctemp || false;
     }
@@ -50,12 +50,12 @@ function elementClassFactory(baseClass) {
 
     constructor() {
       super();
-      let stores = this.stores;
+      const stores = this.stores;
       if (stores) {
         for (let h in stores) stores[h].addListener(this.update.bind(this));
       }
       if (this.constructor.ctemp) {
-        this._state = Object.assign({}, this.constructor.defaultState, this.state);
+        this.state = Object.assign({}, this.constructor.defaultState, this.state);
         const content = this.constructor.ctemp.content.cloneNode(true);
         this._refs = collect(content, this.constructor.stateMap);
         if (this.constructor.useShadowRoot) {
@@ -99,21 +99,13 @@ function elementClassFactory(baseClass) {
 
     onAttributeChange() {}
 
-    get state() {
-      return this.getState();
-    }
-
     getState() {
-      return this._state;
-    }
-
-    set state(v) {
-      this.setState(v);
+      return this.state;
     }
 
     setState(v) {
-      if (!this._state) return;
-      if (this._state !== v) Object.assign(this._state, v);
+      if (!this.state) return;
+      if (this.state !== v) Object.assign(this.state, v);
       this.update();
       this.onStateChange();
     }
@@ -124,7 +116,7 @@ function elementClassFactory(baseClass) {
       this.beforeUpdate();
       update(this);
       if (this._update || this.triggerUpdate || this.hasAttribute(BIND_ATTR)) {
-        trigger(this, 'update', { detail: { state: this._state } });
+        trigger(this, 'update', { detail: { state: this.state } });
       }
       this.onUpdate();
     }
@@ -139,12 +131,12 @@ function elementClassFactory(baseClass) {
 
     sifrrClone(state) {
       const clone = this.cloneNode(false);
-      clone._state = state;
+      clone.state = state;
       return clone;
     }
 
     clearState() {
-      this._state = {};
+      this.state = {};
       this.update();
     }
 

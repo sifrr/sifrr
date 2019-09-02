@@ -7,7 +7,7 @@ export default e => {
   if (!target.hasAttribute(BIND_ATTR)) return;
   if (e.type === 'update' && !target._sifrrEventSet) return;
 
-  const value = target.value || target._state || target.textContent;
+  const value = target.value || target.state || target.textContent;
   if (target.firstChild) target.firstChild.__data = value;
 
   let root = target._root || target.root || target.parentNode;
@@ -15,7 +15,7 @@ export default e => {
   if (root) {
     target._root = root;
     const prop = target.getAttribute(BIND_ATTR);
-    if (shouldMerge(value, root._state[prop])) {
+    if (shouldMerge(value, root.state[prop])) {
       if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
       else root.setState && root.setState({ [prop]: value });
     }

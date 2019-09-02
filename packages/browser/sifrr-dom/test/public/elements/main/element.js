@@ -168,7 +168,7 @@ class MainElement extends Sifrr.Dom.Element {
       const data = me.state.data;
       const todel = data.findIndex(d => d.id === id);
       data.splice(todel, 1);
-      me.state = { data: data };
+      me.setState({ data: data });
     });
     Sifrr.Dom.Event.addListener('click', '.lbl', (e, target) => {
       const id = getParent(target).state.id;
@@ -180,26 +180,26 @@ class MainElement extends Sifrr.Dom.Element {
         if (me.state.data[i].id === id) (me.state.data[i].class = 'danger'), k++;
         if (k > 1) break;
       }
-      me.state = { data: data };
+      me.setState({ data: data });
     });
   }
 
   run() {
-    this.state = {
+    this.setState({
       data: buildData(1000)
-    };
+    });
   }
 
   runlots() {
-    this.state = {
+    this.setState({
       data: buildData(10000)
-    };
+    });
   }
 
   add() {
-    this.state = {
+    this.setState({
       data: this.state.data.concat(buildData(1000))
-    };
+    });
   }
 
   // update is reserved in Sifrr.Dom.Element
@@ -209,13 +209,13 @@ class MainElement extends Sifrr.Dom.Element {
     for (let i = 0; i < l; i += 10) {
       state.data[i].label = state.data[i].label + ' !!!';
     }
-    this.state = state;
+    this.setState(state);
   }
 
   clear() {
-    this.state = {
+    this.setState({
       data: []
-    };
+    });
   }
 
   swaprows() {
@@ -224,9 +224,9 @@ class MainElement extends Sifrr.Dom.Element {
       const a = data[1];
       data[1] = data[998];
       data[998] = a;
-      this.state = {
+      this.setState({
         data: data
-      };
+      });
     }
   }
 

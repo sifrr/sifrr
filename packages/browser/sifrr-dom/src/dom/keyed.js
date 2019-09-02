@@ -39,18 +39,18 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     loop = false;
 
     // Skip prefix
-    (a = prevStartNode._state), (b = newData[newStart]);
+    (a = prevStartNode.state), (b = newData[newStart]);
     while (a[key] === b[key]) {
       makeEqual(prevStartNode, b);
       prevStart++;
       prevStartNode = prevStartNode.nextSibling;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode._state), (b = newData[newStart]);
+      (a = prevStartNode.state), (b = newData[newStart]);
     }
 
     // Skip suffix
-    (a = prevEndNode._state), (b = newData[newEnd]);
+    (a = prevEndNode.state), (b = newData[newEnd]);
     while (a[key] === b[key]) {
       makeEqual(prevEndNode, b);
       prevEnd--;
@@ -58,11 +58,11 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       prevEndNode = prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode._state), (b = newData[newEnd]);
+      (a = prevEndNode.state), (b = newData[newEnd]);
     }
 
     // Fast path to swap backward
-    (a = prevEndNode._state), (b = newData[newStart]);
+    (a = prevEndNode.state), (b = newData[newStart]);
     while (a[key] === b[key]) {
       loop = true;
       makeEqual(prevEndNode, b);
@@ -72,11 +72,11 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode._state), (b = newData[newStart]);
+      (a = prevEndNode.state), (b = newData[newStart]);
     }
 
     // Fast path to swap forward
-    (a = prevStartNode._state), (b = newData[newEnd]);
+    (a = prevStartNode.state), (b = newData[newEnd]);
     while (a[key] === b[key]) {
       loop = true;
       makeEqual(prevStartNode, b);
@@ -88,7 +88,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode._state), (b = newData[newEnd]);
+      (a = prevStartNode.state), (b = newData[newEnd]);
     }
   }
 
@@ -137,8 +137,8 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 
   let reusingNodes = 0;
   while (prevStart <= prevEnd) {
-    if (newKeys.has(prevStartNode._state[key])) {
-      oldKeys[newKeys.get(prevStartNode._state[key])] = prevStart;
+    if (newKeys.has(prevStartNode.state[key])) {
+      oldKeys[newKeys.get(prevStartNode.state[key])] = prevStart;
       reusingNodes++;
     } else {
       toDelete.push(prevStartNode);

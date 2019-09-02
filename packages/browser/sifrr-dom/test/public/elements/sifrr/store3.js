@@ -17,9 +17,9 @@ class SifrrStore3 extends Sifrr.Dom.Element {
   }
 
   onUpdate() {
-    if (!this._state.class) {
+    if (!this.state.class) {
       if (this.className) this.removeAttribute('class');
-    } else if (this.className !== this._state.class) {
+    } else if (this.className !== this.state.class) {
       this.className = this.state.class;
     }
   }

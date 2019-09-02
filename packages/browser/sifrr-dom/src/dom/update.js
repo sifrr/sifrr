@@ -15,8 +15,7 @@ export default function update(element, stateMap) {
     // Fast path for text nodes
     if (data.type === 0) {
       // state node
-      if (dom.__data != element._state[data.text])
-        dom.data = dom.__data = element._state[data.text];
+      if (dom.__data != element.state[data.text]) dom.data = dom.__data = element.state[data.text];
       continue;
     } else if (data.type === 1) {
       // text node
@@ -40,7 +39,7 @@ export default function update(element, stateMap) {
     // state
     if (data.state) {
       const newState = evaluateBindings(data.state, element);
-      if (dom.setState && shouldMerge(newState, dom._state)) dom.setState(newState);
+      if (dom.setState && shouldMerge(newState, dom.state)) dom.setState(newState);
       else dom['state'] = newState;
     }
 
@@ -57,7 +56,7 @@ export default function update(element, stateMap) {
       for (let i = data.attributes.length - 1; i > -1; --i) {
         const attr = data.attributes[i];
         let newValue;
-        if (attr[1] === 0) newValue = element._state[attr[2]];
+        if (attr[1] === 0) newValue = element.state[attr[2]];
         else newValue = evaluateBindings(attr[2], element);
         updateAttribute(dom, attr[0], newValue);
       }
@@ -67,7 +66,7 @@ export default function update(element, stateMap) {
 
     // update element
     let newValue;
-    if (typeof data.text === 'string') newValue = element._state[data.text];
+    if (typeof data.text === 'string') newValue = element.state[data.text];
     else newValue = evaluateBindings(data.text, element);
 
     if (!newValue || newValue.length === 0) dom.textContent = '';

@@ -55,7 +55,7 @@ export default function creator(el, defaultState) {
         eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
       } else if (attribute.name[0] === ':') {
         if (attribute.name.substr(1) === 'state') {
-          sm.state = getBindingFxns(attribute.value);
+          sm['state'] = getBindingFxns(attribute.value);
         } else {
           // Array contents -> 0: property name, 1: binding
           propMap.push([attribute.name.substr(1), getBindingFxns(attribute.value)]);

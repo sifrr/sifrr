@@ -28,7 +28,6 @@ export function create(node, fxn, passedArg) {
       node = TW.nextNode();
       ntr.remove();
     } else {
-      // eslint-disable-next-line no-cond-assign
       if ((ref = fxn(node, passedArg))) {
         indices.push({ idx: idx + 1, ref });
         idx = 1;

@@ -1,5 +1,5 @@
 function setState(state) {
-  return page.$eval('sifrr-update', (el, st) => (el.state = st), state);
+  return page.$eval('sifrr-update', (el, st) => el.setState(st), state);
 }
 
 async function asyncForEach(array, callback) {
@@ -20,6 +20,17 @@ describe('Update and updateAttribute', () => {
       window.replaced = window.su.$('#replaced');
       window.row = window.su.$('#row');
     });
+  });
+
+  it.only('works with props', async () => {
+    const propValue = await page.evaluate(() => su.$('#props').prop);
+    const stateValue = await page.evaluate(() => su.$('#props').state);
+    await setState({ inner: { bang: 'bang' } });
+    const stateValueNew = await page.evaluate(() => su.$('#props').state);
+
+    assert.equal(propValue, 'prop');
+    assert.deepEqual(stateValue, { prop: 'prop' });
+    assert.deepEqual(stateValueNew, { bang: 'bang' });
   });
 
   it("doesn't rerender other things when updating text", async () => {
@@ -111,7 +122,7 @@ describe('Update and updateAttribute', () => {
       window.su.setState({ row: newrow });
       return {
         sameRow: window.row === window.su.$('#row'),
-        state: window.su.$('#row')._state
+        state: window.su.$('#row').state
       };
     });
 

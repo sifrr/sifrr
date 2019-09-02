@@ -142,8 +142,8 @@ describe('Two way bind', () => {
     it('has parents state passed down', async () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
         return {
-          child: el.$('twoway-input')._state,
-          parent: el._state.small
+          child: el.$('twoway-input').state,
+          parent: el.state.small
         };
       });
 
@@ -155,8 +155,8 @@ describe('Two way bind', () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
         el.setState({ small: { input: 'new' } });
         return {
-          child: el.$('twoway-input')._state,
-          parent: el._state.small
+          child: el.$('twoway-input').state,
+          parent: el.state.small
         };
       });
 
@@ -168,8 +168,8 @@ describe('Two way bind', () => {
       const val = await page.$eval(`twoway-sifrr`, el => {
         el.$('twoway-input').setState({ input: 'again' });
         return {
-          child: el.$('twoway-input')._state,
-          parent: el._state.small
+          child: el.$('twoway-input').state,
+          parent: el.state.small
         };
       });
 
@@ -179,7 +179,7 @@ describe('Two way bind', () => {
       // check for immutability
       const exactEqual = await page.$eval(`twoway-sifrr`, el => {
         el.$('twoway-input').setState({ input: 'again2' });
-        return el.$('twoway-input')._state === el.state._small;
+        return el.$('twoway-input').state === el.state._small;
       });
 
       assert(!exactEqual);

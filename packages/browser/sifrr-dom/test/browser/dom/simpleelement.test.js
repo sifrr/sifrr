@@ -157,7 +157,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
         seClone.setState({ some: 'cloned' });
 
         return {
-          stateEqual: seClone._state === seComplex._state,
+          stateEqual: seClone.state === seComplex.state,
           cloneText: seClone.childNodes[1].data,
           textEqual: seClone.childNodes[1].data === seComplex.childNodes[1].data
         };
@@ -171,7 +171,7 @@ describe('Sifrr.Dom.SimpleElement', () => {
     });
 
     it('clones state if given', async () => {
-      const eq = await page.evaluate('seStateClone._state.p');
+      const eq = await page.evaluate('seStateClone.state.p');
 
       expect(eq).to.eq('default');
     });

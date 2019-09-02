@@ -4,10 +4,10 @@ describe('twowaybind', () => {
 
     const target = {
       _root: {
-        _state: {},
+        state: {},
         isSifrr: true,
         setState: function(v) {
-          Object.assign(this._state, v);
+          Object.assign(this.state, v);
         }
       },
       hasAttribute: () => true,
@@ -19,6 +19,6 @@ describe('twowaybind', () => {
     };
     twoWayBind(event);
 
-    assert.equal(target._root._state.stt, 'value');
+    assert.equal(target._root.state.stt, 'value');
   });
 });

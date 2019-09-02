@@ -6,9 +6,8 @@
   <table data-sifrr-html="true">
     <!-- ${this.state.row} -->
   </table>
-  <div id="attr" some-attr="${this.state.attr}">
-
-  </div>
+  <div id="attr" some-attr="${this.state.attr}"></div>
+  <div id="props" :prop="${this.prop}" :state="${this.state.inner}"></div>
 </template>
 <script type="text/javascript">
   const row = document.createElement('tr', { is: 'sifrr-row' });
@@ -17,12 +16,18 @@
     id: 1,
     label: 'ok'
   };
-  class SifrrUpdate extends Sifrr.Dom.Element {}
+  class SifrrUpdate extends Sifrr.Dom.Element {
+    get prop() {
+      return 'prop';
+    }
+  }
   SifrrUpdate.defaultState = {
-    html: '<p>p</p><div id="attribute" some-attr="random" _click="console.log(\'click\')" _keyup="console.log(\'keyup\')">div</div><p id="replaced"></p><a></a>',
+    html:
+      '<p>p</p><div id="attribute" some-attr="random" _click="console.log(\'click\')" _keyup="console.log(\'keyup\')">div</div><p id="replaced"></p><a></a>',
     text: 'random',
     row: row,
-    attr: 'attr'
+    attr: 'attr',
+    inner: { prop: 'prop' }
   };
   Sifrr.Dom.register(SifrrUpdate, { dependsOn: 'sifrr-row' });
 </script>

@@ -258,7 +258,7 @@ will render to
 
 ```js
 const customtag = window.querySelector('custom-tag');
-customtag.state = { id: 2, attr: 'xyz' };
+customtag.setState({ id: 2, attr: 'xyz' });
 // Note: state is functionally immutable, hence doing `customtag.state.id = 2` won't work
 // You need to set state to new value every time you need to change state, but don't
 // worry. Only new values provided are updated, other values remain same as they were.
@@ -315,6 +315,19 @@ Sifrr.Dom.setup(config);
   // or
   CustomTag.useShadowRoot = false;
 </script>
+```
+
+### props
+
+- props do not trigger re-renders
+- this in props is parent sifrr element and not the element itself
+- props don't work when element has no sifrr element
+- props should always be binded, props without bindings won't work (use normal attributes for that)
+
+```html
+<custom-tag :prop="${this.something}"></custom-tag>
+
+<!-- then you can access property in customTag with `this.prop` -->
 ```
 
 ### Sifrr Element (Sifrr.Dom.Element) Methods
@@ -532,14 +545,14 @@ this will render
 ```html
 <!-- inside template -->
 <!-- One Way bindings to `some-element`'s state, updates state of `some-element` when parent's state is changed -->
-<some-element _state="${this.state.someElementState}"
+<some-element :state="${this.state.someElementState}"
   ><some-element>
     <!-- One Way bindings from `some-element`'s state, updates parent's state when state of `some-element` is changed -->
     <some-element data-sifrr-bind="someElementState"
       ><some-element>
         <!-- Both together -->
         <!-- This automatically syncs parent's state.someElementState and `some-element`'s state' -->
-        <some-element _state="${this.state.someElementState}" data-sifrr-bind="someElementState"
+        <some-element :state="${this.state.someElementState}" data-sifrr-bind="someElementState"
           ><some-element></some-element></some-element></some-element></some-element></some-element
 ></some-element>
 ```

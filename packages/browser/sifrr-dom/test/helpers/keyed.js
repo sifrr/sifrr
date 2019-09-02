@@ -76,14 +76,12 @@ function buildData(count = 10, from = 1) {
 function dataToChildNodes(data) {
   const ret = data.map(d => {
     const node = {
-      _state: d
+      state: d
     };
-    node._getStub = sinon.stub().callsFake(() => node._state);
-    node._setStub = sinon.stub().callsFake(v => (node._state = v));
-    Object.defineProperty(node, 'state', {
-      get: node._getStub,
-      set: node._setStub
-    });
+    node._getStub = sinon.stub().callsFake(() => node.state);
+    node._setStub = sinon.stub().callsFake(v => (node.state = v));
+    node.getState = node._getStub;
+    node.setState = node._setStub;
     return node;
   });
   ret.forEach(n => {

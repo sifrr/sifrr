@@ -1,10 +1,9 @@
 import template from './template';
 import config from './config';
 
-export default class Loader {
+class Loader {
   constructor(elemName, url) {
     if (!fetch) throw Error('Sifrr.Dom.load requires window.fetch API to work.');
-    this.constructor.all = this.constructor.all || {};
 
     if (this.constructor.all[elemName]) return this.constructor.all[elemName];
     this.elementName = elemName;
@@ -69,3 +68,7 @@ export default class Loader {
     });
   }
 }
+
+Loader.all = {};
+
+export default Loader;
