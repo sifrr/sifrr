@@ -3664,7 +3664,7 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^3.0.7, loadtest@^3.0.8:
+loadtest@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-3.0.8.tgz#8c8edd012bc3efbc96759697abb97523be8894ee"
   integrity sha512-GHfhNn1Zvy8YajMhwJdr70FnnTVJlczyKt+Q1BekUqR3Id0mT0OBwSymOvzMKCPnJcXQPH9YW5YzOw/aPmY0uA==
