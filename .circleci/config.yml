@@ -11,12 +11,12 @@ commands:
             - '22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6'
       - restore_cache:
           keys:
-            - sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
-            - sifrr-v2-source-{{ .Branch }}-
-            - sifrr-v2-source-
+            - sifrr-v3-source-{{ .Branch }}-{{ .Revision }}
+            - sifrr-v3-source-{{ .Branch }}-
+            - sifrr-v3-source-
       - checkout
       - save_cache:
-          key: sifrr-v2-source-{{ .Branch }}-{{ .Revision }}
+          key: sifrr-v3-source-{{ .Branch }}-{{ .Revision }}
           paths:
             - '.git'
       - run:
@@ -24,13 +24,13 @@ commands:
           command: yarn config set workspaces-experimental true
       - restore_cache:
           keys:
-            - sifrr-v4-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
-            - sifrr-v4-yarn-<< parameters.version >>-
+            - sifrr-v5-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
+            - sifrr-v5-yarn-<< parameters.version >>-
       - run:
           name: Yarn install
           command: yarn install
       - save_cache:
-          key: sifrr-v4-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
+          key: sifrr-v5-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - run:
