@@ -580,8 +580,8 @@ parses array to dom nodes in bindings
 
 <template>
 <!-- data-sifrr-repeat should be binded to an array data which you want to repeat for inside element
-   data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
-  <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="id">
+   :key is key of individual data which will be used in keyed updates/reconciliation -->
+  <div data-sifrr-repeat="${this.state.data}" :key="id">
     <custom-array></custom-array> // data-sifrr-repeat should contain only one element node
   <div>
 </template>
@@ -603,7 +603,7 @@ then, `<custom-tag></custom-tag>` will render:
 ```html
 <custom-tag>
   #shadow-root
-  <div data-sifrr-key="id">
+  <div :key="id">
     <custom-array>
       #shadow-root
       <p>1</p>
@@ -625,8 +625,8 @@ then, `<custom-tag></custom-tag>` will render:
 
 <template>
 <!-- data-sifrr-repeat should be binded to an array data which you want to repeat for inside element
-   data-sifrr-key is key of individual data which will be used in keyed updates/reconciliation -->
-  <div data-sifrr-repeat="${this.state.data}" data-sifrr-key="${this.state.key}">
+   :key is key of individual data which will be used in keyed updates/reconciliation -->
+  <div data-sifrr-repeat="${this.state.data}" :key="${this.state.key}">
     <div> // data-sifrr-repeat should contain only one node
       <p>${this.state.id}</p>
     </div>
@@ -647,7 +647,7 @@ then, `<custom-tag></custom-tag>` will render:
 ```html
 <custom-tag>
   #shadow-root
-  <div data-sifrr-key="id">
+  <div :key="id">
     <div>
       <p>1</p>
     </div>

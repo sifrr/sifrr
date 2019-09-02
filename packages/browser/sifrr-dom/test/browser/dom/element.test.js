@@ -118,14 +118,6 @@ describe('Sifrr.Dom.Element', () => {
       assert.equal(nosrhtml, '<p>Sifrr ps Simple</p>');
     });
 
-    it('works with attribute state', async () => {
-      const srhtml = await page.$eval('element-as-sr', el => el.shadowRoot.innerHTML);
-      const nosrhtml = await page.$eval('element-as-nosr', el => el.innerHTML);
-
-      assert.equal(srhtml, '<p>Sifrr as Simple</p>');
-      assert.equal(nosrhtml, '<p>Sifrr as Simple</p>');
-    });
-
     it('updates only once on connect', async () => {
       const res = await page.evaluate(() => {
         const types = ['element-nods', 'element-ds', 'element-ps', 'element-as'],

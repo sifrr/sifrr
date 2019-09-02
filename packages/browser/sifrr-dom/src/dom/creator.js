@@ -53,13 +53,14 @@ export default function creator(el, defaultState) {
       if (attribute.name[0] === '_') {
         // state binding
         eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-      } else if (attribute.name[0] === ':') {
+      } else if (attribute.name[0] === ':' && attribute.name[0] !== ':key') {
         if (attribute.name.substr(1) === 'state') {
           sm['state'] = getBindingFxns(attribute.value);
         } else {
           // Array contents -> 0: property name, 1: binding
           propMap.push([attribute.name.substr(1), getBindingFxns(attribute.value)]);
         }
+        el.removeAttribute(attribute.name);
       } else {
         // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
         const binding = getStringBindingFxn(attribute.value);
