@@ -77,7 +77,7 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './')
   .split(/[ ,\n]/g)
   .map(p => path.join(__dirname, '../../', p));
-const { runTests } = require('@sifrr/dev');
+const { runTests, exec } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
   let preCommand = [];
@@ -116,13 +116,21 @@ const options = roots.map((root, i) => {
   };
 });
 
-runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
-  ({ failures, coverage }) => {
-    console.table(coverage);
-    if (failures > 0) {
-      global.console.log(`${failures} tests failed!`);
-      process.exit(1);
-    }
-    global.console.log(`All tests passed!`);
+async function run() {
+  if (!dontRunPrecommand) {
+    await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-fetch')} && yarn build`);
   }
-);
+
+  runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
+    ({ failures, coverage }) => {
+      console.table(coverage);
+      if (failures > 0) {
+        global.console.log(`${failures} tests failed!`);
+        process.exit(1);
+      }
+      global.console.log(`All tests passed!`);
+    }
+  );
+}
+
+run();
