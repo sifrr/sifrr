@@ -49,6 +49,7 @@ function stubRequest(request) {
 
 describe('sifrr-fetch', () => {
   async function getResponse(type, url, options, text = false) {
+    console.log(url);
     return page.evaluate(
       (type, url, options, text) => {
         if (typeof Sifrr === 'undefined') return Sifrr;
@@ -104,6 +105,10 @@ describe('sifrr-fetch', () => {
     // Default empty variables
     const resp2 = await getResponse('graphql', '/graphql', { query: 'query { hello }' });
     expect(resp2.body).to.deep.equal({ query: 'query { hello }' });
+
+    // Default graphql path
+    const resp3 = await getResponse('graphql', { query: 'query { hello }' });
+    expect(resp3.body).to.deep.equal({ query: 'query { hello }' });
   });
 
   it('gets text if content type is not application/json', async () => {

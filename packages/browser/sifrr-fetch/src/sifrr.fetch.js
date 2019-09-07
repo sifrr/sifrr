@@ -5,6 +5,11 @@ const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE']
 const isAbort = !!window.AbortController;
 class SifrrFetch {
   static graphql(url, options) {
+    if (typeof url !== 'string') {
+      options = url;
+      url = this.graphqlPath;
+    }
+
     const { query, variables } = options;
     delete options.query;
     delete options.variables;
@@ -69,10 +74,15 @@ class SifrrFetch {
 
   constructor(defaultOptions = {}) {
     this.defaultOptions = defaultOptions;
+    this.graphqlPath = '/graphql';
   }
 
   graphql(url, options) {
-    return this.constructor.graphql(url, this._tOptions(options));
+    if (typeof url === 'string') {
+      return this.constructor.graphql(url, this._tOptions(options));
+    } else {
+      return this.constructor.graphql(this.graphqlPath, this._tOptions(url));
+    }
   }
 
   _tOptions(options) {
@@ -93,6 +103,7 @@ httpMethods.forEach(m => {
 });
 
 SifrrFetch.Socket = Socket;
+SifrrFetch.graphqlPath = '/graphql';
 
 export { SifrrFetch as Fetch, Socket };
 export default SifrrFetch;
