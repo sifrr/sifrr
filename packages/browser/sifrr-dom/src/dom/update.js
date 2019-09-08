@@ -2,7 +2,7 @@ import { makeChildrenEqual } from './makeequal';
 import { makeChildrenEqualKeyed } from './keyed';
 import updateAttribute from './updateattribute';
 import { evaluateBindings } from './bindings';
-import { TEMPLATE, KEY_ATTR } from './constants';
+import { TEMPLATE } from './constants';
 import shouldMerge from '../utils/shouldmerge';
 
 export default function update(element, stateMap) {
@@ -72,11 +72,9 @@ export default function update(element, stateMap) {
     if (!newValue || newValue.length === 0) dom.textContent = '';
     else if (data.type === 3) {
       // repeaing node
-      let key;
-      // eslint-disable-next-line no-inner-declarations
       data.se._root = element;
-      if (data.keyed && (key = dom.getAttribute(KEY_ATTR))) {
-        makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone.bind(data.se), key);
+      if (dom.sifrrKey) {
+        makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone.bind(data.se), dom.sifrrKey);
       } else makeChildrenEqual(dom, newValue, data.se.sifrrClone.bind(data.se));
     } else {
       // html node

@@ -8,6 +8,10 @@ import repeatref from './repeatref';
 import { getBindingFxns, getStringBindingFxn } from './bindings';
 import updateAttribute from './updateattribute';
 
+function attrToProp(attrName) {
+  return attrName.substr(1).replace(/-([a-z])/g, g => g[1].toUpperCase());
+}
+
 export default function creator(el, defaultState) {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const x = el.data;
@@ -53,12 +57,12 @@ export default function creator(el, defaultState) {
       if (attribute.name[0] === '_') {
         // state binding
         eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-      } else if (attribute.name[0] === ':' && attribute.name[0] !== ':key') {
+      } else if (attribute.name[0] === ':') {
         if (attribute.name.substr(1) === 'state') {
           sm['state'] = getBindingFxns(attribute.value);
         } else {
           // Array contents -> 0: property name, 1: binding
-          propMap.push([attribute.name.substr(1), getBindingFxns(attribute.value)]);
+          propMap.push([attrToProp(attribute.name), getBindingFxns(attribute.value)]);
         }
         el.removeAttribute(attribute.name);
       } else {
