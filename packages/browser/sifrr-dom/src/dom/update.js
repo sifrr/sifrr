@@ -68,9 +68,10 @@ export default function update(element, stateMap) {
       }
     }
 
+    // repeaing node
     if (data.type === 3) {
-      // repeaing node
-      if (dom.sifrrKey) {
+      if (!dom.sifrrRepeat || dom.sifrrRepeat.length === 0) dom.textContent = '';
+      else if (dom.sifrrKey) {
         makeChildrenEqualKeyed(
           dom,
           dom.sifrrRepeat,

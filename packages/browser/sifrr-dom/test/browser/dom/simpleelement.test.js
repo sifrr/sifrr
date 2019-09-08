@@ -109,13 +109,13 @@ describe('Sifrr.Dom.SimpleElement', () => {
     );
   });
 
-  it("doesn't do anything with customElements", async () => {
+  it("doesn't do anything with sifrr elements", async () => {
     const type1 = await page.evaluate(() => {
-      const se = Sifrr.Dom.SimpleElement('<tr is="sifrr-element"></tr>');
+      const se = Sifrr.Dom.SimpleElement('<tr is="sifrr-row"></tr>');
       return typeof se.stateMap;
     });
     const type2 = await page.evaluate(() => {
-      const se = Sifrr.Dom.SimpleElement('<sifrr-element></sifrr-element>');
+      const se = Sifrr.Dom.SimpleElement('<sifrr-small></sifrr-small>');
       return typeof se.stateMap;
     });
     const type3 = await page.evaluate(() => {
