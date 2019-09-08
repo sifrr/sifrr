@@ -4,46 +4,40 @@
       color: ${this.state.color};
     }
   </style>
-  <link rel="stylesheet" href="/elements/sifrr/test.css">
+  <link rel="stylesheet" href="/elements/sifrr/test.css" />
   okokok____ok ${this.state.text}
   <slot></slot>
-  <a href="#">${
-    if (window) {
-      if (document) {
-        return 'document';
-      } else {
-        return 'no doc';
-      }
-    } else {
-      return 'not ok';
-    }
-  }</a>
+  <a href="#"
+    >${ if (window) { if (document) { return 'document'; } else { return 'no doc'; } } else { return
+    'not ok'; } }</a
+  >
   <p>select - ${this.state.select}</p>
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
-  <p data-attr=${this.state.attr}>binded data-attr - ${this.state.attr}</p>
-  <input value=${this.state.attr} data-sifrr-bind="attr" disabled="${this.state.disabled}">
-  <input value=${this.state.input} data-sifrr-bind="input">
-  <div data-sifrr-html='true' data-attr=${this.state.attr}>${this.state.elements}</div>
+  <p data-attr="${this.state.attr}">binded data-attr - ${this.state.attr}</p>
+  <input value="${this.state.attr}" data-sifrr-bind="attr" disabled="${this.state.disabled}" />
+  <input value="${this.state.input}" data-sifrr-bind="input" />
+  <div data-sifrr-html="true" data-attr="${this.state.attr}">${this.state.elements}</div>
   <select name="abcd" data-sifrr-bind="select" value="${this.state.select}">
     <option value="volvo">Volvo</option>
     <option value="saab">Saab</option>
     <option value="mercedes">Mercedes</option>
     <option value="audi">Audi</option>
   </select>
-  <div id="styled" style="${this.state.padding}: 10px; margin: ${this.state.margin}; border: 1px solid black;">
-
-  </div>
-  <div data-sifrr-html="true">
-  </div>
+  <div
+    id="styled"
+    :style="${{[this.state.padding]: '10px', margin: this.state.margin, border: '1px solid black'}}"
+  ></div>
+  <div data-sifrr-html="true"></div>
   <div class="">
-    <div data-sifrr-html="true">
-    </div>
+    <div data-sifrr-html="true"></div>
   </div>
   <div class="html" data-sifrr-html="true">
     ${this.state.html}
   </div>
-  <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">${this.state.textarea}</textarea>
+  <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">
+${this.state.textarea}</textarea
+  >
   <div class="" contenteditable data-sifrr-bind="elements">
     ${this.state.elements}
   </div>
@@ -71,5 +65,5 @@
     margin: '5px'
   };
 
-  Sifrr.Dom.register(SifrrTest, { dependsOn: [ 'sifrr-small', 'sifrr-row' ] });
+  Sifrr.Dom.register(SifrrTest, { dependsOn: ['sifrr-small', 'sifrr-row'] });
 </script>

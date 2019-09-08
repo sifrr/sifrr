@@ -11,6 +11,7 @@ export function replacer(match) {
     return new Function(f);
   } catch (e) {
     window.console.log(`Error processing binding: \`${f}\``);
+    window.console.error(e);
     return '';
   }
 }

@@ -47,7 +47,13 @@ export default function update(element, stateMap) {
     if (data.props) {
       for (let i = data.props.length - 1; i > -1; --i) {
         const newValue = evaluateBindings(data.props[i][1], element);
-        if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
+        if (data.props[i][0] === 'style') {
+          const keys = Object.keys(newValue),
+            l = keys.length;
+          for (let i = 0; i < l; i++) {
+            dom.style[keys[i]] = newValue[keys[i]];
+          }
+        } else if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
       }
     }
 
