@@ -18,7 +18,7 @@ export function replacer(match) {
 
 export function evaluate(fxn, el) {
   try {
-    if (typeof fxn === 'string') return fxn;
+    if (typeof fxn !== 'function') return fxn;
     else return fxn.call(el);
   } catch (e) {
     const str = fxn.toString();

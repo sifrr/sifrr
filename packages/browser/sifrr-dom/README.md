@@ -322,7 +322,6 @@ Sifrr.Dom.setup(config);
 - props do not trigger re-renders
 - `this` context in props binding is parent sifrr element and not the element itself
 - props don't work when the element has no parent sifrr element
-- props should always be binded, props without bindings won't work (use normal attributes for that)
 - props are case insensitive
 - props in hyphen-case will be conveted to camel-case property name, i.e. `some-thing` => `someThing`
 

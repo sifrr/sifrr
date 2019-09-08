@@ -54,11 +54,14 @@ export default function creator(el, defaultState) {
     const propMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
-      if (attribute.value.indexOf('${') < 0) continue;
-      if (attribute.name[0] === '_') {
-        // state binding
-        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
-      } else if (attribute.name[0] === ':') {
+
+      if (attribute.name[0] === ':') {
+        // string prop
+        if (attribute.value.indexOf('${') < 0) {
+          propMap.push([attrToProp(attribute.name), [attribute.value]]);
+          continue;
+        }
+        // binding prop
         if (attribute.name.substr(1) === 'state') {
           sm['state'] = getBindingFxns(attribute.value);
         } else {
@@ -66,8 +69,14 @@ export default function creator(el, defaultState) {
           propMap.push([attrToProp(attribute.name), getBindingFxns(attribute.value)]);
         }
         el.removeAttribute(attribute.name);
-      } else {
-        // Don't treat style differently because same performance https://jsperf.com/style-property-vs-style-attribute/2
+      }
+
+      if (attribute.value.indexOf('${') < 0) continue;
+
+      if (attribute.name[0] === '_') {
+        // state binding
+        eventMap.push([attribute.name, getBindingFxns(attribute.value)]);
+      } else if (attribute.name[0] !== ':') {
         const binding = getStringBindingFxn(attribute.value);
         // Array contents -> 0: name, 1: type, 2: binding
         if (typeof binding !== 'string') {

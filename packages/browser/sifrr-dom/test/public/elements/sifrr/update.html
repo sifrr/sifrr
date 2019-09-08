@@ -7,7 +7,13 @@
     <!-- ${this.state.row} -->
   </table>
   <div id="attr" some-attr="${this.state.attr}"></div>
-  <div id="props" :prop="${this.prop}" :state="${this.state.inner}"></div>
+  <div
+    id="props"
+    :prop="${this.prop}"
+    :prop2="ok"
+    :camel-case="ok"
+    :state="${this.state.inner}"
+  ></div>
 </template>
 <script type="text/javascript">
   const row = document.createElement('tr', { is: 'sifrr-row' });
