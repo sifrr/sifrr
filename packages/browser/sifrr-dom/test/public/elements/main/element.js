@@ -57,7 +57,7 @@ const template = `<link href="./css/currentStyle.css" rel="stylesheet">
     </div>
   </div>
   <table class="table table-hover table-striped test-data">
-    <tbody data-sifrr-repeat=\${this.state.data} :sifrr-key='\${"${keyedKey}"}' :sifrr-default-state=\${{"class":false}}>
+    <tbody :sifrr-repeat=\${this.state.data} :sifrr-key='\${"${keyedKey}"}'>
       <tr class=\${this.state.class}>
         <td class='col-md-1 id'>\${this.state.id}</td>
         <td class='col-md-4'><a class='lbl'>\${this.state.label}</a></td>

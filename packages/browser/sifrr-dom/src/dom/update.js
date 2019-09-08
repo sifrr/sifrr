@@ -68,6 +68,19 @@ export default function update(element, stateMap) {
       }
     }
 
+    if (data.type === 3) {
+      // repeaing node
+      if (dom.sifrrKey) {
+        makeChildrenEqualKeyed(
+          dom,
+          dom.sifrrRepeat,
+          data.se.sifrrClone.bind(data.se),
+          dom.sifrrKey
+        );
+      } else makeChildrenEqual(dom, dom.sifrrRepeat, data.se.sifrrClone.bind(data.se));
+      continue;
+    }
+
     if (data.text === undefined) continue;
 
     // update element
@@ -76,13 +89,7 @@ export default function update(element, stateMap) {
     else newValue = evaluateBindings(data.text, element);
 
     if (!newValue || newValue.length === 0) dom.textContent = '';
-    else if (data.type === 3) {
-      // repeaing node
-      data.se._root = element;
-      if (dom.sifrrKey) {
-        makeChildrenEqualKeyed(dom, newValue, data.se.sifrrClone.bind(data.se), dom.sifrrKey);
-      } else makeChildrenEqual(dom, newValue, data.se.sifrrClone.bind(data.se));
-    } else {
+    else {
       // html node
       const newValue = evaluateBindings(data.text, element);
       let children,

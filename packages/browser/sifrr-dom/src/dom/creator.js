@@ -1,5 +1,5 @@
-import { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } from './constants';
-import repeatref from './repeatref';
+import { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR } from './constants';
+import simpleElement from './simpleelement';
 // ref types:
 // 0: state
 // 1: text
@@ -42,8 +42,9 @@ export default function creator(el, defaultState) {
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
       el.textContent = '';
-    } else if (el.hasAttribute(REPEAT_ATTR)) {
-      repeatref(sm, el);
+    } else if (el.hasAttribute(':sifrr-repeat')) {
+      sm.type = 3;
+      sm.se = simpleElement(el.childNodes);
     }
     // attributes
     const attrs = Array.prototype.slice.call(el.attributes),

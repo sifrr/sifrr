@@ -27,11 +27,11 @@ export default function SimpleElement(content, defaultState = null) {
       content.getAttribute('is').indexOf('-') > 0)
   ) {
     if (!content.isSifrr) {
-      // Render custom element if not rendered
+      // Render sifrr element if not rendered
       window.document.body.appendChild(content);
       window.document.body.removeChild(content);
     }
-    return content;
+    if (content.isSifrr) return content;
   }
   content.sifrrDefaultState = defaultState;
   content.stateMap = create(content, creator, defaultState);

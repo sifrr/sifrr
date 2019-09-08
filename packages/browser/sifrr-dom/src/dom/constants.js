@@ -13,5 +13,4 @@ export const ELEMENT_NODE = 1;
 export const OUTER_REGEX = new RegExp(reg, 'g');
 export const STATE_REGEX = /^\$\{this\.state\.([a-zA-Z0-9_$]+)\}$/;
 export const HTML_ATTR = 'data-sifrr-html';
-export const REPEAT_ATTR = 'data-sifrr-repeat';
 export const BIND_ATTR = 'data-sifrr-bind';
