@@ -15,6 +15,7 @@ function responseProgress(resp, onProgress) {
         start(controller) {
           const start = performance.now();
           function read() {
+            // eslint-disable-next-line consistent-return
             return reader.read().then(({ done, value }) => {
               if (done) {
                 controller.close();
@@ -48,17 +49,17 @@ class Request {
   response() {
     const { onProgress } = this._options;
     return fetch(this.url, this.options).then(resp => {
-      const contentType = resp.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
+      const showProgress = typeof onProgress === 'function';
       if (resp.ok) {
-        resp = typeof onProgress === 'function' ? responseProgress(resp, onProgress) : resp;
+        resp = showProgress ? responseProgress(resp, onProgress) : resp;
       } else {
-        onProgress({ percent: 100 });
+        if (showProgress) onProgress({ percent: 100 });
         let error = Error(resp.statusText);
         error.response = resp;
         throw error;
       }
-      return isJson ? resp.json() : resp;
+      const contentType = resp.headers.get('content-type');
+      return contentType && contentType.includes('application/json') ? resp.json() : resp;
     });
   }
 
@@ -86,10 +87,10 @@ class Request {
       ...this._options
     };
     options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
-    if (options.body && typeof body === 'object') {
+    if (options.body && typeof options.body === 'object') {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
     }
-    if (options.headers['content-type'].indexOf('json') > -1) {
+    if (options.headers['content-type'] && options.headers['content-type'].indexOf('json') > -1) {
       options.body = JSON.stringify(options.body);
     }
     return options;
