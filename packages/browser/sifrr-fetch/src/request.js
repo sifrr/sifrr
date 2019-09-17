@@ -94,6 +94,8 @@ class Request {
     options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
     if (options.body && (options.body.constructor === ObjConst || Array.isArray(body))) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
+    }
+    if (options.headers['content-type'].indexOf('json') > -1) {
       options.body = JSON.stringify(options.body);
     }
     return options;
