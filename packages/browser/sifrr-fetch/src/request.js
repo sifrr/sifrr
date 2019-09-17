@@ -1,5 +1,3 @@
-const ObjConst = {}.constructor;
-
 function responseProgress(resp, onProgress) {
   const contentLength = resp.headers.get('content-length');
   const total = parseInt(contentLength, 10);
@@ -48,20 +46,19 @@ class Request {
   }
 
   response() {
-    const { onProgress = () => {} } = this._options;
+    const { onProgress } = this._options;
     return fetch(this.url, this.options).then(resp => {
       const contentType = resp.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
       if (resp.ok) {
-        resp = responseProgress(resp, onProgress);
+        resp = typeof onProgress === 'function' ? responseProgress(resp, onProgress) : resp;
       } else {
         onProgress({ percent: 100 });
         let error = Error(resp.statusText);
         error.response = resp;
         throw error;
       }
-      if (isJson) return resp.json();
-      return resp;
+      return isJson ? resp.json() : resp;
     });
   }
 
@@ -83,15 +80,13 @@ class Request {
   get options() {
     const dOpts = this._options.defaultOptions || {};
     delete this._options.defaultOptions;
-    const options = Object.assign(
-      {
-        redirect: 'follow',
-        ...dOpts
-      },
-      this._options
-    );
+    const options = {
+      redirect: 'follow',
+      ...dOpts,
+      ...this._options
+    };
     options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
-    if (options.body && (options.body.constructor === ObjConst || Array.isArray(body))) {
+    if (options.body && typeof body === 'object') {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
     }
     if (options.headers['content-type'].indexOf('json') > -1) {
