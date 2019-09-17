@@ -44,7 +44,7 @@ function responseProgress(resp, onProgress) {
 class Request {
   constructor(url, options) {
     this._options = options;
-    this._url = url;
+    this._url = (options.host || '') + url;
   }
 
   response() {
@@ -66,10 +66,9 @@ class Request {
   }
 
   get url() {
-    const { params, host } = this._options;
+    const { params } = this._options;
     if (params && Object.keys(params).length > 0) {
       return (
-        (host || '') +
         this._url +
         '?' +
         Object.keys(params)
