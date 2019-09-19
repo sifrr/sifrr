@@ -5,13 +5,14 @@ class ArgumentType extends BaseType {
     return all.map(a => a.getSchema()).join(separator);
   }
 
-  constructor(name, type, { nullable = true, description, deprecated = false } = {}) {
+  constructor(name, type, { nullable = true, description, deprecated = false, defaultValue } = {}) {
     super(name);
 
     this.type = type;
     this.description = description;
     this.nullable = nullable;
     this.deprecated = deprecated;
+    this.defaultValue = defaultValue;
   }
 
   getSchema(suffix) {
@@ -20,8 +21,14 @@ class ArgumentType extends BaseType {
     }${
       this.type
         ? `: ${this.type}${this.nullable ? '' : '!'}${
-            this.deprecated ? ` @deprecated(reason: "${this.deprecated}")` : ''
-          }`
+            this.defaultValue
+              ? ` = ${
+                  typeof this.defaultValue === 'string'
+                    ? `"${this.defaultValue}"`
+                    : this.defaultValue
+                }`
+              : ''
+          }${this.deprecated ? ` @deprecated(reason: "${this.deprecated}")` : ''}`
         : ''
     }`;
   }
