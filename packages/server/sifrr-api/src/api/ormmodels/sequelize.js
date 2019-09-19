@@ -1,10 +1,11 @@
+const { connectionArgs } = require('graphql-relay');
 const { attributeFields, defaultListArgs, defaultArgs } = require('graphql-sequelize');
 const { resolver, createConnectionResolver } = require('graphql-sequelize');
 const Sequelize = require('sequelize');
-const attrsToTypes = require('../attrtypes');
+
+const { graphqlObjectToType } = require('../graphqljsconverter');
 const GqModel = require('../graphql/model');
 const GqConnection = require('../graphql/connection');
-const { connectionArgs } = require('graphql-relay');
 
 class SequelizeModel extends Sequelize.Model {
   static init(options) {
@@ -82,8 +83,12 @@ class SequelizeModel extends Sequelize.Model {
     return this.graphqlModel.getFilteredAttributes(options);
   }
 
-  static gqArgs({ required, allowed } = {}) {
-    return attrsToTypes(Object.assign(defaultArgs(this), defaultListArgs()), required, allowed);
+  static gqArgs() {
+    const all = {};
+    graphqlObjectToType(Object.assign(defaultArgs(this), defaultListArgs())).forEach(
+      c => (all[c.name] = c)
+    );
+    return all;
   }
 
   // aliases on model, connection
