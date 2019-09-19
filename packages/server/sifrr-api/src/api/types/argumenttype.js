@@ -25,6 +25,10 @@ class ArgumentType extends BaseType {
         : ''
     }`;
   }
+
+  static from(obj = {}) {
+    return new this(obj.name, obj.type, obj);
+  }
 }
 
 module.exports = ArgumentType;

@@ -1,4 +1,4 @@
-const ObjectType = require('../objecttype');
+const ObjectType = require('./objecttype');
 
 class EnumType extends ObjectType {
   constructor(name, options) {

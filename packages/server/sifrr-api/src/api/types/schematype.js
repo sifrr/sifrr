@@ -1,4 +1,5 @@
 const ObjectType = require('./objects/objecttype');
+const UnionType = require('./objects/uniontype');
 
 class SchemaType {
   constructor(objects = []) {
@@ -16,7 +17,25 @@ class SchemaType {
   }
 
   getSchema() {
-    return [...this.objects].join('\n\n');
+    return [...this.objects].map(o => o.getSchema()).join('\n\n');
+  }
+
+  static from(obj = []) {
+    const unions = new Set();
+    const all = new this(
+      obj.map(o => {
+        const type = o.type;
+        delete o.type;
+
+        if (type === 'union') return unions.add(o);
+        const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
+        return typeCons.from(o);
+      })
+    );
+
+    unions.forEach(u => all.addObject(UnionType.from(u)));
+
+    return all;
   }
 }
 

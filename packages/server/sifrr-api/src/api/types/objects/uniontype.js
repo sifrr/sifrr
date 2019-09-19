@@ -1,14 +1,13 @@
-const BaseType = require('./basetype');
-const ObjectType = require('./objects/objecttype');
+const ObjectType = require('./objecttype');
 
-class UnionType extends BaseType {
+class UnionType extends ObjectType {
   constructor(name, { objects = [] } = {}) {
     super(name);
     this.objects = new Set([...objects].filter(o => o instanceof ObjectType));
   }
 
   getSchema() {
-    return `union ${this.name} = ${[...this.objects].join(' | ')}`;
+    return `union ${this.name} = ${[...this.objects].map(o => o.name).join(' | ')}`;
   }
 }
 
