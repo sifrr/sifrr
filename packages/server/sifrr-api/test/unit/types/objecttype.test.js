@@ -23,13 +23,26 @@ describe('Object type', () => {
   });
 
   it('throws when no fields are present', () => {
-    expect(() => new ObjectType('Pet').getSchema()).to.throw();
+    expect(() => new ObjectType('BBB').getSchema()).to.throw();
   });
 
-  it('works with impl', () => {
-    expect(new ObjectType('Pet', { fields: [field], impl: new InterfaceType('Bang') }).getSchema())
-      .to.equal(`type Pet implements Bang {
+  it('gives old object if duplicate', () => {
+    const pet = new ObjectType('Pet');
+    const pet2 = new ObjectType('Pet');
+    expect(pet).to.equal(pet2);
+  });
+
+  it('works with impl and adds interface fields', () => {
+    expect(
+      new ObjectType('Umma', {
+        fields: [field],
+        impl: new InterfaceType('Baaa', { fields: [field2] })
+      }).getSchema()
+    ).to.equal(`type Umma implements Baaa {
   field: Int!
+  field1(
+    arg: String
+  ): String
 }`);
   });
 });

@@ -4,12 +4,13 @@ const FieldType = require('../fieldtype');
 
 class ObjectType extends BaseType {
   constructor(name, { fields = [], impl, indent = true, resolver } = {}) {
-    super(name);
+    if (ObjectType.get(name)) return ObjectType.get(name);
 
-    if (impl instanceof ObjectType) impl.fields.forEach(f => this.addField(f));
+    super(name);
+    ObjectType.add(this);
+    this.fields = new Set([...fields].filter(f => f instanceof FieldType));
     this.impl = impl;
-    this.fields =
-      fields instanceof Set ? fields : new Set(fields.filter(f => f instanceof FieldType));
+    if (impl instanceof ObjectType) impl.fields.forEach(f => this.addField(f));
     this.indent = indent;
     this.resolver = resolver;
   }
@@ -33,8 +34,17 @@ class ObjectType extends BaseType {
 ${indentString(FieldType.join([...this.fields]))}
 }`;
   }
+
+  static add(obj) {
+    this.all[obj.name] = obj;
+  }
+
+  static get(name) {
+    return this.all[name];
+  }
 }
 
 ObjectType.prefix = 'type';
+ObjectType.all = {};
 
 module.exports = ObjectType;
