@@ -9,13 +9,19 @@ describe('Argument type', () => {
     expect(new ArgumentType('name', 'Int').getSchema()).to.equal('name: Int');
   });
 
+  it('works with defaultValue', () => {
+    expect(new ArgumentType('name', 'Int', { defaultValue: 'ok' }).getSchema()).to.equal(
+      'name: Int = "ok"'
+    );
+  });
+
   it('works with nullable', () => {
     expect(new ArgumentType('name', 'Int', { nullable: false }).getSchema()).to.equal('name: Int!');
   });
 
   it('works with description', () => {
     expect(new ArgumentType('name', 'Int', { description: 'description' }).getSchema()).to.equal(
-      `"""description"""\nname: Int`
+      `"""\ndescription\n"""\nname: Int`
     );
   });
 

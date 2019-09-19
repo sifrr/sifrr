@@ -9,6 +9,10 @@ describe('Object type', () => {
     args: [new ArgumentType('arg', 'String')]
   });
 
+  before(() => {
+    ObjectType.all = [];
+  });
+
   it('works with fields', () => {
     expect(
       new ObjectType('User', {
@@ -16,9 +20,7 @@ describe('Object type', () => {
       }).getSchema()
     ).to.equal(`type User {
   field: Int!
-  field1(
-    arg: String
-  ): String
+  field1(arg: String): String
 }`);
   });
 
@@ -36,13 +38,11 @@ describe('Object type', () => {
     expect(
       new ObjectType('Umma', {
         fields: [field],
-        impl: new InterfaceType('Baaa', { fields: [field2] })
+        interfaces: new InterfaceType('Baaa', { fields: [field2] })
       }).getSchema()
     ).to.equal(`type Umma implements Baaa {
   field: Int!
-  field1(
-    arg: String
-  ): String
+  field1(arg: String): String
 }`);
   });
 });

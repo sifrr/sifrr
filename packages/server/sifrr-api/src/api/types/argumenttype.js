@@ -16,7 +16,7 @@ class ArgumentType extends BaseType {
   }
 
   getSchema(suffix) {
-    return `${this.description ? `"""${this.description}"""\n` : ''}${this.name}${
+    return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${this.name}${
       suffix ? suffix : ''
     }${
       this.type

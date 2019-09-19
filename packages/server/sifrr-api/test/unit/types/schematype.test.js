@@ -1,12 +1,17 @@
+const ObjectType = require('../../../src/api/types/objects/objecttype');
 const SchemaType = require('../../../src/api/types/schematype');
 
 describe('Schema Type', () => {
+  before(() => {
+    ObjectType.all = [];
+  });
+
   it('create SchemaType from objects', () => {
     const schema = SchemaType.from([
       {
         type: 'union',
         name: 'Any',
-        objects: [{ name: 'User' }, { name: 'Pet' }]
+        types: [{ name: 'User' }, { name: 'Pet' }]
       },
       {
         type: 'interface',
@@ -16,13 +21,14 @@ describe('Schema Type', () => {
       {
         type: 'Model',
         name: 'User',
-        impl: { name: 'LivingBeing' },
+        interfaces: [{ name: 'LivingBeing' }, { name: 'Admin' }],
         fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
       },
       {
         type: 'enum',
         name: 'Enum',
-        fields: [{ name: 'PERSON' }, { name: 'ANIMAL' }]
+        fields: [{ name: 'PERSON' }, { name: 'ANIMAL' }],
+        description: 'A type of enum'
       },
       {
         type: 'query',
@@ -42,11 +48,14 @@ describe('Schema Type', () => {
   Name: String!
 }
 
-type User implements LivingBeing {
+type User implements LivingBeing & Admin {
   what: Person
   whatNot: Animal
 }
 
+"""
+A type of enum
+"""
 enum Enum {
   PERSON
   ANIMAL

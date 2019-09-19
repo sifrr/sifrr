@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../sequelize');
-const { SequelizeModel } = require('@sifrr/api');
+const { SequelizeModel } = require('../../../src/sifrr.api');
 
 class Pet extends SequelizeModel {
   static init() {

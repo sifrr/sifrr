@@ -1,4 +1,4 @@
-const { reqToVariables } = require('@sifrr/api');
+const { reqToVariables } = require('../../../src/sifrr.api');
 const { getQuery, writeHeaders } = require('@sifrr/server');
 
 function setHeaders(res) {
