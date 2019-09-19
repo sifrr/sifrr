@@ -23,17 +23,24 @@ class SchemaType {
   static from(obj = []) {
     const unions = new Set();
     const all = new this(
-      obj.map(o => {
-        const type = o.type;
-        delete o.type;
+      obj
+        .map(o => {
+          if (typeof o !== 'object' || o == null) return null;
 
-        if (type === 'union') return unions.add(o);
-        const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
-        return typeCons.from(o);
-      })
+          const type = o.type;
+          delete o.type;
+
+          if (type === 'union') return unions.add(o);
+          const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
+          return typeCons.from(o);
+        })
+        .filter(o => o)
     );
 
-    unions.forEach(u => all.addObject(UnionType.from(u)));
+    unions.forEach(u => {
+      u.types = u.types.map(t => ObjectType.from(t));
+      all.addObject(UnionType.from(u));
+    });
 
     return all;
   }

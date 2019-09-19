@@ -3,17 +3,24 @@ const BaseType = require('../basetype');
 const FieldType = require('../fieldtype');
 
 class ObjectType extends BaseType {
-  constructor(name, { fields = [], impl, indent = true, resolver } = {}) {
+  constructor(name, { fields = [], interfaces, indent = true, resolver, description } = {}) {
     if (ObjectType.get(name)) return ObjectType.get(name);
 
     super(name);
     ObjectType.add(this);
     this.fields = new Set([...fields].filter(f => f instanceof FieldType));
-    this.impl = impl;
-    if (impl instanceof ObjectType) impl.fields.forEach(f => this.addField(f));
+    this.interfaces =
+      Array.isArray(interfaces) || interfaces instanceof Set
+        ? new Set([...interfaces])
+        : new Set(interfaces ? [interfaces] : []);
+    this.interfaces.forEach(i => i.fields && i.fields.forEach(f => this.addField(f)));
+
+    this.description = description;
     this.indent = indent;
     this.resolver = resolver;
   }
+
+  addInterface() {}
 
   addField(field) {
     if (!(field instanceof FieldType)) throw Error('Field must be instance of FieldType');
@@ -28,8 +35,12 @@ class ObjectType extends BaseType {
   getSchema() {
     if (this.fields.size < 1) throw Error('Object must have atleast one field');
 
-    return `${this.constructor.prefix} ${this.name}${
-      this.impl ? ` implements ${this.impl.name}` : ''
+    return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${
+      this.constructor.prefix
+    } ${this.name}${
+      this.interfaces.size > 0
+        ? ` implements ${[...this.interfaces].map(i => i.name).join(' & ')}`
+        : ''
     } {
 ${indentString(FieldType.join([...this.fields]))}
 }`;
