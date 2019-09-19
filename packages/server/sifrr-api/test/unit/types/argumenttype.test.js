@@ -5,8 +5,8 @@ describe('Argument type', () => {
     expect(new ArgumentType('name', 'Int').getSchema()).to.equal('name: Int');
   });
 
-  it('works with is required', () => {
-    expect(new ArgumentType('name', 'Int', { required: true }).getSchema()).to.equal('name: Int!');
+  it('works with nullable', () => {
+    expect(new ArgumentType('name', 'Int', { nullable: false }).getSchema()).to.equal('name: Int!');
   });
 
   it('works with description', () => {
