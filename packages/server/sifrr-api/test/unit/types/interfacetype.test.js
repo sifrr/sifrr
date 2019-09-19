@@ -1,7 +1,7 @@
-const InterfaceType = require('../../../src/api/types/interfacetype');
+const InterfaceType = require('../../../src/api/types/objects/interfacetype');
 const FieldType = require('../../../src/api/types/fieldtype');
 
-describe('Object type', () => {
+describe('Interface type', () => {
   const field = new FieldType('field', 'Int!');
 
   it('has interface prefix', () => {

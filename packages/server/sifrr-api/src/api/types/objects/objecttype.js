@@ -1,16 +1,17 @@
-const FieldType = require('./fieldtype');
-const InterfaceType = require('./interfacetype');
-const indentString = require('../indent');
+const indentString = require('../../indent');
+const BaseType = require('../basetype');
+const FieldType = require('../fieldtype');
 
-class ObjectType {
-  constructor(name, { fields = [], impl, indent = true } = {}) {
-    this.name = name;
+class ObjectType extends BaseType {
+  constructor(name, { fields = [], impl, indent = true, resolver } = {}) {
+    super(name);
 
+    if (impl instanceof ObjectType) impl.fields.forEach(f => this.addField(f));
     this.impl = impl;
     this.fields =
       fields instanceof Set ? fields : new Set(fields.filter(f => f instanceof FieldType));
-    if (impl instanceof InterfaceType) impl.fields.forEach(f => this.addField(f));
     this.indent = indent;
+    this.resolver = resolver;
   }
 
   addField(field) {

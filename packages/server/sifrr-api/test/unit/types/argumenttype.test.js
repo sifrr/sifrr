@@ -1,6 +1,10 @@
 const ArgumentType = require('../../../src/api/types/argumenttype');
 
 describe('Argument type', () => {
+  it('works with only name', () => {
+    expect(new ArgumentType('name').getSchema()).to.equal('name');
+  });
+
   it('works with only name and type', () => {
     expect(new ArgumentType('name', 'Int').getSchema()).to.equal('name: Int');
   });

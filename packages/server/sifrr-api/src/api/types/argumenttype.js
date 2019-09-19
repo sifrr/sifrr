@@ -1,10 +1,13 @@
-class ArgumentType {
+const BaseType = require('./basetype');
+
+class ArgumentType extends BaseType {
   static join(all = [], separator = '\n') {
     return all.map(a => a.getSchema()).join(separator);
   }
 
   constructor(name, type, { nullable = true, description, deprecated = false } = {}) {
-    this.name = name;
+    super(name);
+
     this.type = type;
     this.description = description;
     this.nullable = nullable;
@@ -14,8 +17,12 @@ class ArgumentType {
   getSchema(suffix) {
     return `${this.description ? `"""${this.description}"""\n` : ''}${this.name}${
       suffix ? suffix : ''
-    }: ${this.type}${this.nullable ? '' : '!'}${
-      this.deprecated ? ` @deprecated(reason: "${this.deprecated}")` : ''
+    }${
+      this.type
+        ? `: ${this.type}${this.nullable ? '' : '!'}${
+            this.deprecated ? ` @deprecated(reason: "${this.deprecated}")` : ''
+          }`
+        : ''
     }`;
   }
 }

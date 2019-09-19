@@ -1,4 +1,5 @@
-const ObjectType = require('../../../src/api/types/objecttype');
+const ObjectType = require('../../../src/api/types/objects/objecttype');
+const InterfaceType = require('../../../src/api/types/objects/interfacetype');
 const FieldType = require('../../../src/api/types/fieldtype');
 const ArgumentType = require('../../../src/api/types/argumenttype');
 
@@ -26,8 +27,8 @@ describe('Object type', () => {
   });
 
   it('works with impl', () => {
-    expect(new ObjectType('Pet', { fields: [field], impl: new ObjectType('Bang') }).getSchema()).to
-      .equal(`type Pet implements Bang {
+    expect(new ObjectType('Pet', { fields: [field], impl: new InterfaceType('Bang') }).getSchema())
+      .to.equal(`type Pet implements Bang {
   field: Int!
 }`);
   });
