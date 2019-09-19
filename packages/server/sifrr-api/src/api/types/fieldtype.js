@@ -25,13 +25,15 @@ class FieldType extends ArgumentType {
     this.arguments.forEach(a => {
       if (a.description || a.deprecated) newLine = '\n';
     });
+    if (this.arguments.size > 3) newLine = '\n';
 
     return ArgumentType.prototype.getSchema.call(
       this,
       this.arguments.size > 0
         ? `(${newLine || ''}${indentString(
-            ArgumentType.join([...this.arguments]),
-            newLine || ', '
+            ArgumentType.join([...this.arguments], newLine || ', '),
+            2,
+            { indentFirstAndLast: !!newLine }
           )}${newLine || ''})`
         : ''
     );
