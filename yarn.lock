@@ -832,7 +832,7 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@sifrr/dev@0.0.31", "@sifrr/dev@^0.0.30", "@sifrr/dev@^0.0.31":
+"@sifrr/dev@0.0.31", "@sifrr/dev@^0.0.31":
   version "0.0.31"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.31.tgz#9a735de2b871b59cebb6fe543b1abe1da8b288d5"
   integrity sha512-6McZLnk0WkHodzBUsKeLLqGmX9yD5PBvR2ABJ0YHT2lmSgqDfu6+XBrh+M/vsgEZqPCm5WLZ7bYe6cVwARRQIg==
@@ -7657,7 +7657,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.2.tgz#105b0f1934119dde543ac8eb71af3a91009efe54"
   integrity sha512-lmQ4L+J6mnu3xweP8+rOrUwzmN+MRAj7TgtJtDaXE5PMyX2kCrklhg3rvOsOIfNeAWMQWO2F1GPc1kMD2vLAfw==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v15.11.0":
+uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0:
   version "15.11.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
 
