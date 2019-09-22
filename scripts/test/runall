@@ -8,6 +8,9 @@ if [[ $COVERAGE == 'true' ]]; then
   rm -rf ./.nyc_output
 fi
 
+cd ./packages/browser/sifrr-fetch && yarn build
+cd ../../../
+
 dirs=(./packages/*/*)
 dirsc=$(echo "${dirs[@]}")
 node ./scripts/test/run.js "${dirsc}" "$@"
