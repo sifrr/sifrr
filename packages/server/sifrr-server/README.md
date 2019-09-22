@@ -216,23 +216,22 @@ It supports:
 Live reload, reloads browser page when static files are changed or a signal is sent.
 
 ```js
-const { livereload, App } = require('@sifrr/server);
+const { App } = require('@sifrr/server');
 
 const app = new App();
-app
-  .ws('/livereload', livereload.wsConfig)
-  .folder('/live', folderPath, {
-    livereload: true // ideally true if development
-    // other sendFile options
-  });
-
-// send refresh signal programatically, maybe after you have compiled code or something
-livereload.sendSignal();
+app.folder('/live', folderPath, {
+  livereload: true // ideally true only in development
+  // other sendFile options
+});
 
 // then in your frontend js file
 import livereload from '@sifrr/server/src/livereloadjs';
+```
 
-livereload(`ws://${host}/livereload`); // probably put this inside if development env condition
+```html
+<!-- or with script tag -->
+<script src="/livereload.js"></script>
+<!-- don't overwrite this path if you using it -->
 ```
 
 ### Load routes

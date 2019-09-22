@@ -5,7 +5,7 @@
   "description": "Sifrr-Server Test server",
   "main": "index.js",
   "scripts": {
-    "build": "yarn rollup -c"
+    "build": "echo 'ok'"
   },
   "keywords": [
     "Sifrr",
