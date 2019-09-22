@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title></title>
   </head>
   <body>
     <h1>OK</h1>
-    <form name="form" id="form">
-      <input type="text" name="name" value="Aaditya">
-      <input id="onefile" type="file" name="file" accept="*/*">
-      <input id="mulfile" type="file" name="file2" accept="*/*" multiple>
+    <form name="form" id="form" onsubmit="submitForm('/tmpdir')">
+      <input type="text" name="name" value="Aaditya" />
+      <input id="onefile" type="file" name="file" accept="*/*" />
+      <input id="mulfile" type="file" name="file2" accept="*/*" multiple />
       <button type="submit" name="submit">Submit</button>
     </form>
-    <form name="form2" id="form2">
-      <input type="text" name="name[]" value="Aaditya">
-      <input type="text" name="firstname" value="Aaditya">
-      <input type="text" name="lastname" value="Taparia">
-      <input type="text" name="address" value="address1">
-      <input type="text" name="address" value="address2">
-      <input type="text" name="address" value="address3">
-      <input type="text" name="some[]" value="some1">
-      <input type="text" name="some[]" value="some2">
-      <input type="text" name="some[]" value="some3">
+    <form name="form2" id="form2" onsubmit="submitForm2('/tmpdir')">
+      <input type="text" name="name[]" value="Aaditya" />
+      <input type="text" name="firstname" value="Aaditya" />
+      <input type="text" name="lastname" value="Taparia" />
+      <input type="text" name="address" value="address1" />
+      <input type="text" name="address" value="address2" />
+      <input type="text" name="address" value="address3" />
+      <input type="text" name="some[]" value="some1" />
+      <input type="text" name="some[]" value="some2" />
+      <input type="text" name="some[]" value="some3" />
       <button type="submit" name="submit">Submit</button>
     </form>
-    <pre id="response">
-    </pre>
+    <pre id="response"></pre>
     <script src="/sifrr.fetch.js" charset="utf-8"></script>
     <script type="text/javascript">
       const form = document.querySelector('#form');
