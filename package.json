@@ -58,7 +58,7 @@
     "ws": "^7.1.2"
   },
   "resolutions": {
-    "@sifrr/dev": "0.0.32",
+    "@sifrr/dev": "0.0.33",
     "@sifrr/dom": "file:./packages/browser/sifrr-dom",
     "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
     "@sifrr/server": "file:./packages/server/sifrr-server",
