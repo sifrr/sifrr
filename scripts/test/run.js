@@ -77,7 +77,7 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './')
   .split(/[ ,\n]/g)
   .map(p => path.join(__dirname, '../../', p));
-const { runTests, exec } = require('@sifrr/dev');
+const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
   let preCommand = [];
