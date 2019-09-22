@@ -1,4 +1,4 @@
-const { App, writeHeaders, livereload } = require('../../../src/sifrr.server');
+const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
 const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
 
@@ -93,8 +93,6 @@ app.folder('/', path.join(__dirname, '../'), {
   watch: true,
   livereload: true
 });
-
-app.ws('/livereload', livereload.wsConfig);
 
 // graphql
 const graphql = require('graphql');
