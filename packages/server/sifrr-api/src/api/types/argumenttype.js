@@ -34,6 +34,9 @@ class ArgumentType extends BaseType {
   }
 
   static from(obj = {}) {
+    if (Array.isArray(obj)) return obj.map(o => this.from(o));
+    if (Array.isArray(obj.args)) obj.args = obj.args.map(o => ArgumentType.from(o));
+
     return new this(obj.name, obj.type, obj);
   }
 }

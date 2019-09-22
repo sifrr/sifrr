@@ -1,4 +1,6 @@
 const ObjectType = require('../../../src/api/types/objects/objecttype');
+const ModelType = require('../../../src/api/types/objects/modeltype');
+const FieldType = require('../../../src/api/types/fieldtype');
 const SchemaType = require('../../../src/api/types/schematype');
 
 describe('Schema Type', () => {
@@ -40,7 +42,15 @@ describe('Schema Type', () => {
         type: 'input',
         name: 'UserInput',
         fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
-      }
+      },
+      new ModelType('Banger', {
+        fields: FieldType.from([
+          {
+            name: 'Name',
+            type: 'Int'
+          }
+        ])
+      })
     ]);
 
     expect(schema.getSchema()).to.equal(
@@ -68,6 +78,10 @@ type Query {
 input UserInput {
   what: Person
   whatNot: Animal
+}
+
+type Banger {
+  Name: Int
 }
 
 union Any = User | Pet`

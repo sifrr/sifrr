@@ -47,8 +47,9 @@ ${indentString(FieldType.join([...this.fields]))}
   }
 
   static from(obj = {}) {
-    if (Array.isArray(obj.fields)) obj.fields = obj.fields.map(f => FieldType.from(f));
-    if (Array.isArray(obj.objects)) obj.objects = obj.objects.map(f => ObjectType.from(f));
+    if (Array.isArray(obj)) return obj.map(o => this.from(o));
+    if (Array.isArray(obj.fields)) obj.fields = FieldType.from(obj.fields);
+    if (Array.isArray(obj.objects)) obj.objects = ObjectType.from(obj.objects);
     return new this(obj.name, obj);
   }
 

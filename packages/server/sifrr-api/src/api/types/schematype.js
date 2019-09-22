@@ -1,8 +1,10 @@
+const BaseType = require('./basetype');
 const ObjectType = require('./objects/objecttype');
 const UnionType = require('./objects/uniontype');
 
-class SchemaType {
+class SchemaType extends BaseType {
   constructor(objects = []) {
+    super('Schema');
     this.objects = new Set([...objects].filter(o => o instanceof ObjectType));
   }
 
@@ -25,6 +27,7 @@ class SchemaType {
     const all = new this(
       obj
         .map(o => {
+          if (o instanceof BaseType) return o;
           if (typeof o !== 'object' || o == null) return null;
 
           const type = o.type;
