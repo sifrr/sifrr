@@ -35,11 +35,14 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.31",
+    "@sifrr/dev": "^0.0.32",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
+    "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.8",
+    "sequelize": "^5.19.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#15.11.0",
     "ws": "^7.1.2"
   },
   "files": [
