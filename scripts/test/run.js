@@ -117,10 +117,6 @@ const options = roots.map((root, i) => {
 });
 
 async function run() {
-  if (!dontRunPrecommand) {
-    await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-fetch')} && yarn build`);
-  }
-
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);

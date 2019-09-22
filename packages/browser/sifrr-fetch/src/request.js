@@ -1,3 +1,5 @@
+const objConst = {}.constructor;
+
 function responseProgress(resp, onProgress) {
   const contentLength = resp.headers.get('content-length');
   const total = parseInt(contentLength, 10);
@@ -54,7 +56,7 @@ class Request {
         resp = showProgress ? responseProgress(resp, onProgress) : resp;
       } else {
         if (showProgress) onProgress({ percent: 100 });
-        let error = Error(resp.statusText);
+        const error = Error(resp.statusText);
         error.response = resp;
         throw error;
       }
@@ -87,7 +89,7 @@ class Request {
       ...this._options
     };
     options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
-    if (options.body && typeof options.body === 'object') {
+    if (options.body && (options.body.constructor === objConst || Array.isArray(options.body))) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
     }
     if (options.headers['content-type'] && options.headers['content-type'].indexOf('json') > -1) {

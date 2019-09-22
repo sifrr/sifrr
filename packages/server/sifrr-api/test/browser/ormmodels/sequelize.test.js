@@ -1,5 +1,5 @@
 global.fetch = require('node-fetch');
-const { Fetch } = require('@sifrr/fetch');
+const { Fetch } = require('../../../../../browser/sifrr-fetch');
 
 function request(type, url) {
   return Fetch[type](PATH + url);
