@@ -2,7 +2,8 @@
   "name": "sifrr",
   "private": true,
   "workspaces": [
-    "packages/*/*"
+    "packages/*/*",
+    "packages/*/*/test/public"
   ],
   "version": "0.0.6",
   "description": "a fullstack nodeJS/vanillaJS framework",
@@ -49,13 +50,18 @@
     "@sifrr/dev": "^0.0.31",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
+    "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.8",
+    "sequelize": "^5.19.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#15.11.0",
     "ws": "^7.1.2"
   },
   "resolutions": {
-    "@sifrr/server": "file:./packages/server/sifrr-server",
+    "@sifrr/dev": "0.0.31",
+    "@sifrr/dom": "file:./packages/browser/sifrr-dom",
     "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
-    "@sifrr/dev": "0.0.31"
+    "@sifrr/server": "file:./packages/server/sifrr-server",
+    "puppeteer": "1.20.0"
   }
 }
