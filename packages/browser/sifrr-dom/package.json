@@ -39,7 +39,7 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/dev": "^0.0.32",
+    "@sifrr/dev": "^0.0.33",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
     "graphql-sequelize": "^9.3.6",
