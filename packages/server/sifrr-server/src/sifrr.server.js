@@ -9,7 +9,6 @@ module.exports = {
   sendFile: require('./server/sendfile'),
   Cluster: require('./server/cluster'),
   livereload: require('./server/livereload'),
-  livereloadjs: require('./server/livereloadjs'),
   getQuery: req => {
     return queryString.parse(req.getQuery());
   }

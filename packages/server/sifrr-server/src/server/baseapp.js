@@ -4,6 +4,7 @@ const { Readable } = require('stream');
 const uWS = require('uWebSockets.js');
 const chokidar = require('chokidar');
 
+const { wsConfig } = require('./livereload');
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
 const loadroutes = require('./loadroutes');
@@ -14,18 +15,24 @@ const noOp = () => true;
 const { stob } = require('./utils');
 
 class BaseApp {
-  file(pattern, path, options = {}) {
+  file(pattern, filePath, options = {}) {
     if (this._staticPaths[pattern]) {
       if (options.failOnDuplicateRoute)
         throw Error(
-          `Error serving '${path}' for '${pattern}', already serving '${
+          `Error serving '${filePath}' for '${pattern}', already serving '${
             this._staticPaths[pattern][0]
           }' file for this patter.`
         );
-      else if (!options.overwriteRoute) return;
+      else if (!options.overwriteRoute) return this;
     }
 
-    this._staticPaths[pattern] = [path, options];
+    if (options.livereload && !this.__livereloadenabled) {
+      this.ws('/__sifrrLiveReload', wsConfig);
+      this.file('/livereload.js', path.join(__dirname, './livereloadjs.js'));
+      this.__livereloadenabled = true;
+    }
+
+    this._staticPaths[pattern] = [filePath, options];
     this.get(pattern, this._serveStatic);
     return this;
   }
