@@ -21,6 +21,14 @@ class SchemaType extends BaseType {
     return this.objects.delete(object);
   }
 
+  getResolvers() {
+    const resolvers = {};
+    this.objects.forEach(o => {
+      resolvers[o.name] = o.getFieldResolvers();
+    });
+    return resolvers;
+  }
+
   getSchema() {
     return [...this.objects].map(o => o.getSchema()).join('\n\n');
   }
