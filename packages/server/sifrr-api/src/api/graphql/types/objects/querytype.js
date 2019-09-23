@@ -2,7 +2,7 @@ const ObjectType = require('./objecttype');
 
 class QueryType extends ObjectType {
   constructor(name, options) {
-    if (!options) name = options;
+    if (!options) options = name;
 
     super('Query', options);
   }

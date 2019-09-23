@@ -13,14 +13,17 @@ class ObjectType extends BaseType {
       Array.isArray(interfaces) || interfaces instanceof Set
         ? new Set([...interfaces])
         : new Set(interfaces ? [interfaces] : []);
-    this.interfaces.forEach(i => i.fields && i.fields.forEach(f => this.addField(f)));
+    this.interfaces.forEach(this.addInterface);
 
     this.description = description;
     this.indent = indent;
     this.resolver = resolver;
   }
 
-  addInterface() {}
+  addInterface(intf) {
+    this.interfaces.add(intf);
+    intf.fields && intf.fields.forEach(f => this.addField(f));
+  }
 
   addField(field) {
     if (!(field instanceof FieldType)) throw Error('Field must be instance of FieldType');
