@@ -36,6 +36,14 @@ class ObjectType extends BaseType {
     return this.fields.remove(field);
   }
 
+  getFieldResolvers() {
+    const resolvers = {};
+    this.fields.forEach(f => {
+      if (f.resolver) resolvers[f.name] = f.resolver;
+    });
+    return resolvers;
+  }
+
   getSchema() {
     if (this.fields.size < 1) {
       throw Error('Object must have atleast one field: ', this);
