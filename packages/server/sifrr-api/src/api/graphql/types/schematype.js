@@ -12,6 +12,7 @@ class SchemaType extends BaseType {
   addObject(object) {
     if (!(object instanceof ObjectType)) throw Error('Object must be an instance of ObjectType');
     object.types && object.types.forEach(o => this.addObject(o));
+    object.edgeType && this.addObject(object.edgeType);
     object.interfaces.forEach(i => this.addObject(i));
     return this.objects.add(object);
   }

@@ -40,6 +40,16 @@ describe('Schema Type', () => {
         fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
       },
       {
+        type: 'connection',
+        name: 'UserConnection',
+        edgeType: {
+          name: 'SomeBody',
+          type: 'Model',
+          fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
+        },
+        fields: [{ name: 'total', type: 'Int', nullable: false }]
+      },
+      {
         type: 'enum',
         name: 'Enum',
         fields: [{ name: 'PERSON' }, { name: 'ANIMAL' }],
@@ -80,6 +90,16 @@ type User implements LivingBeing & Admin {
   whatNot: Animal
   Name: String!
   Role: String!
+}
+
+type SomeBody {
+  what: Person
+  whatNot: Animal
+}
+
+type UserConnection {
+  total: Int!
+  edges: [SomeBody]
 }
 
 """

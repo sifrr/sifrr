@@ -59,6 +59,7 @@ ${indentString(FieldType.join([...this.fields]))}
     if (obj.fields) obj.fields = FieldType.from([...obj.fields]);
     if (obj.types) obj.types = ObjectType.from([...obj.types]);
     if (obj.interfaces) obj.interfaces = InterfaceType.from(obj.interfaces);
+    if (obj.edgeType) obj.edgeType = ObjectType.from(obj.edgeType);
     return new this(obj.name, obj);
   }
 
