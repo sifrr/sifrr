@@ -8,14 +8,14 @@ const {
   GraphQLInterfaceType
 } = require('graphql');
 
-const ArgumentType = require('./types/argumenttype');
-const FieldType = require('./types/fieldtype');
+const ArgumentType = require('./graphql/types/argumenttype');
+const FieldType = require('./graphql/types/fieldtype');
 
-const ObjectType = require('./types/objects/objecttype');
-const UnionType = require('./types/objects/uniontype');
-const EnumType = require('./types/objects/enumtype');
-const InputType = require('./types/objects/inputtype');
-const InterfaceType = require('./types/objects/interfacetype');
+const ObjectType = require('./graphql/types/objects/objecttype');
+const UnionType = require('./graphql/types/objects/uniontype');
+const EnumType = require('./graphql/types/objects/enumtype');
+const InputType = require('./graphql/types/objects/inputtype');
+const InterfaceType = require('./graphql/types/objects/interfacetype');
 
 function graphqlTypeToString(graphqlObject) {
   if (!graphqlObject) return null;

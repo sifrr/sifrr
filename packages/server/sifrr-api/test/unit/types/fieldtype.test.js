@@ -1,5 +1,5 @@
-const ArgumentType = require('../../../src/api/types/argumenttype');
-const FieldType = require('../../../src/api/types/fieldtype');
+const ArgumentType = require('../../../src/api/graphql/types/argumenttype');
+const FieldType = require('../../../src/api/graphql/types/fieldtype');
 
 describe('Field type', () => {
   const arg = new ArgumentType('one', 'Int');

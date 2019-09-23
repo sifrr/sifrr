@@ -1,7 +1,7 @@
-const ObjectType = require('../../../src/api/types/objects/objecttype');
-const InterfaceType = require('../../../src/api/types/objects/interfacetype');
-const FieldType = require('../../../src/api/types/fieldtype');
-const ArgumentType = require('../../../src/api/types/argumenttype');
+const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
+const InterfaceType = require('../../../src/api/graphql/types/objects/interfacetype');
+const FieldType = require('../../../src/api/graphql/types/fieldtype');
+const ArgumentType = require('../../../src/api/graphql/types/argumenttype');
 
 describe('Object type', () => {
   const field = new FieldType('field', 'Int!');

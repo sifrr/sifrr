@@ -1,7 +1,7 @@
-const ObjectType = require('../../../src/api/types/objects/objecttype');
-const ModelType = require('../../../src/api/types/objects/modeltype');
-const FieldType = require('../../../src/api/types/fieldtype');
-const SchemaType = require('../../../src/api/types/schematype');
+const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
+const ModelType = require('../../../src/api/graphql/types/objects/modeltype');
+const FieldType = require('../../../src/api/graphql/types/fieldtype');
+const SchemaType = require('../../../src/api/graphql/types/schematype');
 
 describe('Schema Type', () => {
   before(() => {

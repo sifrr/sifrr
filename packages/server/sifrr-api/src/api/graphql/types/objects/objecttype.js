@@ -1,4 +1,4 @@
-const indentString = require('../../indent');
+const indentString = require('../../../indent');
 const BaseType = require('../basetype');
 const FieldType = require('../fieldtype');
 

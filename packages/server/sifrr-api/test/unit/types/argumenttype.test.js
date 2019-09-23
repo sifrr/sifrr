@@ -1,4 +1,4 @@
-const ArgumentType = require('../../../src/api/types/argumenttype');
+const ArgumentType = require('../../../src/api/graphql/types/argumenttype');
 
 describe('Argument type', () => {
   it('works with only name', () => {
