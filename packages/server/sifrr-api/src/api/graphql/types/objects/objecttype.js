@@ -9,11 +9,12 @@ class ObjectType extends BaseType {
     super(name);
     ObjectType.add(this);
     this.fields = new Set([...fields].filter(f => f instanceof FieldType));
-    this.interfaces =
-      Array.isArray(interfaces) || interfaces instanceof Set
-        ? new Set([...interfaces])
-        : new Set(interfaces ? [interfaces] : []);
-    this.interfaces.forEach(this.addInterface);
+    this.interfaces = new Set();
+    Array.isArray(interfaces) || interfaces instanceof Set
+      ? [...interfaces].forEach(i => this.addInterface(i))
+      : interfaces
+      ? this.addInterface(interfaces)
+      : null;
 
     this.description = description;
     this.indent = indent;
@@ -36,12 +37,14 @@ class ObjectType extends BaseType {
   }
 
   getSchema() {
-    if (this.fields.size < 1) throw Error('Object must have atleast one field');
+    if (this.fields.size < 1) {
+      throw Error('Object must have atleast one field: ', this);
+    }
 
     return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${
       this.constructor.prefix
     } ${this.name}${
-      this.interfaces.size > 0
+      [...this.interfaces].length > 0
         ? ` implements ${[...this.interfaces].map(i => i.name).join(' & ')}`
         : ''
     } {
@@ -50,9 +53,12 @@ ${indentString(FieldType.join([...this.fields]))}
   }
 
   static from(obj = {}) {
-    if (Array.isArray(obj)) return obj.map(o => this.from(o));
-    if (Array.isArray(obj.fields)) obj.fields = FieldType.from(obj.fields);
-    if (Array.isArray(obj.objects)) obj.objects = ObjectType.from(obj.objects);
+    const InterfaceType = require('./interfacetype');
+
+    if (Array.isArray(obj) || obj instanceof Set) return [...obj].map(o => this.from(o));
+    if (obj.fields) obj.fields = FieldType.from([...obj.fields]);
+    if (obj.types) obj.types = ObjectType.from([...obj.types]);
+    if (obj.interfaces) obj.interfaces = InterfaceType.from(obj.interfaces);
     return new this(obj.name, obj);
   }
 

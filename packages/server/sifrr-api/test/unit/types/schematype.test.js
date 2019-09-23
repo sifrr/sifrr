@@ -13,7 +13,14 @@ describe('Schema Type', () => {
       {
         type: 'union',
         name: 'Any',
-        types: [{ name: 'User' }, { name: 'Pet' }]
+        types: [
+          { name: 'User' },
+          {
+            type: 'model',
+            name: 'Pet',
+            fields: [{ name: 'what', type: 'Animal' }, { name: 'whatNot', type: 'Person' }]
+          }
+        ]
       },
       {
         type: 'interface',
@@ -23,7 +30,13 @@ describe('Schema Type', () => {
       {
         type: 'Model',
         name: 'User',
-        interfaces: [{ name: 'LivingBeing' }, { name: 'Admin' }],
+        interfaces: [
+          { name: 'LivingBeing' },
+          {
+            name: 'Admin',
+            fields: [{ name: 'Role', type: 'String', default: 'Admin', nullable: false }]
+          }
+        ],
         fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
       },
       {
@@ -58,9 +71,15 @@ describe('Schema Type', () => {
   Name: String!
 }
 
+interface Admin {
+  Role: String!
+}
+
 type User implements LivingBeing & Admin {
   what: Person
   whatNot: Animal
+  Name: String!
+  Role: String!
 }
 
 """
@@ -82,6 +101,11 @@ input UserInput {
 
 type Banger {
   Name: Int
+}
+
+type Pet {
+  what: Animal
+  whatNot: Person
 }
 
 union Any = User | Pet`

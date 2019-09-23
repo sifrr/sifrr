@@ -5,12 +5,14 @@ const UnionType = require('./objects/uniontype');
 class SchemaType extends BaseType {
   constructor(objects = []) {
     super('Schema');
-    this.objects = new Set([...objects].filter(o => o instanceof ObjectType));
+    this.objects = new Set();
+    [...objects].forEach(o => this.addObject(o));
   }
 
   addObject(object) {
-    if (!(object instanceof ObjectType)) throw Error('Object must an instance of ObjectType');
-
+    if (!(object instanceof ObjectType)) throw Error('Object must be an instance of ObjectType');
+    object.types && object.types.forEach(o => this.addObject(o));
+    object.interfaces.forEach(i => this.addObject(i));
     return this.objects.add(object);
   }
 
@@ -24,28 +26,27 @@ class SchemaType extends BaseType {
 
   static from(obj = []) {
     const unions = new Set();
-    const all = new this(
-      obj
-        .map(o => {
-          if (o instanceof BaseType) return o;
-          if (typeof o !== 'object' || o == null) return null;
+    const schema = new this();
 
-          const type = o.type;
-          delete o.type;
+    obj.forEach(o => {
+      if (o instanceof BaseType) return schema.addObject(o);
+      if (typeof o !== 'object' || o == null) return null;
 
-          if (type === 'union') return unions.add(o);
-          const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
-          return typeCons.from(o);
-        })
-        .filter(o => o)
-    );
+      const type = o.type;
+      delete o.type;
+
+      if (type === 'union') return unions.add(o);
+
+      const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
+      return schema.addObject(typeCons.from(o));
+    });
 
     unions.forEach(u => {
       u.types = u.types.map(t => ObjectType.from(t));
-      all.addObject(UnionType.from(u));
+      schema.addObject(UnionType.from(u));
     });
 
-    return all;
+    return schema;
   }
 }
 
