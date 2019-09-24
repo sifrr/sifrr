@@ -11,9 +11,6 @@ class SchemaType extends BaseType {
 
   addObject(object) {
     if (!(object instanceof ObjectType)) throw Error('Object must be an instance of ObjectType');
-    object.types && object.types.forEach(o => this.addObject(o));
-    object.edgeType && this.addObject(object.edgeType);
-    object.interfaces.forEach(i => this.addObject(i));
     return this.objects.add(object);
   }
 
@@ -30,7 +27,19 @@ class SchemaType extends BaseType {
   }
 
   getSchema() {
-    return [...this.objects].map(o => o.getSchema()).join('\n\n');
+    const newObjects = new Set();
+    this.objects.forEach(object => {
+      newObjects.add(object);
+      object.types && object.types.forEach(o => this.addObject(o));
+      object.edgeType && this.addObject(object.edgeType);
+      object.interfaces.forEach(i => this.addObject(i));
+      object.fields.forEach(f => {
+        if (f.type instanceof ObjectType) this.addObject(f.type);
+        if (f.type && f.type[0] instanceof ObjectType) this.addObject(f.type[0]);
+      });
+    });
+
+    return [...newObjects].map(o => o.getSchema()).join('\n\n');
   }
 
   static from(obj = []) {

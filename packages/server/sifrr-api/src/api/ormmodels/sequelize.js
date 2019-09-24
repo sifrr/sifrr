@@ -25,8 +25,6 @@ class SequelizeModel extends Sequelize.Model {
       resolver: createConnectionResolver({ target: ret }).resolveConnection,
       edgeType: ret.graphqlModel
     });
-    gqSchema.addObject(ret.graphqlModel);
-    gqSchema.addObject(ret.graphqlConnection);
     ret._onInit();
     return ret;
   }

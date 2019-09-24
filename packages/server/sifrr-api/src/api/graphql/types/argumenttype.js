@@ -9,7 +9,7 @@ class ArgumentType extends BaseType {
   constructor(name, type, { nullable = true, description, deprecated = false, defaultValue } = {}) {
     super(name);
 
-    this.type = getType(type);
+    this.type = type;
     this.description = description;
     this.nullable = nullable;
     this.deprecated = deprecated;
@@ -21,7 +21,7 @@ class ArgumentType extends BaseType {
       suffix ? suffix : ''
     }${
       this.type
-        ? `: ${this.type}${this.nullable ? '' : '!'}${
+        ? `: ${getType(this.type)}${this.nullable ? '' : '!'}${
             this.defaultValue
               ? ` = ${
                   typeof this.defaultValue === 'string'

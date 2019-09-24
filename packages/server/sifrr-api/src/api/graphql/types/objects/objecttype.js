@@ -1,4 +1,4 @@
-const indentString = require('../../../indent');
+const { indent: indentString } = require('../../util');
 const BaseType = require('../basetype');
 const FieldType = require('../fieldtype');
 
@@ -8,7 +8,9 @@ class ObjectType extends BaseType {
 
     super(name);
     ObjectType.add(this);
-    this.fields = new Set([...fields].filter(f => f instanceof FieldType));
+    this.fields = new Set();
+    [...fields].forEach(this.addField.bind(this));
+
     this.interfaces = new Set();
     Array.isArray(interfaces) || interfaces instanceof Set
       ? [...interfaces].forEach(i => this.addInterface(i))
@@ -48,7 +50,8 @@ class ObjectType extends BaseType {
 
   getSchema() {
     if (this.fields.size < 1) {
-      throw Error('Object must have atleast one field: ', this);
+      console.log(this);
+      throw Error('Object must have atleast one field');
     }
 
     return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${

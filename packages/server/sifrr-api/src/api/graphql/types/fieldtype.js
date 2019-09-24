@@ -1,5 +1,5 @@
 const ArgumentType = require('./argumenttype');
-const indentString = require('../../indent');
+const { indent: indentString } = require('../util');
 
 class FieldType extends ArgumentType {
   constructor(name, type, { args = [], resolver, indent = true, ...superOpts } = {}) {

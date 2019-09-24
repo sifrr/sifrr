@@ -30,7 +30,7 @@ class User extends SequelizeModel {
     this.addQuery(this.graphqlModel.name, {
       args: this.gqArgs(),
       resolver: this.getQueryResolver.bind(this),
-      type: `[${this.graphqlModel.name}]`
+      type: [this.graphqlModel]
     });
 
     // Mutations

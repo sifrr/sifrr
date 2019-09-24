@@ -30,7 +30,7 @@ class Pet extends SequelizeModel {
         args: this.gqArgs(),
         // customResolver need to bind static functions resolvers with this class, else it won't work
         resolver: this.customResolver.bind(this),
-        type: `[${this.graphqlModel.name}]`,
+        type: [this.graphqlModel],
         description: 'Get one Pet.'
       }
     };

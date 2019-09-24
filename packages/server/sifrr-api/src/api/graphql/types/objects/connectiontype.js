@@ -8,7 +8,13 @@ class ConnectionType extends ObjectType {
     super(name, superOptions);
 
     this.edgeType = edgeType;
-    this.fields.add(new FieldType('edges', `[${edgeType.name}]`));
+    this.fields.add(
+      new FieldType('edges', [
+        new ObjectType(`${name}Edge`, {
+          fields: [{ name: 'node', type: edgeType }, { name: 'cursor', type: 'String!' }]
+        })
+      ])
+    );
   }
 }
 
