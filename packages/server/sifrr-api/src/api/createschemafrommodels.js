@@ -11,7 +11,7 @@ function createSchemaFromModels(
 ) {
   const typeDefs = [];
 
-  const extra = `scalar SequelizeJSON
+  extra = `scalar SequelizeJSON
 scalar Date
 ${extra}`;
 
