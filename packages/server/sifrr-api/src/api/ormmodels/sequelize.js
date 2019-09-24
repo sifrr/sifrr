@@ -4,21 +4,29 @@ const { resolver, createConnectionResolver } = require('graphql-sequelize');
 const Sequelize = require('sequelize');
 
 const { graphqlObjectToType } = require('../graphqljsconverter');
-const GqModel = require('../graphql/model');
-const GqConnection = require('../graphql/connection');
+const GqModel = require('../graphql/types/objects/modeltype');
+const GqConnection = require('../graphql/types/objects/connectiontype');
+const gqSchema = new (require('../graphql/types/schematype'))();
+const gqQuery = new (require('../graphql/types/objects/querytype'))();
+const gqMutation = new (require('../graphql/types/objects/mutationtype'))();
+
+gqSchema.addObject(gqQuery);
+gqSchema.addObject(gqMutation);
 
 class SequelizeModel extends Sequelize.Model {
   static init(options) {
     const ret = super.init(this.schema, options);
-    ret.graphqlModel = new GqModel(ret.name, attributeFields(ret), {
+    ret.graphqlModel = new GqModel(ret.name, {
+      fields: graphqlObjectToType(attributeFields(ret)),
       description: `${ret.name} Model`
     });
-    ret.graphqlConnection = new GqConnection(
-      ret.name + 'Connection',
-      connectionArgs,
-      createConnectionResolver({ target: ret }).resolveConnection,
-      ret.graphqlModel.type
-    );
+    ret.graphqlConnection = new GqConnection(ret.name + 'Connection', {
+      // fields: connectionArgs,
+      resolver: createConnectionResolver({ target: ret }).resolveConnection,
+      edgeType: ret.graphqlModel
+    });
+    gqSchema.addObject(ret.graphqlModel);
+    gqSchema.addObject(ret.graphqlConnection);
     ret._onInit();
     return ret;
   }
@@ -44,17 +52,18 @@ class SequelizeModel extends Sequelize.Model {
     const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
     this[name] = super[type](model, options);
     if (options.useConnection) {
-      const conn = model.graphqlConnection.clone(
-        createConnectionResolver({ target: this[name] }).resolveConnection
-      );
-      conn.description = options.description;
-      this.graphqlModel.addConnection(name, conn);
-    } else
-      this.graphqlModel.addAttribute(name, {
-        resolver: resolver(this[name]),
-        returnType: model.graphqlModel.type,
-        description: options.description
+      this.graphqlModel.addField({
+        name,
+        type: model.graphqlConnection,
+        resolver: createConnectionResolver({ target: this[name] }).resolveConnection
       });
+    } else {
+      this.graphqlModel.addField({
+        name,
+        type: model.graphqlModel,
+        resolver: resolver(this[name])
+      });
+    }
     return this[name];
   }
 
@@ -79,33 +88,33 @@ class SequelizeModel extends Sequelize.Model {
   }
 
   // get attributes, arguments
-  static gqAttrs(options) {
-    return this.graphqlModel.getFilteredAttributes(options);
+  static gqAttrs() {
+    return this.graphqlModel.fields;
   }
 
   static gqArgs() {
-    const all = {};
-    graphqlObjectToType(Object.assign(defaultArgs(this), defaultListArgs())).forEach(
-      c => (all[c.name] = c)
-    );
-    return all;
+    return graphqlObjectToType(Object.assign(defaultArgs(this), defaultListArgs()), true);
   }
 
   // aliases on model, connection
   static addAttr(name, options) {
-    this.graphqlModel.addAttribute(name, options);
+    this.graphqlModel.addField({ name, ...options });
   }
 
   static addQuery(name, options) {
-    this.graphqlModel.addQuery(name, options);
+    gqQuery.addField({ name, ...options });
   }
 
   static addMutation(name, options) {
-    this.graphqlModel.addMutation(name, options);
+    gqMutation.addField({ name, ...options });
   }
 
   static addConnectionQuery(name) {
-    this.graphqlModel.addConnectionQuery(name, this.graphqlConnection);
+    gqQuery.addField({
+      name,
+      args: graphqlObjectToType(connectionArgs),
+      type: this.graphqlConnection
+    });
   }
 
   // Default Resolvers - getQuery, createMutation, updateMutation, upsertMutation, deleteMutation
@@ -172,4 +181,5 @@ class SequelizeModel extends Sequelize.Model {
   }
 }
 
+Sequelize.gqSchema = gqSchema;
 module.exports = SequelizeModel;

@@ -38,7 +38,7 @@ function graphqlTypeToString(graphqlObject) {
   return `${list ? `[${type}]` : type}${nullable ? '' : '!'}`;
 }
 
-function graphqlObjectToType(graphqlObject) {
+function graphqlObjectToType(graphqlObject, isArgument = false) {
   if (Array.isArray(graphqlObject)) return graphqlObject.map(g => graphqlObjectToType(g));
 
   if (graphqlObject instanceof GraphQLInterfaceType) {
@@ -105,7 +105,9 @@ function graphqlObjectToType(graphqlObject) {
         );
       }
 
-      return FieldType.from({
+      const Construct = isArgument ? ArgumentType : FieldType;
+
+      return Construct.from({
         name: f,
         args,
         type: graphqlTypeToString(gqObject.type),

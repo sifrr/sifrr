@@ -4,6 +4,10 @@ class BaseType {
     this.name = name;
   }
 
+  clone() {
+    return new this.constructor(this.name, { ...this });
+  }
+
   getSchema() {
     throw Error('Each type should implement a getSchema method');
   }

@@ -27,7 +27,9 @@ class ObjectType extends BaseType {
   }
 
   addField(field) {
-    if (!(field instanceof FieldType)) throw Error('Field must be instance of FieldType');
+    if (!(field instanceof FieldType)) {
+      return this.addField(FieldType.from(field));
+    }
 
     return this.fields.add(field);
   }

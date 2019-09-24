@@ -1,4 +1,5 @@
 const BaseType = require('./basetype');
+const { getType } = require('../util');
 
 class ArgumentType extends BaseType {
   static join(all = [], separator = '\n') {
@@ -8,7 +9,7 @@ class ArgumentType extends BaseType {
   constructor(name, type, { nullable = true, description, deprecated = false, defaultValue } = {}) {
     super(name);
 
-    this.type = type;
+    this.type = getType(type);
     this.description = description;
     this.nullable = nullable;
     this.deprecated = deprecated;

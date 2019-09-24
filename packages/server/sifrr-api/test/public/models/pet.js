@@ -30,7 +30,7 @@ class Pet extends SequelizeModel {
         args: this.gqArgs(),
         // customResolver need to bind static functions resolvers with this class, else it won't work
         resolver: this.customResolver.bind(this),
-        returnType: `[${this.graphqlModel.type}]`,
+        type: `[${this.graphqlModel.name}]`,
         description: 'Get one Pet.'
       }
     };
@@ -38,36 +38,33 @@ class Pet extends SequelizeModel {
 
   static get mutations() {
     return {
-      [`create${this.graphqlModel.type}`]: {
+      [`create${this.graphqlModel.name}`]: {
         args: this.gqAttrs({
           required: ['name', 'ownerId'],
           allowed: ['name', 'ownerId']
         }),
         resolver: this.createMutationResolver.bind(this),
-        returnType: this.graphqlModel.type
+        type: this.graphqlModel
       },
       createPetAndOwner: {
-        args: {
-          name: { type: 'String!' },
-          owner__name: { type: 'String!' }
-        },
+        args: [{ name: 'name', type: 'String!' }, { name: 'owner__name', type: 'String!' }],
         resolver: this.createMutationResolver.bind(this),
-        returnType: this.graphqlModel.type
+        type: this.graphqlModel
       },
-      [`update${this.graphqlModel.type}`]: {
+      [`update${this.graphqlModel.name}`]: {
         args: this.gqAttrs({ allowed: ['id'], required: ['id'] }),
         resolver: this.updateMutationResolver.bind(this),
-        returnType: this.graphqlModel.type
+        type: this.graphqlModel
       },
-      [`upsert${this.graphqlModel.type}`]: {
+      [`upsert${this.graphqlModel.name}`]: {
         args: this.gqAttrs({ allowed: ['id'], required: ['id'] }),
         resolver: this.upsertMutationResolver.bind(this),
-        returnType: this.graphqlModel.type
+        type: this.graphqlModel
       },
-      [`delete${this.graphqlModel.type}`]: {
+      [`delete${this.graphqlModel.name}`]: {
         args: this.gqAttrs({ allowed: ['id'], required: ['id'] }),
         resolver: this.deleteMutationResolver.bind(this),
-        returnType: 'Int'
+        type: 'Int'
       }
     };
   }
@@ -78,8 +75,8 @@ class Pet extends SequelizeModel {
         resolver: (_, args) => {
           return args.type + _.name;
         },
-        args: { type: { type: 'String' } },
-        returnType: 'String',
+        args: [{ name: 'type', type: 'String' }],
+        type: 'String',
         description: 'Random attribute'
       }
     };
@@ -90,22 +87,23 @@ class Pet extends SequelizeModel {
     this.graphqlModel.description = 'A pet';
 
     // don't add createdAt, updatedAt to schema, and allow extra field 'type'
-    this.graphqlModel.filterAttributes({
-      required: ['name', 'ownerId'],
-      allowed: ['id', 'name', 'ownerId', 'owner', 'type']
-    });
+    // this.graphqlModel.filterAttributes({
+    //   required: ['name', 'ownerId'],
+    //   allowed: ['id', 'name', 'ownerId', 'owner', 'type']
+    // });
 
     // Add extra attributes to pet connection
-    this.graphqlConnection.addAttribute('total', {
+    this.graphqlConnection.addField({
+      name: 'total',
       resolver: _ => {
         return _.source.countPets();
       },
-      returnType: 'Int',
+      type: 'Int',
       description: 'Total pets'
     });
 
     // Add extra arguments to pet connection
-    this.graphqlConnection.addArgument('orderBy', '[[String]] = [["name", "ASC"]]');
+    // this.graphqlConnection.addArgument('orderBy', '[[String]] = [["name", "ASC"]]');
     this.graphqlConnection.description = 'Pet connection';
     this.addConnectionQuery('petConn');
   }

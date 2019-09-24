@@ -6,13 +6,13 @@ class FieldType extends ArgumentType {
     super(name, type, superOpts);
     this.resolver = resolver;
     this.indent = indent;
-    this.arguments =
-      args instanceof Set ? args : new Set(args.filter(t => t instanceof ArgumentType));
+    this.arguments = new Set();
+    args.forEach(this.addArgument.bind(this));
   }
 
   addArgument(arg) {
     if (!(arg instanceof ArgumentType)) throw Error('Argument must be an instance of ArgumentType');
-
+    delete arg.args;
     return this.arguments.add(arg);
   }
 
@@ -20,7 +20,7 @@ class FieldType extends ArgumentType {
     return this.arguments.delete(arg);
   }
 
-  getSchema() {
+  getSchema(args = true) {
     let newLine;
     this.arguments.forEach(a => {
       if (a.description || a.deprecated) newLine = '\n';
@@ -29,7 +29,7 @@ class FieldType extends ArgumentType {
 
     return ArgumentType.prototype.getSchema.call(
       this,
-      this.arguments.size > 0
+      this.arguments.size && args > 0
         ? `(${newLine || ''}${indentString(
             ArgumentType.join([...this.arguments], newLine || ', '),
             2,
