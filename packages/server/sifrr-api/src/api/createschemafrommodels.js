@@ -5,10 +5,7 @@ const { makeExecutableSchema } = require('graphql-tools');
 const { fileHeader, timestampHeader, fileSeparator } = require('./constants');
 const Sequelize = require('sequelize');
 
-function createSchemaFromModels(
-  models,
-  { extra = '', queries = {}, mutations = {}, schemaPath } = {}
-) {
+function createSchemaFromModels(models, { extra = '', schemaPath } = {}) {
   const typeDefs = [];
 
   extra = `scalar SequelizeJSON

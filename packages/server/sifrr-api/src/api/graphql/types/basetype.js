@@ -4,8 +4,8 @@ class BaseType {
     this.name = name;
   }
 
-  clone() {
-    return new this.constructor(this.name, { ...this });
+  clone(name) {
+    return new this.constructor(name || this.name, { ...this });
   }
 
   getSchema() {

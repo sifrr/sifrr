@@ -16,11 +16,12 @@ describe('Object type', () => {
   it('works with fields', () => {
     expect(
       new ObjectType('User', {
-        fields: [field, field, field2, null, undefined, {}, 'string']
+        fields: [field, field, field2, { name: 'some', type: 'Int' }]
       }).getSchema()
     ).to.equal(`type User {
   field: Int!
   field1(arg: String): String
+  some: Int
 }`);
   });
 
@@ -41,6 +42,18 @@ describe('Object type', () => {
         interfaces: new InterfaceType('Baaa', { fields: [field2] })
       }).getSchema()
     ).to.equal(`type Umma implements Baaa {
+  field: Int!
+  field1(arg: String): String
+}`);
+  });
+
+  it('clones object', () => {
+    const object = new ObjectType('Umma', {
+      fields: [field],
+      interfaces: new InterfaceType('Baaa', { fields: [field2] })
+    });
+
+    expect(object.clone('Noob').getSchema()).to.equal(`type Noob implements Baaa {
   field: Int!
   field1(arg: String): String
 }`);
