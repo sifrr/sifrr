@@ -47,7 +47,7 @@ class Pet extends SequelizeModel {
         type: this.graphqlModel
       },
       createPetAndOwner: {
-        args: [{ name: 'name', type: 'String!' }, { name: 'owner__name', type: 'String!' }],
+        args: { name: { type: 'String!' }, owner__name: { type: 'String!' } },
         resolver: this.createMutationResolver.bind(this),
         type: this.graphqlModel
       },
@@ -93,8 +93,7 @@ class Pet extends SequelizeModel {
     // });
 
     // Add extra attributes to pet connection
-    this.graphqlConnection.addField({
-      name: 'total',
+    this.graphqlConnection.addField('total', {
       resolver: _ => {
         return _.source.countPets();
       },

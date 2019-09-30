@@ -1,4 +1,4 @@
-const BaseType = require('./types/basetype');
+const BaseType = require('./types/objects/basetype');
 
 const getType = type => {
   if (type instanceof BaseType) {
@@ -21,7 +21,23 @@ const indent = (string, indentation = 2, { indentFirstAndLast = true } = {}) => 
   return (splited.length > 0 ? firstLastIndent + start + '\n' : '') + firstLastIndent + last;
 };
 
+const objectToMap = (obj, type) => {
+  if (obj instanceof Map) return obj;
+  const map = new Map();
+  if (Array.isArray(obj)) {
+    obj.forEach(o => map.set(o.name, o));
+    return map;
+  }
+  Object.keys(obj).forEach(k => {
+    if (!type || obj[k] instanceof type) {
+      map.set(k, obj[k]);
+    }
+  });
+  return map;
+};
+
 module.exports = {
   getType,
-  indent
+  indent,
+  objectToMap
 };

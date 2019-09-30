@@ -7,8 +7,8 @@ const { graphqlObjectToType } = require('../graphqljsconverter');
 const GqModel = require('../graphql/types/objects/modeltype');
 const GqConnection = require('../graphql/types/objects/connectiontype');
 const gqSchema = new (require('../graphql/types/schematype'))();
-const gqQuery = new (require('../graphql/types/objects/querytype'))();
-const gqMutation = new (require('../graphql/types/objects/mutationtype'))();
+const gqQuery = require('../graphql/types/objects/querytype');
+const gqMutation = require('../graphql/types/objects/mutationtype');
 
 gqSchema.addObject(gqQuery);
 gqSchema.addObject(gqMutation);
@@ -21,7 +21,6 @@ class SequelizeModel extends Sequelize.Model {
       description: `${ret.name} Model`
     });
     ret.graphqlConnection = new GqConnection(ret.name + 'Connection', {
-      // fields: connectionArgs,
       resolver: createConnectionResolver({ target: ret }).resolveConnection,
       edgeType: ret.graphqlModel
     });
@@ -50,14 +49,12 @@ class SequelizeModel extends Sequelize.Model {
     const name = options.as || model.graphqlModel.type + (multiple ? 's' : '');
     this[name] = super[type](model, options);
     if (options.useConnection) {
-      this.graphqlModel.addField({
-        name,
+      this.graphqlModel.addField(name, {
         type: model.graphqlConnection,
         resolver: createConnectionResolver({ target: this[name] }).resolveConnection
       });
     } else {
-      this.graphqlModel.addField({
-        name,
+      this.graphqlModel.addField(name, {
         type: model.graphqlModel,
         resolver: resolver(this[name])
       });
@@ -96,20 +93,19 @@ class SequelizeModel extends Sequelize.Model {
 
   // aliases on model, connection
   static addAttr(name, options) {
-    this.graphqlModel.addField({ name, ...options });
+    this.graphqlModel.addField(name, { ...options });
   }
 
   static addQuery(name, options) {
-    gqQuery.addField({ name, ...options });
+    gqQuery.addField(name, { ...options });
   }
 
   static addMutation(name, options) {
-    gqMutation.addField({ name, ...options });
+    gqMutation.addField(name, { ...options });
   }
 
   static addConnectionQuery(name) {
-    gqQuery.addField({
-      name,
+    gqQuery.addField(name, {
       args: graphqlObjectToType(connectionArgs),
       type: this.graphqlConnection
     });

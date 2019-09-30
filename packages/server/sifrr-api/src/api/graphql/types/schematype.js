@@ -1,4 +1,4 @@
-const BaseType = require('./basetype');
+const BaseType = require('./objects/basetype');
 const ObjectType = require('./objects/objecttype');
 const UnionType = require('./objects/uniontype');
 

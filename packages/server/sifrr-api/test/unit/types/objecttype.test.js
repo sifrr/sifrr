@@ -1,12 +1,12 @@
 const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
 const InterfaceType = require('../../../src/api/graphql/types/objects/interfacetype');
-const FieldType = require('../../../src/api/graphql/types/fieldtype');
-const ArgumentType = require('../../../src/api/graphql/types/argumenttype');
+const FieldType = require('../../../src/api/graphql/types/field');
+const ArgumentType = require('../../../src/api/graphql/types/argument');
 
 describe('Object type', () => {
-  const field = new FieldType('field', 'Int!');
-  const field2 = new FieldType('field1', 'String', {
-    args: [new ArgumentType('arg', 'String')]
+  const field = new FieldType('Int!');
+  const field1 = new FieldType('String', {
+    args: { arg: new ArgumentType('String') }
   });
 
   before(() => {
@@ -16,7 +16,7 @@ describe('Object type', () => {
   it('works with fields', () => {
     expect(
       new ObjectType('User', {
-        fields: [field, field, field2, { name: 'some', type: 'Int' }]
+        fields: { field, field1, some: new FieldType('Int') }
       }).getSchema()
     ).to.equal(`type User {
   field: Int!
@@ -39,7 +39,7 @@ describe('Object type', () => {
     expect(
       new ObjectType('Umma', {
         fields: [field],
-        interfaces: new InterfaceType('Baaa', { fields: [field2] })
+        interfaces: new InterfaceType('Baaa', { fields: { field1 } })
       }).getSchema()
     ).to.equal(`type Umma implements Baaa {
   field: Int!
@@ -49,11 +49,11 @@ describe('Object type', () => {
 
   it('clones object', () => {
     const object = new ObjectType('Umma', {
-      fields: [field],
-      interfaces: new InterfaceType('Baaa', { fields: [field2] })
+      fields: { field },
+      interfaces: new InterfaceType('Baaa', { fields: { field1 } })
     });
 
-    expect(object.clone('Noob').getSchema()).to.equal(`type Noob implements Baaa {
+    expect(object.clone('Noob').getSchema()).to.equal(`type Noob {
   field: Int!
   field1(arg: String): String
 }`);

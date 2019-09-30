@@ -1,13 +1,13 @@
 const InterfaceType = require('../../../src/api/graphql/types/objects/interfacetype');
-const FieldType = require('../../../src/api/graphql/types/fieldtype');
+const FieldType = require('../../../src/api/graphql/types/field');
 
 describe('Interface type', () => {
-  const field = new FieldType('field', 'Int!');
+  const field = new FieldType('Int!');
 
   it('has interface prefix', () => {
     expect(
       new InterfaceType('Interf', {
-        fields: [field]
+        fields: { field: field }
       }).getSchema()
     ).to.equal(`interface Interf {
   field: Int!

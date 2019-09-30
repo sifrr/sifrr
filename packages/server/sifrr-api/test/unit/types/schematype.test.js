@@ -1,6 +1,6 @@
 const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
 const ModelType = require('../../../src/api/graphql/types/objects/modeltype');
-const FieldType = require('../../../src/api/graphql/types/fieldtype');
+const FieldType = require('../../../src/api/graphql/types/field');
 const SchemaType = require('../../../src/api/graphql/types/schematype');
 
 describe('Schema Type', () => {
@@ -18,14 +18,14 @@ describe('Schema Type', () => {
           {
             type: 'model',
             name: 'Pet',
-            fields: [{ name: 'what', type: 'Animal' }, { name: 'whatNot', type: 'Person' }]
+            fields: { what: { type: 'Animal' }, whatNot: { type: 'Person' } }
           }
         ]
       },
       {
         type: 'interface',
         name: 'LivingBeing',
-        fields: [{ name: 'Name', type: 'String', nullable: false }]
+        fields: { name: { type: 'String', nullable: false } }
       },
       {
         type: 'Model',
@@ -34,10 +34,10 @@ describe('Schema Type', () => {
           { name: 'LivingBeing' },
           {
             name: 'Admin',
-            fields: [{ name: 'Role', type: 'String', default: 'Admin', nullable: false }]
+            fields: { Role: { type: 'String', default: 'Admin', nullable: false } }
           }
         ],
-        fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
+        fields: { what: { type: 'Person' }, whatNot: { type: 'Animal' } }
       },
       {
         type: 'connection',
@@ -45,9 +45,9 @@ describe('Schema Type', () => {
         edgeType: {
           name: 'SomeBody',
           type: 'Model',
-          fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
+          fields: { what: { type: 'Person' }, whatNot: { type: 'Animal' } }
         },
-        fields: [{ name: 'total', type: 'Int', nullable: false }]
+        fields: { total: { type: 'Int', nullable: false } }
       },
       {
         type: 'enum',
@@ -56,23 +56,21 @@ describe('Schema Type', () => {
         description: 'A type of enum'
       },
       {
-        type: 'query',
-        fields: [
-          { name: 'what', args: [{ name: 'id', type: 'Int', nullable: false }], type: 'Person' }
-        ]
+        type: 'object',
+        name: 'query',
+        fields: { what: { args: { id: { type: 'Int', nullable: false } }, type: 'Person' } }
       },
       {
         type: 'input',
         name: 'UserInput',
-        fields: [{ name: 'what', type: 'Person' }, { name: 'whatNot', type: 'Animal' }]
+        fields: { what: { type: 'Person' }, whatNot: { type: 'Animal' } }
       },
       new ModelType('Banger', {
-        fields: FieldType.from([
-          {
-            name: 'Name',
+        fields: FieldType.from({
+          Name: {
             type: 'Int'
           }
-        ])
+        })
       })
     ]);
 

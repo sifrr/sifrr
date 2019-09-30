@@ -8,14 +8,16 @@ const {
   GraphQLInterfaceType
 } = require('graphql');
 
-const ArgumentType = require('./graphql/types/argumenttype');
-const FieldType = require('./graphql/types/fieldtype');
+const ArgumentType = require('./graphql/types/argument');
+const FieldType = require('./graphql/types/field');
 
 const ObjectType = require('./graphql/types/objects/objecttype');
 const UnionType = require('./graphql/types/objects/uniontype');
 const EnumType = require('./graphql/types/objects/enumtype');
 const InputType = require('./graphql/types/objects/inputtype');
 const InterfaceType = require('./graphql/types/objects/interfacetype');
+
+const { objectToMap } = require('./graphql/util');
 
 function graphqlTypeToString(graphqlObject) {
   if (!graphqlObject) return null;
@@ -88,32 +90,36 @@ function graphqlObjectToType(graphqlObject, isArgument = false) {
     });
   }
 
+  console.log(graphqlObject);
   if (typeof graphqlObject === 'object') {
-    return Object.keys(graphqlObject).map(f => {
+    const all = {};
+    Object.keys(graphqlObject).map(f => {
       const gqObject = graphqlObject[f];
-      let args = [];
+      let args = {};
 
       if (gqObject.args) {
-        args = Object.keys(gqObject.args).map(g =>
-          ArgumentType.from({
-            name: g,
-            type: graphqlTypeToString(gqObject.args[g].type),
-            defaultValue: gqObject.args[g].defaultValue,
-            description: gqObject.args[g].description,
-            deprecated: false
-          })
+        args = Object.keys(gqObject.args).forEach(
+          g =>
+            (args[g] = ArgumentType.from({
+              name: g,
+              type: graphqlTypeToString(gqObject.args[g].type),
+              defaultValue: gqObject.args[g].defaultValue,
+              description: gqObject.args[g].description,
+              deprecated: false
+            }))
         );
       }
 
       const Construct = isArgument ? ArgumentType : FieldType;
 
-      return Construct.from({
+      all[f] = Construct.from({
         name: f,
         args,
         type: graphqlTypeToString(gqObject.type),
         resolver: gqObject.resolve
       });
     });
+    return objectToMap(all);
   }
 
   return null;
