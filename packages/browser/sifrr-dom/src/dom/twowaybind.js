@@ -1,5 +1,4 @@
 import { BIND_PROP } from './constants';
-import shouldMerge from '../utils/shouldmerge';
 
 export default e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
@@ -15,9 +14,7 @@ export default e => {
   if (root) {
     target._root = root;
     const prop = target[BIND_PROP];
-    if (shouldMerge(root.state[prop], value)) {
-      if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
-      else root.setState && root.setState({ [prop]: value });
-    }
+    if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
+    else root.setState && root.setState({ [prop]: value });
   } else target._root = null;
 };
