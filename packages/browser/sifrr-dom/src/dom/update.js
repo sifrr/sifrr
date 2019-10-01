@@ -45,16 +45,21 @@ export default function update(element, stateMap) {
 
     // props
     if (data.props) {
+      const dirty = dom.onPropsChange ? [] : false;
       for (let i = data.props.length - 1; i > -1; --i) {
         const newValue = evaluateBindings(data.props[i][1], element);
         if (data.props[i][0] === 'style') {
           const keys = Object.keys(newValue),
             l = keys.length;
           for (let i = 0; i < l; i++) {
-            dom.style[keys[i]] = newValue[keys[i]];
+            if (dom.style[keys[i]] !== newValue[keys[i]]) dom.style[keys[i]] = newValue[keys[i]];
           }
-        } else if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
+        } else if (newValue !== dom[data.props[i][0]]) {
+          dom[data.props[i][0]] = newValue;
+          dirty && dirty.push(data.props[i][0]);
+        }
       }
+      dirty && dirty.length > 0 && dom.onPropsChange(dirty);
     }
 
     // update attributes
