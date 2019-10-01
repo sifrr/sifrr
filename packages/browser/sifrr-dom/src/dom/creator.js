@@ -1,4 +1,4 @@
-import { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR } from './constants';
+import { TEXT_NODE, COMMENT_NODE, ELEMENT_NODE, HTML_ATTR, REPEAT_ATTR } from './constants';
 import simpleElement from './simpleelement';
 // ref types:
 // 0: state
@@ -42,7 +42,7 @@ export default function creator(el, defaultState) {
         sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
       el.textContent = '';
-    } else if (el.hasAttribute(':sifrr-repeat')) {
+    } else if (el.hasAttribute(REPEAT_ATTR)) {
       sm.type = 3;
       sm.se = simpleElement(el.childNodes);
     }

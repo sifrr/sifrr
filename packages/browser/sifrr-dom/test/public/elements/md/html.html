@@ -1,6 +1,7 @@
 <template>
   <style media="screen">
-    h1, h3 {
+    h1,
+    h3 {
       font-size: 24px;
       margin: 8px 0;
     }
@@ -18,7 +19,8 @@
     #converter {
       height: calc(100% - 130px);
     }
-    #md, #html {
+    #md,
+    #html {
       padding: 16px;
       font-size: 16px;
       line-height: 24px;
@@ -32,19 +34,30 @@
       font-family: system-ui;
     }
   </style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@gh-pages/github-markdown.css">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@gh-pages/github-markdown.css"
+  />
   <div class="s-12" id="headings">
     <h1>Markdown To HTML with Sifrr diffing</h1>
-    <p>For this big md text, one keypress takes ~16ms with Sifrr Live preview as compared to ~50ms in showdown's <a href='http://demo.showdownjs.com/'>live preview demo</a></p>
-    <h3 class='s-6'>Markdown</h3>
-    <h3 class='s-6'>Live HTML Preview with github styles</h3>
+    <p>
+      For this big md text, one keypress takes ~16ms with Sifrr Live preview as compared to ~50ms in
+      showdown's <a href="http://demo.showdownjs.com/">live preview demo</a>
+    </p>
+    <h3 class="s-6">Markdown</h3>
+    <h3 class="s-6">Live HTML Preview with github styles</h3>
   </div>
   <div class="s-12" id="converter">
-    <textarea class="s-6" id="md" data-sifrr-bind="content" rows="10000">${this.state.content}</textarea>
-    <div class="s-6 markdown-body" id="html" data-sifrr-html="true">${this.mdtohtml()}</div>
+    <textarea class="s-6" id="md" :sifrr-bind="content" rows="10000">
+${this.state.content}</textarea
+    >
+    <div class="s-6 markdown-body" id="html" :sifrr-html="true">${this.mdtohtml()}</div>
   </div>
 </template>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js" charset="utf-8"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"
+  charset="utf-8"
+></script>
 <script type="text/javascript">
   const sd = new showdown.Converter({
     ghCompatibleHeaderId: true,
@@ -57,7 +70,7 @@
     parseImgDimensions: true,
     simplifiedAutoLink: true
   });
-  const content =`# ShowdownJS
+  const content = `# ShowdownJS
 
 Showdown is a Javascript Markdown to HTML converter, based on the original works by John Gruber. It can be used client side (in the browser) or server side (with Node or io).
 
@@ -800,9 +813,13 @@ This new ruleset is based on the comments of Markdown's author John Gruber in th
   class MdHtml extends Sifrr.Dom.Element {
     onConnect() {
       const me = this;
-      window.addEventListener('hashchange', () => {
-        me.$(location.hash).scrollIntoView(true);
-      }, false);
+      window.addEventListener(
+        'hashchange',
+        () => {
+          me.$(location.hash).scrollIntoView(true);
+        },
+        false
+      );
     }
 
     mdtohtml() {

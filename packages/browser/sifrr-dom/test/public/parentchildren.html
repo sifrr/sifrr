@@ -14,7 +14,7 @@
 
       class ParentElement extends Sifrr.Dom.Element {
         static get template() {
-          return `<child-element :state="\${{ text: this.state.abcd }}" :callUpdate="\${this.callUpdate.bind(this)}"></child-element>`;
+          return `<child-element :state="\${{ text: this.state.abcd }}" :render-if=\${this.state.render} :callUpdate="\${this.callUpdate.bind(this)}"></child-element>`;
         }
 
         callUpdate() {
@@ -23,7 +23,8 @@
       }
 
       ParentElement.defaultState = {
-        abcd: 'ok'
+        abcd: 'ok',
+        render: true
       };
 
       class ChildElement extends Sifrr.Dom.Element {

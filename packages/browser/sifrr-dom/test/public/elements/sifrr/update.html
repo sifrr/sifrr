@@ -1,9 +1,9 @@
 <template>
-  <div id="html" data-sifrr-html="true">
+  <div id="html" :sifrr-html="true">
     ${this.state.html}
   </div>
-  <p id="text">some ${this.state.text} text</p>
-  <table data-sifrr-html="true">
+  <p id="text" :render-if="${this.state.render}">some ${this.state.text} text</p>
+  <table :sifrr-html="true" style="display: inline">
     <!-- ${this.state.row} -->
   </table>
   <div id="attr" some-attr="${this.state.attr}"></div>
@@ -34,7 +34,8 @@
     text: 'random',
     row: row,
     attr: 'attr',
-    inner: { prop: 'prop' }
+    inner: { prop: 'prop' },
+    render: true
   };
   Sifrr.Dom.register(SifrrUpdate, { dependsOn: 'sifrr-row' });
 </script>

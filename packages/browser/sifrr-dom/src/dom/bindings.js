@@ -27,6 +27,7 @@ export function evaluate(fxn, el) {
       el
     );
     window.console.error(e);
+    return '';
   }
 }
 

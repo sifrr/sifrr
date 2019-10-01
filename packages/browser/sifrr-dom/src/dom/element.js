@@ -4,7 +4,7 @@ import update from './update';
 import Loader from './loader';
 import { trigger } from './event';
 import template from './template';
-import { BIND_ATTR } from './constants';
+import { BIND_PROP } from './constants';
 
 function elementClassFactory(baseClass) {
   return class extends baseClass {
@@ -115,7 +115,7 @@ function elementClassFactory(baseClass) {
     update() {
       this.beforeUpdate();
       update(this);
-      if (this._update || this.triggerUpdate || this.hasAttribute(BIND_ATTR)) {
+      if (this._update || this.triggerUpdate || this[BIND_PROP]) {
         trigger(this, 'update', { detail: { state: this.state } });
       }
       this.onUpdate();

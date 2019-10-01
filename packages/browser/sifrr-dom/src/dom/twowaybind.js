@@ -1,10 +1,10 @@
-import { BIND_ATTR } from './constants';
+import { BIND_PROP } from './constants';
 import shouldMerge from '../utils/shouldmerge';
 
 export default e => {
   const target = e.composedPath ? e.composedPath()[0] : e.target;
 
-  if (!target.hasAttribute(BIND_ATTR)) return;
+  if (!target[BIND_PROP]) return;
   if (e.type === 'update' && !target._sifrrEventSet) return;
 
   const value = target.value || target.state || target.textContent;
@@ -14,7 +14,7 @@ export default e => {
   while (root && !root.isSifrr) root = root.parentNode || root.host;
   if (root) {
     target._root = root;
-    const prop = target.getAttribute(BIND_ATTR);
+    const prop = target[BIND_PROP];
     if (shouldMerge(root.state[prop], value)) {
       if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
       else root.setState && root.setState({ [prop]: value });
