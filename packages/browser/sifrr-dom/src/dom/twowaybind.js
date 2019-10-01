@@ -15,7 +15,7 @@ export default e => {
   if (root) {
     target._root = root;
     const prop = target.getAttribute(BIND_ATTR);
-    if (shouldMerge(value, root.state[prop])) {
+    if (shouldMerge(root.state[prop], value)) {
       if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
       else root.setState && root.setState({ [prop]: value });
     }

@@ -39,7 +39,7 @@ export default function update(element, stateMap) {
     // state
     if (data.state) {
       const newState = evaluateBindings(data.state, element);
-      if (dom.setState && shouldMerge(newState, dom.state)) dom.setState(newState);
+      if (dom.setState && shouldMerge(dom.state, newState)) dom.setState(newState);
       else dom['state'] = newState;
     }
 
