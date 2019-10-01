@@ -90,7 +90,6 @@ function graphqlObjectToType(graphqlObject, isArgument = false) {
     });
   }
 
-  console.log(graphqlObject);
   if (typeof graphqlObject === 'object') {
     const all = {};
     Object.keys(graphqlObject).map(f => {

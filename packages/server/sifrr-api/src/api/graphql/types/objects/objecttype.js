@@ -3,25 +3,14 @@ const BaseType = require('./basetype');
 const FieldType = require('../field');
 
 class ObjectType extends BaseType {
-  constructor(name, { fields = {}, interfaces, indent = true, resolver, description } = {}) {
+  constructor(name, { fields = {}, indent = true, resolver, description } = {}) {
+    if (BaseType.all.get(name)) return BaseType.all.get(name);
+
     super(name);
-
     this.fields = objectToMap(fields, FieldType);
-    this.interfaces = new Set();
-    Array.isArray(interfaces) || interfaces instanceof Set
-      ? [...interfaces].forEach(i => this.addInterface(i))
-      : interfaces
-      ? this.addInterface(interfaces)
-      : null;
-
     this.description = description;
     this.indent = indent;
     this.resolver = resolver;
-  }
-
-  addInterface(intf) {
-    this.interfaces.add(intf);
-    intf.fields && intf.fields.forEach((f, name) => this.addField(name, f));
   }
 
   addField(name, field) {
@@ -68,26 +57,21 @@ class ObjectType extends BaseType {
     return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${
       this.constructor.prefix
     } ${this.name}${
-      [...this.interfaces].length > 0
-        ? ` implements ${[...this.interfaces].map(i => i.name).join(' & ')}`
+      this.interfaces && this.interfaces.size > 0
+        ? ` implements ${[...this.interfaces.values()].map(i => i.name).join(' & ')}`
         : ''
     } {
 ${indentString(FieldType.join(this.fields))}
 }`;
   }
 
-  static from(obj = {}) {
-    const InterfaceType = require('./interfacetype');
-
-    if (Array.isArray(obj) || obj instanceof Set) return [...obj].map(o => this.from(o));
-    if (obj.fields) obj.fields = FieldType.from(obj.fields);
-    if (obj.types) obj.types = ObjectType.from(obj.types);
-    if (obj.interfaces) obj.interfaces = InterfaceType.from(obj.interfaces);
-    if (obj.edgeType) obj.edgeType = ObjectType.from(obj.edgeType);
+  static from(obj) {
+    if (obj instanceof this) return obj;
     return new this(obj.name, obj);
   }
 }
 
+ObjectType.type = 'object';
 ObjectType.prefix = 'type';
 
 module.exports = ObjectType;

@@ -1,4 +1,4 @@
-const { getType, objectToMap } = require('../util');
+const { getStringType, objectToMap } = require('../util');
 
 class Argument {
   static join(all = {}, separator = '\n') {
@@ -28,7 +28,7 @@ class Argument {
 
     return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${this.name}${
       suffix ? suffix : ''
-    }${`: ${getType(this.type)}${this.nullable ? '' : '!'}${
+    }${`: ${getStringType(this.type)}${this.nullable ? '' : '!'}${
       this.defaultValue
         ? ` = ${
             typeof this.defaultValue === 'string' ? `"${this.defaultValue}"` : this.defaultValue
@@ -38,14 +38,15 @@ class Argument {
   }
 
   static from(obj = {}) {
-    if (!obj.type) {
-      const all = objectToMap(obj, this);
-      const newMap = new Map();
-      all.forEach((arg, name) => newMap.set(name, this.from(arg)));
+    if (obj.type === undefined) {
+      return objectToMap(obj, this);
     }
+
     if (obj.args) {
-      obj.args = Argument.from(obj.args);
+      obj.args = objectToMap(obj.args, Argument);
     }
+
+    if (obj instanceof this) return obj;
 
     return new this(obj.type, obj);
   }

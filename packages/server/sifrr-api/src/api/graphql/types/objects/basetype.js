@@ -1,7 +1,8 @@
 class BaseType {
   constructor(name) {
-    if (BaseType.get(name)) return BaseType.get(name);
-    if (!name) throw Error('Type must have a name');
+    if (!name) throw Error('Type must have a name: ' + JSON.stringify(this));
+    if (this.constructor.all.get(name)) return this.constructor.all.get(name);
+
     this.name = name;
     BaseType.add(this);
   }
@@ -19,13 +20,16 @@ class BaseType {
   }
 
   static add(obj) {
-    this.all[obj.name] = obj;
-  }
-
-  static get(name) {
-    return this.all[name];
+    this.all.set(obj.name, obj);
   }
 }
-BaseType.all = {};
+BaseType.all = new Map();
+
+// scalar types
+new BaseType('Id');
+new BaseType('Int');
+new BaseType('Float');
+new BaseType('String');
+new BaseType('Boolean');
 
 module.exports = BaseType;

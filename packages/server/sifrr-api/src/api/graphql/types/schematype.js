@@ -1,16 +1,20 @@
-const BaseType = require('./objects/basetype');
 const ObjectType = require('./objects/objecttype');
 const UnionType = require('./objects/uniontype');
 
-class SchemaType extends BaseType {
+const toType = obj => {
+  return require(`./objects/${obj.type.toLowerCase()}type.js`).from(obj);
+};
+
+class SchemaType {
   constructor(objects = []) {
-    super('Schema');
     this.objects = new Set();
     [...objects].forEach(o => this.addObject(o));
   }
 
   addObject(object) {
-    if (!(object instanceof ObjectType)) throw Error('Object must be an instance of ObjectType');
+    if (!(object instanceof ObjectType)) {
+      throw Error('Object must be an instance of ObjectType: ' + JSON.stringify(object));
+    }
     return this.objects.add(object);
   }
 
@@ -32,11 +36,13 @@ class SchemaType extends BaseType {
       newObjects.add(object);
       object.types && object.types.forEach(o => this.addObject(o));
       object.edgeType && this.addObject(object.edgeType);
-      object.interfaces.forEach(i => this.addObject(i));
-      object.fields.forEach(f => {
-        if (f.type instanceof ObjectType) this.addObject(f.type);
-        if (f.type && f.type[0] instanceof ObjectType) this.addObject(f.type[0]);
-      });
+      object.convertInterfaces && object.convertInterfaces();
+      object.interfaces && object.interfaces.forEach(i => this.addObject(i));
+      object.fields &&
+        object.fields.forEach(f => {
+          if (f && f.type instanceof ObjectType) this.addObject(f.type);
+          if (f && f.type && f.type[0] instanceof ObjectType) this.addObject(f.type[0]);
+        });
     });
 
     return [...newObjects].map(o => o.getSchema()).join('\n\n');
@@ -47,16 +53,11 @@ class SchemaType extends BaseType {
     const schema = new this();
 
     obj.forEach(o => {
-      if (o instanceof BaseType) return schema.addObject(o);
+      if (o instanceof ObjectType) return schema.addObject(o);
       if (typeof o !== 'object' || o == null) return null;
 
-      const type = o.type;
-      delete o.type;
-
-      if (type === 'union') return unions.add(o);
-
-      const typeCons = require(`./objects/${type.toLowerCase()}type.js`);
-      return schema.addObject(typeCons.from(o));
+      if (o.type === 'union') return unions.add(o);
+      return schema.addObject(toType(o));
     });
 
     unions.forEach(u => {

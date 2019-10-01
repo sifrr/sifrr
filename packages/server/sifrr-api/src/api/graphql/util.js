@@ -1,11 +1,11 @@
 const BaseType = require('./types/objects/basetype');
 
-const getType = type => {
+const getStringType = type => {
   if (type instanceof BaseType) {
     return type.name;
   }
   if (Array.isArray(type)) {
-    return `[${getType(type[0])}]`;
+    return `[${getStringType(type[0])}]`;
   }
   return type;
 };
@@ -21,23 +21,36 @@ const indent = (string, indentation = 2, { indentFirstAndLast = true } = {}) => 
   return (splited.length > 0 ? firstLastIndent + start + '\n' : '') + firstLastIndent + last;
 };
 
-const objectToMap = (obj, type) => {
-  if (obj instanceof Map) return obj;
+const toType = (obj, Type, name) => {
+  if (!(obj instanceof Type) && obj.type !== undefined) obj = Type.from(obj);
+  obj.name = obj.name || name;
+  obj.type = obj.type || Type.type;
+  return obj;
+};
+
+const objectToMap = (obj, Type) => {
+  if (!obj) return new Map();
+
+  if (obj instanceof Map) {
+    const newMap = new Map();
+    obj.forEach((arg, name) => newMap.set(name, toType(arg, Type, name)));
+    return newMap;
+  }
+
   const map = new Map();
-  if (Array.isArray(obj)) {
-    obj.forEach(o => map.set(o.name, o));
+  if (Array.isArray(obj) || obj instanceof Set) {
+    [...obj].forEach(o => map.set(o.name, toType(o, Type)));
     return map;
   }
   Object.keys(obj).forEach(k => {
-    if (!type || obj[k] instanceof type) {
-      map.set(k, obj[k]);
-    }
+    map.set(k, toType(obj[k], Type, k));
   });
   return map;
 };
 
 module.exports = {
-  getType,
+  toType,
+  getStringType,
   indent,
   objectToMap
 };
