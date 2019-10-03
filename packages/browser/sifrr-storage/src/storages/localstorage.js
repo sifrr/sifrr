@@ -26,7 +26,7 @@ class LocalStorage extends Storage {
   }
 
   _upsert(data) {
-    for (let key in data) {
+    for (const key in data) {
       this.store.setItem(this.tableName + '/' + key, this.constructor.stringify(data[key]));
     }
     return true;

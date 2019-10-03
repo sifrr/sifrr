@@ -192,6 +192,51 @@ for (let key in SifrrStorage.availableStores) {
       expect(result['false']).to.equal(false);
     });
 
+    it('memoizes with first argument', async () => {
+      const result = await page.evaluate(async key => {
+        const storage = new Sifrr.Storage(key);
+        let i = 0;
+        const func = async () => i;
+        const memoized = storage.memoize(func);
+        const first = await memoized('some');
+        i++;
+        const second = await memoized('some', 'lol');
+        const nonMemoized = await memoized('someNot');
+        return {
+          first,
+          second,
+          nonMemoized
+        };
+      }, key);
+
+      expect(result).to.deep.equal({
+        first: 0,
+        second: 0,
+        nonMemoized: 1
+      });
+    });
+
+    it('memoizes with key function', async () => {
+      const result = await page.evaluate(async key => {
+        const storage = new Sifrr.Storage(key);
+        let i = 0;
+        const func = async () => i;
+        const memoized = storage.memoize(func, (a, b) => a + b);
+        const first = await memoized('some');
+        i++;
+        const second = await memoized('some', 'lol');
+        return {
+          first,
+          second
+        };
+      }, key);
+
+      expect(result).to.deep.equal({
+        first: 0,
+        second: 1
+      });
+    });
+
     describe('works with all types of data', async () => {
       const types = [
         'Array',
