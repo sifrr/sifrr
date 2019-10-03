@@ -838,7 +838,7 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.31", "@sifrr/dev@0.0.34", "@sifrr/dev@^0.0.34":
+"@sifrr/dev@0.0.31", "@sifrr/dev@0.0.34":
   version "0.0.34"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.34.tgz#88481dffe4de65f40f61c3e92123ef0589533a71"
   integrity sha512-tCUVUZpPBIFjH76B3iXqQswxfI7pclxGRJiA+PXGD7pCP4GtgBZoo9q23ctuG+uPEguzgiW+sxdbmpd84hasXQ==
