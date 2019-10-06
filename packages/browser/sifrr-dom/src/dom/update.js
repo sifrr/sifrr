@@ -7,8 +7,22 @@ import shouldMerge from '../utils/shouldmerge';
 
 const displayNone = 'none';
 
+const renderIf = (dom, shouldRender = dom[RENDER_IF_PROP] != false) => {
+  if (dom.___oldRenderIf === shouldRender) return shouldRender;
+
+  dom.___oldRenderIf = shouldRender;
+  if (shouldRender) {
+    dom.style.display = dom.__sifrrOldDisplay;
+    typeof dom.update === 'function' && dom.update();
+  } else {
+    dom.__sifrrOldDisplay = dom.style.display;
+    dom.style.display = displayNone;
+  }
+  return false;
+};
+
 export default function update(element, stateMap) {
-  if (element[RENDER_IF_PROP] == false) return;
+  if (!renderIf(element)) return;
 
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
@@ -64,13 +78,7 @@ export default function update(element, stateMap) {
 
           // render if
           if (data.props[i][0] === RENDER_IF_PROP) {
-            if (newValue == false && dom.style.display !== displayNone) {
-              dom.__sifrrOldDisplay = dom.style.display;
-              dom.style.display = displayNone;
-            } else if (newValue != false) {
-              dom.style.display = dom.__sifrrOldDisplay;
-              typeof dom.update === 'function' && dom.update();
-            }
+            renderIf(dom);
           }
         }
       }

@@ -16,6 +16,8 @@ describe('Route', () => {
 
   it('adds to all on connect and removes on disconnect', () => {
     const route = new Route();
+    route.routeRegex = new RegExp();
+    route.update = () => {};
 
     route.onConnect();
     expect(Route.all.has(route)).to.be.true;
@@ -27,9 +29,9 @@ describe('Route', () => {
   it('on attributechange', () => {
     const route = new Route();
 
+    route.path = 'ok';
     assert.notExists(route.routeRegex);
 
-    route.getAttribute = () => 'ok';
     sinon.stub(route, 'refresh');
     route.onAttributeChange('path');
 

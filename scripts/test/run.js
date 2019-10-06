@@ -21,7 +21,8 @@ const before = function() {
         html: sinon.stub(),
         register: sinon.stub(),
         Event: {
-          add: sinon.stub()
+          add: sinon.stub(),
+          trigger: sinon.stub()
         }
       }
     },
