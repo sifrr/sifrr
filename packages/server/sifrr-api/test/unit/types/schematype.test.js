@@ -5,7 +5,7 @@ const SchemaType = require('../../../src/api/graphql/types/schematype');
 
 describe('Schema Type', () => {
   beforeEach(() => {
-    ObjectType.all = new Map();
+    ObjectType.all.clear();
   });
 
   it('create SchemaType from objects', () => {

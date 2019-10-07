@@ -10,7 +10,7 @@ describe('Object type', () => {
   });
 
   beforeEach(() => {
-    ObjectType.all = new Map();
+    ObjectType.all.clear();
   });
 
   it('works with fields', () => {
