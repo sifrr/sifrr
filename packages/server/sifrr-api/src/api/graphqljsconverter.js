@@ -118,7 +118,7 @@ function graphqlObjectToType(graphqlObject, isArgument = false) {
         resolver: gqObject.resolve
       });
     });
-    return objectToMap(all);
+    return objectToMap(all, FieldType);
   }
 
   return null;
