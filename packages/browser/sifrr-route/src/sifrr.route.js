@@ -4,7 +4,7 @@ import RegexPath from './regexpath';
 const firstTitle = window.document.title;
 class SifrrRoute extends Element {
   static get template() {
-    return '<style>:host{display: none;}:host(.active){display: block;}</style><slot></slot>';
+    return '<slot></slot>';
   }
 
   static syncedAttrs() {
@@ -13,6 +13,7 @@ class SifrrRoute extends Element {
 
   onConnect() {
     this.loaded = false;
+    this.refresh();
     this.constructor.all.add(this);
   }
 
@@ -31,8 +32,8 @@ class SifrrRoute extends Element {
     const loc = window.location.pathname;
     const parsed = this.routeRegex.test(loc);
     if (parsed.match) {
+      this.setState(parsed.data);
       this.activate();
-      this.state = parsed.data;
       this.$$('[data-sifrr-route-state=true]', false).forEach(el => {
         el.state = { route: parsed.data };
       });
@@ -53,7 +54,8 @@ class SifrrRoute extends Element {
         this.loaded = Promise.resolve(true);
       }
     }
-    this.classList.add('active');
+    this.renderIf = true;
+    this.update();
     Event.trigger(this, 'activate');
     this.onActivate();
   }
@@ -61,7 +63,8 @@ class SifrrRoute extends Element {
   onActivate() {}
 
   deactivate() {
-    this.classList.remove('active');
+    this.renderIf = false;
+    this.update();
     Event.trigger(this, 'deactivate');
     this.onDeactivate();
   }

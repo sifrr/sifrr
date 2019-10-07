@@ -1,5 +1,4 @@
-const { BIND_ATTR } = require('../../src/dom/constants');
-const bindSelector = '[' + BIND_ATTR + ']';
+const { BIND_SELECTOR } = require('../../src/dom/constants');
 
 describe('Sifrr.Dom.setup', () => {
   before(async () => {
@@ -38,13 +37,13 @@ describe('Sifrr.Dom.setup', () => {
       // Adds event listeners
       events: {
         input: {
-          [bindSelector]: {}
+          [BIND_SELECTOR]: {}
         },
         change: {
-          [bindSelector]: {}
+          [BIND_SELECTOR]: {}
         },
         update: {
-          [bindSelector]: {}
+          [BIND_SELECTOR]: {}
         }
       }
     });

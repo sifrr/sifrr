@@ -98,6 +98,26 @@ class Storage {
     return Promise.resolve(this._clear());
   }
 
+  memoize(func, keyFunc = arg => (typeof arg === 'string' ? arg : stringify(arg))) {
+    if (typeof func !== 'function') throw Error('Only functions can be memoized');
+
+    return (...args) => {
+      const key = keyFunc(...args);
+      return this.get(key).then(data => {
+        if (data[key] === undefined || data[key] === null) {
+          const resultPromise = func(...args);
+          if (!(resultPromise instanceof Promise))
+            throw Error('Only promise returning functions can be memoized');
+          return resultPromise.then(v => {
+            return this.set(key, v).then(() => v);
+          });
+        } else {
+          return data[key];
+        }
+      });
+    };
+  }
+
   isSupported(force = true) {
     if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
       return true;

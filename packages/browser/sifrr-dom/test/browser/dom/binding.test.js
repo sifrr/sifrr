@@ -87,7 +87,7 @@ describe('Bindings', () => {
     it('works without bindings', async () => {
       const l = await page.$eval('binding-html', el => el.constructor.stateMap.length);
 
-      assert.equal(l, 6);
+      assert.equal(l, 7);
     });
   });
 });

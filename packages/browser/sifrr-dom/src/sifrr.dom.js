@@ -1,4 +1,4 @@
-import { BIND_ATTR } from './dom/constants';
+import { BIND_SELECTOR } from './dom/constants';
 import Element from './dom/element';
 import twoWayBind from './dom/twowaybind';
 import Loader from './dom/loader';
@@ -9,8 +9,6 @@ import { makeChildrenEqualKeyed } from './dom/keyed';
 import Store from './dom/store';
 import template from './dom/template';
 import config from './dom/config';
-
-const bindSelector = '[' + BIND_ATTR + ']';
 
 // Caches
 const elements = {};
@@ -64,9 +62,9 @@ const setup = function(newConfig) {
 
   config.events.push('input', 'change', 'update');
   config.events.forEach(e => Event.add(e));
-  Event.addListener('input', bindSelector, twoWayBind);
-  Event.addListener('change', bindSelector, twoWayBind);
-  Event.addListener('update', bindSelector, twoWayBind);
+  Event.addListener('input', BIND_SELECTOR, twoWayBind);
+  Event.addListener('change', BIND_SELECTOR, twoWayBind);
+  Event.addListener('update', BIND_SELECTOR, twoWayBind);
 };
 
 // Load Element HTML/JS and execute script in it

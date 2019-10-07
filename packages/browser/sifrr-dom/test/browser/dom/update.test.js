@@ -26,15 +26,22 @@ describe('Update and updateAttribute', () => {
     const propValue = await page.evaluate(() => su.$('#props').prop);
     const prop2Value = await page.evaluate(() => su.$('#props').prop2);
     const camelCasePropValue = await page.evaluate(() => su.$('#props').camelCase);
-    const stateValue = await page.evaluate(() => su.$('#props').state);
+    const stateValue = await page.evaluate(() => {
+      su.$('#props').onPropsChange = function(d) {
+        this._dirty = d;
+      };
+      return su.$('#props').state;
+    });
     await setState({ inner: { bang: 'bang' } });
     const stateValueNew = await page.evaluate(() => su.$('#props').state);
+    const dirty = await page.evaluate(() => su.$('#props')._dirty);
 
     assert.equal(propValue, 'prop', 'works with binding prop');
     assert.equal(prop2Value, 'ok', 'works with string prop');
     assert.equal(camelCasePropValue, 'ok', 'works with hyphen case prop');
     assert.deepEqual(stateValue, { prop: 'prop' });
     assert.deepEqual(stateValueNew, { bang: 'bang' });
+    assert.deepEqual(dirty, ['stateProp']);
   });
 
   it("doesn't rerender other things when updating text", async () => {

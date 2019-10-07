@@ -15,10 +15,10 @@
   <p>input - ${this.state.input}</p>
   <p>textarea - ${this.state.textarea}${this.state.textarea}</p>
   <p data-attr="${this.state.attr}">binded data-attr - ${this.state.attr}</p>
-  <input value="${this.state.attr}" data-sifrr-bind="attr" disabled="${this.state.disabled}" />
-  <input value="${this.state.input}" data-sifrr-bind="input" />
-  <div data-sifrr-html="true" data-attr="${this.state.attr}">${this.state.elements}</div>
-  <select name="abcd" data-sifrr-bind="select" value="${this.state.select}">
+  <input value="${this.state.attr}" :sifrr-bind="attr" disabled="${this.state.disabled}" />
+  <input value="${this.state.input}" :sifrr-bind="input" />
+  <div :sifrr-html="true" data-attr="${this.state.attr}">${this.state.elements}</div>
+  <select name="abcd" :sifrr-bind="select" value="${this.state.select}">
     <option value="volvo">Volvo</option>
     <option value="saab">Saab</option>
     <option value="mercedes">Mercedes</option>
@@ -28,17 +28,15 @@
     id="styled"
     :style="${{[this.state.padding]: '10px', margin: this.state.margin, border: '1px solid black'}}"
   ></div>
-  <div data-sifrr-html="true"></div>
+  <div :sifrr-html="true"></div>
   <div class="">
-    <div data-sifrr-html="true"></div>
+    <div :sifrr-html="true"></div>
   </div>
-  <div class="html" data-sifrr-html="true">
+  <div class="html" :sifrr-html="true">
     ${this.state.html}
   </div>
-  <textarea name="name" rows="2" cols="40" data-sifrr-bind="textarea">
-${this.state.textarea}</textarea
-  >
-  <div class="" contenteditable data-sifrr-bind="elements">
+  <textarea name="name" rows="2" cols="40" :sifrr-bind="textarea">${this.state.textarea}</textarea>
+  <div class="" contenteditable :sifrr-bind="elements">
     ${this.state.elements}
   </div>
   <sifrr-small _click="${this.sifrrSmallClick}"></sifrr-small>

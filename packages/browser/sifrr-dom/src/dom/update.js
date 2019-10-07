@@ -2,10 +2,28 @@ import { makeChildrenEqual } from './makeequal';
 import { makeChildrenEqualKeyed } from './keyed';
 import updateAttribute from './updateattribute';
 import { evaluateBindings } from './bindings';
-import { TEMPLATE } from './constants';
+import { TEMPLATE, RENDER_IF_PROP, ELEMENT_NODE } from './constants';
 import shouldMerge from '../utils/shouldmerge';
 
+const displayNone = 'none';
+
+const renderIf = (dom, shouldRender = dom[RENDER_IF_PROP] != false) => {
+  if (dom.___oldRenderIf === shouldRender) return shouldRender;
+
+  dom.___oldRenderIf = shouldRender;
+  if (shouldRender) {
+    dom.style.display = dom.__sifrrOldDisplay;
+    return true;
+  } else {
+    dom.__sifrrOldDisplay = dom.style.display;
+    dom.style.display = displayNone;
+    return false;
+  }
+};
+
 export default function update(element, stateMap) {
+  if (element.nodeType === ELEMENT_NODE && !renderIf(element)) return;
+
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
   for (let i = element._refs ? element._refs.length - 1 : -1; i > -1; --i) {
@@ -39,22 +57,32 @@ export default function update(element, stateMap) {
     // state
     if (data.state) {
       const newState = evaluateBindings(data.state, element);
-      if (dom.setState && shouldMerge(newState, dom.state)) dom.setState(newState);
+      if (dom.setState && shouldMerge(dom.state, newState)) dom.setState(newState);
       else dom['state'] = newState;
     }
 
     // props
     if (data.props) {
+      const dirty = dom.onPropsChange ? [] : false;
       for (let i = data.props.length - 1; i > -1; --i) {
         const newValue = evaluateBindings(data.props[i][1], element);
         if (data.props[i][0] === 'style') {
           const keys = Object.keys(newValue),
             l = keys.length;
           for (let i = 0; i < l; i++) {
-            dom.style[keys[i]] = newValue[keys[i]];
+            if (dom.style[keys[i]] !== newValue[keys[i]]) dom.style[keys[i]] = newValue[keys[i]];
           }
-        } else if (newValue !== dom[data.props[i][0]]) dom[data.props[i][0]] = newValue;
+        } else if (newValue !== dom[data.props[i][0]]) {
+          dom[data.props[i][0]] = newValue;
+          dirty && dirty.push(data.props[i][0]);
+
+          // render if
+          if (data.props[i][0] === RENDER_IF_PROP) {
+            if (renderIf(dom)) typeof dom.update === 'function' && dom.update();
+          }
+        }
       }
+      dirty && dirty.length > 0 && dom.onPropsChange(dirty);
     }
 
     // update attributes

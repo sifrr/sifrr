@@ -33,8 +33,7 @@
     "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-dom",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s",
-    "benchmark": "node benchmark/runbenchmark.js"
+    "test-server": "yarn test -s"
   },
   "dependencies": {},
   "peerDependencies": {},
@@ -45,7 +44,7 @@
     "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.8",
-    "sequelize": "^5.19.0",
+    "sequelize": "^5.19.2",
     "uWebSockets.js": "uNetworking/uWebSockets.js#15.11.0",
     "ws": "^7.1.2"
   },

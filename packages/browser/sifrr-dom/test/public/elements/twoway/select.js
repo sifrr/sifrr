@@ -1,7 +1,7 @@
 class TwowaySelect extends Sifrr.Dom.Element {
   static get template() {
     return Sifrr.Dom.template`<div>\${this.state.select}</div>
-    <select name="select" data-sifrr-bind="select" value="\${this.state.select}">
+    <select name="select" :sifrr-bind="select" value="\${this.state.select}">
       <option value="volvo">Volvo</option>
       <option value="saab">Saab</option>
       <option value="mercedes">Mercedes</option>

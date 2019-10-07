@@ -1,3 +1,5 @@
+import { BIND_PROP } from '../../../src/dom/constants';
+
 describe('twowaybind', () => {
   it('takes composedPath if exists', () => {
     const twoWayBind = require('../../../src/dom/twowaybind').default;
@@ -10,8 +12,7 @@ describe('twowaybind', () => {
           Object.assign(this.state, v);
         }
       },
-      hasAttribute: () => true,
-      getAttribute: () => 'stt',
+      [BIND_PROP]: 'stt',
       value: 'value'
     };
     const event = {
