@@ -2,7 +2,7 @@ import { makeChildrenEqual } from './makeequal';
 import { makeChildrenEqualKeyed } from './keyed';
 import updateAttribute from './updateattribute';
 import { evaluateBindings } from './bindings';
-import { TEMPLATE, RENDER_IF_PROP } from './constants';
+import { TEMPLATE, RENDER_IF_PROP, ELEMENT_NODE } from './constants';
 import shouldMerge from '../utils/shouldmerge';
 
 const displayNone = 'none';
@@ -13,16 +13,16 @@ const renderIf = (dom, shouldRender = dom[RENDER_IF_PROP] != false) => {
   dom.___oldRenderIf = shouldRender;
   if (shouldRender) {
     dom.style.display = dom.__sifrrOldDisplay;
-    typeof dom.update === 'function' && dom.update();
+    return true;
   } else {
     dom.__sifrrOldDisplay = dom.style.display;
     dom.style.display = displayNone;
+    return false;
   }
-  return false;
 };
 
 export default function update(element, stateMap) {
-  if (!renderIf(element)) return;
+  if (element.nodeType === ELEMENT_NODE && !renderIf(element)) return;
 
   stateMap = stateMap || element.constructor.stateMap;
   // Update nodes
@@ -78,7 +78,7 @@ export default function update(element, stateMap) {
 
           // render if
           if (data.props[i][0] === RENDER_IF_PROP) {
-            renderIf(dom);
+            if (renderIf(dom)) typeof dom.update === 'function' && dom.update();
           }
         }
       }
