@@ -32,6 +32,10 @@ class Argument {
     }${this.deprecated ? ` @deprecated(reason: "${this.deprecated}")` : ''}`}`;
   }
 
+  clone() {
+    return new this.constructor(this.type, { ...this });
+  }
+
   static from(obj = {}) {
     if (obj.args) {
       obj.args = objectToMap(obj.args, Argument);

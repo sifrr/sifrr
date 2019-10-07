@@ -34,7 +34,8 @@ class ObjectType extends BaseType {
   }
 
   getFilteredFields(filterFxn = () => true) {
-    const newFields = new Map(this.fields);
+    const newFields = new Map();
+    this.fields.forEach((f, k) => newFields.set(k, f.clone()));
     const keys = this.fields.keys();
     for (const name of keys) {
       if (!filterFxn(name)) newFields.delete(name);

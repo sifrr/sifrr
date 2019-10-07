@@ -131,8 +131,7 @@ type UserConnectionEdge {
 type Pet {
   what: Animal
   whatNot: Person
-}
-`
+}`
     );
   });
 });

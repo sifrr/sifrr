@@ -1,51 +1,110 @@
 type Query {
-  """Get one Pet."""
-  getPet(id: Int, where: SequelizeJSON, limit: Int, order: String, offset: Int): [Pet]
-  """Pet connection"""
-  petConn(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
-  User(id: Int, where: SequelizeJSON, limit: Int, order: String, offset: Int): [User]
+  """
+  Get one Pet.
+  """
+  getPet(
+    id: Int
+    where: SequelizeJSON
+    limit: Int
+    order: String
+    offset: Int
+  ): [Pet]
+  petConn(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): PetConnection
+  User(
+    id: Int
+    where: SequelizeJSON
+    limit: Int
+    order: String
+    offset: Int
+  ): [User]
 }
 
 type Mutation {
-  createPet(name: String!, ownerId: Int!): Pet
+  createPet(
+    id: Int
+    name: String
+    ownerId: Int
+    createdAt: Date
+    updatedAt: Date
+  ): Pet
   createPetAndOwner(name: String!, owner__name: String!): Pet
-  updatePet(id: Int!): Pet
-  upsertPet(id: Int!): Pet
-  deletePet(id: Int!): Int
-  createUser(name: String!): User
+  updatePet(
+    id: Int
+    name: String
+    ownerId: Int
+    createdAt: Date
+    updatedAt: Date
+  ): Pet
+  upsertPet(
+    id: Int
+    name: String
+    ownerId: Int
+    createdAt: Date
+    updatedAt: Date
+  ): Pet
+  deletePet(
+    id: Int
+    name: String
+    ownerId: Int
+    createdAt: Date
+    updatedAt: Date
+  ): Int
+  createUser(
+    id: Int
+    name: String
+    createdAt: Date
+    updatedAt: Date
+  ): User
+}
+
+"""
+A pet
+"""
+type Pet {
+  id: Int
+  name: String
+  ownerId: Int
+  createdAt: Date
+  updatedAt: Date
+  """
+  Random attribute
+  """
+  type(type: String): String
+  owner: User
+}
+
+"""
+Pet connection
+"""
+type PetConnection {
+  edges: PetConnectionEdge
+  """
+  Total pets
+  """
+  total: Int
+}
+
+"""
+User Model
+"""
+type User {
+  id: Int
+  name: String
+  createdAt: Date
+  updatedAt: Date
+  pets: PetConnection
+}
+
+type PetConnectionEdge {
+  node: Pet
+  cursor: String!
 }
 
 scalar SequelizeJSON
 scalar Date
 scalar Random
-
-"""A pet"""
-type Pet {
-  id: Int!
-  name: String!
-  ownerId: Int!
-  """Random attribute"""
-  type(type: String): String
-  owner: User
-}
-
-type User {
-  id: Int!
-  name: String
-  createdAt: Date!
-  updatedAt: Date!
-  """pets of user"""
-  pets(after: String, first: Int, before: String, last: Int, orderBy: [[String]] = [["name", "ASC"]]): PetConnection
-}
-
-"""Pet connection"""
-type PetConnection {
-  edges: [PetConnectionEdge]
-  """Total pets"""
-  total: Int
-}
-
-type PetConnectionEdge {
-  node: Pet
-  cursor: String
-}

@@ -1,4 +1,5 @@
 const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
+const ModelType = require('../../../src/api/graphql/types/objects/modeltype');
 const InterfaceType = require('../../../src/api/graphql/types/objects/interfacetype');
 const FieldType = require('../../../src/api/graphql/types/field');
 const ArgumentType = require('../../../src/api/graphql/types/argument');
@@ -37,18 +38,18 @@ describe('Object type', () => {
 
   it('works with impl and adds interface fields', () => {
     expect(
-      new ObjectType('Umma', {
+      new ModelType('Umma', {
         fields: [field],
-        interfaces: new InterfaceType('Baaa', { fields: { field1 } })
+        interfaces: new InterfaceType('Baro', { fields: { field1 } })
       }).getSchema()
-    ).to.equal(`type Umma implements Baaa {
+    ).to.equal(`type Umma implements Baro {
   field: Int!
   field1(arg: String): String
 }`);
   });
 
   it('clones object', () => {
-    const object = new ObjectType('Umma', {
+    const object = new ModelType('Umma', {
       fields: { field },
       interfaces: new InterfaceType('Baaa', { fields: { field1 } })
     });
