@@ -4,8 +4,8 @@ const FieldType = require('../../../src/api/graphql/types/field');
 const SchemaType = require('../../../src/api/graphql/types/schematype');
 
 describe('Schema Type', () => {
-  before(() => {
-    ObjectType.all = [];
+  beforeEach(() => {
+    ObjectType.all = new Map();
   });
 
   it('create SchemaType from objects', () => {

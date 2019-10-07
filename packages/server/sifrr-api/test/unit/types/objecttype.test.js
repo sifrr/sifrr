@@ -9,8 +9,8 @@ describe('Object type', () => {
     args: { arg: new ArgumentType('String') }
   });
 
-  before(() => {
-    ObjectType.all = [];
+  beforeEach(() => {
+    ObjectType.all = new Map();
   });
 
   it('works with fields', () => {
