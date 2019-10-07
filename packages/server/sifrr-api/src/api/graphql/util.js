@@ -7,7 +7,7 @@ const getStringType = type => {
   if (Array.isArray(type)) {
     return `[${getStringType(type[0])}]`;
   }
-  return type;
+  return type || '';
 };
 
 const indent = (string, indentation = 2, { indentFirstAndLast = true } = {}) => {
@@ -22,9 +22,9 @@ const indent = (string, indentation = 2, { indentFirstAndLast = true } = {}) => 
 };
 
 const toType = (obj, Type, name) => {
-  if (!(obj instanceof Type) && obj.type !== undefined) obj = Type.from(obj);
   obj.name = obj.name || name;
   obj.type = obj.type || Type.type;
+  if (!(obj instanceof Type)) obj = Type.from(obj);
   return obj;
 };
 
@@ -39,7 +39,10 @@ const objectToMap = (obj, Type) => {
 
   const map = new Map();
   if (Array.isArray(obj) || obj instanceof Set) {
-    [...obj].forEach(o => map.set(o.name, toType(o, Type)));
+    [...obj].forEach(o => {
+      const typedObj = toType(o, Type);
+      map.set(o.name, typedObj);
+    });
     return map;
   }
   Object.keys(obj).forEach(k => {

@@ -21,14 +21,9 @@ class Argument {
   }
 
   getSchema(suffix) {
-    if (!this.name || !this.type) {
-      console.error(this);
-      throw new Error('Argument must have a name and type');
-    }
-
     return `${this.description ? `"""\n${this.description}\n"""\n` : ''}${this.name}${
       suffix ? suffix : ''
-    }${`: ${getStringType(this.type)}${this.nullable ? '' : '!'}${
+    }${`${this.type ? ': ' : ''}${getStringType(this.type)}${this.nullable ? '' : '!'}${
       this.defaultValue
         ? ` = ${
             typeof this.defaultValue === 'string' ? `"${this.defaultValue}"` : this.defaultValue
@@ -38,10 +33,6 @@ class Argument {
   }
 
   static from(obj = {}) {
-    if (obj.type === undefined) {
-      return objectToMap(obj, this);
-    }
-
     if (obj.args) {
       obj.args = objectToMap(obj.args, Argument);
     }

@@ -8,7 +8,8 @@ class ModelType extends ObjectType {
     if (ObjectType.all.get(name)) return ObjectType.all.get(name);
 
     super(name, superOpts);
-    this.interfaces = objectToMap(interfaces, InterfaceType);
+    interfaces = objectToMap(interfaces, InterfaceType);
+    this.interfaces = interfaces;
     this.interfaces.forEach(i =>
       objectToMap(i.fields, Field).forEach((f, name) => this.addField(name, f))
     );

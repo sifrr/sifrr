@@ -1,4 +1,5 @@
 const ObjectType = require('./objecttype');
+const ModelType = require('./modeltype');
 const { toType } = require('../../util');
 
 class ConnectionType extends ObjectType {
@@ -8,10 +9,10 @@ class ConnectionType extends ObjectType {
     if (!edgeType) throw Error('Connection must have An EdgeType');
     super(name, superOptions);
 
-    this.edgeType = toType(edgeType, ObjectType);
+    this.edgeType = toType(edgeType, ModelType);
     this.addField('edges', {
-      type: new ObjectType(`${name}Edge`, {
-        fields: { node: { type: edgeType }, cursor: { type: 'String!' } }
+      type: new ModelType(`${name}Edge`, {
+        fields: { node: { type: this.edgeType }, cursor: { type: 'String!' } }
       })
     });
   }
