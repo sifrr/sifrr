@@ -48,7 +48,7 @@ describe('Object type', () => {
 }`);
   });
 
-  it('clones object', () => {
+  it('clones object only fields', () => {
     const object = new ModelType('Umma', {
       fields: { field },
       interfaces: new InterfaceType('Baaa', { fields: { field1 } })
@@ -57,6 +57,17 @@ describe('Object type', () => {
     expect(object.clone('Noob').getSchema()).to.equal(`type Noob {
   field: Int!
   field1(arg: String): String
+}`);
+  });
+
+  it('filters fields in cloning', () => {
+    const object = new ModelType('OKaa', {
+      fields: { field },
+      interfaces: new InterfaceType('Baaar', { fields: { field1 } })
+    });
+
+    expect(object.clone('Suree', {}, f => f === 'field').getSchema()).to.equal(`type Suree {
+  field: Int!
 }`);
   });
 });

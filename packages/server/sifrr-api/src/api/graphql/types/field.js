@@ -6,7 +6,7 @@ class Field extends Argument {
     super(type, superOpts);
     this.resolver = resolver;
     this.indent = indent;
-    this.arguments = objectToMap(args, this.constructor);
+    this.arguments = objectToMap(args, Argument);
   }
 
   addArgument(name, arg) {

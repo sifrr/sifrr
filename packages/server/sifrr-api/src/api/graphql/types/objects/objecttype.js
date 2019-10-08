@@ -1,21 +1,22 @@
 const { indent: indentString, objectToMap } = require('../../util');
 const BaseType = require('./basetype');
-const FieldType = require('../field');
+const Field = require('../field');
 
 class ObjectType extends BaseType {
   constructor(name, { fields = {}, indent = true, resolver, description } = {}) {
     if (BaseType.all.get(name)) return BaseType.all.get(name);
 
     super(name);
-    this.fields = objectToMap(fields, FieldType);
+    this.fields = objectToMap(fields, Field);
     this.description = description;
     this.indent = indent;
     this.resolver = resolver;
   }
 
   addField(name, field) {
-    if (!(field instanceof FieldType)) {
-      return this.addField(name, FieldType.from(field));
+    console.log(field);
+    if (!(field instanceof Field)) {
+      return this.addField(name, Field.from(field));
     }
     field.name = name;
     return this.fields.set(name, field);
@@ -30,16 +31,14 @@ class ObjectType extends BaseType {
   }
 
   clone(name, opts, filter) {
-    return new this.constructor(name, { fields: this.getFilteredFields(filter), ...opts });
+    return new this.constructor(name, { ...opts, fields: this.getFilteredFields(filter) });
   }
 
   getFilteredFields(filterFxn = () => true) {
     const newFields = new Map();
-    this.fields.forEach((f, k) => newFields.set(k, f.clone()));
-    const keys = this.fields.keys();
-    for (const name of keys) {
-      if (!filterFxn(name)) newFields.delete(name);
-    }
+    this.fields.forEach((f, k) => {
+      if (filterFxn(k)) newFields.set(k, f.clone());
+    });
     return newFields;
   }
 
@@ -62,7 +61,7 @@ class ObjectType extends BaseType {
         ? ` implements ${[...this.interfaces.values()].map(i => i.name).join(' & ')}`
         : ''
     } {
-${indentString(FieldType.join(this.fields))}
+${indentString(Field.join(this.fields))}
 }`;
   }
 
