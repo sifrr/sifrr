@@ -51,4 +51,17 @@ describe('Field type', () => {
     const field = new Field('name', 'Int');
     expect(() => field.addArgument({})).to.throw();
   });
+
+  it('clones with argument', () => {
+    const field = new Field('Int', {
+      name: 'name',
+      args: { one: arg, two: arg2, three: arg3, four: arg4 }
+    });
+    expect(field.clone().getSchema()).to.equal(`name(
+  one: Int
+  two: String
+  three: Int
+  four: Id
+): Int`);
+  });
 });

@@ -54,6 +54,7 @@ describe('Object type', () => {
       interfaces: new InterfaceType('Baaa', { fields: { field1 } })
     });
 
+    console.log(object.clone('Noob').fields.get('field1'));
     expect(object.clone('Noob').getSchema()).to.equal(`type Noob {
   field: Int!
   field1(arg: String): String

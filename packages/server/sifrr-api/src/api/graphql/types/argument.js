@@ -33,7 +33,7 @@ class Argument {
   }
 
   clone() {
-    return new this.constructor(this.type, { ...this });
+    return new this.constructor(this.type, { ...this, args: this.arguments });
   }
 
   static from(obj = {}) {

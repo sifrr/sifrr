@@ -14,7 +14,6 @@ class ObjectType extends BaseType {
   }
 
   addField(name, field) {
-    console.log(field);
     if (!(field instanceof Field)) {
       return this.addField(name, Field.from(field));
     }
