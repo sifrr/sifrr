@@ -2,7 +2,7 @@
 module.exports = (saveSchema = true) => {
   global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 
-  const { createSchemaFromModels, GraphqlExecutor } = require('@sifrr/api');
+  const { createSchemaFromModels, GraphqlExecutor } = require('../../../src/sifrr.api');
   const path = require('path');
 
   const models = require('../models');

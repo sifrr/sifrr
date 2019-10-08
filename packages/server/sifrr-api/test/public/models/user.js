@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../sequelize');
-const { SequelizeModel } = require('@sifrr/api');
+const { SequelizeModel } = require('../../../src/sifrr.api');
 
 class User extends SequelizeModel {
   static init() {
@@ -27,20 +27,20 @@ class User extends SequelizeModel {
 
   static onInit() {
     // getQuery Resolver
-    this.addQuery(this.graphqlModel.type, {
+    this.addQuery(this.graphqlModel.name, {
       args: this.gqArgs(),
       resolver: this.getQueryResolver.bind(this),
-      returnType: `[${this.graphqlModel.type}]`
+      type: [this.graphqlModel]
     });
 
     // Mutations
-    this.addMutation(`create${this.graphqlModel.type}`, {
+    this.addMutation(`create${this.graphqlModel.name}`, {
       args: this.gqAttrs({
         required: ['name'],
         allowed: ['name']
       }),
       resolver: this.createMutationResolver.bind(this),
-      returnType: this.graphqlModel.type
+      type: this.graphqlModel
     });
   }
 }

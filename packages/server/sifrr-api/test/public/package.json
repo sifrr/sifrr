@@ -26,6 +26,8 @@
   "homepage": "https://github.com/sifrr/sifrr-api-example#readme",
   "dependencies": {
     "@sifrr/cli": "file:../../../sifrr-cli",
+    "@sifrr/fetch": "file:../../../../browser/sifrr-fetch",
+    "@sifrr/server": "file:../../../sifrr-server",
     "dataloader-sequelize": "^2.0.1",
     "graphql-sequelize": "^9.3.1",
     "mysql2": "^1.6.4",
