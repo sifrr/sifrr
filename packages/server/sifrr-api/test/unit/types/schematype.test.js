@@ -1,11 +1,11 @@
-const ObjectType = require('../../../src/api/graphql/types/objects/objecttype');
 const ModelType = require('../../../src/api/graphql/types/objects/modeltype');
 const FieldType = require('../../../src/api/graphql/types/field');
 const SchemaType = require('../../../src/api/graphql/types/schematype');
+const { clear } = require('../../../src/api/graphql/types/objects/alltypes');
 
 describe('Schema Type', () => {
   beforeEach(() => {
-    ObjectType.all.clear();
+    clear();
   });
 
   it('create SchemaType from objects', () => {
@@ -117,6 +117,10 @@ union Any = User | Pet
 interface Admin {
   Role: String!
 }
+
+scalar Person
+
+scalar Animal
 
 type SomeBody {
   what: Person

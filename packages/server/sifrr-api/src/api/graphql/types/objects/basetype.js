@@ -1,10 +1,13 @@
+const { all, add } = require('./alltypes');
+
 class BaseType {
-  constructor(name) {
+  constructor(name, schema = true) {
     if (!name) throw Error('Type must have a name: ' + JSON.stringify(this));
-    if (this.constructor.all.get(name)) return this.constructor.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     this.name = name;
-    BaseType.add(this);
+    this.schema = schema;
+    add(this);
   }
 
   clone(name) {
@@ -12,24 +15,19 @@ class BaseType {
   }
 
   getSchema() {
-    throw Error('Each type should implement a getSchema method');
+    return this.schema ? `scalar ${this.name}` : '';
   }
 
   static from() {
     throw Error('Each Type must implement a static from method');
   }
-
-  static add(obj) {
-    this.all.set(obj.name, obj);
-  }
 }
-BaseType.all = new Map();
 
 // scalar types
-new BaseType('Id');
-new BaseType('Int');
-new BaseType('Float');
-new BaseType('String');
-new BaseType('Boolean');
+new BaseType('Id', false);
+new BaseType('Int', false);
+new BaseType('Float', false);
+new BaseType('String', false);
+new BaseType('Boolean', false);
 
 module.exports = BaseType;

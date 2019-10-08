@@ -1,10 +1,11 @@
 const { indent: indentString, objectToMap } = require('../../util');
 const BaseType = require('./basetype');
 const Field = require('../field');
+const { all } = require('./alltypes');
 
 class ObjectType extends BaseType {
   constructor(name, { fields = {}, indent = true, resolver, description } = {}) {
-    if (BaseType.all.get(name)) return BaseType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     super(name);
     this.fields = objectToMap(fields, Field);

@@ -78,6 +78,8 @@ type Pet {
   owner: User
 }
 
+scalar SequelizeJSON
+
 """
 Pet connection
 """
@@ -100,11 +102,11 @@ type User {
   pets: PetConnection
 }
 
+scalar Date
+
 type PetConnectionEdge {
   node: Pet
   cursor: String!
 }
 
-scalar SequelizeJSON
-scalar Date
 scalar Random

@@ -1,4 +1,4 @@
-const { getStringType, objectToMap } = require('../util');
+const { getStringType, objectToMap, getType } = require('../util');
 
 class Argument {
   static join(all = {}, separator = '\n') {
@@ -13,9 +13,9 @@ class Argument {
 
   constructor(type, { name, nullable = true, description, deprecated = false, defaultValue } = {}) {
     this.name = name;
-    this.type = type;
+    this.type = getType(type).type;
     this.description = description;
-    this.nullable = nullable;
+    this.nullable = !!getType(type).nullable && nullable;
     this.deprecated = deprecated;
     this.defaultValue = defaultValue;
   }

@@ -1,10 +1,11 @@
 const ObjectType = require('./objecttype');
 const ModelType = require('./modeltype');
 const { toType } = require('../../util');
+const { all } = require('./alltypes');
 
 class ConnectionType extends ObjectType {
   constructor(name, { edgeType, ...superOptions }) {
-    if (ObjectType.all.get(name)) return ObjectType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     if (!edgeType) throw Error('Connection must have An EdgeType');
     super(name, superOptions);

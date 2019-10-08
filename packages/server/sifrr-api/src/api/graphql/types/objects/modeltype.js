@@ -1,10 +1,11 @@
 const ObjectType = require('./objecttype');
 const InterfaceType = require('./interfacetype');
 const { objectToMap } = require('../../util');
+const { all } = require('./alltypes');
 
 class ModelType extends ObjectType {
   constructor(name, { interfaces, ...superOpts }) {
-    if (ObjectType.all.get(name)) return ObjectType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     super(name, superOpts);
     if (interfaces instanceof InterfaceType) interfaces = [interfaces];

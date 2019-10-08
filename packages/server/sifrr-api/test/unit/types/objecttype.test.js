@@ -3,6 +3,7 @@ const ModelType = require('../../../src/api/graphql/types/objects/modeltype');
 const InterfaceType = require('../../../src/api/graphql/types/objects/interfacetype');
 const FieldType = require('../../../src/api/graphql/types/field');
 const ArgumentType = require('../../../src/api/graphql/types/argument');
+const { clear } = require('../../../src/api/graphql/types/objects/alltypes');
 
 describe('Object type', () => {
   const field = new FieldType('Int!');
@@ -11,7 +12,7 @@ describe('Object type', () => {
   });
 
   beforeEach(() => {
-    ObjectType.all.clear();
+    clear();
   });
 
   it('works with fields', () => {

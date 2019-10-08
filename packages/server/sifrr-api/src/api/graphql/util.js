@@ -1,5 +1,25 @@
 const BaseType = require('./types/objects/basetype');
 
+const getType = type => {
+  if (Array.isArray(type)) {
+    return { type: type[0] instanceof BaseType ? type : [getType(type[0])], nullable: true };
+  } else if (typeof type === 'string') {
+    if (type.slice('-1') === '!') {
+      return {
+        type: new BaseType(type.slice(0, type.length - 1)),
+        nullable: false
+      };
+    } else {
+      return {
+        type: new BaseType(type),
+        nullable: true
+      };
+    }
+  } else {
+    return { type, nullable: true };
+  }
+};
+
 const getStringType = type => {
   if (type instanceof BaseType) {
     return type.name;
@@ -52,6 +72,7 @@ const objectToMap = (obj, Type) => {
 };
 
 module.exports = {
+  getType,
   toType,
   getStringType,
   indent,

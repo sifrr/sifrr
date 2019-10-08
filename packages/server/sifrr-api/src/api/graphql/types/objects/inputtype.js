@@ -1,8 +1,9 @@
 const ObjectType = require('./objecttype');
+const { all } = require('./alltypes');
 
 class InputType extends ObjectType {
   constructor(name, opts) {
-    if (ObjectType.all.get(name)) return ObjectType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     super(name, opts);
   }

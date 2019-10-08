@@ -1,9 +1,10 @@
 const ObjectType = require('./objecttype');
 const { objectToMap } = require('../../util');
+const { all } = require('./alltypes');
 
 class UnionType extends ObjectType {
   constructor(name, { types = [], resolveType, ...superOptions } = {}) {
-    if (ObjectType.all.get(name)) return ObjectType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     super(name, superOptions);
     this.types = objectToMap(types, ObjectType);

@@ -1,8 +1,9 @@
 const ObjectType = require('./objecttype');
+const { all } = require('./alltypes');
 
 class EnumType extends ObjectType {
   constructor(name, options) {
-    if (ObjectType.all.get(name)) return ObjectType.all.get(name);
+    if (all.get(name)) return all.get(name);
 
     super(name, options);
   }

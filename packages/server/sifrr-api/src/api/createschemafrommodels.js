@@ -8,10 +8,6 @@ const Sequelize = require('sequelize');
 function createSchemaFromModels(models, { extra = '', schemaPath } = {}) {
   const typeDefs = [];
 
-  extra = `scalar SequelizeJSON
-scalar Date
-${extra}`;
-
   typeDefs.push(Sequelize.gqSchema.getSchema());
   typeDefs.push(extra);
 
