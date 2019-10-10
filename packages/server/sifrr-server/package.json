@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "graphql": "^14.5.3",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v15.11.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.0.0"
   },
   "devDependencies": {
     "@sifrr/dev": "^0.0.30",
