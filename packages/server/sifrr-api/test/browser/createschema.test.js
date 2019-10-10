@@ -1,17 +1,22 @@
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
-const schemaPath = path.join(__dirname, '../public/db/schema.graphql');
+const schemaDir = path.join(__dirname, '../public/db');
 const { fileSeparator } = require('../../src/api/constants');
+const getlastfile = require('../../src/utils/getlastfile');
 
-describe('createSchemaFromModels', () => {
+describe('createExecutableSchema', () => {
+  before(() => {
+    exec(`rm -rf ${schemaDir}`);
+  });
+
+  after(() => {
+    exec(`rm -rf ${schemaDir}`);
+  });
+
   it('creates correct schema', () => {
-    exec(`rm ${schemaPath}`);
-
-    expect(fs.existsSync(schemaPath)).to.equal(false);
-
     require('../public/config/setup')();
-
+    const schemaPath = getlastfile(schemaDir);
     expect(fs.existsSync(schemaPath)).to.equal(true);
 
     const generatedSchema = fs
@@ -25,16 +30,17 @@ describe('createSchemaFromModels', () => {
   });
 
   it("doesn't rewrite if schema hasn't changed", () => {
-    const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
+    const schemaPath = getlastfile(schemaDir);
 
     require('../public/config/setup')();
 
-    const newSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
+    const newSchema = getlastfile(schemaDir);
 
-    expect(oldSchema).to.equal(newSchema);
+    expect(schemaPath).to.equal(newSchema);
   });
 
-  it('rewrites if schema has changed', () => {
+  it('rewrites if schema has changed', async () => {
+    const schemaPath = getlastfile(schemaDir);
     fs.writeFileSync(
       schemaPath,
       fileSeparator +
@@ -42,16 +48,15 @@ describe('createSchemaFromModels', () => {
   dummy: ok
 }`
     );
-    const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
 
     require('../public/config/setup')();
+    const newSchema = getlastfile(schemaDir);
 
-    const newSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
-
-    expect(oldSchema).to.not.equal(newSchema);
+    expect(schemaPath).to.not.equal(newSchema);
   });
 
   it('should not rewrite schema if no schemaPath', () => {
+    const schemaPath = getlastfile(schemaDir);
     fs.writeFileSync(
       schemaPath,
       fileSeparator +
@@ -59,12 +64,10 @@ describe('createSchemaFromModels', () => {
   dummy: ok
 }`
     );
-    const oldSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
-
     require('../public/config/setup')(false);
 
-    const newSchema = fs.readFileSync(schemaPath, { encoding: 'UTF-8' });
+    const newSchema = getlastfile(schemaDir);
 
-    expect(oldSchema).to.equal(newSchema);
+    expect(schemaPath).to.equal(newSchema);
   });
 });

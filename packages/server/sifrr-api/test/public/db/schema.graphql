@@ -1,5 +1,0 @@
-#### Graphql Schema ####
-
-type New {
-  dummy: ok
-}

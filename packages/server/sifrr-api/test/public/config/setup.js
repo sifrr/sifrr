@@ -1,10 +1,8 @@
+const path = require('path');
+const { createExecutableSchema, GraphqlExecutor } = require('../../../src/sifrr.api');
+global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
 // Env
 module.exports = (saveSchema = true) => {
-  global.ENV = process.env.NODE_ENV || process.env.ENV || 'development';
-
-  const { createSchemaFromModels, GraphqlExecutor } = require('../../../src/sifrr.api');
-  const path = require('path');
-
   const models = require('../models');
   const gqModels = {};
   for (let m in models) {
@@ -12,19 +10,9 @@ module.exports = (saveSchema = true) => {
   }
 
   // Available globally (also in routes)
-  global.graphqlSchema = createSchemaFromModels(gqModels, {
-    query: {
-      count: {
-        // Add extra query 'count' just for example
-        args: '',
-        resolver: (_, __, ctx) => {
-          return ctx.count || 0;
-        },
-        returnType: 'Random'
-      }
-    },
+  global.graphqlSchema = createExecutableSchema(require('../sequelize').Sequelize.gqSchema, {
     extra: 'scalar Random', // Add scalar Random as we have returnType Random for 'count'
-    schemaPath: saveSchema ? path.join(__dirname, '../db/schema.graphql') : ''
+    schemaDir: saveSchema ? path.join(__dirname, '../db') : null
   });
   global.etg = new GraphqlExecutor(global.graphqlSchema);
 
