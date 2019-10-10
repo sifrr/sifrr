@@ -8307,6 +8307,10 @@ uWebSockets.js@uNetworking/uWebSockets.js#15.11.0, uWebSockets.js@uNetworking/uW
   version "15.11.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e7552889a50a7ffa654c41c99a9bad46dd0024c5"
 
+uWebSockets.js@uNetworking/uWebSockets.js#v16.0.0:
+  version "16.0.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/279ddafb1f95c81b4befece127a320c1e3dfcd4a"
+
 uglify-js@3.4.x:
   version "3.4.10"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.4.10.tgz#9ad9563d8eb3acdfb8d38597d2af1d815f6a755f"
