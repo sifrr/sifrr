@@ -5,6 +5,7 @@ require('./config/setup')();
 const path = require('path');
 const { App } = require('@sifrr/server');
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize');
+const { PubSub } = require('graphql-subscriptions');
 
 const server = new App();
 
@@ -13,10 +14,13 @@ server.load(path.join(__dirname, './routes'), {
   basePath: '/api' /* , ignore: [ 'user.js' ] */
 });
 
-server.graphql('/graphql', global.graphqlSchema, () => ({
-  [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize),
-  random: 1
-}));
+server.graphql('/graphql', global.graphqlSchema, {
+  contextFxn: () => ({
+    [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize),
+    random: 1,
+    pubsub: new PubSub()
+  })
+});
 
 server.file('/graphiql', path.join(__dirname, './graphiql.html'));
 server.file('/', path.join(__dirname, './graphiql.html'));

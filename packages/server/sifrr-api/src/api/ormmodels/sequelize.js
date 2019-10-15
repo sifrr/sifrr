@@ -9,9 +9,11 @@ const GqConnection = require('../graphql/types/objects/connectiontype');
 const gqSchema = new (require('../graphql/types/schematype'))();
 const gqQuery = require('../graphql/types/objects/querytype');
 const gqMutation = require('../graphql/types/objects/mutationtype');
+const gqSubscription = require('../graphql/types/objects/subscriptiontype');
 
 gqSchema.addObject(gqQuery);
 gqSchema.addObject(gqMutation);
+gqSchema.addObject(gqSubscription);
 
 class SequelizeModel extends Sequelize.Model {
   static init(options) {
@@ -66,6 +68,7 @@ class SequelizeModel extends Sequelize.Model {
   static _onInit() {
     for (let q in this.queries) this.addQuery(q, this.queries[q]);
     for (let m in this.mutations) this.addMutation(m, this.mutations[m]);
+    for (let s in this.subscriptions) this.addSubscription(s, this.mutations[s]);
     for (let a in this.extraAttributes) this.addAttr(a, this.extraAttributes[a]);
     this.onInit();
   }
@@ -75,6 +78,10 @@ class SequelizeModel extends Sequelize.Model {
   }
 
   static get mutations() {
+    return {};
+  }
+
+  static get subscriptions() {
     return {};
   }
 
@@ -102,6 +109,10 @@ class SequelizeModel extends Sequelize.Model {
 
   static addMutation(name, options) {
     gqMutation.addField(name, { ...options });
+  }
+
+  static addSubscription(name, options) {
+    gqSubscription.addField(name, { ...options });
   }
 
   static addConnectionQuery(name) {

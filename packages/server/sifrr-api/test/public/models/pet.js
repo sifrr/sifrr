@@ -37,6 +37,7 @@ class Pet extends SequelizeModel {
   }
 
   static get mutations() {
+    const reso = this.upsertMutationResolver.bind(this);
     return {
       [`create${this.graphqlModel.name}`]: {
         args: this.gqAttrs({
@@ -58,7 +59,12 @@ class Pet extends SequelizeModel {
       },
       [`upsert${this.graphqlModel.name}`]: {
         args: this.gqAttrs({ allowed: ['id'], required: ['id'] }),
-        resolver: this.upsertMutationResolver.bind(this),
+        resolver: (a, b, c, d) => {
+          c.pubsub.publish('PET', {
+            ...b
+          });
+          return reso(a, b, c, d);
+        },
         type: this.graphqlModel
       },
       [`delete${this.graphqlModel.name}`]: {
@@ -99,6 +105,18 @@ class Pet extends SequelizeModel {
       },
       type: 'Int',
       description: 'Total pets'
+    });
+
+    // subscription
+    this.addSubscription('getPetSub', {
+      resolver: {
+        subscribe: (_, args, { pubsub }) => {
+          console.log(pubsub);
+          return pubsub.asyncIterator('PET');
+        }
+      },
+      type: 'Pet',
+      description: 'get new Pets'
     });
 
     // Add extra arguments to pet connection
