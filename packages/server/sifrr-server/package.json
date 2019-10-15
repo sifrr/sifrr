@@ -29,6 +29,7 @@
   "dependencies": {
     "busboy": "^0.3.0",
     "chokidar": "^3.0.1",
+    "iterall": "^1.2.2",
     "mkdirp": "^0.5.1",
     "query-string": "^6.8.1"
   },

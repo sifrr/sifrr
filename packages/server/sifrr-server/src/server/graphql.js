@@ -1,37 +1,135 @@
+/* eslint-disable no-case-declarations */
 const queryString = require('query-string');
+const { createAsyncIterator, forAwaitEach, isAsyncIterable } = require('iterall');
 
-module.exports = function graphqlRoute(schema, contextFxn = () => undefined, graphql) {
-  graphql = graphql || require('graphql').graphql;
+const GQL_START = 'start';
+const GQL_DATA = 'data';
+const GQL_STOP = 'stop';
+
+async function getGraphqlParams(res, req) {
+  // query and variables
+  const queryParams = queryString.parse(req.getQuery());
+  let { query, variables, operationName } = queryParams;
+  if (typeof variables === 'string') variables = JSON.parse(variables);
+
+  // body
+  if (res && typeof res.json === 'function') {
+    const data = await res.json();
+    query = data.query || query;
+    variables = data.variables || variables;
+    operationName = data.operationName || operationName;
+  }
+  return {
+    source: query,
+    variableValues: variables,
+    operationName
+  };
+}
+
+function graphqlPost(schema, graphqlOptions = {}, graphql) {
+  const execute = graphql.graphql || require('graphql').graphql;
 
   return async (res, req) => {
     res.onAborted(console.error);
 
-    // query and variables
-    const queryParams = queryString.parse(req.getQuery());
-    let { query, variables } = queryParams;
-    if (typeof variables === 'string') variables = JSON.parse(variables);
-
-    if (typeof res.json === 'function') {
-      const data = await res.json();
-      query = data.query || query;
-      variables = data.variables || variables;
-    }
-
-    // context
-    let context = contextFxn(res, req);
-    if (typeof context === 'object' && context.constructor.name === 'Promise')
-      context = await context;
-
     res.writeHeader('content-type', 'application/json');
     res.end(
       JSON.stringify(
-        await graphql({
+        await execute({
           schema,
-          source: query,
-          variableValues: variables,
-          contextValue: context
+          ...(await getGraphqlParams(res, req)),
+          ...graphqlOptions,
+          contextValue: {
+            res,
+            req,
+            ...(graphqlOptions &&
+              (graphqlOptions.contextValue ||
+                (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(res, req)))))
+          }
         })
       )
     );
   };
+}
+
+function stopGqsSubscription(operations, reqOpId) {
+  if (!reqOpId) return;
+  operations[reqOpId] && operations[reqOpId].return && operations[reqOpId].return();
+  delete operations[reqOpId];
+}
+
+function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
+  const subscribe = graphql.subscribe || require('graphql').subscribe;
+  const execute = graphql.graphql || require('graphql').graphql;
+
+  return {
+    open: (ws, req) => {
+      ws.req = req;
+      ws.operations = {};
+      ws.opId = 1;
+    },
+    message: async (ws, message) => {
+      const { type, payload, id: reqOpId, sifrrQueryId } = JSON.parse(
+        Buffer.from(message).toString('utf8')
+      );
+      const opId = ws.opId;
+      ws.opId = opId + 1;
+
+      switch (type) {
+        case GQL_START:
+          stopGqsSubscription(ws.operations, reqOpId);
+
+          const params = {
+            schema,
+            document: graphql.parse(payload.query),
+            variableValues: payload.variables,
+            operationName: payload.operationName,
+            contextValue: {
+              ws,
+              ...(graphqlOptions &&
+                (graphqlOptions.contextValue ||
+                  (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(ws)))))
+            },
+            ...graphqlOptions
+          };
+          let asyncIterable = await subscribe(
+            params.schema,
+            params.document,
+            params.rootValue,
+            params.contextValue,
+            params.variableValues,
+            params.operationName
+          );
+          asyncIterable = isAsyncIterable(asyncIterable)
+            ? asyncIterable
+            : createAsyncIterator([asyncIterable]);
+
+          forAwaitEach(asyncIterable, result =>
+            ws.send(
+              JSON.stringify({
+                id: opId,
+                type: GQL_DATA,
+                payload: result
+              })
+            )
+          );
+          break;
+
+        case GQL_STOP:
+          stopGqsSubscription(ws.operations, reqOpId);
+          break;
+
+        default:
+          ws.send(JSON.stringify({ payload: await execute(params), id: opId, sifrrQueryId }));
+          break;
+      }
+    },
+    idleTimeout: 24 * 60 * 60,
+    ...uwsOptions
+  };
+}
+
+module.exports = {
+  graphqlPost,
+  graphqlWs
 };

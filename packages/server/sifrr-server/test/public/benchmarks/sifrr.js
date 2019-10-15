@@ -1,6 +1,8 @@
 const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
 const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 
 const app = new App();
 const headers = {
@@ -127,14 +129,28 @@ const queryType = new graphql.GraphQLObjectType({
         id: { type: graphql.GraphQLString }
       },
       resolve: function(_, { id }) {
+        pubsub.publish('ID', { user: fakeDatabase[id] });
         return fakeDatabase[id];
       }
     }
   }
 });
 
-const schema = new graphql.GraphQLSchema({ query: queryType });
+// Define the Subscription type
+const subscriptionType = new graphql.GraphQLObjectType({
+  name: 'Subscription',
+  fields: {
+    user: {
+      type: userType,
+      subscribe(_, __, { pubsub }) {
+        return pubsub.asyncIterator('ID');
+      }
+    }
+  }
+});
 
-app.graphql('/graphql', schema, () => ({}), graphql.graphql);
+const schema = new graphql.GraphQLSchema({ query: queryType, subscription: subscriptionType });
+
+app.graphql('/graphql', schema, { contextValue: { pubsub } }, {}, graphql);
 
 module.exports = app;

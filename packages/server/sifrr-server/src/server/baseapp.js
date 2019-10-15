@@ -8,7 +8,7 @@ const { wsConfig } = require('./livereload');
 const sendFile = require('./sendfile');
 const formData = require('./formdata');
 const loadroutes = require('./loadroutes');
-const graphqlHandler = require('./graphql');
+const { graphqlPost, graphqlWs } = require('./graphql');
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
@@ -125,10 +125,11 @@ class BaseApp {
     return this;
   }
 
-  graphql(path, schema, contextFxn, graphql) {
-    const handler = graphqlHandler(schema, contextFxn, graphql);
+  graphql(path, schema, graphqlOptions, uwsOptions, graphql) {
+    const handler = graphqlPost(schema, graphqlOptions, graphql);
     this.post(path, handler);
     this.get(path, handler);
+    this.ws(path, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
     return this;
   }
 

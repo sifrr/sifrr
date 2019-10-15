@@ -9,6 +9,6 @@ const headers = {
 module.exports = {
   basePath: '/p',
   folder: {
-    '': [path.join(__dirname, '../public'), { headers, lastModified: false }],
+    '': [path.join(__dirname, '../public'), { headers, lastModified: false }]
   }
 };
