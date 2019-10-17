@@ -7503,7 +7503,7 @@ sequelize-pool@^2.3.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-2.3.0.tgz#64f1fe8744228172c474f530604b6133be64993d"
   integrity sha512-Ibz08vnXvkZ8LJTiUOxRcj1Ckdn7qafNZ2t59jYHMX1VIebTAOYefWdRYFt6z6+hy52WGthAHAoLc9hvk3onqA==
 
-sequelize@^5.16.0, sequelize@^5.19.6, sequelize@^5.19.8:
+sequelize@^5.16.0, sequelize@^5.19.8:
   version "5.19.8"
   resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.19.8.tgz#9030d9cfd60eb1090af526c16eb85b1288b9e000"
   integrity sha512-PeI40+HQFQkDleFh1oIfOoalCCq4lePps+sUegNJMEzmy1UT5PsE5ob8Ljon9vOtMouqcWJ6OPS1GwFIaPEuaA==
