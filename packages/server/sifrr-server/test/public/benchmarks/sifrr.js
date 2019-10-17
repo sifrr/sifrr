@@ -151,6 +151,12 @@ const subscriptionType = new graphql.GraphQLObjectType({
 
 const schema = new graphql.GraphQLSchema({ query: queryType, subscription: subscriptionType });
 
-app.graphql('/graphql', schema, { contextValue: { pubsub } }, {}, graphql);
+app.graphql(
+  '/graphql',
+  schema,
+  { contextValue: { pubsub }, graphiqlPath: '/graphiql' },
+  {},
+  graphql
+);
 
 module.exports = app;

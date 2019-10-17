@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 const queryString = require('query-string');
 const { createAsyncIterator, forAwaitEach, isAsyncIterable } = require('iterall');
 
@@ -72,29 +71,36 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
       const { type, payload, id: reqOpId, sifrrQueryId } = JSON.parse(
         Buffer.from(message).toString('utf8')
       );
-      const opId = ws.opId;
-      ws.opId = opId + 1;
+      let opId;
+      if (reqOpId) {
+        opId = reqOpId;
+      } else {
+        opId = ws.opId;
+        ws.opId = opId + 1;
+      }
+
+      const params = {
+        schema,
+        source: payload.query,
+        variableValues: payload.variables,
+        operationName: payload.operationName,
+        contextValue: {
+          ws,
+          ...(graphqlOptions &&
+            (graphqlOptions.contextValue ||
+              (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(ws)))))
+        },
+        ...graphqlOptions
+      };
 
       switch (type) {
         case GQL_START:
-          stopGqsSubscription(ws.operations, reqOpId);
+          stopGqsSubscription(ws.operations, opId);
 
-          const params = {
-            schema,
-            document: graphql.parse(payload.query),
-            variableValues: payload.variables,
-            operationName: payload.operationName,
-            contextValue: {
-              ws,
-              ...(graphqlOptions &&
-                (graphqlOptions.contextValue ||
-                  (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(ws)))))
-            },
-            ...graphqlOptions
-          };
+          // eslint-disable-next-line no-case-declarations
           let asyncIterable = await subscribe(
             params.schema,
-            params.document,
+            graphql.parse(params.source),
             params.rootValue,
             params.contextValue,
             params.variableValues,

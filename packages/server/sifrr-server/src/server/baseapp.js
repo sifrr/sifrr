@@ -125,11 +125,13 @@ class BaseApp {
     return this;
   }
 
-  graphql(path, schema, graphqlOptions, uwsOptions, graphql) {
+  graphql(route, schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
     const handler = graphqlPost(schema, graphqlOptions, graphql);
-    this.post(path, handler);
-    this.get(path, handler);
-    this.ws(path, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
+    this.post(route, handler);
+    this.get(route, handler);
+    this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
+    if (graphqlOptions && graphqlOptions.graphiqlPath)
+      this.file(graphqlOptions.graphiqlPath, path.join(__dirname, './graphiql.html'));
     return this;
   }
 
