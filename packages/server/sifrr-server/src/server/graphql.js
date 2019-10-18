@@ -57,7 +57,7 @@ function stopGqsSubscription(operations, reqOpId) {
   delete operations[reqOpId];
 }
 
-function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
+function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
   const subscribe = graphql.subscribe || require('graphql').subscribe;
   const execute = graphql.graphql || require('graphql').graphql;
 
