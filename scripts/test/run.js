@@ -126,6 +126,7 @@ async function run() {
         process.exit(1);
       }
       global.console.log(`All tests passed!`);
+      process.exit(0);
     }
   );
 }
