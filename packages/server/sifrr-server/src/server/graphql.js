@@ -25,7 +25,7 @@ async function getGraphqlParams(res, req) {
   };
 }
 
-function graphqlPost(schema, graphqlOptions = {}, graphql) {
+function graphqlPost(schema, graphqlOptions = {}, graphql = {}) {
   const execute = graphql.graphql || require('graphql').graphql;
 
   return async (res, req) => {
