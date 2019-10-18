@@ -11,12 +11,12 @@ commands:
             - '22:0a:b8:85:e7:5a:96:2a:90:5c:16:01:d6:1f:e8:b6'
       - restore_cache:
           keys:
-            - sifrr-v3-source-{{ .Branch }}-{{ .Revision }}
-            - sifrr-v3-source-{{ .Branch }}-
-            - sifrr-v3-source-
+            - sifrr-v4-source-{{ .Branch }}-{{ .Revision }}
+            - sifrr-v4-source-{{ .Branch }}-
+            - sifrr-v4-source-
       - checkout
       - save_cache:
-          key: sifrr-v3-source-{{ .Branch }}-{{ .Revision }}
+          key: sifrr-v4-source-{{ .Branch }}-{{ .Revision }}
           paths:
             - '.git'
       - run:
