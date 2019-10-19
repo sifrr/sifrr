@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+      html,
+      body {
+        font-size: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      input {
+        width: 200px;
+        height: 28px;
+        padding: 6px;
+      }
+      button {
+        height: 28px;
+        padding: 6px;
+      }
+      #messages {
+        padding: 4px;
+        margin: 4px;
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      Channel: <input type="text" name="channel" id="channel" /><button
+        type="submit"
+        onclick="joinChannel()"
+      >
+        Join
+      </button>
+      <strong id="channelStatus"></strong>
+    </p>
+    <p>UserId: <input type="text" name="userId" id="userId" /></p>
+    <p>
+      Message: <input type="text" name="message" id="message" /><button
+        type="submit"
+        onclick="sendMessage()"
+      >
+        Send
+      </button>
+    </p>
+    <div id="messages"></div>
+    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script>
+      let subId;
+      const sock = new Sifrr.Fetch.Socket(`ws://${location.host}/graphql`);
+      const messages = document.getElementById('messages');
+
+      function addMessage({
+        data: {
+          chat: { message, User }
+        }
+      }) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${User.name}:</strong> ${message}`;
+        messages.appendChild(p);
+      }
+
+      async function joinChannel() {
+        if (subId) await sock.unsubscribe(subId);
+        subId = await sock.subscribe(
+          {
+            query: `subscription($channel: String) {
+            chat(channel: $channel) {
+              message
+              User {
+                id
+                name
+              }
+              channel
+            }
+          }`,
+            variables: {
+              channel: document.getElementById('channel').value
+            }
+          },
+          addMessage
+        );
+        document.getElementById('messages').textContent = '';
+        document.getElementById('channelStatus').textContent = `${
+          document.getElementById('channel').value
+        } joined!`;
+      }
+
+      function sendMessage() {
+        sock
+          .graphql({
+            query: `query($userId: String, $channel: String, $message: String) {
+            message(message: $message, channel: $channel, userId: $userId)
+          }`,
+            variables: {
+              userId: document.getElementById('userId').value,
+              channel: document.getElementById('channel').value,
+              message: document.getElementById('message').value
+            }
+          })
+          .then(({ data }) => {
+            console.log(data.message);
+            if (data.message === true) document.getElementById('message').value = '';
+          });
+      }
+    </script>
+  </body>
+</html>

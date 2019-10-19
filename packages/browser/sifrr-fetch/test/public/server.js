@@ -46,6 +46,15 @@ const userType = new graphql.GraphQLObjectType({
   }
 });
 
+const messageType = new graphql.GraphQLObjectType({
+  name: 'Message',
+  fields: {
+    message: { type: graphql.GraphQLString },
+    channel: { type: graphql.GraphQLString },
+    User: { type: userType }
+  }
+});
+
 // Define the Query type
 const queryType = new graphql.GraphQLObjectType({
   name: 'Query',
@@ -60,6 +69,21 @@ const queryType = new graphql.GraphQLObjectType({
         pubsub.publish('ID', { user: fakeDatabase[id] });
         return fakeDatabase[id];
       }
+    },
+    message: {
+      type: graphql.GraphQLBoolean,
+      // `args` describes the arguments that the `user` query accepts
+      args: {
+        message: { type: graphql.GraphQLString },
+        userId: { type: graphql.GraphQLString },
+        channel: { type: graphql.GraphQLString }
+      },
+      resolve: function(_, { message, channel, userId }) {
+        pubsub.publish(`${channel}_message`, {
+          chat: { User: { id: userId, name: userId }, message, channel }
+        });
+        return true;
+      }
     }
   }
 });
@@ -72,6 +96,16 @@ const subscriptionType = new graphql.GraphQLObjectType({
       type: userType,
       subscribe(_, __, { pubsub }) {
         return pubsub.asyncIterator('ID');
+      }
+    },
+    chat: {
+      type: messageType,
+      // `args` describes the arguments that the `user` query accepts
+      args: {
+        channel: { type: graphql.GraphQLString }
+      },
+      subscribe(_, { channel }, { pubsub }) {
+        return pubsub.asyncIterator(`${channel}_message`);
       }
     }
   }
