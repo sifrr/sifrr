@@ -62,6 +62,13 @@ type Mutation {
   ): User
 }
 
+type Subscription {
+  """
+  get new Pets
+  """
+  getPetSub: Pet
+}
+
 """
 A pet
 """

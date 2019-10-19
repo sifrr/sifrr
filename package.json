@@ -62,7 +62,7 @@
     "@sifrr/dom": "file:./packages/browser/sifrr-dom",
     "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
     "@sifrr/server": "file:./packages/server/sifrr-server",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.0.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.1.0",
     "puppeteer": "1.20.0"
   }
 }

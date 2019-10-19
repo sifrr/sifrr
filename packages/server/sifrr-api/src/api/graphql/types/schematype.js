@@ -50,7 +50,7 @@ class SchemaType {
     });
 
     return [...this.objects]
-      .filter(o => !(o instanceof ObjectType) || (o.fields && o.fields.size > 0))
+      .filter(o => !(o instanceof ObjectType) || (o.fields && (o.fields.size > 0 || o.types)))
       .map(o => o && o.getSchema())
       .filter(s => s)
       .join('\n\n');
