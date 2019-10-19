@@ -1,7 +1,5 @@
-const SifrrApi = {};
-SifrrApi.SequelizeModel = require('./api/ormmodels/sequelize');
-SifrrApi.GraphqlExecutor = require('./api/graphqlexecutor');
-SifrrApi.createExecutableSchema = require('./api/createexecutableschema');
-SifrrApi.reqToVariables = require('./api/reqtovariables');
-
-module.exports = SifrrApi;
+module.exports = {
+  SequelizeModel: require('./api/ormmodels/sequelize'),
+  GraphqlExecutor: require('./api/graphqlexecutor'),
+  createExecutableSchema: require('./api/createexecutableschema')
+};

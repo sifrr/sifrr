@@ -6,10 +6,6 @@ function request(type, url) {
 }
 
 describe('SequelizeModel', () => {
-  before(async () => {
-    await page.goto(`${PATH}/`);
-  });
-
   it('__ connection works', async () => {
     const data = (await request('get', '/api/v1/pets?where={"owner__id":1}')).data;
 

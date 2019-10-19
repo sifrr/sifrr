@@ -10,11 +10,12 @@ module.exports = (saveSchema = true) => {
   }
 
   // Available globally (also in routes)
-  global.graphqlSchema = createExecutableSchema(require('../sequelize').Sequelize.gqSchema, {
+  const graphqlSchema = createExecutableSchema(require('../sequelize').Sequelize.gqSchema, {
     extra: 'scalar Random', // Add scalar Random as we have returnType Random for 'count'
     schemaDir: saveSchema ? path.join(__dirname, '../db') : null
   });
-  global.etg = new GraphqlExecutor(global.graphqlSchema);
+  global.etg = new GraphqlExecutor(graphqlSchema);
 
   Object.assign(global, models);
+  return graphqlSchema;
 };

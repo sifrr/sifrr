@@ -1,6 +1,6 @@
 process.env.NODE_PATH = require('path').join(__dirname, './node_modules');
 require('module').Module._initPaths();
-require('./config/setup')();
+const graphqlSchema = require('./config/setup')();
 
 const path = require('path');
 const { App } = require('@sifrr/server');
@@ -14,15 +14,13 @@ server.load(path.join(__dirname, './routes'), {
   basePath: '/api' /* , ignore: [ 'user.js' ] */
 });
 
-server.graphql('/graphql', global.graphqlSchema, {
+server.graphql('/graphql', graphqlSchema, {
   contextFxn: () => ({
     [EXPECTED_OPTIONS_KEY]: createContext(require('./sequelize').sequelize),
     random: 1,
     pubsub: new PubSub()
-  })
+  }),
+  graphiqlPath: '/graphiql'
 });
-
-server.file('/graphiql', path.join(__dirname, './graphiql.html'));
-server.file('/', path.join(__dirname, './graphiql.html'));
 
 module.exports = server;

@@ -1,4 +1,3 @@
-const { reqToVariables } = require('../../../src/sifrr.api');
 const { getQuery, writeHeaders } = require('@sifrr/server');
 
 function setHeaders(res) {
@@ -30,7 +29,7 @@ module.exports = {
           }
         }
       `,
-          reqToVariables(getQuery(req), { allowed: ['name', 'ownerId'] }),
+          getQuery(req),
           { random: 1 }
         )
         .then(data => res.end(JSON.stringify(data)));
@@ -52,7 +51,7 @@ module.exports = {
           }
         }
       `,
-          reqToVariables(getQuery(req), { allowed: ['name', 'owner__name'] }),
+          getQuery(req),
           { random: 1 }
         )
         .then(data => res.end(JSON.stringify(data)));
@@ -76,7 +75,10 @@ module.exports = {
           }
         }
       `,
-          reqToVariables(getQuery(req), { allowed: ['where', 'id'] }),
+          {
+            where: getQuery(req).where ? JSON.parse(getQuery(req).where) : undefined,
+            id: getQuery(req).id ? parseInt(getQuery(req).id) : undefined
+          },
           { random: 1 }
         )
         .then(data => res.end(JSON.stringify(data)));

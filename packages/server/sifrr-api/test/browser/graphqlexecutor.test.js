@@ -6,10 +6,6 @@ function getReq(url) {
 }
 
 describe('GraphqlExecutor', () => {
-  before(async () => {
-    await page.goto(`${PATH}/`);
-  });
-
   it('executes given graphql', async () => {
     const data = (await getReq('/api/v1/pets')).data;
 
