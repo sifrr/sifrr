@@ -39,11 +39,11 @@ function webSocketServer(port) {
         if (ENV == 'development') global.console.log(`message received ${ws.id}: `, message);
         let ok, res;
         res = {};
-        res.sifrrQueryId = message.sifrrQueryId;
-        if (message.sifrrQueryType === 'FILE') {
-          res.data = fs.readFileSync(path.join(__dirname, message.data.url), 'UTF-8');
+        res.id = message.id;
+        if (message.type === 'FILE') {
+          res.payload = fs.readFileSync(path.join(__dirname, message.payload.url), 'UTF-8');
         } else {
-          res.data = { dataYouSent: message.data };
+          res.payload = { dataYouSent: message.payload };
         }
         // setTimeout(() => {
         ok = ws.send(JSON.stringify(res));

@@ -5,7 +5,7 @@ describe('graphql', function() {
 
   it('works with query params', async () => {
     const resp = await page.evaluate(async p => {
-      return await Sifrr.Fetch.get(
+      return await Sifrr.Fetch.post(
         `${p}/graphql?query=query($id: String) { user(id: $id) { id \n name } }&variables={"id":"a"}`
       );
     }, PATH);

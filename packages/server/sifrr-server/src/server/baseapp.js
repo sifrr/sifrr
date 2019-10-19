@@ -129,7 +129,7 @@ class BaseApp {
     const handler = graphqlPost(schema, graphqlOptions, graphql);
     this.post(route, handler);
     this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
-    this.get(route, handler);
+    // this.get(route, handler);
     if (graphqlOptions && graphqlOptions.graphiqlPath)
       this.file(graphqlOptions.graphiqlPath, path.join(__dirname, './graphiql.html'));
     return this;

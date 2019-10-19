@@ -190,8 +190,6 @@ app.graphql('/graphql', graphqlSchema, contextFxn);
 
 It supports:
 
-- GET requests with query params (`query` and `variables`) eg. `/graphql?query=query($id: String) { user(id: $id) { id \n name } }&variables={"id":"a"}`
-
 - POST requests with query params (`query` and `variables`) eg. `/graphql?query=query($id: String) { user(id: $id) { id \n name } }&variables={"id":"a"}`
 
 - POST requests with json body (containing `query` and `variables`) eg body:
@@ -210,6 +208,27 @@ It supports:
   }
 }
 ```
+
+- Websocket subscriptions (same message format as graphql-subscription-ws)
+
+```js
+// subscribe message
+{
+  type: 'start',
+  payload: {
+    query: ``, // subscription query
+    variables: {...}
+  }
+}
+
+// unsubscribe message
+{
+  type: 'stop',
+  id: 1 // subscription id received when subscribing
+}
+```
+
+can be implemented easily using sifrr-fetch
 
 ### Live reload (experimental)
 

@@ -208,19 +208,42 @@ socket.send(message [, type]).then(resp => {
 
 // Server will receive data as:
 // {
-//   sifrrQueryId: Int,
-//   sifrrQueryType: type, (default: 'JSON')
-//   data: message
+//   id: Int,
+//   type: type, (default: 'sifrr-fetch')
+//   payload: message
 // },
 // and should send back
 // {
-//   sifrrQueryId: same id as received
-//   data: response
+//   id: same id as received
+//   payload: response
 // }
 // then resp will be equal to response sent above
 //
 // If socket connection fails
 // It will call fallback function with message and resolves with its return value
+```
+
+### Graphql query over websocket (compatible with sifrr-server)
+
+```js
+socket.graphql({
+  query: ...,
+  variables: ...
+}).then(data => {
+  // do something with data
+});
+```
+
+### Graphql Subscriptions (compatible with graphql-subscription-ws and sifrr-server)
+
+```js
+let subscriptionId;
+// subscribe
+socket.subscribe({ query: `subscription { ... }`, variables: { ... } }, callback).then(id => subscriptionId = id);
+// callback will be called with every data received from server
+
+// unsubscribe
+socket.unsubscribe(subscriptionId).then(...);
 ```
 
 ### Traditional WebSocket messaging

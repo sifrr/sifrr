@@ -1,8 +1,6 @@
 const { App, writeHeaders } = require('../../../src/sifrr.server');
 const path = require('path');
 const memoryCache = require('cache-manager').caching({ store: 'memory', max: 100, ttl: 0 });
-const { PubSub } = require('graphql-subscriptions');
-const pubsub = new PubSub();
 
 const app = new App();
 const headers = {
@@ -97,6 +95,8 @@ app.folder('/', path.join(__dirname, '../'), {
 });
 
 // graphql
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 const graphql = require('graphql');
 
 const fakeDatabase = {

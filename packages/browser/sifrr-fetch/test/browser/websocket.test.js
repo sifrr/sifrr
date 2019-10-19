@@ -1,4 +1,4 @@
-describe('websocket', function() {
+describe('websocket fallback', function() {
   before(async () => {
     await page.goto(`${PATH}/index.html`, { waitUntil: 'networkidle0' });
   });
@@ -28,7 +28,9 @@ describe('websocket', function() {
 let wsserver;
 const wsport = 7700;
 
-describe('websockets', () => {
+describe('websockets', function() {
+  this.timeout(0);
+
   before(async () => {
     wsserver = require('../public/wsserver')(wsport);
     await page.goto(`${PATH}/loadtest.html`, { waitUntil: 'networkidle0' });
@@ -86,5 +88,64 @@ describe('websockets', () => {
     expect(result.socket.size).to.equal(result.fetch.size);
     // no longer the case after moving to sifrr-server (because localhost)
     // expect(result.socket.time).to.be.at.most(result.fetch.time);
+  });
+
+  it('queries graphql', async () => {
+    const res = await page.evaluate(async () => {
+      const sock = new Sifrr.Fetch.Socket(`ws://${location.host}/graphql`);
+      return await sock.graphql({
+        query: `query($id: String) {
+      user(id: $id) {
+        id,
+        name
+      }
+    }
+    `,
+        variables: { id: 'a' }
+      });
+    });
+
+    expect(res.data).to.deep.equal({ user: { id: 'a', name: 'alice' } });
+  });
+
+  it('(un)subscribes subscriptions', async () => {
+    const res = await page.evaluate(async () => {
+      const sock = new Sifrr.Fetch.Socket(`ws://${location.host}/graphql`);
+      const data = [];
+      const id = await sock.subscribe(
+        {
+          query: `subscription {
+          user {
+            id,
+            name
+          }
+        }
+        `
+        },
+        d => data.push(d)
+      );
+      const get = {
+        query: `query($id: String) {
+      user(id: $id) {
+        id,
+        name
+      }
+    }
+    `,
+        variables: { id: 'a' }
+      };
+      await sock.graphql(get);
+      await sock.graphql(get);
+      await new Promise(res => setTimeout(res, 100));
+      await sock.unsubscribe(id);
+      await sock.graphql(get);
+      await new Promise(res => setTimeout(res, 100));
+      return data;
+    });
+
+    expect(res.length).to.equal(2);
+    res.forEach(d => {
+      expect(d).to.deep.equal({ data: { user: { id: 'a', name: 'alice' } } });
+    });
   });
 });

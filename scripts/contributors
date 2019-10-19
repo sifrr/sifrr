@@ -7,4 +7,5 @@
 
 git shortlog -sen \
   | perl -spe 's/^\s+\d+\s+//' \
+  | grep -v "bot" \
   > misc/CONTRIBUTORS

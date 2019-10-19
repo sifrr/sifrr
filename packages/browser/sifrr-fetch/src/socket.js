@@ -1,3 +1,6 @@
+const GRAPHQL_START = 'start';
+const GRAPHQL_STOP = 'stop';
+
 class Socket {
   constructor(
     url,
@@ -13,25 +16,47 @@ class Socket {
     this._openSocket();
   }
 
-  send(data, type = 'JSON') {
-    const message = {
-      data,
-      sifrrQueryType: type,
-      sifrrQueryId: this.id++
-    };
-    return this.sendRaw(JSON.stringify(message), message.sifrrQueryId, data);
+  graphql(payload) {
+    const id = this.id++;
+    return this.sendRaw(JSON.stringify({ id, type: 'query', payload }), id);
   }
 
-  sendRaw(message, id, original = message) {
+  subscribe(payload, callback) {
+    if (typeof callback !== 'function') throw Error('Callback should be given for subscribing.');
+    return this.send(payload, GRAPHQL_START, callback);
+  }
+
+  unsubscribe(id) {
+    this.sendRaw(JSON.stringify({ id, type: GRAPHQL_STOP }), this.id++);
+    delete this._requests[id];
+    return Promise.resolve(id);
+  }
+
+  send(payload, type = 'sifrr-fetch', callback) {
+    const message = {
+      payload,
+      type: type,
+      id: this.id++
+    };
+    return this.sendRaw(JSON.stringify(message), message.id, payload, callback);
+  }
+
+  sendRaw(message, id, original = message, callback) {
+    const isCallback = typeof callback === 'function';
     if (this._fallback) return this.fallback(original);
     return this._openSocket()
       .then(ws => {
         ws.send(message);
         return new Promise(res => {
+          if (isCallback) res(id);
           this._requests[id] = {
             res: v => {
-              delete this._requests[id];
-              res(v);
+              if (isCallback) {
+                callback(v);
+              } else {
+                delete this._requests[id];
+                res(v);
+              }
             },
             original
           };
@@ -83,8 +108,9 @@ class Socket {
 
   _onmessage(event) {
     const data = JSON.parse(event.data);
-    if (data.sifrrQueryId) this._requests[data.sifrrQueryId].res(data.data);
-    delete this._requests[data.sifrrQueryId];
+    if (data.id && this._requests[data.id]) {
+      this._requests[data.id].res(data.payload);
+    }
     this.onmessage(event);
   }
 

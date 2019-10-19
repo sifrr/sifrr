@@ -1,9 +1,11 @@
 const queryString = require('query-string');
 const { createAsyncIterator, forAwaitEach, isAsyncIterable } = require('iterall');
-
+// client -> server
 const GQL_START = 'start';
-const GQL_DATA = 'data';
 const GQL_STOP = 'stop';
+// server -> client
+const GQL_DATA = 'data';
+const GQL_STOPPED = 'stopped';
 
 async function getGraphqlParams(res, req) {
   // query and variables
@@ -68,15 +70,12 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
       ws.opId = 1;
     },
     message: async (ws, message) => {
-      const { type, payload, id: reqOpId, sifrrQueryId } = JSON.parse(
-        Buffer.from(message).toString('utf8')
-      );
+      const { type, payload = {}, id: reqOpId } = JSON.parse(Buffer.from(message).toString('utf8'));
       let opId;
       if (reqOpId) {
         opId = reqOpId;
       } else {
-        opId = ws.opId;
-        ws.opId = opId + 1;
+        opId = ws.opId++;
       }
 
       const params = {
@@ -126,7 +125,7 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
           break;
 
         default:
-          ws.send(JSON.stringify({ payload: await execute(params), id: opId, sifrrQueryId }));
+          ws.send(JSON.stringify({ payload: await execute(params), id: opId }));
           break;
       }
     },
