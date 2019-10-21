@@ -39,7 +39,7 @@
     "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.8",
-    "sequelize": "^5.19.8",
+    "sequelize": "^5.21.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v16.1.0",
     "ws": "^7.1.2"
   },
