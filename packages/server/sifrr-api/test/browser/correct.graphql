@@ -8,7 +8,7 @@ type Query {
     limit: Int
     order: String
     offset: Int
-  ): [Pet]
+  ): [Pet]!
   petConn(
     after: String
     first: Int
@@ -26,39 +26,39 @@ type Query {
 
 type Mutation {
   createPet(
-    id: Int
+    id: Int!
     name: String
     ownerId: Int
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   ): Pet
   createPetAndOwner(name: String!, owner__name: String!): Pet
   updatePet(
-    id: Int
+    id: Int!
     name: String
     ownerId: Int
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   ): Pet
   upsertPet(
-    id: Int
+    id: Int!
     name: String
     ownerId: Int
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   ): Pet
   deletePet(
-    id: Int
+    id: Int!
     name: String
     ownerId: Int
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   ): Int
   createUser(
-    id: Int
+    id: Int!
     name: String
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date!
+    updatedAt: Date!
   ): User
 }
 
@@ -73,11 +73,11 @@ type Subscription {
 A pet
 """
 type Pet {
-  id: Int
+  id: Int!
   name: String
   ownerId: Int
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date!
+  updatedAt: Date!
   """
   Random attribute
   """
@@ -102,10 +102,10 @@ type PetConnection {
 User Model
 """
 type User {
-  id: Int
+  id: Int!
   name: String
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date!
+  updatedAt: Date!
   pets: PetConnection
 }
 

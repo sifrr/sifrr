@@ -75,7 +75,7 @@ module.exports = {
           }
         }
       `,
-          {
+          (getQuery(req).where || getQuery(req).id) && {
             where: getQuery(req).where ? JSON.parse(getQuery(req).where) : null,
             id: getQuery(req).id ? parseInt(getQuery(req).id) : null
           },

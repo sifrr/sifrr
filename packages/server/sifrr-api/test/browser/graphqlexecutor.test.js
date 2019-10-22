@@ -7,9 +7,8 @@ function getReq(url) {
 
 describe('GraphqlExecutor', () => {
   it('executes given graphql', async () => {
-    const data = (await getReq('/api/v1/pets')).data;
-
-    assert.equal(data.getPet.length, 3);
+    const data = await getReq('/api/v1/pets');
+    assert.equal(data.data.getPet.length, 3);
   });
 
   it('executes given graphql with variables', async () => {

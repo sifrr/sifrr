@@ -31,7 +31,8 @@ class Pet extends SequelizeModel {
         // customResolver need to bind static functions resolvers with this class, else it won't work
         resolver: this.customResolver.bind(this),
         type: [this.graphqlModel],
-        description: 'Get one Pet.'
+        description: 'Get one Pet.',
+        nullable: false
       }
     };
   }
