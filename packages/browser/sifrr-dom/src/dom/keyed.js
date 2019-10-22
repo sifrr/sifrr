@@ -116,7 +116,6 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       while (newStart <= newEnd) {
         _node = createFn(newData[newStart]);
         parent.insertBefore(_node, finalNode);
-        prevEndNode = _node;
         newStart++;
       }
     }

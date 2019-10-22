@@ -35,7 +35,7 @@ function elementClassFactory(baseClass) {
         if (this.useShadowRoot && window.ShadyCSS && !window.ShadyCSS.nativeShadow) {
           window.ShadyCSS.prepareTemplate(this._ctemp, this.elementName);
         }
-        this.stateMap = create(this._ctemp.content, creator, this.defaultState, this);
+        this.stateMap = create(this._ctemp.content, creator, this.defaultState);
       }
       return this._ctemp || false;
     }

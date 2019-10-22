@@ -23,7 +23,7 @@ class SifrrFetch {
   }
 
   static socket(url, protocol, fallback) {
-    return new WebSocket(url, protocol, fallback);
+    return new Socket(url, protocol, fallback);
   }
 
   static request(u, o = {}, m = 'GET') {

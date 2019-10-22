@@ -7,7 +7,7 @@
   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=small"/></a>
   <a href="https://coveralls.io/github/sifrr/sifrr?branch=master"><img src="https://img.shields.io/coveralls/github/sifrr/sifrr.svg?style=flat-square" alt="Coverage Status" /></a>
   <a href="https://dependabot.com/"><img src="https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot" alt="Dependabot badge" /></a>
-  <a href="https://codeclimate.com/github/sifrr/sifrr/maintainability"><img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/sifrr/sifrr.svg?logo=code%20climate&style=flat-square" /></a>
+  <a href="https://lgtm.com/projects/g/sifrr/sifrr/alerts/"><img alt="Code Climate maintainability" src="https://img.shields.io/lgtm/grade/javascript/g/sifrr/sifrr.svg?logo=lgtm&style=flat-square&logoWidth=18" /></a>
 </p>
 <p align="center">
   <a href="https://sifrr.github.io/sifrr/">Documentation</a> | <a href="./CHANGELOG.md">Changelog</a> | <a href="./misc/CONTRIBUTORS">Contributors</a> | <a href="./misc/CONTRIBUTING.md">Contributing guidelines</a> | <a href="./misc/CODE_OF_CONDUCT.md">Code of Conduct</a>

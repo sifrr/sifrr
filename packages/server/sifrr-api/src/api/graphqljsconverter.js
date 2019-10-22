@@ -27,7 +27,7 @@ function graphqlTypeToString(graphqlObject) {
   let list = false;
 
   if (graphqlObject instanceof GraphQLNonNull) {
-    nullable = true;
+    nullable = false;
     graphqlObject = graphqlObject.ofType;
   }
 
