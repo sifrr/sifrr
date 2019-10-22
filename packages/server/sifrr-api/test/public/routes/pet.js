@@ -76,8 +76,8 @@ module.exports = {
         }
       `,
           {
-            where: getQuery(req).where ? JSON.parse(getQuery(req).where) : undefined,
-            id: getQuery(req).id ? parseInt(getQuery(req).id) : undefined
+            where: getQuery(req).where ? JSON.parse(getQuery(req).where) : null,
+            id: getQuery(req).id ? parseInt(getQuery(req).id) : null
           },
           { random: 1 }
         )
