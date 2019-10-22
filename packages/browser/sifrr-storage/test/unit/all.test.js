@@ -43,28 +43,45 @@ describe('SifrrStorage', () => {
 });
 
 describe('Storage', () => {
-  let x = new Storage();
+  let x = new Storage({ ttl: 100 });
 
-  describe('#_parseKeyValue', () => {
-    it('should return key if key is array and value is not there', () => {
-      assert.deepEqual(x._parseKeyValue([0, 1, 2]), [0, 1, 2]);
+  describe('#_parseSetValue', () => {
+    it('should return data with ttl', () => {
+      assert.deepEqual(x._parseSetValue('a'), { value: 'a', ttl: 100 });
+      assert.deepEqual(x._parseSetValue({ value: 'b' }), { value: 'b', ttl: 100 });
     });
 
-    it('should return object if key is object and value is not there', () => {
-      assert.deepEqual(x._parseKeyValue({ a: 'b', c: 'd' }), { a: 'b', c: 'd' });
+    it('should return data with given ttl', () => {
+      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }), { value: 'b', ttl: 500 });
+    });
+  });
+
+  describe('#_parseSetData', () => {
+    before(() => {
+      x._oldparseSetValue = x._parseSetValue;
+      x._parseSetValue = () => 'ok';
     });
 
-    it('should return array if key is string and value is not there', () => {
-      assert.deepEqual(x._parseKeyValue('a'), ['a']);
+    after(() => {
+      x._parseSetValue = x._oldparseSetValue;
     });
 
-    it('should return object if key is string and value is string', () => {
-      assert.deepEqual(x._parseKeyValue('a', 'b'), { a: 'b' });
+    it('set value for key value', () => {
+      assert.deepEqual(x._parseSetData('a', 'b'), { a: 'ok' });
     });
 
-    it('throws error when key is not supported', () => {
-      expect(() => x._parseKeyValue(() => {})).to.throw('Invalid Key');
-      expect(() => x._parseKeyValue(() => {}, 'ok')).to.throw('Invalid Key');
+    it('set value for data', () => {
+      assert.deepEqual(x._parseSetData({ a: 'b' }), { a: 'ok' });
+    });
+  });
+
+  describe('#_parseGetData', () => {
+    it('returns value if present', () => {
+      assert.deepEqual(x._parseGetData({ a: { value: 'b' } }), { a: 'b' });
+    });
+
+    it('returns if not present', () => {
+      assert.deepEqual(x._parseGetData({ a: null }), { a: null });
     });
   });
 

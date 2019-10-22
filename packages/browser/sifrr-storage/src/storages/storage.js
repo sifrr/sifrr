@@ -1,12 +1,12 @@
 import { stringify, parse } from '../utils/json';
 
-const jsonConstructor = {}.constructor;
 const defaultOptions = {
   priority: [],
   name: 'SifrrStorage',
   version: 1,
   description: 'Sifrr Storage',
-  size: 5 * 1024 * 1024
+  size: 5 * 1024 * 1024,
+  ttl: 0
 };
 
 class Storage {
@@ -19,37 +19,17 @@ class Storage {
     this.description = this._options.description;
   }
 
-  _parseKeyValue(key, value) {
-    if (typeof value === 'undefined') {
-      if (Array.isArray(key)) {
-        return key;
-      } else if (typeof key === 'string') {
-        return [key];
-      } else if (key.constructor === jsonConstructor) {
-        return key;
-      }
-      {
-        throw Error('Invalid Key');
-      }
-    } else if (typeof key === 'string') {
-      let ans = {};
-      ans[key] = value;
-      return ans;
-    } else {
-      throw Error('Invalid Key');
-    }
-  }
-
+  // overwrited methods
   _select(keys) {
-    return this.all().then(data => {
-      let ans = {};
+    return Promise.resolve(this._parsedData()).then(data => {
+      const ans = {};
       keys.forEach(key => (ans[key] = data[key]));
       return ans;
     });
   }
 
   _upsert(data) {
-    let table = this.table;
+    const table = this.table;
     for (let key in data) {
       table[key] = data[key];
     }
@@ -57,7 +37,7 @@ class Storage {
   }
 
   _delete(keys) {
-    let table = this.table;
+    const table = this.table;
     keys.forEach(key => delete table[key]);
     this.table = table;
   }
@@ -74,24 +54,62 @@ class Storage {
     }
   }
 
+  // data manipulation methods
+  _parseGetData(original) {
+    Object.keys(original).forEach(k => (original[k] = original[k] && original[k].value));
+    return original;
+  }
+
+  _parseSetData(key, value) {
+    if (typeof value !== 'undefined') {
+      return { [key]: this._parseSetValue(value) };
+    } else {
+      const data = {};
+      Object.keys(key).forEach(k => (data[k] = this._parseSetValue(key[k])));
+      return data;
+    }
+  }
+
+  _parseSetValue(value) {
+    if (value && value.value) {
+      value.ttl = value.ttl || this._options.ttl;
+      return value;
+    } else {
+      return {
+        value,
+        ttl: this._options.ttl
+      };
+    }
+  }
+
+  _parseKey(key) {
+    if (Array.isArray(key)) {
+      return key;
+    } else if (typeof key === 'string') {
+      return [key];
+    }
+    throw Error('Invalid Key: ' + key);
+  }
+
+  // public methods
   keys() {
-    return this.all().then(d => Object.keys(d));
+    return Promise.resolve(this._parsedData()).then(d => Object.keys(d));
   }
 
   all() {
-    return Promise.resolve(this._parsedData());
+    return Promise.resolve(this._parsedData()).then(this._parseGetData);
   }
 
   get(key) {
-    return Promise.resolve(this._select(this._parseKeyValue(key)));
+    return Promise.resolve(this._select(this._parseKey(key))).then(this._parseGetData);
   }
 
   set(key, value) {
-    return Promise.resolve(this._upsert(this._parseKeyValue(key, value)));
+    return Promise.resolve(this._upsert(this._parseSetData(key, value)));
   }
 
   del(key) {
-    return Promise.resolve(this._delete(this._parseKeyValue(key)));
+    return Promise.resolve(this._delete(this._parseKey(key)));
   }
 
   clear() {

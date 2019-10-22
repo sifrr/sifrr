@@ -285,7 +285,10 @@ for (let key in SifrrStorage.availableStores) {
           );
 
           if (key !== 'jsonstorage') {
-            assert(result.exact || (result.sameInstance && result.arrayEqual));
+            assert(
+              result.exact || (result.sameInstance && result.arrayEqual),
+              `${JSON.stringify(result)} was not as expected`
+            );
           }
         });
       });

@@ -1,16 +1,16 @@
 function save_localstorage() {
-  window.localStorage.setItem('SifrrStorage1/a', 'b');
+  window.localStorage.setItem('SifrrStorage1/a', '{"value":"b"}');
 }
 
 function save_cookies() {
-  document.cookie = 'SifrrStorage1/a=b';
+  document.cookie = 'SifrrStorage1/a={"value":"b"}';
 }
 
 function save_websql() {
   let webSQL = window.openDatabase('ss', 1, 'whatever', 1 * 1024 * 1024);
   webSQL.transaction(function(tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS SifrrStorage1 (key unique, value)');
-    tx.executeSql('INSERT INTO SifrrStorage1(key, value) VALUES ("a", "b")');
+    tx.executeSql('INSERT INTO SifrrStorage1(key, value) VALUES ("a", \'{"value":"b"}\')');
   });
 }
 
@@ -22,14 +22,14 @@ function save_indexeddb() {
     let table = db.createObjectStore('SifrrStorage1');
     table.transaction.oncomplete = async function() {
       let store = db.transaction('SifrrStorage1', 'readwrite').objectStore('SifrrStorage1');
-      store.add('b', 'a');
+      store.add({ value: 'b' }, 'a');
     };
   };
 }
 
 function save_jsonstorage() {
   let storage = new Sifrr.Storage('jsonstorage');
-  storage._table = { a: 'b' };
+  storage._table = { a: { value: 'b' } };
 }
 
 function arrayEqual(buf1, buf2) {
