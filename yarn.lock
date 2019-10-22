@@ -838,7 +838,7 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.36", "@sifrr/dev@^0.0.30", "@sifrr/dev@^0.0.36":
+"@sifrr/dev@0.0.36", "@sifrr/dev@^0.0.36":
   version "0.0.36"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.36.tgz#fc406b1d5235655ddab5c512b761c7dca7962020"
   integrity sha512-xZ8W/THXShiRm2XDGZZ7fz7h2LIy0y49cBKP9m7m157/he+6H96Xbkg3wsma8FLNNL3468hpNqL4WUSeL5DBoA==
@@ -8311,7 +8311,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.2.tgz#105b0f1934119dde543ac8eb71af3a91009efe54"
   integrity sha512-lmQ4L+J6mnu3xweP8+rOrUwzmN+MRAj7TgtJtDaXE5PMyX2kCrklhg3rvOsOIfNeAWMQWO2F1GPc1kMD2vLAfw==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v15.11.0", uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
   version "16.0.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/279ddafb1f95c81b4befece127a320c1e3dfcd4a"
 
