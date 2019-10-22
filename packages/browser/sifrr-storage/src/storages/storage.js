@@ -56,7 +56,20 @@ class Storage {
 
   // data manipulation methods
   _parseGetData(original) {
-    Object.keys(original).forEach(k => (original[k] = original[k] && original[k].value));
+    const now = Date.now();
+    Object.keys(original).forEach(k => {
+      if (typeof original[k] === 'undefined') return;
+
+      const { createdAt, ttl } = original[k];
+      original[k] = original[k] && original[k].value;
+
+      if (ttl === 0) return;
+
+      if (now - createdAt > ttl) {
+        delete original[k];
+        this.del(k);
+      }
+    });
     return original;
   }
 
@@ -73,11 +86,13 @@ class Storage {
   _parseSetValue(value) {
     if (value && value.value) {
       value.ttl = value.ttl || this._options.ttl;
+      value.createdAt = Date.now();
       return value;
     } else {
       return {
         value,
-        ttl: this._options.ttl
+        ttl: this._options.ttl,
+        createdAt: Date.now()
       };
     }
   }
@@ -97,11 +112,11 @@ class Storage {
   }
 
   all() {
-    return Promise.resolve(this._parsedData()).then(this._parseGetData);
+    return Promise.resolve(this._parsedData()).then(this._parseGetData.bind(this));
   }
 
   get(key) {
-    return Promise.resolve(this._select(this._parseKey(key))).then(this._parseGetData);
+    return Promise.resolve(this._select(this._parseKey(key))).then(this._parseGetData.bind(this));
   }
 
   set(key, value) {

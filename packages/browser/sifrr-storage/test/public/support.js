@@ -77,3 +77,5 @@ window.LF = {
   indexeddb: window.localforage.createInstance({ driver: window.localforage.INDEXEDDB }),
   localstorage: window.localforage.createInstance({ driver: window.localforage.LOCALSTORAGE })
 };
+
+window.delay = time => new Promise(res => setTimeout(res, time));

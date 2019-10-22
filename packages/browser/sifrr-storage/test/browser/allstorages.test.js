@@ -192,6 +192,23 @@ for (let key in SifrrStorage.availableStores) {
       expect(result['false']).to.equal(false);
     });
 
+    it('works with ttl', async () => {
+      const result = await page.evaluate(async key => {
+        const storage = new Sifrr.Storage(key);
+        await storage.set('ttl', { value: 1, ttl: 100 });
+        const before = await storage.get('ttl');
+        await delay(110);
+        const after = await storage.get('ttl');
+        return {
+          before: before.ttl,
+          after: after.ttl
+        };
+      }, key);
+
+      expect(result.before).to.equal(1);
+      expect(result.after).to.equal(undefined);
+    });
+
     it('memoizes with first argument', async () => {
       const result = await page.evaluate(async key => {
         const storage = new Sifrr.Storage(key);

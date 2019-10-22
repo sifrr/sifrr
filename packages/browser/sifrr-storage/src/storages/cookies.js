@@ -31,14 +31,13 @@ class Cookies extends Storage {
     return true;
   }
 
+  _delete(keys) {
+    keys.forEach(k => (this.store = `${this.tableName}/${k}=; expires=${date}; path=/`));
+    return true;
+  }
+
   _clear() {
-    let result = this.store;
-    result.split('; ').forEach(value => {
-      const k = value.split('=')[0];
-      if (k.indexOf(this.tableName) === 0) {
-        this.store = `${k}=; expires=${date}; path=/`;
-      }
-    });
+    return this.keys().then(this._delete.bind(this));
   }
 
   get store() {

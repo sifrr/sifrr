@@ -47,12 +47,18 @@ describe('Storage', () => {
 
   describe('#_parseSetValue', () => {
     it('should return data with ttl', () => {
-      assert.deepEqual(x._parseSetValue('a'), { value: 'a', ttl: 100 });
-      assert.deepEqual(x._parseSetValue({ value: 'b' }), { value: 'b', ttl: 100 });
+      assert.equal(x._parseSetValue('a').value, 'a');
+      assert.equal(x._parseSetValue('a').ttl, 100);
+      expect(Date.now() - x._parseSetValue('a').createdAt).to.be.at.most(100);
+
+      assert.equal(x._parseSetValue({ value: 'b' }).value, 'b');
+      assert.equal(x._parseSetValue({ value: 'b' }).ttl, 100);
+      expect(Date.now() - x._parseSetValue('a').createdAt).to.be.at.most(100);
     });
 
     it('should return data with given ttl', () => {
-      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }), { value: 'b', ttl: 500 });
+      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }).value, 'b');
+      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }).ttl, 500);
     });
   });
 
@@ -81,7 +87,7 @@ describe('Storage', () => {
     });
 
     it('returns if not present', () => {
-      assert.deepEqual(x._parseGetData({ a: null }), { a: null });
+      assert.deepEqual(x._parseGetData({ a: undefined }), { a: undefined });
     });
   });
 

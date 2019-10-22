@@ -87,7 +87,8 @@ let options = {
   name: 'SifrrStorage', // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
   version: 1, // version number (integer / float / string), 1 is treated same as '1'
   desciption: 'Sifrr Storage', // description (text)
-  size: 5 * 1024 * 1024 // Max db size in bytes only for websql (integer)
+  size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
+  ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
 };
 storage = new Sifrr.Storage(options);
 ```
@@ -115,6 +116,11 @@ storage.set(key, value).then(() => {
 // insert multiple key-values
 let data = { a: 'b', c: { d: 'e' } };
 storage.set(data).then(() => {
+  /* Do something here */
+});
+
+// inserting with different ttl (30 seconds in example) than set in options
+storage.set(key, { value, ttl: 30 * 1000 ).then(() => {
   /* Do something here */
 });
 ```
