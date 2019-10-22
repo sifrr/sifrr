@@ -14,7 +14,11 @@ export default e => {
   if (root) {
     target._root = root;
     const prop = target[BIND_PROP];
-    if (e.type === 'update') root.setState && root.setState({ [prop]: Object.assign({}, value) });
+    if (typeof prop === 'function') {
+      prop.call(root, value);
+      root.update && root.update();
+    } else if (e.type === 'update')
+      root.setState && root.setState({ [prop]: Object.assign({}, value) });
     else root.setState && root.setState({ [prop]: value });
   } else target._root = null;
 };

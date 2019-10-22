@@ -68,7 +68,7 @@ export default function creator(el, defaultState) {
           // Array contents -> 0: property name, 1: binding
           propMap.push([attrToProp(attribute.name), getBindingFxns(attribute.value)]);
         }
-        el.removeAttribute(attribute.name);
+        el.setAttribute(attribute.name, '');
       }
 
       if (attribute.value.indexOf('${') < 0) continue;
