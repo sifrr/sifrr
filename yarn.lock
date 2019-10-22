@@ -838,10 +838,10 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.30", "@sifrr/dev@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.30.tgz#bb6b1382f094a15f8b7ad4ecb75c82507bad3f26"
-  integrity sha512-3yIOqVDHBWDMkyGJG+lJmd/62C4AUYD5Of4pNsOu+sae0/VCS86MmWXMVSn9XNiHLx9b68NLBBO1rZ4RcA/tqg==
+"@sifrr/dev@0.0.36", "@sifrr/dev@^0.0.36":
+  version "0.0.36"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.36.tgz#fc406b1d5235655ddab5c512b761c7dca7962020"
+  integrity sha512-xZ8W/THXShiRm2XDGZZ7fz7h2LIy0y49cBKP9m7m157/he+6H96Xbkg3wsma8FLNNL3468hpNqL4WUSeL5DBoA==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -850,7 +850,7 @@
     "@babel/register" "^7.5.5"
     "@commitlint/cli" "^8.1.0"
     "@commitlint/config-conventional" "^8.1.0"
-    "@sifrr/eslint-config" "^0.0.3"
+    "@sifrr/eslint-config" "^0.0.4"
     "@sifrr/fetch" "^0.0.6"
     "@sifrr/server" "^0.0.6"
     autoprefixer "^9.6.1"
@@ -878,7 +878,7 @@
     node-sass "^4.12.0"
     portfinder "^1.0.21"
     prettier "^1.18.2"
-    puppeteer "^1.19.0"
+    puppeteer "1.20.0"
     repl "^0.1.3"
     rollup "^1.19.4"
     rollup-plugin-babel "^4.3.3"
@@ -897,10 +897,10 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom":
   version "0.0.6"
 
-"@sifrr/eslint-config@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@sifrr/eslint-config/-/eslint-config-0.0.3.tgz#ca06c84b2eeb605f174ebb0f2375f7f6014a3191"
-  integrity sha512-/me2FvsaoQrJJOFTazEjQGN2wAmqyXYzL2IdZYGn1ujMj2pk+PathJy908CCpPclNUgmamjflm4zE1DJcEwSoQ==
+"@sifrr/eslint-config@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@sifrr/eslint-config/-/eslint-config-0.0.4.tgz#c6108b5249e06a2ebad3583a958895167a515cbc"
+  integrity sha512-75bW9MU6L0NGwOJeog+hY+AOlWX7+IEy39e7ECimIU7EMU5sQ5NYjCvJlVgcQbL46mfgEx5lyONEkQ/UfIP7SQ==
   dependencies:
     babel-eslint "^10.0.2"
     eslint "^6.0.1"
@@ -6764,7 +6764,7 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-puppeteer@1.20.0, puppeteer@^1.16.0, puppeteer@^1.19.0:
+puppeteer@1.20.0, puppeteer@^1.16.0:
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.20.0.tgz#e3d267786f74e1d87cf2d15acc59177f471bbe38"
   integrity sha512-bt48RDBy2eIwZPrkgbcwHtb51mj2nKvHOPMaSH2IsWiv7lOG9k9zhaRzpDZafrk05ajMc3cu+lSQYYOfH2DkVQ==
