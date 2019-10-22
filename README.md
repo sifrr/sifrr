@@ -79,7 +79,7 @@ For eg.
 
 ## Node support (server packages and development)
 
-Sifrr officially supports node v10 (LTS), v12 (current). Other versions might work for some packages.
+Sifrr officially supports node v10, v12 (LTS). Other versions might work for some packages.
 
 ## Browser Support (browser packages)
 

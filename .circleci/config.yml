@@ -81,7 +81,7 @@ jobs:
   build_and_test_node12:
     working_directory: ~/sifrr
     docker:
-      - image: circleci/node:12.7.0-browsers
+      - image: circleci/node:12-browsers
       - image: mysql:5.6
         command: --character-set-server=utf8mb4 --innodb_file_per_table --innodb_large_prefix --innodb_file_format=barracuda
         environment:
@@ -91,9 +91,23 @@ jobs:
       - run_tests:
           version: node12
 
+  build_and_test_node13:
+    working_directory: ~/sifrr
+    docker:
+      - image: circleci/node:13-browsers
+      - image: mysql:5.6
+        command: --character-set-server=utf8mb4 --innodb_file_per_table --innodb_large_prefix --innodb_file_format=barracuda
+        environment:
+          MYSQL_DATABASE: sifrr_test
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+    steps:
+      - run_tests:
+          version: node13
+
 workflows:
   version: 2.1
   build_and_test:
     jobs:
       - build_and_test_node10
       - build_and_test_node12
+      - build_and_test_node13
