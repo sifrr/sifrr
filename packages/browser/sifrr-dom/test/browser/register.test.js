@@ -26,27 +26,15 @@ describe('Sifrr.Dom.register', () => {
   });
 
   it('throws error if elementName is not defined', async () => {
-    const error = await page.evaluate(() => {
-      try {
-        Sifrr.Dom.register({});
-        return true;
-      } catch (e) {
-        return e.message;
-      }
-    });
+    const error = await page.evaluate(() => Sifrr.Dom.register({}).catch(e => e.message));
 
     expect(error).to.eq('Error creating Custom Element: No name given.');
   });
 
   it('throws error if elementName has no dash', async () => {
-    const error = await page.evaluate(() => {
-      try {
-        Sifrr.Dom.register({ elementName: 'nodash' });
-        return true;
-      } catch (e) {
-        return e.message;
-      }
-    });
+    const error = await page.evaluate(() =>
+      Sifrr.Dom.register({ elementName: 'nodash' }).catch(e => e.message)
+    );
 
     expect(error).to.eq(
       "Error creating Element: nodash - Custom Element name must have one dash '-'"
