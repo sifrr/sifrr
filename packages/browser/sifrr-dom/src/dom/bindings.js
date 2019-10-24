@@ -1,6 +1,6 @@
 import { OUTER_REGEX, STATE_REGEX } from './constants';
 
-export function replacer(match) {
+function replacer(match) {
   let f;
   if (match.indexOf('return ') > -1) {
     f = match;
@@ -16,7 +16,7 @@ export function replacer(match) {
   }
 }
 
-export function evaluate(fxn, el) {
+function evaluate(el, fxn) {
   try {
     if (typeof fxn !== 'function') return fxn;
     else return fxn.call(el);
@@ -51,6 +51,7 @@ export const getStringBindingFxn = string => {
 };
 
 export const evaluateBindings = (fxns, element) => {
-  if (typeof fxns === 'function') return evaluate(fxns, element);
-  return fxns.map(fxn => evaluate(fxn, element)).join('');
+  if (typeof fxns === 'function') return evaluate(element, fxns);
+  const binded = evaluate.bind(null, element);
+  return fxns.map(binded).join('');
 };
