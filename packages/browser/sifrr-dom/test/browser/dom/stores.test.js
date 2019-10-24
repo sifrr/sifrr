@@ -19,19 +19,19 @@ describe('stores', () => {
 
   it('updates element on store update', async () => {
     const value = await page.$eval('sifrr-store', el => {
-      el.stores.haha.set({ a: 'not hahaha' });
+      el.hahaStore.set({ a: 'not hahaha' });
       return el.innerHTML;
     });
     expect(value).to.equal('<p>not hahaha</p>');
 
     const value2 = await page.$eval('sifrr-store2', el => {
-      el.stores.new.set('not hahaha');
+      el.newStore.set('not hahaha');
       return el.innerHTML;
     });
     expect(value2).to.equal('<p>not hahaha</p>');
 
     const value3 = await page.$eval('sifrr-store3', el => {
-      el.stores.new.set(['m', 'n']);
+      el.newStore.set(['m', 'n']);
       return el.innerHTML;
     });
     expect(value3).to.equal('<p>mn</p>');

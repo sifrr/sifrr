@@ -6,7 +6,7 @@ import SimpleElement from './dom/simpleelement';
 import * as Event from './dom/event';
 import { makeChildrenEqual, makeEqual } from './dom/makeequal';
 import { makeChildrenEqualKeyed } from './dom/keyed';
-import Store from './dom/store';
+import { Store, bindStoresToElement } from './dom/store';
 import template from './dom/template';
 import config from './dom/config';
 
@@ -20,13 +20,16 @@ const register = (Element, options = {}) => {
   Element.useSR = config.useShadowRoot;
   const name = options.name || Element.elementName;
   if (!name) {
-    throw Error('Error creating Custom Element: No name given.', Element);
+    return Promise.reject(Error('Error creating Custom Element: No name given.', Element));
   } else if (window.customElements.get(name)) {
     console.warn(
       `Error creating Element: ${name} - Custom Element with this name is already defined.`
     );
+    return Promise.resolve(false);
   } else if (name.indexOf('-') < 1) {
-    throw Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`);
+    return Promise.reject(
+      Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`)
+    );
   } else {
     let before;
     if (Array.isArray(options.dependsOn)) {
@@ -120,7 +123,8 @@ export {
   load,
   loading,
   config,
-  elements
+  elements,
+  bindStoresToElement
 };
 
 export default {
@@ -139,5 +143,6 @@ export default {
   load,
   loading,
   config,
-  elements
+  elements,
+  bindStoresToElement
 };

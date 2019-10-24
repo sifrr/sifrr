@@ -1,8 +1,8 @@
 // import SifrrDom from '@sifrr/dom';
 // const Sifrr = { Dom: SifrrDom };
-const newStore = new Sifrr.Dom.Store('string');
+window.newStore = new Sifrr.Dom.Store('string');
 
-const template = `<p>\${this.stores.new.value}</p>`;
+const template = `<p>\${this.newStore.value}</p>`;
 class SifrrStore2 extends Sifrr.Dom.Element {
   static get useShadowRoot() {
     return false;
@@ -12,8 +12,10 @@ class SifrrStore2 extends Sifrr.Dom.Element {
     return template;
   }
 
-  get stores() {
-    return { new: newStore };
+  constructor() {
+    super();
+    Sifrr.Dom.bindStoresToElement(this, [window.newStore]);
+    this.newStore = window.newStore;
   }
 
   onUpdate() {
@@ -24,4 +26,5 @@ class SifrrStore2 extends Sifrr.Dom.Element {
     }
   }
 }
+
 Sifrr.Dom.register(SifrrStore2);

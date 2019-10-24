@@ -1,10 +1,11 @@
 import shouldMerge from '../utils/shouldmerge';
 const objCon = {}.constructor;
 
-export default class Store {
+export class Store {
   constructor(initial) {
     this.value = initial;
     this.listeners = [];
+    this.addListener = this.listeners.push.bind(this.listeners);
   }
 
   set(newValue) {
@@ -14,8 +15,10 @@ export default class Store {
     }
     this.listeners.forEach(l => l());
   }
+}
 
-  addListener(listener) {
-    this.listeners.push(listener);
-  }
+export function bindStoresToElement(element, stores = []) {
+  const update = element.update.bind(element);
+  if (Array.isArray(stores)) stores.forEach(s => s.addListener(update));
+  else stores.addListener(update);
 }
