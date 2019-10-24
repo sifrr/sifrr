@@ -28,9 +28,9 @@ class Loader {
   }
 
   getUrl(type = 'js') {
-    return (
-      this.url || `${config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`
-    );
+    if (this.url) return this.url;
+    if (typeof config.url === 'function') return this.url(this.elementName);
+    return `${config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.${type}`;
   }
 
   static getFile(url) {

@@ -58,7 +58,8 @@ const setup = function(newConfig) {
   document.$$ = document.querySelectorAll;
   Object.assign(config, newConfig);
 
-  if (typeof config.baseUrl !== 'string') throw Error('baseUrl should be a string');
+  if (typeof config.baseUrl !== 'string' && typeof config.url !== 'function')
+    throw Error('baseUrl should be a string, or url should be function');
 
   config.events.push('input', 'change', 'update');
   config.events.forEach(e => Event.add(e));

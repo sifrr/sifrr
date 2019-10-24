@@ -15,7 +15,7 @@ describe('Sifrr.Dom.setup', () => {
       }
     });
 
-    expect(error).to.eq('baseUrl should be a string');
+    expect(error).to.eq('baseUrl should be a string, or url should be function');
   });
 
   it('sets up sifrr', async () => {
