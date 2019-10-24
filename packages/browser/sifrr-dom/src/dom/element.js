@@ -99,10 +99,6 @@ function elementClassFactory(baseClass) {
 
     onAttributeChange() {}
 
-    getState() {
-      return this.state;
-    }
-
     setState(v) {
       if (!this.state) return;
       if (this.state !== v) Object.assign(this.state, v);

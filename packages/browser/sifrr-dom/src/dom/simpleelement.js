@@ -9,7 +9,6 @@ function sifrrClone(newState) {
   clone.root = this._root;
   clone._refs = collect(clone, this.stateMap);
   clone.state = Object.assign({}, this.sifrrDefaultState, newState);
-  clone.getState = this.stateProps.getState;
   clone.setState = this.stateProps.setState;
   update(clone, this.stateMap);
   return clone;
@@ -41,9 +40,6 @@ export default function SimpleElement(content, defaultState = null) {
       if (!this.state) return;
       if (this.state !== v) Object.assign(this.state, v);
       update(this, content.stateMap);
-    },
-    getState: function() {
-      return this.state;
     }
   };
   return content;
