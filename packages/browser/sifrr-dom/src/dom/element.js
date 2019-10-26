@@ -13,13 +13,8 @@ function elementClassFactory(baseClass) {
     }
 
     static get observedAttributes() {
-      return this.observedAttrs().concat(this.syncedAttrs());
+      return this.observedAttrs();
     }
-
-    static syncedAttrs() {
-      return [];
-    }
-
     static observedAttrs() {
       return [];
     }
@@ -87,9 +82,6 @@ function elementClassFactory(baseClass) {
     onDisconnect() {}
 
     attributeChangedCallback(attrName, oldVal, newVal) {
-      if (this.constructor.syncedAttrs().indexOf(attrName) > -1) {
-        this[attrName] = newVal;
-      }
       this.onAttributeChange(attrName, oldVal, newVal);
     }
 
