@@ -156,10 +156,11 @@ function sendFileToRes(
     });
   }
   readStream
-    .on('error', () => {
+    .on('error', e => {
       res.writeStatus('500 Internal server error');
       res.end();
       readStream.destroy();
+      throw e;
     })
     .on('end', () => {
       res.end();
