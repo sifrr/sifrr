@@ -33,12 +33,12 @@ describe('Route', () => {
     assert.notExists(route.routeRegex);
 
     sinon.stub(route, 'refresh');
-    route.onAttributeChange('path');
+    route.onPropsChange(['path']);
 
     assert.exists(route.routeRegex);
     assert(route.refresh.calledOnce);
 
-    route.onAttributeChange('some');
+    route.onPropsChange(['some']);
     assert(route.refresh.calledOnce, 'should not call refresh again');
   });
 

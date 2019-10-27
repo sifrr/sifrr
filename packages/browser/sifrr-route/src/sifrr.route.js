@@ -7,13 +7,8 @@ class SifrrRoute extends Element {
     return '<slot></slot>';
   }
 
-  static syncedAttrs() {
-    return ['path'];
-  }
-
   onConnect() {
     this.loaded = false;
-    this.refresh();
     this.constructor.all.add(this);
   }
 
@@ -21,8 +16,8 @@ class SifrrRoute extends Element {
     this.constructor.all.delete(this);
   }
 
-  onAttributeChange(attrName) {
-    if (attrName === 'path') {
+  onPropsChange(props) {
+    if (props.indexOf('path') > -1) {
       this.routeRegex = new RegexPath(this.path);
       this.refresh();
     }
@@ -41,6 +36,7 @@ class SifrrRoute extends Element {
   }
 
   activate() {
+    this.renderIf = true;
     if (!this.loaded) {
       const sifrrElements = this.dataset.sifrrElements;
       if (sifrrElements && sifrrElements.indexOf('-') > 0) {
@@ -54,7 +50,6 @@ class SifrrRoute extends Element {
         this.loaded = Promise.resolve(true);
       }
     }
-    this.renderIf = true;
     this.update();
     Event.trigger(this, 'activate');
     this.onActivate();
@@ -132,7 +127,7 @@ Event.add('activate');
 Event.add('deactivate');
 register(SifrrRoute);
 
-window.addEventListener('popstate', SifrrRoute.popstateEventListener);
 window.document.addEventListener('click', SifrrRoute.clickEventListener);
+window.addEventListener('popstate', SifrrRoute.popstateEventListener);
 
 export { RegexPath, SifrrRoute };

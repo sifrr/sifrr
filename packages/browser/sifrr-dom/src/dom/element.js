@@ -96,6 +96,11 @@ function elementClassFactory(baseClass) {
 
     onStateChange() {}
 
+    setProp(name, value) {
+      this[name] = value;
+      this.onPropsChange && this.onPropsChange([name]);
+    }
+
     update() {
       this.beforeUpdate();
       update(this);

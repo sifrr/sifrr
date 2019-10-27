@@ -59,10 +59,8 @@ export default function creator(el, defaultState) {
         // string prop
         if (attribute.value.indexOf('${') < 0) {
           propMap.push([attrToProp(attribute.name), [attribute.value]]);
-          continue;
-        }
-        // binding prop
-        if (attribute.name.substr(1) === 'state') {
+        } else if (attribute.name === ':state') {
+          // binding prop
           sm['state'] = getBindingFxns(attribute.value);
         } else {
           // Array contents -> 0: property name, 1: binding

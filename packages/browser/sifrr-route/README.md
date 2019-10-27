@@ -2,13 +2,6 @@
 
 History API based Routing library for building One Page Applications with sifrr.
 
-## Size
-
-| Type                                           |                           Size                           |
-| :--------------------------------------------- | :------------------------------------------------------: |
-| Minified (`dist/sifrr.route.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/route)   |
-| Minified + Gzipped (`dist/sifrr.route.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/route) |
-
 ### Browser API support needed for
 
 | APIs        | caniuse                             | polyfills                                    |
@@ -17,14 +10,14 @@ History API based Routing library for building One Page Applications with sifrr.
 
 ## How to use
 
+**Note** `sifrr-route` only works inside another wrapper sifrr element, since it uses prop `path`
+
 1.  Copy contents of `dist/sifrr.route.js` to `elements/sifrr/route.js` folder in your sifrr app. And use `Sifrr.Dom.load('sifrr-route')` to load sifrr-route.
 2.  Or you can directly import in html:
 
 ```html
 <!-- Using ES6 modules and NPM -->
-<script type="module">
-  import '@sifrr/route';
-</script>
+import '@sifrr/route';
 <!-- OR ES6 modules and using CDN -->
 <script
   src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js"
@@ -44,10 +37,10 @@ Good way can be to serve `index.html` to all routes and define all routes in thi
 
 ### Routing
 
-Add sifrr-route tag in your html, this will only be shown when `window.location.pathname` is same as `path` unless it has `target` attribute and it is not equal to `_self` or link is of some other domain.
+Add sifrr-route tag in your html, this will only be shown when `window.location.pathname` is same as `path` prop unless it has `target` attribute and it is not equal to `_self` or link is of some other domain.
 
 ```html
-<sifrr-route path="/some-path">
+<sifrr-route :path="/some-path">
   <!-- Contents -->
 </sifrr-route>
 ```
@@ -55,6 +48,8 @@ Add sifrr-route tag in your html, this will only be shown when `window.location.
 Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the page, but only show sifrr-routes with matching pathname. If you want the page to reload add `target='_top'` to `a` tag.
 
 - You can use `sifrr-route` inside another `sifrr-route`.
+
+- path prop can be a sifrr-dom binding as well, and it should work without any problems
 
 - you can also use regex in `path` but it will be shown only if it is exact match of pathname, eg: `/(.*)/abcd` will match `/qwert/abcd` but not `/qwert/abcd/efgh`
 
@@ -78,7 +73,7 @@ Note that when `sifrr-route` is loaded, clicking on a link `a` won't reload the 
     }
   ```
 
-  and make `sifrr-route` tag with `path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
+  and make `sifrr-route` tag with `:path="/:x/*/**/mnop/*/:k"`'s state equal to this parsed data
 
 ### Class
 

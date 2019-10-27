@@ -1,5 +1,6 @@
 async function isActive(selector) {
-  return await page.$eval(selector, async el => el.renderIf);
+  await page.waitForSelector(selector);
+  return await page.$eval(selector, async el => (await el.loaded) && el.renderIf);
 }
 
 describe('sifrr-route', () => {
@@ -78,7 +79,7 @@ describe('sifrr-route', () => {
 
     expect(await isActive('#test')).to.be.true;
 
-    await page.$eval('#test', el => el.setAttribute('path', '/abcd'));
+    await page.$eval('#test', el => el.setProp('path', '/abcd'));
 
     expect(await isActive('#test')).to.be.false;
   });
