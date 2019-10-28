@@ -19,7 +19,10 @@ export class Store {
 
   update() {
     this.listeners.forEach(l => l());
+    this.onUpdate();
   }
+
+  onUpdate() {}
 }
 
 export function bindStoresToElement(element, stores = []) {
