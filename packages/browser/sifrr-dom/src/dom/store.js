@@ -12,9 +12,8 @@ export class Store {
     if (shouldMerge(this.value, newValue)) {
       if (this.value.constructor === objCon) Object.assign(this.value, newValue);
       else this.value = newValue;
-
-      this.update();
     }
+    this.update();
   }
 
   update() {
