@@ -15,7 +15,6 @@
   "main": "dist/sifrr.storage.cjs.js",
   "module": "src/sifrr.storage.js",
   "browser": "dist/sifrr.storage.min.js",
-  "types": "dist/types/sifrr.storage.d.ts",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -40,6 +39,7 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@sifrr/dev": "^0.0.36",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
