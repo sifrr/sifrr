@@ -20,7 +20,7 @@ describe('Sifrr.Storage in browser', () => {
   it('Website Should have LocalStorage', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new Sifrr.Storage({ priority: ['localstorage'] });
+        const x = new Sifrr.Storage({ priority: ['localstorage'] });
         x.store;
         return true;
       } catch (e) {
@@ -33,7 +33,7 @@ describe('Sifrr.Storage in browser', () => {
   it('Website Should have indexedDB', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new Sifrr.Storage({ priority: ['indexeddb'] });
+        const x = new Sifrr.Storage({ priority: ['indexeddb'] });
         x.store;
         return true;
       } catch (e) {
@@ -46,7 +46,7 @@ describe('Sifrr.Storage in browser', () => {
   it('Website Should have websql', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new Sifrr.Storage({ priority: ['websql'] });
+        const x = new Sifrr.Storage({ priority: ['websql'] });
         x.store;
         return true;
       } catch (e) {
@@ -59,7 +59,7 @@ describe('Sifrr.Storage in browser', () => {
   it('Website Should have cookies', async () => {
     const result = await page.evaluate(() => {
       try {
-        let x = new Sifrr.Storage({ priority: ['cookies'] });
+        const x = new Sifrr.Storage({ priority: ['cookies'] });
         x.store;
         return true;
       } catch (e) {

@@ -3,21 +3,31 @@ import WebSQL from './storages/websql';
 import LocalStorage from './storages/localstorage';
 import Cookies from './storages/cookies';
 import JsonStorage from './storages/jsonstorage';
+import { StorageOptions } from './storages/types';
 
-let storages = {};
-storages[IndexedDB.type] = IndexedDB;
-storages[WebSQL.type] = WebSQL;
-storages[LocalStorage.type] = LocalStorage;
-storages[Cookies.type] = Cookies;
-storages[JsonStorage.type] = JsonStorage;
+const storages: { [x: string]: any } = {
+  [IndexedDB.type]: IndexedDB,
+  [WebSQL.type]: WebSQL,
+  [LocalStorage.type]: LocalStorage,
+  [Cookies.type]: Cookies,
+  [JsonStorage.type]: JsonStorage
+};
+
+type MainOptions = StorageOptions & {
+  priority?: string[];
+};
 
 class SifrrStorage {
-  constructor(options) {
-    if (typeof options === 'string') options = { priority: [options] };
-    else options = options || {};
-    options.priority = options.priority || [];
+  static availableStores = storages;
+  options: MainOptions;
 
-    this._options = options;
+  constructor(options: string | MainOptions) {
+    if (typeof options === 'string') this.options = { priority: [options] };
+    else {
+      this.options = options || {};
+      this.options.priority = this.options.priority || [];
+    }
+
     return this.storage;
   }
 
@@ -25,11 +35,11 @@ class SifrrStorage {
     const storage = this.supportedStore();
     if (typeof storage === 'undefined')
       throw Error('No available storage supported in this browser');
-    return new storage(this._options);
+    return storage;
   }
 
   get priority() {
-    return this._options.priority.concat([
+    return this.options.priority.concat([
       'indexeddb',
       'websql',
       'localstorage',
@@ -41,12 +51,13 @@ class SifrrStorage {
   supportedStore() {
     for (let i = 0; i < this.priority.length; i++) {
       let store = storages[this.priority[i]];
-      if (store && new store(this._options).isSupported()) return store;
+      if (store) {
+        const storage = new store(this.options).isSupported();
+        return storage;
+      }
     }
   }
 }
-
-SifrrStorage.availableStores = storages;
 
 export { IndexedDB, WebSQL, LocalStorage, Cookies, JsonStorage };
 export default SifrrStorage;

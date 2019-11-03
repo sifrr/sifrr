@@ -32,6 +32,8 @@ module.exports = function(folder, isBrowser) {
     pkgToMerge.module = `src/${jsFileName}.js`;
     pkgToMerge.main = `dist/${jsFileName}.cjs.js`;
     pkgToMerge.browser = `dist/${jsFileName}.min.js`;
+    pkgToMerge.types = `dist/types/${jsFileName}.d.ts`;
+
     pkgToMerge.browserslist = pkg.browserslist;
   }
 
