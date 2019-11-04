@@ -44,7 +44,7 @@
     "cache-manager": "^2.10.0",
     "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
-    "loadtest": "^3.0.8",
+    "loadtest": "^3.0.9",
     "sequelize": "^5.21.2",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v16.1.0",
     "ws": "^7.2.0"
