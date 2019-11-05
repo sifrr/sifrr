@@ -1,10 +1,10 @@
 declare global {
   interface Promise<T> {
-    abort: () => void;
+    abort?: () => void;
   }
 
   interface Error {
-    response: any;
+    response?: any;
   }
 }
 

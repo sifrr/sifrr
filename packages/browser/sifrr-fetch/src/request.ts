@@ -2,10 +2,36 @@ import { SifrrFetchOptions } from './types';
 
 const objConst = {}.constructor;
 
-function responseProgress(resp: Response, onProgress) {
+/**
+ * calls onProgress callback on response download progress
+ *
+ * @param {Response} resp
+ * @param {{
+ *     (progress: {
+ *       loaded?: number;
+ *       total?: number;
+ *       percent: number;
+ *       speed?: number;
+ *       value?: Uint8Array;
+ *     }): void;
+ *   }} onProgress
+ * @returns
+ */
+function responseProgress(
+  resp: Response,
+  onProgress: {
+    (progress: {
+      loaded?: number;
+      total?: number;
+      percent: number;
+      speed?: number;
+      value?: Uint8Array;
+    }): void;
+  }
+) {
   const contentLength = resp.headers.get('content-length');
   const total = parseInt(contentLength, 10);
-  if (!total || !resp.body || !window.ReadableStream) {
+  if (!total || !resp.body || !ReadableStream) {
     onProgress({
       total: 0,
       percent: 100
@@ -44,15 +70,24 @@ function responseProgress(resp: Response, onProgress) {
   }
 }
 
+/**
+ * @class Request
+ */
 class Request {
   private _options: SifrrFetchOptions;
   private _url: string;
-
+  /**
+   * @param  {string|number} url url of request
+   * @param  {SifrrFetchOptions} options sifrr fetch options
+   */
   constructor(url: string | number, options: SifrrFetchOptions) {
     this._options = options;
     this._url = (options.host || '') + url;
   }
 
+  /**
+   * @returns Promise<any> response of the request
+   */
   response() {
     const { onProgress } = this._options;
     return fetch(this.url, this.options).then(resp => {
@@ -70,6 +105,10 @@ class Request {
     });
   }
 
+  /**
+   * url with encoded params
+   * @readonly
+   */
   get url() {
     const { params } = this._options;
     if (params && Object.keys(params).length > 0) {
@@ -85,6 +124,11 @@ class Request {
     }
   }
 
+  /**
+   * merged options with default options
+   * @readonly
+   * @type {RequestInit}
+   */
   get options(): RequestInit {
     this._options.defaultOptions = this._options.defaultOptions || {};
     const options = {

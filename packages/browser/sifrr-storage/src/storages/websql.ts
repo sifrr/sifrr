@@ -1,5 +1,5 @@
 import Storage from './storage';
-import { StorageOptions, SavedData, SavedDataObject } from './types';
+import { StorageOptions, SavedDataObject } from './types';
 
 type websqlResult = {
   rows: {

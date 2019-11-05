@@ -90,7 +90,7 @@ class SifrrFetch {
     }
   }
 
-  _tOptions(options: SifrrFetchOptions) {
+  private _tOptions(options: SifrrFetchOptions) {
     options.defaultOptions = this.defaultOptions;
     return options;
   }
