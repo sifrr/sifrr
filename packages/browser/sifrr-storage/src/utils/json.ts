@@ -21,7 +21,7 @@ function encodeBlob(blob) {
   return ui8.toString();
 }
 
-export function parse(data) {
+export function parse(data: any): any {
   let ans = data;
   if (typeof data === 'string') {
     try {
@@ -34,7 +34,8 @@ export function parse(data) {
   if (typeof data === 'string' && data.indexOf(uId) > 0) {
     const [type, av, av2] = data.split(uId);
 
-    if (type === 'ArrayBuffer') ans = new window.Uint8Array(av.split(',')).buffer;
+    if (type === 'ArrayBuffer')
+      ans = new window.Uint8Array(av.split(',').map(i => parseInt(i))).buffer;
     else if (type === 'Blob') ans = decodeBlob(av2, av);
     else ans = new window[type](av.split(','));
   } else if (Array.isArray(data)) {
@@ -52,7 +53,7 @@ export function parse(data) {
   return ans;
 }
 
-export function stringify(data) {
+export function stringify(data: any): string {
   if (typeof data !== 'object') return JSON.stringify(data);
   if (data === null) return 'null';
   if (Array.isArray(data)) return JSON.stringify(data.map(d => stringify(d)));

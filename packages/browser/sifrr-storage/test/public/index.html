@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title></title>
   </head>
   <body>
     <h1>OK</h1>
-    <script src="https://cdn.jsdelivr.net/npm/localforage@1.7.3/dist/localforage.min.js" charset="utf-8"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/localforage@1.7.3/dist/localforage.min.js"
+      charset="utf-8"
+    ></script>
     <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
     <script src="/sifrr.storage.js" charset="utf-8"></script>
     <script src="/support.js" charset="utf-8"></script>
     <script type="text/javascript">
       async function bulkInsert(storage, key, value, num = 100, setting = 'set') {
-        if (typeof storage === 'string') storage = new Sifrr.Storage(storage);
+        if (typeof storage === 'string') storage = Sifrr.Storage.getStorage(storage);
         await storage[setting](key, value);
         let runs = 0;
         return new Promise(res => {
-          const start = performance.now(), data = {};
+          const start = performance.now(),
+            data = {};
           for (let i = 0; i < num; i++) {
             data[key + i] = value;
             storage[setting](key + i, value).then(() => {
@@ -27,8 +31,8 @@
         });
       }
       // wrapping something with storage
-      let getCached = (url) => {
-        const storage = new Sifrr.Storage({ name: 'SifrrFetchGet', version: 1 });
+      let getCached = url => {
+        const storage = Sifrr.Storage.getStorage({ name: 'SifrrFetchGet', version: 1 });
         return Sifrr.Fetch.get(url, {
           use: ({ url }) => {
             return storage.get(url).then(v => {
@@ -36,13 +40,15 @@
               return v[url];
             });
           },
-          after: (resp) => {
-            return Promise.resolve(resp).then(resp => {
-              return typeof resp.text === 'function' ? resp.text() : resp;
-            }).then(v => {
-              storage.set(url, v);
-              return v;
-            });
+          after: resp => {
+            return Promise.resolve(resp)
+              .then(resp => {
+                return typeof resp.text === 'function' ? resp.text() : resp;
+              })
+              .then(v => {
+                storage.set(url, v);
+                return v;
+              });
           }
         });
       };

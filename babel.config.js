@@ -11,6 +11,7 @@ module.exports = function(api) {
   ];
 
   return {
-    presets
+    presets,
+    plugins: [['@babel/plugin-proposal-class-properties', { loose: true }]]
   };
 };

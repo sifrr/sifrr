@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const version = require('./package.json').version;
 const { getRollupConfig } = require('@sifrr/dev');
 
@@ -45,10 +46,13 @@ function moduleConfig(name, root, minify = false, type) {
     mergeConfig.output.outro = 'if (exports.default) exports = exports.default;';
   }
 
+  const isTs = fs.existsSync(path.join(root, `./src/${filename}.ts`));
   return getRollupConfig(
     {
       name,
-      inputFile: path.join(root, `./src/${filename}.js`),
+      inputFile: isTs
+        ? path.join(root, `./src/${filename}.ts`)
+        : path.join(root, `./src/${filename}.js`),
       outputFolder: path.join(root, './dist'),
       outputFileName: filename,
       minify,
