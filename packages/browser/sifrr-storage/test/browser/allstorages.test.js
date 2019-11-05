@@ -278,7 +278,7 @@ for (const key in availableStores) {
             async (key, type) => {
               const s = Sifrr.Storage.getStorage(key);
               await s.set(type, window.AllDataTypes[type]);
-              await new Promise(res => setTimeout(res, 10));
+              await new Promise(res => setTimeout(res, 50));
             },
             key,
             type

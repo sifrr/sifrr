@@ -1,101 +1,76 @@
-const SifrrStorage = require('../../src/sifrr.storage').default;
+const { availableStores, getStorage } = require('../../src/sifrr.storage');
+const { parseGetData, parseSetValue } = require('../../src/utils/dataparser');
 const JSONP = require('../../src/utils/json'),
   Storage = require('../../src/storages/storage').default;
 
 describe('SifrrStorage', () => {
   describe('#new', () => {
     it('should return supported storage by default', () => {
-      let x = new SifrrStorage();
-      expect(x).to.be.an.instanceof(SifrrStorage.availableStores['indexeddb']);
+      let x = getStorage();
+      expect(x).to.be.an.instanceof(availableStores['indexeddb']);
       assert.equal(x.type, 'indexeddb');
     });
 
-    Object.keys(SifrrStorage.availableStores).forEach(type => {
+    Object.keys(availableStores).forEach(type => {
       it(`should return ${type} if ${type} is prioritized`, () => {
-        let x = new SifrrStorage({ priority: [type] });
-        expect(x).to.be.an.instanceof(SifrrStorage.availableStores[type]);
+        let x = getStorage({ priority: [type] });
+        expect(x).to.be.an.instanceof(availableStores[type]);
         assert.equal(x.type, type);
 
-        let y = new SifrrStorage(type);
-        expect(y).to.be.an.instanceof(SifrrStorage.availableStores[type]);
+        let y = getStorage(type);
+        expect(y).to.be.an.instanceof(availableStores[type]);
         assert.equal(y.type, type);
       });
 
       it("doesn't return the storage if not supported", () => {
-        sinon.stub(SifrrStorage.availableStores[type].prototype, 'isSupported').returns(undefined);
+        sinon.stub(availableStores[type].prototype, 'isSupported').returns(undefined);
 
-        let y = new SifrrStorage(type);
+        const y = getStorage(type);
 
-        expect(y).to.not.be.an.instanceof(SifrrStorage.availableStores[type]);
+        expect(y).to.not.be.an.instanceof(availableStores[type]);
 
         sinon.restore();
       });
     });
-
-    it('throws error if no supported storages', () => {
-      sinon.stub(SifrrStorage.prototype, 'supportedStore');
-
-      expect(() => new SifrrStorage()).to.throw();
-
-      sinon.restore();
-    });
   });
 });
 
-describe('Storage', () => {
-  let x = new Storage({ ttl: 100 });
+describe('Parser', () => {
+  const x = new Storage({ ttl: 100 });
 
-  describe('#_parseSetValue', () => {
+  describe('#parseSetValue', () => {
     it('should return data with ttl', () => {
-      assert.equal(x._parseSetValue('a').value, 'a');
-      assert.equal(x._parseSetValue('a').ttl, 100);
-      expect(Date.now() - x._parseSetValue('a').createdAt).to.be.at.most(100);
+      assert.equal(parseSetValue('a').value, 'a');
+      assert.equal(parseSetValue('a', 100).ttl, 100);
+      expect(Date.now() - parseSetValue('a').createdAt).to.be.at.most(100);
 
-      assert.equal(x._parseSetValue({ value: 'b' }).value, 'b');
-      assert.equal(x._parseSetValue({ value: 'b' }).ttl, 100);
-      expect(Date.now() - x._parseSetValue('a').createdAt).to.be.at.most(100);
+      assert.equal(parseSetValue({ value: 'b' }).value, 'b');
+      assert.equal(parseSetValue({ value: 'b' }, 100).ttl, 100);
+      expect(Date.now() - parseSetValue('a').createdAt).to.be.at.most(100);
     });
 
     it('should return data with given ttl', () => {
-      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }).value, 'b');
-      assert.deepEqual(x._parseSetValue({ value: 'b', ttl: 500 }).ttl, 500);
+      assert.deepEqual(parseSetValue({ value: 'b', ttl: 500 }).value, 'b');
+      assert.deepEqual(parseSetValue({ value: 'b', ttl: 500 }, 300).ttl, 500);
     });
   });
 
-  describe('#_parseSetData', () => {
-    before(() => {
-      x._oldparseSetValue = x._parseSetValue;
-      x._parseSetValue = () => 'ok';
-    });
-
-    after(() => {
-      x._parseSetValue = x._oldparseSetValue;
-    });
-
-    it('set value for key value', () => {
-      assert.deepEqual(x._parseSetData('a', 'b'), { a: 'ok' });
-    });
-
-    it('set value for data', () => {
-      assert.deepEqual(x._parseSetData({ a: 'b' }), { a: 'ok' });
-    });
-  });
-
-  describe('#_parseGetData', () => {
+  describe('#parseGetData', () => {
     it('returns value if present', () => {
-      assert.deepEqual(x._parseGetData({ a: { value: 'b' } }), { a: 'b' });
+      assert.deepEqual(parseGetData({ a: { value: 'b' } }), { a: 'b' });
     });
 
     it('returns if not present', () => {
-      assert.deepEqual(x._parseGetData({ a: undefined }), { a: undefined });
+      assert.deepEqual(parseGetData({ a: undefined }), { a: undefined });
     });
   });
 
   it('isSupported', () => {
-    expect(x.isSupported(false), 'returns false on isSupported if store is undefined').to.be.false;
+    x.hasStore = () => false;
+    expect(x.isSupported(false), 'returns false on isSupported if hasStore is false').to.be.false;
     expect(x.isSupported(true), 'returns true on isSupported if document is undefined').to.be.true;
 
-    x.store = true;
+    x.hasStore = () => true;
     expect(x.isSupported(false), 'returns true on isSupported if store is not undefined').to.be
       .true;
   });

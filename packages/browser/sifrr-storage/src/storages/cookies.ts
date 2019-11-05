@@ -49,7 +49,7 @@ class Cookies extends Storage {
   }
 
   hasStore() {
-    return !!document.cookie;
+    return typeof document.cookie !== 'undefined';
   }
 
   static get type() {
