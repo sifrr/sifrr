@@ -48,14 +48,14 @@ example, put in your frontend js module (compatible with webpack/rollup/etc):
 
 ```js
 const Storage = require('@sifrr/storage');
-// use Storage instead of Sifrr.Storage in examples if you are using this
 ```
 
 #### ES modules
 
 ```js
-import Storage from '@sifrr/storage';
-// use Storage instead of Sifrr.Storage in examples if you are using this
+import { getStorage } from '@sifrr/storage';
+// or Sifrr.Storage.getStorage (script tag)
+// or Storage.getStorage (node js import)
 
 // or
 // if you want to use one type of store without support checking based on priority
@@ -71,7 +71,7 @@ Sifrr.Storage uses Promises.
 - Initialize a storage with a type
 
 ```js
-let storage = new Sifrr.Storage(type);
+let storage = getStorage(type);
 ```
 
 where type is one of `indexeddb`, `websql`, `localstorage`, `cookies`, `jsonstorage`.
@@ -90,7 +90,7 @@ let options = {
   size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
   ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
 };
-storage = new Sifrr.Storage(options);
+storage = getStorage(options);
 ```
 
 **Initializing with same priority, name and version will give same instance.**
@@ -159,7 +159,7 @@ storage.del(['a', 'c']).then(() => {
 
 ### Updating a key
 
-`.set()` will update the value.
+`.set()` will update the value as well.
 
 ### Get all data in table
 
@@ -180,6 +180,23 @@ storage.clear().then(() => {
   // checking if data is deleted
   storage.all().then(data => console.log(data)); // > {}
 });
+```
+
+### Use for memoization or any function
+
+```js
+function some(a, b, c, d) {
+  // expensive computation
+  return 'a';
+}
+
+const memoizedSome = storage.memoize(some); // cache key is unique for unique first function argument
+
+// custom cache key function, should return string
+function cacheKeyFunction(a, b, c, d) {
+  return JSON.stringify(c);
+}
+const memoizedSomeCustomCache = storage.memoize(some, cacheKeyFunction);
 ```
 
 ### Get all created storage instances
