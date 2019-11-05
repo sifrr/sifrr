@@ -846,10 +846,10 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.37", "@sifrr/dev@^0.0.37":
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.37.tgz#8340e4f9c8791caab2ca3d565ca1b228a386d5e6"
-  integrity sha512-DF1cpPKsJm6c+DOfnMLATJ9XKxOrRYQTg+VP5y86IX6rzFjynhkqz7xCVVIGBmD94zTUlljOY0BwaukCK9y4rQ==
+"@sifrr/dev@0.0.38", "@sifrr/dev@^0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.38.tgz#ff09d40d133f7759b5f1307e53ecb91c01e60e00"
+  integrity sha512-OaYuhgqAjaCVJRkAXZnyuPaVL2srd+S953smXbrPEOht0sqU3FNQl+dXBKE20qw+4rRgy0DoijW7QGCldWencg==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -897,7 +897,7 @@
     rollup-plugin-postcss "^2.0.3"
     rollup-plugin-replace "^2.2.0"
     rollup-plugin-terser "^5.1.1"
-    rollup-plugin-typescript2 "^0.25.1"
+    rollup-plugin-typescript2 "^0.24.3"
     sinon "^7.4.1"
     typescript "^3.5.3"
     uWebSockets.js uNetworking/uWebSockets.js#v16.1.0
@@ -4132,6 +4132,14 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.3.0"
     debug "^3.1.0"
 
+https-proxy-agent@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-3.0.1.tgz#b8c286433e87602311b01c8ea34413d856a4af81"
+  integrity sha512-+ML2Rbh6DAuee7d07tYGEKOEi2voWPUGan+ExdPbPW6Z3svq+JCqr0v8WmKPOkz1vOVykPCBSuobe7G8GJUtVg==
+  dependencies:
+    agent-base "^4.3.0"
+    debug "^3.1.0"
+
 husky@^3.0.3:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/husky/-/husky-3.0.5.tgz#d7db27c346645a8dc52df02aa534a377ad7925e0"
@@ -6796,14 +6804,14 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-puppeteer@1.20.0, puppeteer@2.0.0, puppeteer@^1.16.0:
-  version "1.20.0"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.20.0.tgz#e3d267786f74e1d87cf2d15acc59177f471bbe38"
-  integrity sha512-bt48RDBy2eIwZPrkgbcwHtb51mj2nKvHOPMaSH2IsWiv7lOG9k9zhaRzpDZafrk05ajMc3cu+lSQYYOfH2DkVQ==
+puppeteer@2.0.0, puppeteer@^1.16.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-2.0.0.tgz#0612992e29ec418e0a62c8bebe61af1a64d7ec01"
+  integrity sha512-t3MmTWzQxPRP71teU6l0jX47PHXlc4Z52sQv4LJQSZLq1ttkKS2yGM3gaI57uQwZkNaoGd0+HPPMELZkcyhlqA==
   dependencies:
     debug "^4.1.0"
     extract-zip "^1.6.6"
-    https-proxy-agent "^2.2.1"
+    https-proxy-agent "^3.0.0"
     mime "^2.0.3"
     progress "^2.0.1"
     proxy-from-env "^1.0.0"
@@ -7361,7 +7369,7 @@ rollup-plugin-terser@^5.1.1:
     serialize-javascript "^1.7.0"
     terser "^4.1.0"
 
-rollup-plugin-typescript2@^0.25.1:
+rollup-plugin-typescript2@^0.24.3:
   version "0.24.3"
   resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.24.3.tgz#276fa33a9d584d500da62d3e5400307f4a46bdf2"
   integrity sha512-D7yovQlhnRoz7pG/RF0ni+koxgzEShwfAGuOq6OVqKzcATHOvmUt2ePeYVdc9N0adcW1PcTzklUEM0oNWE/POw==
@@ -8348,7 +8356,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.2.tgz#105b0f1934119dde543ac8eb71af3a91009efe54"
   integrity sha512-lmQ4L+J6mnu3xweP8+rOrUwzmN+MRAj7TgtJtDaXE5PMyX2kCrklhg3rvOsOIfNeAWMQWO2F1GPc1kMD2vLAfw==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v16.1.0", uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
   version "16.0.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/279ddafb1f95c81b4befece127a320c1e3dfcd4a"
 
