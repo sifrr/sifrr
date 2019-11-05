@@ -1,10 +1,14 @@
 import Request from './request';
 import Socket from './socket';
+import { SifrrFetchOptions, beforeOpts } from './types';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE'];
 const isAbort = !!window.AbortController;
 class SifrrFetch {
-  static graphql(url, options) {
+  static graphqlPath: string = '/graphql';
+  static Socket = Socket;
+
+  static graphql(url: string | SifrrFetchOptions, options: SifrrFetchOptions) {
     if (typeof url !== 'string') {
       options = url;
       url = this.graphqlPath;
@@ -22,11 +26,11 @@ class SifrrFetch {
     return this.request(url, options, 'POST');
   }
 
-  static socket(url, protocol, fallback) {
-    return new Socket(url, protocol, fallback);
+  static socket(url: string, protocols: string, fallback: () => Promise<never>) {
+    return new Socket(url, protocols, fallback);
   }
 
-  static request(u, o = {}, m = 'GET') {
+  static request(u: string, o: SifrrFetchOptions = {}, m = 'GET') {
     let promise = Promise.resolve({ url: u, options: o, method: m });
     if (typeof o.before === 'function') (promise = promise.then(o.before)) && delete o.before;
 
@@ -47,11 +51,10 @@ class SifrrFetch {
           });
       });
     }
-    let controller;
+    let controller: AbortController;
     if (isAbort) controller = new AbortController();
-    promise = promise[current](({ url, options, method }) => {
+    promise = promise[current](({ url, options, method }: beforeOpts) => {
       options.method = options.method || method;
-      if (isAbort) options.signal = controller.signal;
       const response = new Request(url, options).response();
       return Promise.race([
         response,
@@ -71,20 +74,23 @@ class SifrrFetch {
     return promise;
   }
 
-  constructor(defaultOptions = {}) {
+  graphqlPath = '';
+  defaultOptions: SifrrFetchOptions;
+
+  constructor(defaultOptions: SifrrFetchOptions = {}) {
     this.defaultOptions = defaultOptions;
     this.graphqlPath = '/graphql';
   }
 
-  graphql(url, options) {
+  graphql(url: any, options: any) {
     if (typeof url === 'string') {
-      return this.constructor.graphql(url, this._tOptions(options));
+      return (<typeof SifrrFetch>this.constructor).graphql(url, this._tOptions(options));
     } else {
-      return this.constructor.graphql(this.graphqlPath, this._tOptions(url));
+      return (<typeof SifrrFetch>this.constructor).graphql(this.graphqlPath, this._tOptions(url));
     }
   }
 
-  _tOptions(options) {
+  _tOptions(options: SifrrFetchOptions) {
     options.defaultOptions = this.defaultOptions;
     return options;
   }
@@ -92,17 +98,14 @@ class SifrrFetch {
 
 httpMethods.forEach(m => {
   const ml = m.toLowerCase();
-  SifrrFetch[ml] = function(url, options) {
+  SifrrFetch[ml] = function(url: any, options: any) {
     return this.request(url, options, m);
   };
 
-  SifrrFetch.prototype[ml] = function(url, options) {
+  SifrrFetch.prototype[ml] = function(url: any, options: any) {
     return this.constructor[ml](url, this._tOptions(options));
   };
 });
-
-SifrrFetch.Socket = Socket;
-SifrrFetch.graphqlPath = '/graphql';
 
 export { SifrrFetch as Fetch, Socket };
 export default SifrrFetch;

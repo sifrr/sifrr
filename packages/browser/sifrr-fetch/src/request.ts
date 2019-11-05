@@ -1,6 +1,8 @@
+import { SifrrFetchOptions } from './types';
+
 const objConst = {}.constructor;
 
-function responseProgress(resp, onProgress) {
+function responseProgress(resp: Response, onProgress) {
   const contentLength = resp.headers.get('content-length');
   const total = parseInt(contentLength, 10);
   if (!total || !resp.body || !window.ReadableStream) {
@@ -43,7 +45,10 @@ function responseProgress(resp, onProgress) {
 }
 
 class Request {
-  constructor(url, options) {
+  private _options: SifrrFetchOptions;
+  private _url: string;
+
+  constructor(url: string | number, options: SifrrFetchOptions) {
     this._options = options;
     this._url = (options.host || '') + url;
   }
@@ -80,22 +85,25 @@ class Request {
     }
   }
 
-  get options() {
-    const dOpts = this._options.defaultOptions || {};
-    delete this._options.defaultOptions;
+  get options(): RequestInit {
+    this._options.defaultOptions = this._options.defaultOptions || {};
     const options = {
       redirect: 'follow',
-      ...dOpts,
+      ...this._options.defaultOptions,
       ...this._options
     };
-    options.headers = Object.assign(this._options.headers || {}, dOpts.headers);
+    delete options.defaultOptions;
+    options.headers = Object.assign(
+      this._options.headers || {},
+      this._options.defaultOptions.headers
+    );
     if (options.body && (options.body.constructor === objConst || Array.isArray(options.body))) {
       options.headers['content-type'] = options.headers['content-type'] || 'application/json';
     }
     if (options.headers['content-type'] && options.headers['content-type'].indexOf('json') > -1) {
       options.body = JSON.stringify(options.body);
     }
-    return options;
+    return options as RequestInit;
   }
 }
 
