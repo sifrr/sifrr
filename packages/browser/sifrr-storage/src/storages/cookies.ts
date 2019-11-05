@@ -48,7 +48,7 @@ class Cookies extends Storage {
     document.cookie = v;
   }
 
-  hasStore() {
+  protected hasStore() {
     return typeof document.cookie !== 'undefined';
   }
 

@@ -7,7 +7,7 @@ class JsonStorage extends Storage {
     return (<typeof JsonStorage>this.constructor)._matchingInstance(this);
   }
 
-  hasStore() {
+  protected hasStore() {
     return true;
   }
 

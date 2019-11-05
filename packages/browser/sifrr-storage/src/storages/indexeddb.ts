@@ -67,7 +67,7 @@ class IndexedDB extends Storage {
     });
   }
 
-  hasStore() {
+  protected hasStore() {
     return !!window.indexedDB;
   }
 

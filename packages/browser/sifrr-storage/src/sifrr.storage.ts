@@ -6,7 +6,11 @@ import JsonStorage from './storages/jsonstorage';
 import { StorageOptions } from './storages/types';
 import Storage from './storages/storage';
 
-const storages: { [x: string]: typeof Storage } = {
+type StorageConstructor = {
+  new (options: StorageOptions): Storage;
+};
+
+const storages: { [x: string]: StorageConstructor } = {
   [IndexedDB.type]: IndexedDB,
   [WebSQL.type]: WebSQL,
   [LocalStorage.type]: LocalStorage,

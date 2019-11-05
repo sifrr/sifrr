@@ -1,5 +1,5 @@
 import Storage from './storage';
-import { StorageOptions } from './types';
+import { StorageOptions, SavedData, SavedDataObject } from './types';
 
 type websqlResult = {
   rows: {
@@ -65,6 +65,10 @@ class WebSQL extends Storage {
     return this.execSql(`SELECT key, value FROM ${this.tableName}`);
   }
 
+  protected hasStore() {
+    return !!window.openDatabase;
+  }
+
   private getWebsql() {
     if (this._store) return this._store;
     this._store = window.openDatabase('ss', 1, this.description, this.size);
@@ -72,7 +76,7 @@ class WebSQL extends Storage {
     return this._store;
   }
 
-  private execSql(query: string, args = []) {
+  private execSql(query: string, args = []): Promise<SavedDataObject> {
     const me = this;
     return new Promise(resolve => {
       me.getWebsql().transaction(function(tx) {
@@ -83,7 +87,7 @@ class WebSQL extends Storage {
     });
   }
 
-  private parseResults(results: websqlResult) {
+  private parseResults(results: websqlResult): SavedDataObject {
     const ans = {};
     const len = results.rows.length;
     for (let i = 0; i < len; i++) {
