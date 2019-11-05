@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "sourceMap": true,
+    "declarationDir": "./dist/types",
+    "module": "es6",
+    "noImplicitAny": false,
+    "target": "es2015",
+    "lib": ["es5", "es2015", "dom", "webworker"],
+    "strictBindCallApply": true
+  },
+  "include": ["src/*"],
+  "exclude": ["node_modules"]
+}

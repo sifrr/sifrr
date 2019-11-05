@@ -1,5 +1,13 @@
-class SW {
-  constructor(options) {
+import { swOptions } from './types';
+
+declare var self: ServiceWorkerGlobalScope;
+
+class ServiceWorker {
+  options: swOptions;
+  defaultPushTitle: string;
+  defaultPushOptions: NotificationOptions;
+
+  constructor(options: swOptions) {
     this.options = Object.assign(
       {
         version: 1,
@@ -36,7 +44,7 @@ class SW {
   }
 
   /* istanbul ignore next */
-  onInstall() {}
+  onInstall(_event: any) {}
 
   activateEventListener() {
     const version = '-v' + this.options.version;
@@ -64,7 +72,7 @@ class SW {
     if (request.method === 'GET') {
       event.respondWith(
         this.respondWithPolicy(request)
-          .then(response => {
+          .then((response: { ok: any; status: string | number }) => {
             if (
               !response.ok &&
               response.status > 0 &&
@@ -74,20 +82,22 @@ class SW {
             }
             return response;
           })
-          .catch(e => this.respondWithFallback(otherReq, e))
+          .catch((e: any) => this.respondWithFallback(otherReq, e))
       );
     }
   }
 
   pushEventListener(event) {
-    let data = {};
+    let data: {
+      title?: string;
+    } = {};
     if (event.data) {
       if (typeof event.data.json === 'function') data = event.data.json();
       else data = event.data || {};
     }
 
     const title = data.title || this.defaultPushTitle;
-    const options = Object.assign(this.defaultPushOptions, data);
+    const options: NotificationOptions = Object.assign({}, this.defaultPushOptions, data);
 
     return self.registration.showNotification(title, options);
   }
@@ -97,21 +107,21 @@ class SW {
 
   precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
     const me = this;
-    let promises = [];
+    const promises = [];
     urls.forEach(u => {
-      let req = me.createRequest(u);
+      const req = me.createRequest(u);
       return promises.push(
         me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName)
       );
     });
-    for (let value of Object.values(fbs)) {
-      let req = this.createRequest(value);
+    for (const url of Object.values(fbs)) {
+      const req = this.createRequest(url);
       promises.push(this.responseFromNetwork(req, this.options.fallbackCacheName));
     }
     return Promise.all(promises);
   }
 
-  respondWithFallback(request, error) {
+  respondWithFallback(request: { url: any }, error: any) {
     const fallback = this.createRequest(this.findRegex(request.url, this.options.fallbacks));
     if (fallback !== undefined) {
       return this.responseFromCache(fallback, this.options.fallbackCacheName);
@@ -121,14 +131,14 @@ class SW {
     }
   }
 
-  respondWithPolicy(request) {
+  respondWithPolicy(request: Request) {
     const req1 = request.clone();
     const req2 = request.clone();
     const config = this.findRegex(request.url, this.options.policies);
     const policy = config.policy;
     const cacheName = config.cacheName || this.options.defaultCacheName;
 
-    let resp;
+    let resp: Promise<Response>;
     switch (policy) {
       case 'NETWORK_ONLY':
         resp = this.responseFromNetwork(req1, cacheName, false);
@@ -154,7 +164,7 @@ class SW {
     return resp;
   }
 
-  responseFromNetwork(request, cache, putInCache = true) {
+  responseFromNetwork(request: Request, cache: string, putInCache = true) {
     return caches.open(cache + '-v' + this.options.version).then(cache =>
       fetch(request).then(response => {
         if (putInCache) cache.put(request, response.clone());
@@ -163,7 +173,7 @@ class SW {
     );
   }
 
-  responseFromCache(request, cache) {
+  responseFromCache(request: Request, cache: string) {
     return caches
       .open(cache + '-v' + this.options.version)
       .then(cache => cache.match(request))
@@ -173,12 +183,12 @@ class SW {
       });
   }
 
-  createRequest(url, data = { method: 'GET' }) {
+  createRequest(url: string | Request, data = { method: 'GET' }) {
     return new Request(url, data);
   }
 
-  findRegex(url, policies) {
-    for (let [key, value] of Object.entries(policies)) {
+  findRegex(url: string, policies: { [s: string]: unknown } | ArrayLike<unknown>) {
+    for (const [key, value] of Object.entries(policies)) {
       const regex = new RegExp(key);
       if (regex.test(url)) return value;
     }
@@ -186,5 +196,5 @@ class SW {
   }
 }
 
-export { SW as ServiceWorker };
-export default SW;
+export { ServiceWorker };
+export default ServiceWorker;
