@@ -28,8 +28,8 @@ function save_indexeddb() {
 }
 
 function save_jsonstorage() {
-  let storage = new Sifrr.Storage('jsonstorage');
-  storage._table = { a: { value: 'b' } };
+  let storage = Sifrr.Storage.getStorage('jsonstorage');
+  storage.table = { a: { value: 'b' } };
 }
 
 function arrayEqual(buf1, buf2) {

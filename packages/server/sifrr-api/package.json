@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@sifrr/dev": "^0.0.36",
+    "@sifrr/dev": "^0.0.37",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.0",
     "graphql-sequelize": "^9.3.6",

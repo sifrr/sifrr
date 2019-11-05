@@ -1,6 +1,6 @@
-const SifrrStorage = require('../../src/sifrr.storage').default;
+const { availableStores } = require('../../src/sifrr.storage');
 
-for (const key in SifrrStorage.availableStores) {
+for (const key in availableStores) {
   describe(`${key} in browser`, () => {
     before(async () => {
       await page.goto(`${PATH}/index.html`);
@@ -9,7 +9,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`Setting priority to ${key} give ${key} instance`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage({ priority: [key] });
           return storage.type;
         } catch (e) {
           return e.message;
@@ -21,7 +21,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`Giving options to ${key} give ${key} instance`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           return storage.type;
         } catch (e) {
           return e.message;
@@ -33,8 +33,8 @@ for (const key in SifrrStorage.availableStores) {
     it(`Same table name for ${key} give same instance`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage1 = new Sifrr.Storage(key);
-          const storage2 = new Sifrr.Storage(key);
+          const storage1 = Sifrr.Storage.getStorage(key);
+          const storage2 = Sifrr.Storage.getStorage(key);
           return storage1 === storage2;
         } catch (e) {
           return e.message;
@@ -47,7 +47,7 @@ for (const key in SifrrStorage.availableStores) {
       const result = await page.evaluate(async key => {
         try {
           new Function(`save_${key}();`)();
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           return await storage.all();
         } catch (e) {
           return e.message;
@@ -59,7 +59,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`${key}.get selects value`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           await storage.set('w', 'x');
           await storage.set('y', 'z');
           return {
@@ -78,7 +78,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`${key}.set updates or sets value`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           await storage.set('w', 'abc');
           await storage.set('y', 'abc');
           await storage.set('z', 'abc');
@@ -97,7 +97,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`${key}.del deletes value`, async () => {
       const result = await page.evaluate(key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           storage.set('w', 'x');
           storage.set('y', 'z');
           storage.set('a', 'b');
@@ -116,9 +116,9 @@ for (const key in SifrrStorage.availableStores) {
     it('can handle multiple tables', async () => {
       const result = await page.evaluate(async key => {
         try {
-          const st1 = new Sifrr.Storage({ priority: [key], name: 'first', version: 1 });
-          const st2 = new Sifrr.Storage({ priority: [key], name: 'first', version: 2 });
-          const st3 = new Sifrr.Storage({ priority: [key], name: 'third', version: 1 });
+          const st1 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 1 });
+          const st2 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 2 });
+          const st3 = Sifrr.Storage.getStorage({ priority: [key], name: 'third', version: 1 });
           await st1.set('m', 'a');
           await st2.set('m', 'b');
           await st3.set('m', 'c');
@@ -135,7 +135,7 @@ for (const key in SifrrStorage.availableStores) {
     it(`${key}.set works with json`, async () => {
       const result = await page.evaluate(async key => {
         try {
-          const storage = new Sifrr.Storage(key);
+          const storage = Sifrr.Storage.getStorage(key);
           await storage.set('aadi', { name: { first: 'aaditya' } });
           return storage.all();
         } catch (e) {
@@ -147,7 +147,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it(`${key}.clear clears the storage`, async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key),
+        const storage = Sifrr.Storage.getStorage(key),
           ans = {};
         await storage.set('a', 'b');
         ans.before = await storage.get('a');
@@ -168,7 +168,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it('gives all keys', async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key);
+        const storage = Sifrr.Storage.getStorage(key);
         await storage.set('a', 1);
         await storage.set('b', 2);
         return await storage.keys();
@@ -179,7 +179,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it('saves value when it is falsy', async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key);
+        const storage = Sifrr.Storage.getStorage(key);
         await storage.set('a', 0);
         await storage.set('f', false);
         return {
@@ -194,7 +194,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it('works with ttl', async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key);
+        const storage = Sifrr.Storage.getStorage(key);
         await storage.set('ttl', { value: 1, ttl: 100 });
         const before = await storage.get('ttl');
         await delay(110);
@@ -211,7 +211,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it('memoizes with first argument', async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key);
+        const storage = Sifrr.Storage.getStorage(key);
         let i = 0;
         const func = async () => i;
         const memoized = storage.memoize(func);
@@ -235,7 +235,7 @@ for (const key in SifrrStorage.availableStores) {
 
     it('memoizes with key function', async () => {
       const result = await page.evaluate(async key => {
-        const storage = new Sifrr.Storage(key);
+        const storage = Sifrr.Storage.getStorage(key);
         let i = 0;
         const func = async () => i;
         const memoized = storage.memoize(func, (a, b) => a + b);
@@ -276,7 +276,7 @@ for (const key in SifrrStorage.availableStores) {
         it(`works with ${type}`, async () => {
           await page.evaluate(
             async (key, type) => {
-              const s = new Sifrr.Storage(key);
+              const s = Sifrr.Storage.getStorage(key);
               await s.set(type, window.AllDataTypes[type]);
               await new Promise(res => setTimeout(res, 10));
             },
@@ -287,7 +287,7 @@ for (const key in SifrrStorage.availableStores) {
           await page.goto(`${PATH}/index.html`);
           const result = await page.evaluate(
             async (key, type) => {
-              const s = new Sifrr.Storage(key);
+              const s = Sifrr.Storage.getStorage(key);
               const value = (await s.get(type))[type];
               return {
                 sameInstance: value instanceof window[type],

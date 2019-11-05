@@ -846,10 +846,10 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.36", "@sifrr/dev@^0.0.36":
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.36.tgz#fc406b1d5235655ddab5c512b761c7dca7962020"
-  integrity sha512-xZ8W/THXShiRm2XDGZZ7fz7h2LIy0y49cBKP9m7m157/he+6H96Xbkg3wsma8FLNNL3468hpNqL4WUSeL5DBoA==
+"@sifrr/dev@0.0.37", "@sifrr/dev@^0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.37.tgz#8340e4f9c8791caab2ca3d565ca1b228a386d5e6"
+  integrity sha512-DF1cpPKsJm6c+DOfnMLATJ9XKxOrRYQTg+VP5y86IX6rzFjynhkqz7xCVVIGBmD94zTUlljOY0BwaukCK9y4rQ==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -886,7 +886,7 @@
     node-sass "^4.12.0"
     portfinder "^1.0.21"
     prettier "^1.18.2"
-    puppeteer "1.20.0"
+    puppeteer "2.0.0"
     repl "^0.1.3"
     rollup "^1.19.4"
     rollup-plugin-babel "^4.3.3"
@@ -897,10 +897,10 @@
     rollup-plugin-postcss "^2.0.3"
     rollup-plugin-replace "^2.2.0"
     rollup-plugin-terser "^5.1.1"
-    rollup-plugin-typescript2 "^0.24.0"
+    rollup-plugin-typescript2 "^0.25.1"
     sinon "^7.4.1"
     typescript "^3.5.3"
-    uWebSockets.js uNetworking/uWebSockets.js#v15.11.0
+    uWebSockets.js uNetworking/uWebSockets.js#v16.1.0
 
 "@sifrr/dom@file:./packages/browser/sifrr-dom":
   version "0.0.6"
@@ -6796,7 +6796,7 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-puppeteer@1.20.0, puppeteer@^1.16.0:
+puppeteer@1.20.0, puppeteer@2.0.0, puppeteer@^1.16.0:
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.20.0.tgz#e3d267786f74e1d87cf2d15acc59177f471bbe38"
   integrity sha512-bt48RDBy2eIwZPrkgbcwHtb51mj2nKvHOPMaSH2IsWiv7lOG9k9zhaRzpDZafrk05ajMc3cu+lSQYYOfH2DkVQ==
@@ -7361,10 +7361,10 @@ rollup-plugin-terser@^5.1.1:
     serialize-javascript "^1.7.0"
     terser "^4.1.0"
 
-rollup-plugin-typescript2@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.24.0.tgz#27ce5459d03e095236bdbcda3ca68fe289718d07"
-  integrity sha512-yp7z9hZ5kXjOGXKXkfTRJuIPyLvKtUWfAGmreilnYn+qIVhE5CgE7SFvzLKHggsAXPaCAflHRiEj0l71WXWJkA==
+rollup-plugin-typescript2@^0.25.1:
+  version "0.24.3"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.24.3.tgz#276fa33a9d584d500da62d3e5400307f4a46bdf2"
+  integrity sha512-D7yovQlhnRoz7pG/RF0ni+koxgzEShwfAGuOq6OVqKzcATHOvmUt2ePeYVdc9N0adcW1PcTzklUEM0oNWE/POw==
   dependencies:
     find-cache-dir "^3.0.0"
     fs-extra "8.1.0"
@@ -8348,7 +8348,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.2.tgz#105b0f1934119dde543ac8eb71af3a91009efe54"
   integrity sha512-lmQ4L+J6mnu3xweP8+rOrUwzmN+MRAj7TgtJtDaXE5PMyX2kCrklhg3rvOsOIfNeAWMQWO2F1GPc1kMD2vLAfw==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v15.11.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0:
   version "16.0.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/279ddafb1f95c81b4befece127a320c1e3dfcd4a"
 

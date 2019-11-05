@@ -23,13 +23,7 @@ class Storage {
   size: number;
 
   tableName: string;
-  private _table: any;
-  public get table(): any {
-    return this._table;
-  }
-  public set table(value: any) {
-    this._table = value;
-  }
+  private table = {};
 
   constructor(options: StorageOptions = defaultOptions) {
     Object.assign(this, defaultOptions, options);
@@ -38,44 +32,47 @@ class Storage {
 
   // overwrited methods
   protected select(keys: string[]): object | Promise<object> {
-    return Promise.resolve(this.parsedData()).then(data => {
-      const ans = {};
-      keys.forEach(key => (ans[key] = data[key]));
-      return ans;
-    });
+    const table = this.getStore();
+    const ans = {};
+    keys.forEach(key => (ans[key] = table[key]));
+    return ans;
   }
 
   protected upsert(data: { [x: string]: any }): boolean | Promise<boolean> {
-    const table = this.table;
+    const table = this.getStore();
     for (let key in data) {
       table[key] = data[key];
     }
-    this.table = table;
+    this.setStore(table);
     return true;
   }
 
   protected delete(keys: string[]): boolean | Promise<boolean> {
-    const table = this.table;
+    const table = this.getStore();
     keys.forEach(key => delete table[key]);
-    this.table = table;
+    this.setStore(table);
     return true;
   }
 
   protected deleteAll(): boolean | Promise<boolean> {
-    this.table = {};
+    this.setStore({});
     return true;
   }
 
-  protected parsedData(): object {
+  protected getStore(): {} {
     return this.table;
   }
 
+  protected setStore(v: {}) {
+    this.table = v;
+  }
+
   keys() {
-    return Promise.resolve(this.parsedData()).then(d => Object.keys(d));
+    return Promise.resolve(this.getStore()).then(d => Object.keys(d));
   }
 
   all() {
-    return Promise.resolve(this.parsedData()).then(d => parseGetData(d, this.del.bind(this)));
+    return Promise.resolve(this.getStore()).then(d => parseGetData(d, this.del.bind(this)));
   }
 
   get(key: string) {

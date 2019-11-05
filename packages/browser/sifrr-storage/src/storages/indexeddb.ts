@@ -9,10 +9,6 @@ class IndexedDB extends Storage {
     return (<typeof IndexedDB>this.constructor)._matchingInstance<IndexedDB>(this);
   }
 
-  protected parsedData() {
-    return this._tx('readonly', 'getAllKeys', undefined, undefined).then(this.select.bind(this));
-  }
-
   protected select(keys: string[]) {
     const ans = {};
     const promises = [];
@@ -56,13 +52,13 @@ class IndexedDB extends Storage {
     );
   }
 
-  private getStore() {
-    return window.indexedDB;
+  protected getStore() {
+    return this._tx('readonly', 'getAllKeys', undefined, undefined).then(this.select.bind(this));
   }
 
   private createStore(table: string) {
     return new Promise((resolve, reject) => {
-      const request = this.getStore().open(table, 1);
+      const request = window.indexedDB.open(table, 1);
       request.onupgradeneeded = () => {
         request.result.createObjectStore(table);
       };

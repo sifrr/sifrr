@@ -4,8 +4,9 @@ import LocalStorage from './storages/localstorage';
 import Cookies from './storages/cookies';
 import JsonStorage from './storages/jsonstorage';
 import { StorageOptions } from './storages/types';
+import Storage from './storages/storage';
 
-const storages: { [x: string]: any } = {
+const storages: { [x: string]: typeof Storage } = {
   [IndexedDB.type]: IndexedDB,
   [WebSQL.type]: WebSQL,
   [LocalStorage.type]: LocalStorage,
@@ -17,47 +18,42 @@ type MainOptions = StorageOptions & {
   priority?: string[];
 };
 
-class SifrrStorage {
-  static availableStores = storages;
-  options: MainOptions;
-
-  constructor(options: string | MainOptions) {
-    if (typeof options === 'string') this.options = { priority: [options] };
-    else {
-      this.options = options || {};
-      this.options.priority = this.options.priority || [];
-    }
-
-    return this.storage;
-  }
-
-  get storage() {
-    const storage = this.supportedStore();
-    if (typeof storage === 'undefined')
-      throw Error('No available storage supported in this browser');
-    return storage;
-  }
-
-  get priority() {
-    return this.options.priority.concat([
-      'indexeddb',
-      'websql',
-      'localstorage',
-      'cookies',
-      'jsonstorage'
-    ]);
-  }
-
-  supportedStore() {
-    for (let i = 0; i < this.priority.length; i++) {
-      let store = storages[this.priority[i]];
-      if (store) {
-        const storage = new store(this.options).isSupported();
-        return storage;
-      }
+function getSupportedStoreFromPriority(
+  priority: string[] = [],
+  options: StorageOptions = {}
+): Storage {
+  priority = priority.concat([
+    IndexedDB.type,
+    WebSQL.type,
+    LocalStorage.type,
+    Cookies.type,
+    JsonStorage.type
+  ]);
+  for (let i = 0; i < priority.length; i++) {
+    let store = storages[priority[i]];
+    if (store) {
+      const storage = new store(options);
+      if (storage.isSupported()) return storage;
     }
   }
+  throw Error(
+    'No compatible storage found. Available types: ' + Object.keys(storages).join(', ') + '.'
+  );
 }
 
-export { IndexedDB, WebSQL, LocalStorage, Cookies, JsonStorage };
-export default SifrrStorage;
+function getStorage(options: string | MainOptions): Storage {
+  const priority = typeof options === 'string' ? [options] : (options || {}).priority;
+  const stOptions = typeof options === 'string' ? {} : options;
+
+  return getSupportedStoreFromPriority(priority, stOptions);
+}
+
+export {
+  IndexedDB,
+  WebSQL,
+  LocalStorage,
+  Cookies,
+  JsonStorage,
+  getStorage,
+  storages as availableStores
+};

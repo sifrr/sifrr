@@ -11,19 +11,6 @@ class Cookies extends Storage {
     return (<typeof Cookies>this.constructor)._matchingInstance<Cookies>(this);
   }
 
-  protected parsedData() {
-    let result = this.getStore(),
-      ans = {};
-    result.split('; ').forEach(value => {
-      let [k, v] = value.split('=');
-      if (k.indexOf(this.tableName) === 0)
-        ans[k.slice(this.tableName.length + 1)] = (<typeof Storage>this.constructor).parse(
-          v.replace(equalRegex, '=')
-        );
-    });
-    return ans;
-  }
-
   protected upsert(data: object) {
     for (let key in data) {
       this.setStore(
@@ -44,11 +31,20 @@ class Cookies extends Storage {
     return this.keys().then(this.delete.bind(this));
   }
 
-  private getStore() {
-    return document.cookie;
+  protected getStore() {
+    let result = document.cookie,
+      ans = {};
+    result.split('; ').forEach(value => {
+      let [k, v] = value.split('=');
+      if (k.indexOf(this.tableName) === 0)
+        ans[k.slice(this.tableName.length + 1)] = (<typeof Storage>this.constructor).parse(
+          v.replace(equalRegex, '=')
+        );
+    });
+    return ans;
   }
 
-  private setStore(v: string) {
+  protected setStore(v: string) {
     document.cookie = v;
   }
 
