@@ -1,6 +1,6 @@
 import { stringify, parse } from '../utils/json';
 import { parseGetData, parseKey, parseSetData } from '../utils/dataparser';
-import { StorageOptions } from './types';
+import { StorageOptions, SavedDataObject } from './types';
 
 const defaultOptions: StorageOptions = {
   name: 'SifrrStorage',
@@ -10,9 +10,8 @@ const defaultOptions: StorageOptions = {
   ttl: 0
 };
 
-class Storage {
+abstract class Storage {
   static type: string;
-  static _all: Array<Storage>;
 
   type: string = (<typeof Storage>this.constructor).type;
 
@@ -31,7 +30,7 @@ class Storage {
   }
 
   // overwrited methods
-  protected select(keys: string[]): object | Promise<object> {
+  protected select(keys: string[]): SavedDataObject | Promise<SavedDataObject> {
     const table = this.getStore();
     const ans = {};
     keys.forEach(key => (ans[key] = table[key]));
@@ -59,7 +58,7 @@ class Storage {
     return true;
   }
 
-  protected getStore(): {} {
+  protected getStore(): SavedDataObject | Promise<SavedDataObject> {
     return this.table;
   }
 
@@ -124,11 +123,11 @@ class Storage {
     }
   }
 
-  hasStore() {
+  protected hasStore() {
     return true;
   }
 
-  isEqual(other: { tableName: string; type: string }) {
+  protected isEqual(other: { tableName: string; type: string }) {
     if (this.tableName == other.tableName && this.type == other.type) {
       return true;
     } else {
@@ -137,21 +136,22 @@ class Storage {
   }
 
   // aliases
-  static stringify(data: any) {
+  protected static stringify(data: any) {
     return stringify(data);
   }
 
-  static parse(data: string) {
+  protected static parse(data: string) {
     return parse(data);
   }
 
   // one instance per store
-  static _add(instance: Storage) {
+  protected static _all: Array<Storage>;
+  protected static _add(instance: Storage) {
     this._all = this._all || [];
     this._all.push(instance);
   }
 
-  static _matchingInstance<T extends Storage>(otherInstance: Storage): T {
+  protected static _matchingInstance<T extends Storage>(otherInstance: Storage): T {
     const all = this._all || [],
       length = all.length;
     for (let i = 0; i < length; i++) {

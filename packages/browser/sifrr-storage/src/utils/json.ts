@@ -2,7 +2,7 @@ const toS = Object.prototype.toString;
 const uId = '~SS%l3g5k3~';
 
 function decodeBlob(str, type) {
-  return new Blob([new window.Uint8Array(str.split(',')).buffer], { type });
+  return new Blob([new Uint8Array(str.split(',')).buffer], { type });
 }
 
 function encodeBlob(blob) {
@@ -34,8 +34,7 @@ export function parse(data: any): any {
   if (typeof data === 'string' && data.indexOf(uId) > 0) {
     const [type, av, av2] = data.split(uId);
 
-    if (type === 'ArrayBuffer')
-      ans = new window.Uint8Array(av.split(',').map(i => parseInt(i))).buffer;
+    if (type === 'ArrayBuffer') ans = new Uint8Array(av.split(',').map(i => parseInt(i))).buffer;
     else if (type === 'Blob') ans = decodeBlob(av2, av);
     else ans = new window[type](av.split(','));
   } else if (Array.isArray(data)) {
@@ -65,7 +64,7 @@ export function stringify(data: any): string {
     }
     return JSON.stringify(ans);
   } else if (type === 'ArrayBuffer') {
-    data = new window.Uint8Array(data);
+    data = new Uint8Array(data);
   } else if (type === 'Blob') {
     data = data.type + uId + encodeBlob(data);
   }

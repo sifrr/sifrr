@@ -5,3 +5,13 @@ export type StorageOptions = {
   size?: number;
   ttl?: number;
 };
+
+export type SavedData = {
+  ttl: number;
+  createdAt: number;
+  value: any;
+};
+
+export type SavedDataObject = {
+  [k: string]: SavedData;
+};

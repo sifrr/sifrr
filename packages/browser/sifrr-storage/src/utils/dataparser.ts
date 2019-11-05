@@ -1,6 +1,8 @@
+import { SavedDataObject, SavedData } from '../storages/types';
+
 // always bind to storage
 export const parseGetData = (
-  original: object,
+  original: SavedDataObject,
   onExpire: (k: string) => Promise<boolean> | undefined
 ): object => {
   const now = Date.now();
@@ -20,7 +22,7 @@ export const parseGetData = (
   return original;
 };
 
-export const parseSetValue = (value: any, defaultTtl): object => {
+export const parseSetValue = (value: any, defaultTtl: number): SavedData => {
   if (value && value.value) {
     value.ttl = value.ttl || defaultTtl;
     value.createdAt = Date.now();
@@ -34,7 +36,11 @@ export const parseSetValue = (value: any, defaultTtl): object => {
   }
 };
 
-export const parseSetData = (key: string | object, value: any | undefined, defaultTtl): object => {
+export const parseSetData = (
+  key: string | object,
+  value: any | undefined,
+  defaultTtl: number | undefined
+): SavedDataObject => {
   if (typeof key === 'string') {
     return { [key]: parseSetValue(value, defaultTtl) };
   } else {

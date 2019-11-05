@@ -54,7 +54,7 @@ class LocalStorage extends Storage {
     return window.localStorage;
   }
 
-  hasStore() {
+  protected hasStore() {
     return !!window.localStorage;
   }
 

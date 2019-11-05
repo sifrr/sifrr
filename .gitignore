@@ -3,6 +3,9 @@ logs
 *.log
 *.log*
 
+# docs
+**/docs
+
 # Coverage directory used by tools like istanbul
 coverage
 
@@ -21,7 +24,6 @@ typings/
 dist
 .DS_Store
 .ts_cache
-
 
 # test yarns
 **/test/public/yarn.lock
