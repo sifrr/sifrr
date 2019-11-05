@@ -82,7 +82,7 @@ class SifrrFetch {
     this.graphqlPath = '/graphql';
   }
 
-  graphql(url: any, options: any) {
+  graphql(url: string, options: SifrrFetchOptions) {
     if (typeof url === 'string') {
       return (<typeof SifrrFetch>this.constructor).graphql(url, this._tOptions(options));
     } else {
@@ -98,12 +98,12 @@ class SifrrFetch {
 
 httpMethods.forEach(m => {
   const ml = m.toLowerCase();
-  SifrrFetch[ml] = function(url: any, options: any) {
-    return this.request(url, options, m);
+  SifrrFetch[ml] = function(url: string, options: SifrrFetchOptions) {
+    return SifrrFetch.request(url, options, m);
   };
 
-  SifrrFetch.prototype[ml] = function(url: any, options: any) {
-    return this.constructor[ml](url, this._tOptions(options));
+  SifrrFetch.prototype[ml] = function(url: string, options: SifrrFetchOptions) {
+    return SifrrFetch[ml](url, this._tOptions(options));
   };
 });
 
