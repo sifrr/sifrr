@@ -36,7 +36,7 @@
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@sifrr/dev": "^0.0.38",
     "axios": "^0.19.0",
-    "cache-manager": "^2.10.0",
+    "cache-manager": "^2.10.1",
     "graphql-sequelize": "^9.3.6",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.9",
