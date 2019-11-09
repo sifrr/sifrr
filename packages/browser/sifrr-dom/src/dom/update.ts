@@ -4,10 +4,11 @@ import updateAttribute from './updateattribute';
 import { evaluateBindings } from './bindings';
 import { TEMPLATE, RENDER_IF_PROP, ELEMENT_NODE } from './constants';
 import shouldMerge from '../utils/shouldmerge';
+import { SifrrRef, DomBindingReturnValue } from './types';
 
 const displayNone = 'none';
 
-const renderIf = (dom, shouldRender = dom[RENDER_IF_PROP] != false) => {
+const renderIf = (dom: HTMLElement, shouldRender = dom[RENDER_IF_PROP] != false) => {
   if (dom.___oldRenderIf === shouldRender) return shouldRender;
 
   dom.___oldRenderIf = shouldRender;
@@ -21,7 +22,7 @@ const renderIf = (dom, shouldRender = dom[RENDER_IF_PROP] != false) => {
   }
 };
 
-export default function update(element, stateMap) {
+export default function update(element, stateMap?: SifrrRef[]) {
   if (element.nodeType === ELEMENT_NODE && !renderIf(element)) return;
 
   stateMap = stateMap || element.constructor.stateMap;
@@ -89,9 +90,9 @@ export default function update(element, stateMap) {
     if (data.attributes) {
       for (let i = data.attributes.length - 1; i > -1; --i) {
         const attr = data.attributes[i];
-        let newValue;
+        let newValue: string | false;
         if (attr[1] === 0) newValue = element.state[attr[2]];
-        else newValue = evaluateBindings(attr[2], element);
+        else newValue = <string | false>evaluateBindings(attr[2], element);
         updateAttribute(dom, attr[0], newValue);
       }
     }
@@ -113,22 +114,22 @@ export default function update(element, stateMap) {
     if (data.text === undefined) continue;
 
     // update element
-    let newValue;
+    let newValue: DomBindingReturnValue;
     if (typeof data.text === 'string') newValue = element.state[data.text];
     else newValue = evaluateBindings(data.text, element);
 
-    if (!newValue || newValue.length === 0) dom.textContent = '';
+    if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) dom.textContent = '';
     else {
       // html node
       const newValue = evaluateBindings(data.text, element);
-      let children,
+      let children: string[] | HTMLElement[] | NodeList,
         isNode = false;
       if (Array.isArray(newValue)) {
         children = newValue;
-      } else if (newValue.content && newValue.content.nodeType === 11) {
+      } else if (newValue instanceof window.HTMLTemplateElement) {
         children = newValue.content.childNodes;
         isNode = true;
-      } else if (newValue.nodeType) {
+      } else if (newValue instanceof window.HTMLElement) {
         children = [newValue];
       } else if (typeof newValue === 'string') {
         const temp = TEMPLATE();

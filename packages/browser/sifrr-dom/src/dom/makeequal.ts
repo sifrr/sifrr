@@ -2,7 +2,12 @@ import updateAttribute from './updateattribute';
 import shouldMerge from '../utils/shouldmerge';
 import { TEXT_NODE, COMMENT_NODE } from './constants';
 
-export function makeChildrenEqual(parent, newChildren, createFn, isNode = false) {
+export function makeChildrenEqual(
+  parent: HTMLElement,
+  newChildren: any[] | HTMLElement[] | NodeList,
+  createFn: (state: any) => HTMLElement,
+  isNode = false
+) {
   const newL = newChildren.length,
     oldL = parent.childNodes.length;
   // Lesser children now
@@ -14,14 +19,14 @@ export function makeChildrenEqual(parent, newChildren, createFn, isNode = false)
     }
   }
 
-  let item,
+  let item: HTMLElement,
     head = parent.firstChild,
     curNewChild = newChildren[0];
   if (isNode) {
     // Make old children equal to new children
     while (head) {
       item = curNewChild.nextSibling;
-      head = makeEqual(head, curNewChild).nextSibling;
+      head = makeEqual(<HTMLElement>head, curNewChild).nextSibling;
       curNewChild = item;
     }
     // Add extra new children
@@ -34,7 +39,7 @@ export function makeChildrenEqual(parent, newChildren, createFn, isNode = false)
     let i = 0;
     // Make old children equal to new children
     while (head) {
-      head = makeEqual(head, newChildren[i]).nextSibling;
+      head = makeEqual(<HTMLElement>head, newChildren[i]).nextSibling;
       i++;
     }
     // Add extra new children
@@ -46,11 +51,19 @@ export function makeChildrenEqual(parent, newChildren, createFn, isNode = false)
   }
 }
 
-export function makeEqual(oldNode, newNode) {
+export function makeEqual(
+  oldNode: HTMLElement & {
+    setState?(state: any): void;
+    state?: any;
+  },
+  newNode: HTMLElement | any
+) {
   if (!newNode.nodeType) {
-    if (shouldMerge(oldNode.state, newNode)) oldNode.setState(newNode);
+    if (oldNode.state && shouldMerge(oldNode.state, newNode)) oldNode.setState(newNode);
     return oldNode;
   }
+
+  newNode = <HTMLElement>newNode;
 
   if (oldNode.nodeName !== newNode.nodeName) {
     oldNode.replaceWith(newNode);
@@ -59,7 +72,8 @@ export function makeEqual(oldNode, newNode) {
 
   // Text or comment node
   if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
-    if (oldNode.data !== newNode.data) oldNode.data = newNode.data;
+    if ((<Text>(<unknown>oldNode)).data !== (<Text>(<unknown>newNode)).data)
+      (<Text>(<unknown>oldNode)).data = newNode.data;
     return oldNode;
   }
 

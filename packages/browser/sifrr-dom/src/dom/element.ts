@@ -6,15 +6,23 @@ import { trigger } from './event';
 import template from './template';
 import { BIND_PROP } from './constants';
 
-function elementClassFactory(baseClass) {
-  return class extends baseClass {
-    static extends(htmlElementClass) {
+import { SifrrRef, ISifrrElement } from './types';
+
+function elementClassFactory(baseClass: typeof HTMLElement) {
+  return class SifrrElement extends baseClass implements ISifrrElement {
+    private static _ctemp: HTMLTemplateElement;
+    private static stateMap: SifrrRef[];
+    private static useSR: boolean;
+    public static defaultState: {};
+
+    static extends(htmlElementClass: typeof HTMLElement) {
       return elementClassFactory(htmlElementClass);
     }
 
     static get observedAttributes() {
       return this.observedAttrs();
     }
+
     static observedAttrs() {
       return [];
     }
@@ -43,13 +51,23 @@ function elementClassFactory(baseClass) {
       return this.useSR;
     }
 
+    private _refs: HTMLElement[];
+    private __content: DocumentFragment;
+    public _root: SifrrElement;
+    public _update: () => void;
+    public triggerUpdate: boolean;
+    public onPropsChange: (props: Array<string>) => void;
+    public connected: boolean;
+    public state: {};
+
     constructor() {
       super();
-      if (this.constructor.ctemp) {
-        this.state = Object.assign({}, this.constructor.defaultState, this.state);
-        const content = this.constructor.ctemp.content.cloneNode(true);
-        this._refs = collect(content, this.constructor.stateMap);
-        if (this.constructor.useShadowRoot) {
+      const constructor = <typeof SifrrElement>this.constructor;
+      if (constructor.ctemp !== false) {
+        this.state = Object.assign({}, constructor.defaultState, this.state);
+        const content = <DocumentFragment>constructor.ctemp.content.cloneNode(true);
+        this._refs = collect(content, constructor.stateMap);
+        if (constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
           });
@@ -81,13 +99,13 @@ function elementClassFactory(baseClass) {
 
     onDisconnect() {}
 
-    attributeChangedCallback(attrName, oldVal, newVal) {
+    attributeChangedCallback(attrName: string, oldVal: any, newVal: any) {
       this.onAttributeChange(attrName, oldVal, newVal);
     }
 
-    onAttributeChange() {}
+    onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
 
-    setState(v) {
+    setState(v: any) {
       if (!this.state) return;
       if (this.state !== v) Object.assign(this.state, v);
       this.update();
@@ -96,7 +114,7 @@ function elementClassFactory(baseClass) {
 
     onStateChange() {}
 
-    setProp(name, value) {
+    setProp(name: string, value: any) {
       this[name] = value;
       this.onPropsChange && this.onPropsChange([name]);
     }
@@ -113,13 +131,13 @@ function elementClassFactory(baseClass) {
     beforeUpdate() {}
     onUpdate() {}
 
-    isSifrr(name = null) {
-      if (name) return name === this.constructor.elementName;
+    isSifrr = (name = null) => {
+      if (name) return name === (<typeof SifrrElement>this.constructor).elementName;
       else return true;
-    }
+    };
 
-    sifrrClone(state) {
-      const clone = this.cloneNode(false);
+    sifrrClone(state: any) {
+      const clone = <SifrrElement>this.cloneNode(false);
       clone.state = state;
       return clone;
     }
@@ -129,12 +147,12 @@ function elementClassFactory(baseClass) {
       this.update();
     }
 
-    $(args, sr = true) {
+    $(args: string, sr = true) {
       if (this.shadowRoot && sr) return this.shadowRoot.querySelector(args);
       else return this.querySelector(args);
     }
 
-    $$(args, sr = true) {
+    $$(args: string, sr = true) {
       if (this.shadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
       else return this.querySelectorAll(args);
     }
@@ -143,7 +161,7 @@ function elementClassFactory(baseClass) {
       if (!this._root) {
         let root = this.parentNode;
         while (root && !root.isSifrr) root = root.parentNode || root.host;
-        if (root && root.isSifrr) this._root = root;
+        if (root && root.isSifrr) this._root = <SifrrElement>root;
       }
       return this._root;
     }

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { makeEqual } from './makeequal';
+import { ISifrrElement } from './types';
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
@@ -11,7 +12,14 @@ import { makeEqual } from './makeequal';
 // How this implementation differs from others, is that it's working with data directly,
 // without maintaining nodes arrays, and manipulates dom only when required
 
-export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
+export function makeChildrenEqualKeyed(
+  parent: ISifrrElement,
+  newData: ISifrrElement[],
+  createFn: {
+    (state: any): ISifrrElement;
+  },
+  key: string | number
+) {
   const newL = newData.length,
     oldL = parent.childNodes.length;
 
@@ -28,12 +36,12 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     loop = true,
     prevEnd = oldL - 1,
     newEnd = newL - 1,
-    prevStartNode = parent.firstChild,
-    prevEndNode = parent.lastChild,
-    finalNode,
-    a,
-    b,
-    _node;
+    prevStartNode: ISifrrElement = <ISifrrElement>parent.firstChild,
+    prevEndNode: ISifrrElement = <ISifrrElement>parent.lastChild,
+    finalNode: ISifrrElement,
+    a: any,
+    b: any,
+    _node: ISifrrElement;
 
   fixes: while (loop) {
     loop = false;
@@ -43,7 +51,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     while (a[key] === b[key]) {
       makeEqual(prevStartNode, b);
       prevStart++;
-      prevStartNode = prevStartNode.nextSibling;
+      prevStartNode = <ISifrrElement>prevStartNode.nextSibling;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       (a = prevStartNode.state), (b = newData[newStart]);
@@ -55,7 +63,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       makeEqual(prevEndNode, b);
       prevEnd--;
       finalNode = prevEndNode;
-      prevEndNode = prevEndNode.previousSibling;
+      prevEndNode = <ISifrrElement>prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       (a = prevEndNode.state), (b = newData[newEnd]);
@@ -66,7 +74,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     while (a[key] === b[key]) {
       loop = true;
       makeEqual(prevEndNode, b);
-      _node = prevEndNode.previousSibling;
+      _node = <ISifrrElement>prevEndNode.previousSibling;
       parent.insertBefore(prevEndNode, prevStartNode);
       prevEndNode = _node;
       prevEnd--;
@@ -80,10 +88,10 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
     while (a[key] === b[key]) {
       loop = true;
       makeEqual(prevStartNode, b);
-      _node = prevStartNode.nextSibling;
+      _node = <ISifrrElement>prevStartNode.nextSibling;
       parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
       finalNode = prevStartNode;
-      prevEndNode = prevStartNode.previousSibling;
+      prevEndNode = <ISifrrElement>prevStartNode.previousSibling;
       prevStartNode = _node;
       prevStart++;
       newEnd--;
@@ -95,14 +103,14 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   // Fast path for shrink
   if (newEnd < newStart) {
     if (prevStart <= prevEnd) {
-      let next;
+      let next: Node | ISifrrElement;
       while (prevStart <= prevEnd) {
         if (prevEnd === 0) {
           parent.removeChild(prevEndNode);
         } else {
           next = prevEndNode.previousSibling;
           parent.removeChild(prevEndNode);
-          prevEndNode = next;
+          prevEndNode = <ISifrrElement>next;
         }
         prevEnd--;
       }
@@ -143,7 +151,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
       toDelete.push(prevStartNode);
     }
     nodes[prevStart] = prevStartNode;
-    prevStartNode = prevStartNode.nextSibling;
+    prevStartNode = <ISifrrElement>prevStartNode.nextSibling;
     prevStart++;
   }
 
@@ -164,7 +172,7 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   let lisIdx = longestSeq.length - 1,
-    tmpD;
+    tmpD: ISifrrElement;
   for (let i = newEnd; i >= newStart; i--) {
     if (longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
@@ -187,16 +195,16 @@ export function makeChildrenEqualKeyed(parent, newData, createFn, key) {
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L368
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
-export function longestPositiveIncreasingSubsequence(ns, newStart) {
-  let seq = [],
+export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number) {
+  const seq = [],
     is = [],
-    l = -1,
     pre = new Array(ns.length);
+  let l = -1;
 
   for (let i = newStart, len = ns.length; i < len; i++) {
-    let n = ns[i];
+    const n = ns[i];
     if (n < 0) continue;
-    let j = findGreatestIndexLEQ(seq, n);
+    const j = findGreatestIndexLEQ(seq, n);
     if (j !== -1) pre[i] = is[j];
     if (j === l) {
       l++;
@@ -215,7 +223,7 @@ export function longestPositiveIncreasingSubsequence(ns, newStart) {
   return seq;
 }
 
-function findGreatestIndexLEQ(seq, n) {
+function findGreatestIndexLEQ(seq: number[], n: number) {
   // invariant: lo is guaranteed to be index of a value <= n, hi to be >
   // therefore, they actually start out of range: (-1, last + 1)
   let lo = -1,
@@ -225,7 +233,7 @@ function findGreatestIndexLEQ(seq, n) {
   if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
 
   while (hi - lo > 1) {
-    let mid = Math.floor((lo + hi) / 2);
+    const mid = Math.floor((lo + hi) / 2);
     if (seq[mid] > n) {
       hi = mid;
     } else {
