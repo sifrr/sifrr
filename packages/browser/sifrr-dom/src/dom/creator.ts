@@ -5,16 +5,19 @@ import simpleElement from './simpleelement';
 // 1: text
 // 2: html
 // 3: arrayToDom
+// 4: other
 import { getBindingFxns, getStringBindingFxn } from './bindings';
 import updateAttribute from './updateattribute';
 
-function attrToProp(attrName) {
+import { SifrrStateMap, EventMap, PropMap, AttributeMap } from './types';
+
+function attrToProp(attrName: string) {
   return attrName.substr(1).replace(/-([a-z])/g, g => g[1].toUpperCase());
 }
 
-export default function creator(el, defaultState) {
+export default function creator(el: HTMLElement, defaultState: {}): SifrrStateMap | 0 {
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
-    const x = el.data;
+    const x = (<Text>(<unknown>el)).data;
     if (x.indexOf('${') > -1) {
       const binding = getStringBindingFxn(x.trim());
       if (typeof binding !== 'string') {
@@ -24,7 +27,8 @@ export default function creator(el, defaultState) {
           text: binding
         };
       } else {
-        if (defaultState) el.data = el.__data = defaultState[binding];
+        if (defaultState)
+          (<Text>(<unknown>el)).data = (<Text>(<unknown>el)).__data = defaultState[binding];
         // state node
         return {
           type: 0,
@@ -33,13 +37,15 @@ export default function creator(el, defaultState) {
       }
     }
   } else if (el.nodeType === ELEMENT_NODE) {
-    const sm = {};
+    const sm: SifrrStateMap = {
+      type: 4
+    };
     // Html ?
     if (el.hasAttribute(HTML_ATTR)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;
-        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+        sm.text = <string>getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
       el.textContent = '';
     } else if (el.hasAttribute(REPEAT_ATTR)) {
@@ -49,9 +55,9 @@ export default function creator(el, defaultState) {
     // attributes
     const attrs = Array.prototype.slice.call(el.attributes),
       l = attrs.length;
-    const attrStateMap = [];
-    const eventMap = [];
-    const propMap = [];
+    const attrStateMap: AttributeMap = [];
+    const eventMap: EventMap = [];
+    const propMap: PropMap = [];
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i];
 

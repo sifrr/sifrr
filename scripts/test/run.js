@@ -31,6 +31,11 @@ const before = function() {
       log: sinon.stub(),
       error: sinon.stub(),
       warn: sinon.stub()
+    },
+    Node: {
+      TEXT_NODE: 2,
+      COMMENT_NODE: 8,
+      ELEMENT_NODE: 1
     }
   };
   global.fetch = () => {};
@@ -81,7 +86,7 @@ const roots = (process.argv[2] || './')
 const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
-  let preCommand = [];
+  const preCommand = [];
   if (!dontRunPrecommand) {
     preCommand.push(`cd ${root} && yarn build`);
     if (fs.existsSync(path.join(root, './test/public/package.json'))) {

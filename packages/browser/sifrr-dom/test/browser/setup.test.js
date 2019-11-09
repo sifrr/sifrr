@@ -32,6 +32,7 @@ describe('Sifrr.Dom.setup', () => {
       config: {
         baseUrl: '/',
         useShadowRoot: false,
+        url: null,
         events: ['input', 'change', 'update']
       },
       // Adds event listeners

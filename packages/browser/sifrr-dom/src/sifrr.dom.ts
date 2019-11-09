@@ -9,6 +9,7 @@ import { makeChildrenEqualKeyed } from './dom/keyed';
 import { Store, bindStoresToElement } from './dom/store';
 import template from './dom/template';
 import config from './dom/config';
+import { SifrrElement } from './dom/types';
 
 // Caches
 const elements = {};
@@ -16,11 +17,21 @@ const loadingElements = {};
 const registering = {};
 
 // Register Custom Element Function
-const register = (Element, options = {}) => {
+const register = (
+  Element: typeof SifrrElement,
+  {
+    name,
+    dependsOn,
+    ...options
+  }: {
+    name?: string;
+    dependsOn?: string | string[];
+  } & ElementDefinitionOptions = {}
+) => {
   Element.useSR = config.useShadowRoot;
-  const name = options.name || Element.elementName;
+  name = name || Element.elementName;
   if (!name) {
-    return Promise.reject(Error('Error creating Custom Element: No name given.', Element));
+    return Promise.reject(Error('Error creating Custom Element: No name given.'));
   } else if (window.customElements.get(name)) {
     console.warn(
       `Error creating Element: ${name} - Custom Element with this name is already defined.`
@@ -32,12 +43,11 @@ const register = (Element, options = {}) => {
     );
   } else {
     let before;
-    if (Array.isArray(options.dependsOn)) {
-      before = Promise.all(options.dependsOn.map(en => load(en)));
-    } else if (typeof options.dependsOn === 'string') {
-      before = load(options.dependsOn);
+    if (Array.isArray(dependsOn)) {
+      before = Promise.all(dependsOn.map(en => load(en)));
+    } else if (typeof dependsOn === 'string') {
+      before = load(dependsOn);
     } else before = Promise.resolve(true);
-    delete options.dependsOn;
     const registeringPromise = before.then(() =>
       window.customElements.define(name, Element, options)
     );
@@ -54,7 +64,7 @@ const register = (Element, options = {}) => {
 };
 
 // Initialize SifrrDom
-const setup = function(newConfig) {
+const setup = function(newConfig: any) {
   HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
@@ -72,7 +82,7 @@ const setup = function(newConfig) {
 };
 
 // Load Element HTML/JS and execute script in it
-const load = function(elemName, { url, js = true } = {}) {
+const load = function(elemName: string, { url = null, js = true } = {}) {
   if (window.customElements.get(elemName)) {
     return Promise.resolve(
       window.console.warn(
@@ -81,7 +91,7 @@ const load = function(elemName, { url, js = true } = {}) {
     );
   }
   loadingElements[elemName] = window.customElements.whenDefined(elemName);
-  let loader = new Loader(elemName, url);
+  const loader = new Loader(elemName, url);
   return loader
     .executeScripts(js)
     .then(() => registering[elemName])
@@ -101,7 +111,7 @@ const load = function(elemName, { url, js = true } = {}) {
 
 const loading = () => {
   const promises = [];
-  for (let el in loadingElements) {
+  for (const el in loadingElements) {
     promises.push(loadingElements[el]);
   }
   return Promise.all(promises);
