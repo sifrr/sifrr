@@ -63,12 +63,17 @@ export type SifrrStateMap =
       text: string;
     }
   | {
-      type: 1 | 2 | 3 | 4;
+      type: 1;
+      text: BindingFxns;
+    }
+  | {
+      type: 2 | 3;
       text?: BindingFxns;
       se?: ISifrrElement;
       events?: EventMap;
       props?: PropMap;
       attributes?: AttributeMap;
+      state?: BindingFxns;
     };
 
 export type SifrrRef = {

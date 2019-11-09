@@ -3,7 +3,7 @@
  * @param target target
  * @param source new value to be merged in old value
  */
-function shallowEqual(target: { [x: string]: any }, source: { [x: string]: any }) {
+function shallowEqual(target: any, source: any) {
   if (typeof target !== 'object') return target !== source;
   if (target === null || source === null) return target === source;
   for (const key in source) {

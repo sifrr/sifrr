@@ -56,11 +56,11 @@ export default function update(element, stateMap?: SifrrRef[]) {
     }
 
     // state
-    // if (data.state) {
-    //   const newState = evaluateBindings(data.state, element);
-    //   if (dom.setState && shouldMerge(dom.state, newState)) dom.setState(newState);
-    //   else dom['state'] = newState;
-    // }
+    if (data.state) {
+      const newState = evaluateBindings(data.state, element);
+      if (dom.setState && shouldMerge(dom.state, newState)) dom.setState(newState);
+      else dom['state'] = newState;
+    }
 
     // props
     if (data.props) {

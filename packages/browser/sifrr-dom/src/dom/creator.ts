@@ -5,7 +5,6 @@ import simpleElement from './simpleelement';
 // 1: text
 // 2: html
 // 3: arrayToDom
-// 4: other
 import { getBindingFxns, getStringBindingFxn } from './bindings';
 import updateAttribute from './updateattribute';
 
@@ -37,15 +36,13 @@ export default function creator(el: HTMLElement, defaultState: {}): SifrrStateMa
       }
     }
   } else if (el.nodeType === ELEMENT_NODE) {
-    const sm: SifrrStateMap = {
-      type: 4
-    };
+    const sm: any = {};
     // Html ?
     if (el.hasAttribute(HTML_ATTR)) {
       const innerHTML = el.innerHTML;
       if (innerHTML.indexOf('${') > -1) {
         sm.type = 2;
-        sm.text = <string>getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
+        sm.text = getBindingFxns(innerHTML.replace(/<!--((?:(?!-->).)+)-->/g, '$1').trim());
       }
       el.textContent = '';
     } else if (el.hasAttribute(REPEAT_ATTR)) {
@@ -97,7 +94,7 @@ export default function creator(el: HTMLElement, defaultState: {}): SifrrStateMa
     if (propMap.length > 0) sm.props = propMap;
     if (attrStateMap.length > 0) sm.attributes = attrStateMap;
 
-    if (Object.keys(sm).length > 0) return sm;
+    if (Object.keys(sm).length > 0) return <SifrrStateMap>sm;
   }
   return 0;
 }

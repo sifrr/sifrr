@@ -27,9 +27,7 @@ export default function SimpleElement(
   defaultState = null
 ) {
   const templ = template(content);
-  const se = <ISifrrElement>(
-    (<unknown>(templ.content.firstElementChild || templ.content.firstChild))
-  );
+  const se = <ISifrrElement>(templ.content.firstElementChild || templ.content.firstChild);
   // Already sifrr element
   if (
     se.isSifrr ||
