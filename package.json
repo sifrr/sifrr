@@ -57,7 +57,7 @@
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^3.0.9",
     "sequelize": "^5.21.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.1.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.2.0",
     "ws": "^7.2.0"
   },
   "resolutions": {
@@ -65,7 +65,7 @@
     "@sifrr/dom": "file:./packages/browser/sifrr-dom",
     "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
     "@sifrr/server": "file:./packages/server/sifrr-server",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.1.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.2.0",
     "puppeteer": "2.0.0"
   }
 }
