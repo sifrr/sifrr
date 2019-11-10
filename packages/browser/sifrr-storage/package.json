@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "main": "dist/sifrr.storage.cjs.js",
-  "module": "src/sifrr.storage.js",
+  "module": "dist/sifrr.storage.module.js",
   "browser": "dist/sifrr.storage.min.js",
   "types": "dist/types/sifrr.storage.d.ts",
   "browserslist": [

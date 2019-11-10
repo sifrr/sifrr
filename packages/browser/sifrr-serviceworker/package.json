@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "main": "dist/sifrr.serviceworker.cjs.js",
-  "module": "src/sifrr.serviceworker.js",
+  "module": "dist/sifrr.serviceworker.module.js",
   "browser": "dist/sifrr.serviceworker.min.js",
   "types": "dist/types/sifrr.serviceworker.d.ts",
   "browserslist": [

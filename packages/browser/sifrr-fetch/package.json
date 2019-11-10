@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "main": "dist/sifrr.fetch.cjs.js",
-  "module": "src/sifrr.fetch.js",
+  "module": "dist/sifrr.fetch.module.js",
   "browser": "dist/sifrr.fetch.min.js",
   "types": "dist/types/sifrr.fetch.d.ts",
   "browserslist": [

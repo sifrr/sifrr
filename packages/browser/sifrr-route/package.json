@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "main": "dist/sifrr.route.cjs.js",
-  "module": "src/sifrr.route.js",
+  "module": "dist/sifrr.route.module.js",
   "browser": "dist/sifrr.route.min.js",
   "types": "dist/types/sifrr.route.d.ts",
   "browserslist": [
