@@ -83,7 +83,7 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './')
   .split(/[ ,\n]/g)
   .map(p => path.join(__dirname, '../../', p));
-const { runTests } = require('@sifrr/dev');
+const { runTests, exec } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
   const preCommand = [];
@@ -123,6 +123,7 @@ const options = roots.map((root, i) => {
 });
 
 async function run() {
+  await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);
