@@ -24,13 +24,13 @@ commands:
           command: yarn config set workspaces-experimental true
       - restore_cache:
           keys:
-            - sifrr-v5-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
-            - sifrr-v5-yarn-<< parameters.version >>-
+            - sifrr-v6-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
+            - sifrr-v6-yarn-<< parameters.version >>-
       - run:
           name: Yarn install
           command: yarn install
       - save_cache:
-          key: sifrr-v5-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
+          key: sifrr-v6-yarn-<< parameters.version >>-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - run:
