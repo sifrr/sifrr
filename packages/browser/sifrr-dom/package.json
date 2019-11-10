@@ -15,6 +15,7 @@
   "main": "dist/sifrr.dom.cjs.js",
   "module": "src/sifrr.dom.js",
   "browser": "dist/sifrr.dom.min.js",
+  "types": "dist/types/sifrr.dom.d.ts",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

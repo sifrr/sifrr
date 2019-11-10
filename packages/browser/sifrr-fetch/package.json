@@ -15,6 +15,7 @@
   "main": "dist/sifrr.fetch.cjs.js",
   "module": "src/sifrr.fetch.js",
   "browser": "dist/sifrr.fetch.min.js",
+  "types": "dist/types/sifrr.fetch.d.ts",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

@@ -1,22 +1,30 @@
-import { Element, load, Event, register } from '@sifrr/dom';
+import { Element as SifrrElement, load, Event, register } from '@sifrr/dom';
 import RegexPath from './regexpath';
+import { ClickEvent } from './types';
 
 const firstTitle = window.document.title;
-class SifrrRoute extends Element {
+class SifrrRoute extends SifrrElement {
+  static all: Set<SifrrRoute> = new Set();
+  static currentUrl = window.location.pathname;
+
   static get template() {
     return '<slot></slot>';
   }
 
+  private routeRegex: RegexPath;
+  private loaded: Promise<boolean>;
+  public path: string;
+
   onConnect() {
-    this.loaded = false;
-    this.constructor.all.add(this);
+    this.loaded = null;
+    (<typeof SifrrRoute>this.constructor).all.add(this);
   }
 
   onDisconnect() {
-    this.constructor.all.delete(this);
+    (<typeof SifrrRoute>this.constructor).all.delete(this);
   }
 
-  onPropsChange(props) {
+  onPropsChange(props: string[]) {
     if (props.indexOf('path') > -1) {
       this.routeRegex = new RegexPath(this.path);
       this.refresh();
@@ -25,11 +33,11 @@ class SifrrRoute extends Element {
 
   refresh() {
     const loc = window.location.pathname;
-    const parsed = this.routeRegex.test(loc);
+    const parsed = this.routeRegex.testRoute(loc);
     if (parsed.match) {
       this.setState(parsed.data);
       this.activate();
-      this.$$('[data-sifrr-route-state=true]', false).forEach(el => {
+      this.$$('[data-sifrr-route-state=true]', false).forEach((el: Element & { state: any }) => {
         el.state = { route: parsed.data };
       });
     } else this.deactivate();
@@ -42,9 +50,11 @@ class SifrrRoute extends Element {
       if (sifrrElements && sifrrElements.indexOf('-') > 0) {
         try {
           const elements = JSON.parse(sifrrElements);
-          this.loaded = Promise.all(Object.keys(elements).map(k => load(k, elements[k])));
+          this.loaded = Promise.all(Object.keys(elements).map(k => load(k, elements[k]))).then(
+            () => true
+          );
         } catch (e) {
-          this.loaded = Promise.all(sifrrElements.split(',').map(k => load(k)));
+          this.loaded = Promise.all(sifrrElements.split(',').map(k => load(k))).then(() => true);
         }
       } else {
         this.loaded = Promise.resolve(true);
@@ -75,18 +85,18 @@ class SifrrRoute extends Element {
 
   static onRouteChange() {}
 
-  static clickEventListener(e) {
+  static clickEventListener(e: ClickEvent) {
     if (!(window.history && window.history.pushState)) return false;
     if (e.metaKey || e.ctrlKey) return false;
 
     // find closest link element
     const composedPath = e.composedPath ? e.composedPath() : [e.target],
       l = composedPath.length;
-    let target;
+    let target: HTMLAnchorElement;
     for (let i = 0; i < l; i++) {
-      const t = composedPath[i];
-      if (t.matches && t.matches('a')) {
-        target = t;
+      const t = <HTMLElement>composedPath[i];
+      if (t.tagName && t.tagName === 'A') {
+        target = <HTMLAnchorElement>t;
         break;
       }
     }
@@ -113,15 +123,13 @@ class SifrrRoute extends Element {
     return true;
   }
 
-  static popstateEventListener(e) {
+  static popstateEventListener(e: PopStateEvent) {
     if (e.state && e.state.title) document.title = e.state.title;
     // replace title with First title if there's no state title
     else window.document.title = firstTitle;
     SifrrRoute.refreshAll();
   }
 }
-
-SifrrRoute.all = new Set();
 
 Event.add('activate');
 Event.add('deactivate');

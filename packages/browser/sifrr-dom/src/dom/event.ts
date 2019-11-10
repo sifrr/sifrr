@@ -73,7 +73,7 @@ export const removeListener = (name: string, css: string, fxn: SifrrEventListene
 export const trigger = (
   el: HTMLElement,
   name: string,
-  options: { detail: any; [n: string]: any }
+  options?: { detail: any; [n: string]: any }
 ) => {
   if (typeof el === 'string') el = <HTMLElement>document.$(el);
   el.dispatchEvent(new CustomEvent(name, Object.assign(customOpts, options)));

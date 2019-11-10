@@ -55,23 +55,28 @@ describe('Route', () => {
 
     it('has correct target from composedPath or target', () => {
       const t1 = {
-        matches: sinon.spy()
+        tagName: 'ABC'
       };
+      const s1 = sinon.spy();
+      sinon.stub(t1, 'tagName').get(s1);
       const t2 = {
-        matches: sinon.spy()
+        tagName: 'ABC'
       };
+      const s2 = sinon.spy();
+      sinon.stub(t2, 'tagName').get(s2);
+
       Route.clickEventListener({
         composedPath: () => [t1],
-        target: () => t2
+        target: t2
       });
 
-      assert(t1.matches.calledOnce, 'uses composedpath target when present');
+      assert(s1.calledOnce, 'uses composedpath target when present');
 
       Route.clickEventListener({
         target: t2
       });
 
-      assert(t2.matches.calledOnce, 'uses target when composedPath not present');
+      assert(s2.calledOnce, 'uses target when composedPath not present');
     });
 
     it('returns false if metaKey or ctrlKey used', () => {
@@ -90,7 +95,7 @@ describe('Route', () => {
       Route.clickEventListener({
         target: {
           host: 'localhost',
-          matches: () => true,
+          tagName: 'A',
           getAttribute: () => 'new title',
           pathname: '/',
           href: '/?bang#hash'

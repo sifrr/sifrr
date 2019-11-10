@@ -56,9 +56,9 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     public _root: SifrrElement;
     public _update: () => void;
     public triggerUpdate: boolean;
-    public onPropsChange: (props: Array<string>) => void;
     public connected: boolean;
     public state: {};
+    public renderIf: boolean;
 
     constructor() {
       super();
@@ -118,6 +118,8 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       this[name] = value;
       this.onPropsChange && this.onPropsChange([name]);
     }
+
+    onPropsChange(props: string[]): void {}
 
     update() {
       this.beforeUpdate();

@@ -10,6 +10,7 @@ const keys = [
   'main',
   'module',
   'browser',
+  'types',
   'bin',
   'browserslist',
   'keywords',

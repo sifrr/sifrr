@@ -1,4 +1,4 @@
-const getRegex = path => {
+const getRegex = (path: string) => {
   return new RegExp(
     '^' +
       path
@@ -10,9 +10,9 @@ const getRegex = path => {
   );
 };
 
-const getDataMap = path => {
+const getDataMap = (path: string) => {
   const dataMap = [];
-  path.split('/').forEach(r => {
+  path.split('/').forEach((r: string) => {
     if (r[0] === ':') {
       dataMap.push(r);
     } else if (r === '*' || r === '**' || r.match(/\(.*\)/)) {
@@ -23,15 +23,26 @@ const getDataMap = path => {
 };
 
 class RegexPath extends RegExp {
-  constructor(path, options = {}) {
+  public options: {
+    delimiter: string;
+  };
+  private path: string;
+  private dataMap: string[];
+
+  constructor(path: string, options = {}) {
     super(getRegex(path));
     this.options = Object.assign({ delimiter: '/' }, options);
     this.path = path;
     this.dataMap = getDataMap(path);
   }
 
-  test(route) {
-    const data = {},
+  testRoute(route: string) {
+    const data: {
+        regexGroups?: string[];
+        [k: string]: string | string[];
+        '*'?: string[];
+        '**'?: string[];
+      } = {},
       match = this.exec(route);
     if (match) {
       this.dataMap.forEach((d, i) => {

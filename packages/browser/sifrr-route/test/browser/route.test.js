@@ -21,7 +21,7 @@ describe('sifrr-route', () => {
 
   it('makes el active on refresh if regex test is true', async () => {
     await page.$eval('#test', el => {
-      el.routeRegex.test = () => {
+      el.routeRegex.testRoute = () => {
         return { match: true };
       };
       el.refresh();
@@ -30,7 +30,7 @@ describe('sifrr-route', () => {
     expect(await isActive('#test')).to.be.true;
 
     await page.$eval('#test', el => {
-      el.routeRegex.test = () => {
+      el.routeRegex.testRoute = () => {
         return { match: false };
       };
       el.refresh();
@@ -47,9 +47,9 @@ describe('sifrr-route', () => {
   it("refreshes once when a link is click and doesn't if somewhere else is click", async () => {
     await page.$eval('#test', el => {
       el.i = 0;
-      el.refresh = () => (el.i = el.i + 1);
+      el.refresh = () => el.i++;
     });
-    await page.click('a[href="/abcd"]');
+    await page.click('a[href="/efgh"]');
     await page.click('h1');
 
     assert.equal(await page.$eval('#test', el => el.i), 1);
