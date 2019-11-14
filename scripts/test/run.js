@@ -88,7 +88,7 @@ const { runTests, exec } = require('@sifrr/dev');
 const options = roots.map((root, i) => {
   const preCommand = [];
   if (!dontRunPrecommand) {
-    preCommand.push(`cd ${root} && yarn build`);
+    if (root.indexOf('sifrr-dom') < 0) preCommand.push(`cd ${root} && yarn build`);
     if (fs.existsSync(path.join(root, './test/public/package.json'))) {
       preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
     }
