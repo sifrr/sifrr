@@ -45,7 +45,11 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "dependencies": {},
+  "dependencies": {
+    "@sifrr/dom": "file:./packages/browser/sifrr-dom",
+    "@sifrr/fetch": "file:./packages/browser/sifrr-fetch",
+    "@sifrr/server": "file:./packages/server/sifrr-server"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.0",
     "@sifrr/dev": "^0.0.38",

@@ -15,3 +15,5 @@ export type SavedData = {
 export type SavedDataObject = {
   [k: string]: SavedData;
 };
+
+export default {};

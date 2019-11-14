@@ -37,3 +37,5 @@ export type SifrrFetchOptions = {
 } & RequestInit;
 
 export type MaybePromise<T> = T | Promise<T>;
+
+export default {};

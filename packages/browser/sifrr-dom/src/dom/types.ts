@@ -104,3 +104,5 @@ export declare var SifrrElement: {
   useSR: boolean;
   elementName: string;
 };
+
+export default {};

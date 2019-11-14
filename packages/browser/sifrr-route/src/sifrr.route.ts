@@ -103,7 +103,7 @@ class SifrrRoute extends SifrrElement {
 
     if (
       !target ||
-      target.host !== window.location.host ||
+      // target.host !== window.location.host ||
       (target.target && target.target !== '_self')
     )
       return false;
