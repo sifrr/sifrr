@@ -865,10 +865,10 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.39", "@sifrr/dev@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.39.tgz#009a571ae2c26ddab1e7e81d1d0ecc6612c22b0f"
-  integrity sha512-aB3CfIx/K8U0CVULhLxTXbTrP9McE1VuaWS9qc0CWPyWyzUbl/F2tcF5RDekA7H9VtO4pTZv/Jn8U4X78t6Y1w==
+"@sifrr/dev@0.0.40", "@sifrr/dev@^0.0.39", "@sifrr/dev@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.40.tgz#d1ba92581049bb6c5cad39b66d5084b8e05cb134"
+  integrity sha512-No/ojhC3rwRoLigMirNmWLKBk7SawzZagVXQO5I0eXhVF7TfGHUUTgUcdwU62nw4ysKIM0iWqmEe030vbQWWwA==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -6856,7 +6856,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0:
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v16.2.0", uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0:
   version "16.2.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/8df7212c3e0117631fdd8e8e5c90094f5f97fb08"
 
