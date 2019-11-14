@@ -49,6 +49,7 @@ function moduleConfig(name, root, minify = false, type) {
   const isTs = fs.existsSync(path.join(root, `./src/${filename}.ts`));
   return getRollupConfig(
     {
+      root,
       name,
       inputFile: isTs
         ? path.join(root, `./src/${filename}.ts`)

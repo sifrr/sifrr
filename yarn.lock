@@ -851,16 +851,24 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
+"@rollup/plugin-replace@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-replace/-/plugin-replace-2.2.1.tgz#94af20cb3d70cccdcec991d1f97dd373936ec544"
+  integrity sha512-dgq5ijT8fK18KTb1inenZ61ivTayV7pvbz2+ivT+VN20BOgJVM1fqoBETqGHKgFVm/J9BhR82mQyAtxfpPv1lQ==
+  dependencies:
+    magic-string "^0.25.2"
+    rollup-pluginutils "^2.6.0"
+
 "@sifrr/cli@file:packages/server/sifrr-cli":
   version "0.0.6"
   dependencies:
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.38", "@sifrr/dev@^0.0.38":
-  version "0.0.38"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.38.tgz#ff09d40d133f7759b5f1307e53ecb91c01e60e00"
-  integrity sha512-OaYuhgqAjaCVJRkAXZnyuPaVL2srd+S953smXbrPEOht0sqU3FNQl+dXBKE20qw+4rRgy0DoijW7QGCldWencg==
+"@sifrr/dev@0.0.39", "@sifrr/dev@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.39.tgz#009a571ae2c26ddab1e7e81d1d0ecc6612c22b0f"
+  integrity sha512-aB3CfIx/K8U0CVULhLxTXbTrP9McE1VuaWS9qc0CWPyWyzUbl/F2tcF5RDekA7H9VtO4pTZv/Jn8U4X78t6Y1w==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -869,6 +877,7 @@
     "@babel/register" "^7.5.5"
     "@commitlint/cli" "^8.1.0"
     "@commitlint/config-conventional" "^8.1.0"
+    "@rollup/plugin-replace" "^2.2.1"
     "@sifrr/eslint-config" "^0.0.4"
     "@sifrr/fetch" "^0.0.6"
     "@sifrr/server" "^0.0.6"
@@ -906,12 +915,11 @@
     rollup-plugin-html "^0.2.1"
     rollup-plugin-node-resolve "^5.2.0"
     rollup-plugin-postcss "^2.0.3"
-    rollup-plugin-replace "^2.2.0"
     rollup-plugin-terser "^5.1.1"
-    rollup-plugin-typescript2 "^0.24.3"
+    rollup-plugin-typescript2 "^0.25.2"
     sinon "^7.4.1"
     typescript "^3.5.3"
-    uWebSockets.js uNetworking/uWebSockets.js#v16.1.0
+    uWebSockets.js uNetworking/uWebSockets.js#v16.2.0
 
 "@sifrr/dom@file:./packages/browser/sifrr-dom":
   version "0.0.6"
@@ -5995,14 +6003,6 @@ rollup-plugin-postcss@^2.0.3:
     rollup-pluginutils "^2.0.1"
     style-inject "^0.3.0"
 
-rollup-plugin-replace@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-replace/-/rollup-plugin-replace-2.2.0.tgz#f41ae5372e11e7a217cde349c8b5d5fd115e70e3"
-  integrity sha512-/5bxtUPkDHyBJAKketb4NfaeZjL5yLZdeUihSfbF2PQMz+rSTEb8ARKoOl3UBT4m7/X+QOXJo3sLTcq+yMMYTA==
-  dependencies:
-    magic-string "^0.25.2"
-    rollup-pluginutils "^2.6.0"
-
 rollup-plugin-terser@^5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/rollup-plugin-terser/-/rollup-plugin-terser-5.1.2.tgz#3e41256205cb75f196fc70d4634227d1002c255c"
@@ -6014,10 +6014,10 @@ rollup-plugin-terser@^5.1.1:
     serialize-javascript "^1.7.0"
     terser "^4.1.0"
 
-rollup-plugin-typescript2@^0.24.3:
-  version "0.24.3"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.24.3.tgz#276fa33a9d584d500da62d3e5400307f4a46bdf2"
-  integrity sha512-D7yovQlhnRoz7pG/RF0ni+koxgzEShwfAGuOq6OVqKzcATHOvmUt2ePeYVdc9N0adcW1PcTzklUEM0oNWE/POw==
+rollup-plugin-typescript2@^0.25.2:
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.25.2.tgz#1a165df08560902da45b355413464caca1765d3a"
+  integrity sha512-+tpZj/ZIf2lwjyjX6xEW1S5Y38/21TB3p6poLodISIia8owMMfIKuFFnWcESE4FPBHkR8XPKqjY0PH9IUJJK+Q==
   dependencies:
     find-cache-dir "^3.0.0"
     fs-extra "8.1.0"
@@ -6856,7 +6856,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.1.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0:
   version "16.2.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/8df7212c3e0117631fdd8e8e5c90094f5f97fb08"
 
