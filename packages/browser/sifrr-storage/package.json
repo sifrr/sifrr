@@ -41,7 +41,7 @@
   "peerDependencies": {},
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.0",
-    "@sifrr/dev": "^0.0.39",
+    "@sifrr/dev": "^0.0.40",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.1",
     "graphql-sequelize": "^9.3.6",
