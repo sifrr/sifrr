@@ -32,7 +32,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@sifrr/dev": "^0.0.39",
     "axios": "^0.19.0",
     "cache-manager": "^2.10.1",
