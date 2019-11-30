@@ -124,6 +124,7 @@ const options = roots.map((root, i) => {
 
 async function run() {
   await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
+  await exec(`yarn upgrade @sifrr/dom`);
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);
