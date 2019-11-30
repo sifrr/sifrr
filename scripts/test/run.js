@@ -88,7 +88,7 @@ const { runTests, exec } = require('@sifrr/dev');
 const options = roots.map((root, i) => {
   const preCommand = [];
   if (!dontRunPrecommand) {
-    preCommand.push(`cd ${root} && yarn build`);
+    if (root.indexOf('sifrr-dom') < 0) preCommand.push(`cd ${root} && yarn build`);
     if (fs.existsSync(path.join(root, './test/public/package.json'))) {
       preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
     }
@@ -124,6 +124,7 @@ const options = roots.map((root, i) => {
 
 async function run() {
   await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
+  await exec(`yarn upgrade @sifrr/dom`);
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);

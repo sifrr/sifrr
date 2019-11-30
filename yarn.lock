@@ -315,7 +315,7 @@
     "@babel/helper-remap-async-to-generator" "^7.7.0"
     "@babel/plugin-syntax-async-generators" "^7.2.0"
 
-"@babel/plugin-proposal-class-properties@^7.7.4":
+"@babel/plugin-proposal-class-properties@^7.7.0":
   version "7.7.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.7.4.tgz#2f964f0cb18b948450362742e33e15211e77c2ba"
   integrity sha512-EcuXeV4Hv1X3+Q1TsuOmyyxeTRiSqurGJ26+I/FW1WbymmRRapVORm6x1Zl3iDIHyRxEs+VXWp6qnlcfcJSbbw==
@@ -960,10 +960,10 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.39", "@sifrr/dev@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.39.tgz#009a571ae2c26ddab1e7e81d1d0ecc6612c22b0f"
-  integrity sha512-aB3CfIx/K8U0CVULhLxTXbTrP9McE1VuaWS9qc0CWPyWyzUbl/F2tcF5RDekA7H9VtO4pTZv/Jn8U4X78t6Y1w==
+"@sifrr/dev@0.0.40", "@sifrr/dev@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.40.tgz#d1ba92581049bb6c5cad39b66d5084b8e05cb134"
+  integrity sha512-No/ojhC3rwRoLigMirNmWLKBk7SawzZagVXQO5I0eXhVF7TfGHUUTgUcdwU62nw4ysKIM0iWqmEe030vbQWWwA==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/plugin-external-helpers" "^7.2.0"
@@ -1549,7 +1549,7 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-cache-manager@^2.10.0, cache-manager@^2.10.1:
+cache-manager@^2.10.1:
   version "2.10.1"
   resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-2.10.1.tgz#d8f312381255966cfc19c990bc8834c8d24edb2a"
   integrity sha512-bk17v9IkLqNcbCzggEh82LEJhjHp+COnL57L7a0ESbM/cOuXIIBatdVjD/ps7vOsofI48++zAC14Ye+8v50flg==

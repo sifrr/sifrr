@@ -132,7 +132,7 @@ describe('sifrr-route', () => {
     expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(5);
   });
 
-  it('reloads when clicked on a link with target has different host', async () => {
+  it.only('reloads when clicked on a link with target has different host', async () => {
     expect(
       await page.evaluate(() => window.location.protocol + '//' + window.location.host)
     ).to.equal(PATH);
