@@ -27,7 +27,7 @@
     "test-server": "yarn test -s"
   },
   "dependencies": {
-    "cache-manager": "^2.10.0",
+    "cache-manager": "^2.10.1",
     "puppeteer": "^2.0.0"
   },
   "peerDependencies": {},
