@@ -3,11 +3,11 @@ const fs = require('fs');
 const stringify = require('./stringify');
 
 module.exports = function(folder, isBrowser) {
-  let pkgFileString = '../.' + folder + '/package.json',
+  const pkgFileString = '../.' + folder + '/package.json',
     pkgFile = require(pkgFileString);
-  let pkgFolder = folder.split('/')[folder.split('/').length - 1];
-  let jsFileName = pkgFolder.replace('-', '.');
-  let pkgName = '@' + jsFileName.replace('.', '/');
+  const pkgFolder = folder.split('/')[folder.split('/').length - 1];
+  const jsFileName = pkgFolder.replace('-', '.');
+  const pkgName = '@' + jsFileName.replace('.', '/');
   const pkgToMerge = {
     name: pkgName,
     main: `src/${jsFileName}.js`,
@@ -51,7 +51,7 @@ module.exports = function(folder, isBrowser) {
     process.stdout.write('No package file in this folder \n');
   }
 
-  let rollupConfigFileString = '../.' + folder + '/rollup.config.js';
+  const rollupConfigFileString = '../.' + folder + '/rollup.config.js';
   const config = `const getConfig = require('../../../rollup.base');
 
 module.exports = getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s =>
