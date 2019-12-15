@@ -1,6 +1,6 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 import { TEXT_NODE, TREE_WALKER } from './constants';
-import { SifrrRef, SifrrBindMap } from './types';
+import { SifrrRef, SifrrBindCreatorFxn, SifrrBindMap } from './types';
 const TW_SHARED = TREE_WALKER();
 
 export function collect(
@@ -20,12 +20,12 @@ export function collect(
 
 export function create(
   node: HTMLElement | DocumentFragment,
-  fxn: (node: HTMLElement, passedValue: any) => SifrrBindMap | 0,
+  fxn: SifrrBindCreatorFxn,
   passedValue: any
 ): SifrrRef[] {
   const TW = TREE_WALKER();
-  const indices = [];
-  let ref: any,
+  const indices: SifrrRef[] = [];
+  let ref: SifrrBindMap[] | 0,
     idx = 0,
     ntr: HTMLElement;
   TW.currentNode = node;

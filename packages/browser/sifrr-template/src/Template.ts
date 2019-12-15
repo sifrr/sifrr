@@ -10,9 +10,9 @@ class Template {
 
   constructor(str: TemplateStringsArray, substitutions: any[]) {
     const { functionMap, mergedString } = functionMapCreator(str, substitutions);
-    this.functionMap = functionMap;
+    this.functionMap = functionMap; // maybe not required to save
     this.template = createTemplateFromString(mergedString);
-    this.refMap = create(this.template.content, creator, this.functionMap)
+    this.refMap = create(this.template.content, creator, functionMap);
   }
 }
 

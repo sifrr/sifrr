@@ -14,30 +14,38 @@ export type AttributeMap = Array<[string, 1, BindingFxn] | [string, 0, string]>;
 
 export enum SifrrBindType {
   Text = 1,
-  Element = 2
+  Prop = 2,
+  Attribute = 3
 }
 
 // TODO: separate based on type
 export type SifrrBindMap =
-  {
+  | {
       type: SifrrBindType.Text;
-      text: BindingFxn;
+      value: BindingFxn;
     }
   | {
-      type: SifrrBindType.Element;
-      text?: BindingFxn;
-      se?: any;
-      events?: EventMap;
-      props?: PropMap;
-      attributes?: AttributeMap;
-      state?: BindingFxn;
+      type: SifrrBindType.Attribute;
+      name: string;
+      value: BindingFxn;
+    }
+  | {
+      type: SifrrBindType.Prop;
+      name: string;
+      value: BindingFxn;
+      direct: boolean;
     };
 
 export type SifrrRef = {
   idx: number;
-  ref: SifrrBindMap;
+  ref: SifrrBindMap[];
 };
 
-export type SifrrFunctionMap = Map<string, BindingFxn>
+export type SifrrFunctionMap = Map<string, BindingFxn>;
+
+export type SifrrBindCreatorFxn = (
+  el: HTMLElement,
+  functionMap: SifrrFunctionMap
+) => SifrrBindMap[] | 0;
 
 export default {};
