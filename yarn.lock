@@ -960,7 +960,7 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@^0.0.40":
+"@sifrr/dev@0.0.40", "@sifrr/dev@^0.0.40":
   version "0.0.40"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.40.tgz#d1ba92581049bb6c5cad39b66d5084b8e05cb134"
   integrity sha512-No/ojhC3rwRoLigMirNmWLKBk7SawzZagVXQO5I0eXhVF7TfGHUUTgUcdwU62nw4ysKIM0iWqmEe030vbQWWwA==
@@ -1016,7 +1016,7 @@
     typescript "^3.5.3"
     uWebSockets.js uNetworking/uWebSockets.js#v16.2.0
 
-"@sifrr/dom@file:./packages/browser/sifrr-dom":
+"@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-template/packages/browser/sifrr-dom":
   version "0.0.6"
 
 "@sifrr/eslint-config@^0.0.4":
@@ -1030,10 +1030,10 @@
     eslint-plugin-mocha "^6.0.0"
     eslint-plugin-prettier "^3.1.0"
 
-"@sifrr/fetch@file:packages/browser/sifrr-fetch":
+"@sifrr/fetch@file:./packages/browser/sifrr-fetch", "@sifrr/fetch@file:packages/browser/sifrr-fetch":
   version "0.0.6"
 
-"@sifrr/server@file:packages/server/sifrr-server":
+"@sifrr/server@file:./packages/server/sifrr-server", "@sifrr/server@file:packages/server/sifrr-server":
   version "0.0.6"
   dependencies:
     busboy "^0.3.0"
@@ -6951,7 +6951,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.4.0:
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v16.2.0", uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.4.0:
   version "16.2.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/8df7212c3e0117631fdd8e8e5c90094f5f97fb08"
 
