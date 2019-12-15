@@ -960,7 +960,7 @@
     mkdirp "^0.5.1"
     yargs "^13.2.4"
 
-"@sifrr/dev@0.0.40", "@sifrr/dev@^0.0.40":
+"@sifrr/dev@^0.0.40":
   version "0.0.40"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.40.tgz#d1ba92581049bb6c5cad39b66d5084b8e05cb134"
   integrity sha512-No/ojhC3rwRoLigMirNmWLKBk7SawzZagVXQO5I0eXhVF7TfGHUUTgUcdwU62nw4ysKIM0iWqmEe030vbQWWwA==
@@ -1030,10 +1030,10 @@
     eslint-plugin-mocha "^6.0.0"
     eslint-plugin-prettier "^3.1.0"
 
-"@sifrr/fetch@file:./packages/browser/sifrr-fetch", "@sifrr/fetch@file:packages/browser/sifrr-fetch":
+"@sifrr/fetch@file:packages/browser/sifrr-fetch":
   version "0.0.6"
 
-"@sifrr/server@file:./packages/server/sifrr-server", "@sifrr/server@file:packages/server/sifrr-server":
+"@sifrr/server@file:packages/server/sifrr-server":
   version "0.0.6"
   dependencies:
     busboy "^0.3.0"

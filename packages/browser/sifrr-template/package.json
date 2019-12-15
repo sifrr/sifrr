@@ -1,0 +1,53 @@
+{
+  "name": "@sifrr/template",
+  "version": "0.0.6",
+  "description": "Frontend key-value(JSON to JSON) persisted storage library",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sifrr/sifrr.git"
+  },
+  "author": "aadityataparia <aadityataparia@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/sifrr/sifrr/issues"
+  },
+  "homepage": "https://github.com/sifrr/sifrr",
+  "main": "dist/sifrr.template.cjs.js",
+  "module": "dist/sifrr.template.module.js",
+  "browser": "dist/sifrr.template.min.js",
+  "types": "dist/types/sifrr.template.d.ts",
+  "browserslist": [
+    "chrome >= 55",
+    "safari >= 10.1",
+    "opera >= 42",
+    "firefox >= 63"
+  ],
+  "keywords": [],
+  "scripts": {
+    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-template",
+    "build": "yarn rollup -c",
+    "test-build": "cd test/public && yarn build",
+    "test-server": "yarn test -s"
+  },
+  "dependencies": {
+    "@sifrr/dom": "file:./packages/browser/sifrr-dom"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@sifrr/dev": "^0.0.40",
+    "axios": "^0.19.0",
+    "cache-manager": "^2.10.1",
+    "graphql-sequelize": "^9.3.6",
+    "isomorphic-ws": "^4.0.1",
+    "loadtest": "^3.0.9",
+    "sequelize": "^5.21.2",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.4.0",
+    "ws": "^7.2.0"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src"
+  ]
+}
