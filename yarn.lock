@@ -3356,7 +3356,7 @@ graphql-relay@^0.6.0:
   dependencies:
     prettier "^1.16.0"
 
-graphql-sequelize@^9.3.1, graphql-sequelize@^9.3.6, graphql-sequelize@^9.4.0:
+graphql-sequelize@^9.3.1, graphql-sequelize@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/graphql-sequelize/-/graphql-sequelize-9.4.0.tgz#451223fdf0c27021b8bf50824ae8ec66e979e91f"
   integrity sha512-hEoNoEcHn+v4dmWDb1yAh6/AFX6RcMGoHq3H3oiJcmRDRmS+8CVpPgaIW7E3ibWVpf/o2I1HOzgB+QFnPJ2LhQ==
