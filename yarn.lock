@@ -4190,19 +4190,6 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^3.0.9:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-3.1.0.tgz#bcad6a1c489f865cf9514b0a91b38e0c6fc1fad6"
-  integrity sha512-5tO8lac9DBsO/Camnqpp8ZFR8Yeve/tURMjPy3422FasaKfrNFm2UcvBoYHMYxAl6EG/OkIztkZqtGPd9Qw1sg==
-  dependencies:
-    agentkeepalive "^2.0.3"
-    https-proxy-agent "^2.2.1"
-    log "1.4.*"
-    prototypes ">= 0.4.3"
-    stdio "^0.2.3"
-    testing "^1.1.1"
-    websocket "^1.0.28"
-
 loadtest@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-4.0.0.tgz#58fdc15cfbc74eaf941b5029f1b1f4f4939ca662"
@@ -5629,7 +5616,7 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-"prototypes@>= 0.4.3", prototypes@^3.0.1:
+prototypes@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/prototypes/-/prototypes-3.0.1.tgz#34f5471217f46a91f4cce08b4801c3f188257fcc"
   integrity sha512-6yAXnqhrPslmAvynCwIHupJwphL2/4EeVCGRcCh2NQTrcyychdngZQUWNnxzXZ9h7TSrG5Fhjnr/kvZs5BfK1w==
