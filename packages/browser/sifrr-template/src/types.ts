@@ -1,16 +1,40 @@
-export type DomBindingReturnValue =
-  | string
-  | HTMLElement
-  | NodeList
-  | HTMLElement[]
-  | HTMLTemplateElement
-  | string[];
+declare global {
+  interface HTMLTemplateElement {
+    refs?: SifrrRefCollection[];
+    parent?: TemplateParent;
+    props?: object;
+  }
 
-export type BindingFxn = (oldValue: DomBindingReturnValue) => DomBindingReturnValue;
+  interface Node {
+    __sifrrTemplate?: HTMLTemplateElement;
+    __oldRenderIf?: boolean;
+    __sifrrOldDisplay?: string;
+    __oldData?: string;
+  }
+}
 
-export type EventMap = Array<[number, BindingFxn]>;
-export type PropMap = Array<[string, BindingFxn]>;
-export type AttributeMap = Array<[string, 1, BindingFxn] | [string, 0, string]>;
+export type TemplateParent =
+  | {
+      __sifrrTemplate?: HTMLTemplateElement;
+      readonly nodeType: false;
+    }
+  | HTMLElement;
+
+export type TemplateParentKeyed = TemplateParent & {
+  key: string | number;
+};
+
+export type ChildNodeKeyed = ChildNode & {
+  key: string | number;
+};
+
+export type SifrrNode = null | undefined | string | Node | SifrrNode[];
+
+export type DomBindingReturnValue = SifrrNode | NodeList;
+
+export type SifrrNodeValue = Node[];
+
+export type BindingFxn<T> = (this: TemplateParent, oldValue: DomBindingReturnValue) => T;
 
 export enum SifrrBindType {
   Text = 1,
@@ -18,34 +42,46 @@ export enum SifrrBindType {
   Attribute = 3
 }
 
-// TODO: separate based on type
 export type SifrrBindMap =
   | {
       type: SifrrBindType.Text;
-      value: BindingFxn;
+      value: BindingFxn<DomBindingReturnValue>;
     }
   | {
       type: SifrrBindType.Attribute;
       name: string;
-      value: BindingFxn;
+      value: BindingFxn<string | false | null | undefined>;
     }
   | {
       type: SifrrBindType.Prop;
       name: string;
-      value: BindingFxn;
+      value: BindingFxn<any>;
       direct: boolean;
     };
 
+// ref map for each base template element
 export type SifrrRef = {
   idx: number;
-  ref: SifrrBindMap[];
+  map: SifrrBindMap[];
 };
 
-export type SifrrFunctionMap = Map<string, BindingFxn>;
+// collection of ref for each sifrr template element
+export type SifrrRefCollection = {
+  node: Node;
+  bindMap: SifrrBindMap[];
+  currentValues: DomBindingReturnValue[];
+};
 
+// uid -> fxn
+export type SifrrFunctionMap = Map<string, BindingFxn<any>>;
+
+// create bind map for a base template
 export type SifrrBindCreatorFxn = (
   el: HTMLElement,
   functionMap: SifrrFunctionMap
 ) => SifrrBindMap[] | 0;
+
+// clone a base tempalte element
+export type SifrrCloneFunction = (parent?: TemplateParent) => HTMLTemplateElement;
 
 export default {};

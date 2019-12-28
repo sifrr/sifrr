@@ -1,19 +1,46 @@
 // based on https://github.com/Freak613/stage0/blob/master/index.js
 import { TEXT_NODE, TREE_WALKER } from './constants';
-import { SifrrRef, SifrrBindCreatorFxn, SifrrBindMap } from './types';
+import {
+  SifrrRef,
+  SifrrBindCreatorFxn,
+  SifrrBindMap,
+  SifrrRefCollection,
+  DomBindingReturnValue,
+  SifrrBindType
+} from './types';
 const TW_SHARED = TREE_WALKER();
 
+function collectValues(element: Node, bindMap: SifrrBindMap[]): DomBindingReturnValue[] {
+  const oldValues: DomBindingReturnValue[] = new Array(bindMap.length);
+  for (let j = bindMap.length - 1; j > -1; --j) {
+    const binding = bindMap[j];
+
+    if (binding.type === SifrrBindType.Text) {
+      oldValues[j] = element;
+    } else if (binding.type === SifrrBindType.Attribute) {
+      oldValues[j] = (<HTMLElement>element).getAttribute(binding.name);
+    } else if (binding.type === SifrrBindType.Prop) {
+      oldValues[j] = (<HTMLElement>element)[binding.name];
+    }
+  }
+  return oldValues;
+}
+
 export function collect(
-  element: HTMLElement | DocumentFragment,
-  stateMap: SifrrRef[]
-): HTMLElement[] {
-  const l = stateMap.length,
-    refs = new Array(l);
+  element: Node | DocumentFragment,
+  refMap: SifrrRef[]
+): SifrrRefCollection[] {
+  const l = refMap.length,
+    refs: SifrrRefCollection[] = new Array(l);
   TW_SHARED.currentNode = element;
   for (let i = 0, n: number; i < l; i++) {
-    n = stateMap[i].idx;
-    while (--n) element = <HTMLElement>TW_SHARED.nextNode();
-    refs[i] = element;
+    n = refMap[i].idx;
+    while (--n) element = TW_SHARED.nextNode();
+    refs[i] = {
+      node: <Node>element,
+      currentValues: collectValues(<Node>element, refMap[i].map),
+      bindMap: refMap[i].map
+    };
   }
   return refs;
 }
@@ -25,7 +52,7 @@ export function create(
 ): SifrrRef[] {
   const TW = TREE_WALKER();
   const indices: SifrrRef[] = [];
-  let ref: SifrrBindMap[] | 0,
+  let map: SifrrBindMap[] | 0,
     idx = 0,
     ntr: HTMLElement;
   TW.currentNode = node;
@@ -35,8 +62,8 @@ export function create(
       node = <HTMLElement>TW.nextNode();
       ntr.remove();
     } else {
-      if ((ref = fxn(<HTMLElement>node, passedValue))) {
-        indices.push({ idx: idx + 1, ref });
+      if ((map = fxn(<HTMLElement>node, passedValue))) {
+        indices.push({ idx: idx + 1, map });
         idx = 1;
       } else {
         idx++;
