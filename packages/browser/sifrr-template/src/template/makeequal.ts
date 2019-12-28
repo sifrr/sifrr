@@ -1,14 +1,14 @@
 import updateAttribute from './updateattribute';
 import update from './update';
 import { TEXT_NODE, COMMENT_NODE } from './constants';
-import { SifrrCloneFunction, TemplateParent } from './types';
+import { SifrrCloneFunction, TemplateProps } from './types';
 import { arrayOf } from '../utils';
 
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual(
   oldChildren: ChildNode[],
-  newChildren: Node[] | TemplateParent[],
-  createFn: SifrrCloneFunction
+  newChildren: Node[] | TemplateProps[],
+  createFn?: SifrrCloneFunction
 ) {
   const newL = newChildren.length;
   const oldL = oldChildren.length;
@@ -24,7 +24,7 @@ export function makeChildrenEqual(
     }
   }
 
-  let item: Node | TemplateParent,
+  let item: Node | TemplateProps,
     head = oldChildren[0];
 
   let i = 0;
@@ -39,16 +39,16 @@ export function makeChildrenEqual(
   while (i < newL) {
     item = newChildren[i];
     const toAppend = <Node>(
-      (item instanceof Node ? <ChildNode>item : createFn(<TemplateParent>item).content)
+      (item instanceof Node ? <ChildNode>item : createFn(<TemplateProps>item).content)
     );
     parent.insertBefore(toAppend, nextSib);
     i++;
   }
 }
 
-export function makeEqual(oldNode: ChildNode, newNode: Node | TemplateParent): ChildNode {
+export function makeEqual(oldNode: ChildNode, newNode: Node | TemplateProps): ChildNode {
   if (!(newNode instanceof Node)) {
-    oldNode.__sifrrTemplate.parent = newNode;
+    oldNode.__sifrrTemplate.props = newNode;
     update(oldNode.__sifrrTemplate);
     return oldNode;
   }
@@ -80,7 +80,7 @@ export function makeEqual(oldNode: ChildNode, newNode: Node | TemplateParent): C
   }
 
   // make children equal
-  makeChildrenEqual(arrayOf(oldNode.childNodes), arrayOf<ChildNode>(newNode.childNodes), undefined);
+  makeChildrenEqual(arrayOf(oldNode.childNodes), arrayOf<ChildNode>(newNode.childNodes));
 
   return oldNode;
 }

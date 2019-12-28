@@ -43,7 +43,7 @@ function getNodesFromBindingValue(value: DomBindingReturnValue): (Node | ChildNo
 }
 
 export default function update(tempElement: HTMLTemplateElement) {
-  const element = tempElement.parent;
+  const element = tempElement.props;
   if (!element) return;
   if (!renderIf(<HTMLElement>element)) {
     return;
@@ -86,7 +86,7 @@ export default function update(tempElement: HTMLTemplateElement) {
         if (newValue.length < 1) {
           newValue = [<Node>document.createTextNode('')];
         }
-        makeChildrenEqual(<ChildNode[]>oldValue, newValue, undefined);
+        makeChildrenEqual(<ChildNode[]>oldValue, newValue);
       } else if (binding.type === SifrrBindType.Attribute) {
         updateAttribute(<HTMLElement>node, binding.name, newValue);
       } else if (binding.type === SifrrBindType.Prop) {

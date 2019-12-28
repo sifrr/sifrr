@@ -1,8 +1,7 @@
 declare global {
   interface HTMLTemplateElement {
     refs?: SifrrRefCollection[];
-    parent?: TemplateParent;
-    props?: object;
+    props?: TemplateProps;
   }
 
   interface Node {
@@ -13,14 +12,14 @@ declare global {
   }
 }
 
-export type TemplateParent =
+export type TemplateProps =
   | {
       __sifrrTemplate?: HTMLTemplateElement;
       readonly nodeType: false;
     }
   | HTMLElement;
 
-export type TemplateParentKeyed = TemplateParent & {
+export type TemplateParentKeyed = TemplateProps & {
   key: string | number;
 };
 
@@ -34,7 +33,7 @@ export type DomBindingReturnValue = SifrrNode | NodeList;
 
 export type SifrrNodeValue = Node[];
 
-export type BindingFxn<T> = (parent: TemplateParent, oldValue: DomBindingReturnValue) => T;
+export type BindingFxn<T> = (parent: TemplateProps, oldValue: DomBindingReturnValue) => T;
 
 export enum SifrrBindType {
   Text = 1,
@@ -82,6 +81,6 @@ export type SifrrBindCreatorFxn = (
 ) => SifrrBindMap[] | 0;
 
 // clone a base tempalte element
-export type SifrrCloneFunction = (parent?: TemplateParent) => HTMLTemplateElement;
+export type SifrrCloneFunction = (parent?: TemplateProps) => HTMLTemplateElement;
 
 export default {};
