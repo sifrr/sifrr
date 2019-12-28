@@ -16,7 +16,7 @@ function collectValues(element: Node, bindMap: SifrrBindMap[]): DomBindingReturn
     const binding = bindMap[j];
 
     if (binding.type === SifrrBindType.Text) {
-      oldValues[j] = element;
+      oldValues[j] = [element];
     } else if (binding.type === SifrrBindType.Attribute) {
       oldValues[j] = (<HTMLElement>element).getAttribute(binding.name);
     } else if (binding.type === SifrrBindType.Prop) {

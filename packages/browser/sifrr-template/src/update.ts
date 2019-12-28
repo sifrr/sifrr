@@ -80,14 +80,13 @@ export default function update(tempElement: HTMLTemplateElement) {
         }
 
         // convert nodeList/HTML collection to array and string to text element
-        const oldNodeValue = getNodesFromBindingValue(oldValue);
         newValue = getNodesFromBindingValue(newValue);
 
         // special case of no value return
         if (newValue.length < 1) {
           newValue = [<Node>document.createTextNode('')];
         }
-        makeChildrenEqual(<ChildNode[]>oldNodeValue, newValue, undefined);
+        makeChildrenEqual(<ChildNode[]>oldValue, newValue, undefined);
       } else if (binding.type === SifrrBindType.Attribute) {
         updateAttribute(<HTMLElement>node, binding.name, newValue);
       } else if (binding.type === SifrrBindType.Prop) {

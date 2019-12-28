@@ -80,11 +80,7 @@ export function makeEqual(oldNode: ChildNode, newNode: Node | TemplateParent): C
   }
 
   // make children equal
-  makeChildrenEqual(
-    arrayOf<ChildNode>(oldNode.childNodes),
-    arrayOf<ChildNode>(newNode.childNodes),
-    undefined
-  );
+  makeChildrenEqual(arrayOf(oldNode.childNodes), arrayOf<ChildNode>(newNode.childNodes), undefined);
 
   return oldNode;
 }
