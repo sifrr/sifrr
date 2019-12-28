@@ -2,7 +2,7 @@ import updateAttribute from './updateattribute';
 import update from './update';
 import { TEXT_NODE, COMMENT_NODE } from './constants';
 import { SifrrCloneFunction, TemplateParent } from './types';
-import { arrayOf } from './utils';
+import { arrayOf } from '../utils';
 
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual(

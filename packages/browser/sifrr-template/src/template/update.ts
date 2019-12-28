@@ -1,8 +1,8 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { RENDER_IF_PROP, ELEMENT_NODE } from './constants';
-import { DomBindingReturnValue, SifrrBindType, SifrrNodeValue, SifrrNode } from './types';
-import { arrayOf } from './utils';
+import { DomBindingReturnValue, SifrrBindType } from './types';
+import { arrayOf } from '../utils';
 
 const displayNone = 'none';
 const emptyArray = [];

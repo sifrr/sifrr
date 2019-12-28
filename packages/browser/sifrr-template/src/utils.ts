@@ -1,6 +1,6 @@
-import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
+import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './template/constants';
 import createUniqueString from './ustring';
-import { SifrrFunctionMap } from './types';
+import { SifrrFunctionMap } from './template/types';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();

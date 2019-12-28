@@ -1,4 +1,4 @@
-import { createTemplateFromString, functionMapCreator } from './utils';
+import { createTemplateFromString, functionMapCreator } from '../utils';
 import { create, collect } from './ref';
 import { SifrrRef, SifrrFunctionMap, TemplateParent } from './types';
 import creator from './creator';
@@ -16,13 +16,7 @@ class Template {
     this.refMap = create(this.template.content, creator, functionMap);
   }
 
-  // used to repeat data of array in binding
-  repeat(oldValue: HTMLElement, props: object[], key: string) {}
-
-  // used for single element creation in binding
-  create(oldValue: HTMLElement, props: object) {}
-
-  // cloning a document fragment, used by create in first render. Parent will be used as this in binding function.
+  // cloning a document fragment, used by create in first render. Parent will be used as first argument in binding function.
   clone(parent?: TemplateParent) {
     const temp = <HTMLTemplateElement>this.template.cloneNode(true);
     temp.refs = collect(temp.content, this.refMap);
