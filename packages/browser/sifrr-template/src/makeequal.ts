@@ -29,7 +29,7 @@ export function makeChildrenEqual(
 
   let i = 0;
   // Make old children equal to new children
-  while (i < oldL) {
+  while (i < oldL && i < newL) {
     item = makeEqual(head, newChildren[i]);
     newChildren[i] = item;
     head = item.nextSibling;

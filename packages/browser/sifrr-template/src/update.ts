@@ -64,16 +64,30 @@ export default function update(tempElement: HTMLTemplateElement) {
         continue;
       }
 
-      let newValue = binding.value.call(element, oldValue);
+      let newValue = binding.value.call(null, element, oldValue);
       if (oldValue === newValue) continue;
 
       // text
       if (binding.type === SifrrBindType.Text) {
+        // fast path for one text node
+        if (oldValue instanceof Text) {
+          if (newValue instanceof Text) {
+            oldValue.data = newValue.data;
+            continue;
+          } else if (typeof newValue === 'string') {
+            oldValue.data = newValue;
+            continue;
+          }
+        }
+
         // convert nodeList/HTML collection to array and string to text element
         const oldNodeValue = getNodesFromBindingValue(oldValue);
         newValue = getNodesFromBindingValue(newValue);
 
-        // special case of null/undefined/no value return
+        // special case of no value return
+        if (newValue.length < 1) {
+          newValue = [<Node>document.createTextNode('')];
+        }
         makeChildrenEqual(<ChildNode[]>oldNodeValue, newValue, undefined);
       } else if (binding.type === SifrrBindType.Attribute) {
         updateAttribute(<HTMLElement>node, binding.name, newValue);

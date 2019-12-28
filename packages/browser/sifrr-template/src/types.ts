@@ -34,7 +34,7 @@ export type DomBindingReturnValue = SifrrNode | NodeList;
 
 export type SifrrNodeValue = Node[];
 
-export type BindingFxn<T> = (this: TemplateParent, oldValue: DomBindingReturnValue) => T;
+export type BindingFxn<T> = (parent: TemplateParent, oldValue: DomBindingReturnValue) => T;
 
 export enum SifrrBindType {
   Text = 1,

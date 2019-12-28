@@ -8,5 +8,23 @@
   </head>
   <body>
     <script src="./sifrr.template.js"></script>
+    <script>
+      const template = Sifrr.Template.createTemplate`asdd${({ i }, oldV) => {
+        console.log(i, oldV);
+        return `${Date.now()} + ${i * 1000}`;
+      }}sdfd`;
+
+      const temp2 = Sifrr.Template.createTemplate`sfdf <div>${({ n }) => {
+        return [...Array(n)].map((x, i) => template.clone({ i }).content.childNodes);
+      }}</div><span>dfsdfd</span>aff`;
+
+      const ttt = temp2.clone({ n: 10 });
+      document.body.appendChild(ttt.content);
+
+      function updateTTT(n) {
+        ttt.parent.n = n;
+        temp2.update(ttt);
+      }
+    </script>
   </body>
 </html>
