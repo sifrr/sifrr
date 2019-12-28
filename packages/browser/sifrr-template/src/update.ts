@@ -1,17 +1,14 @@
 import { makeChildrenEqual } from './makeequal';
-import { makeChildrenEqualKeyed } from './keyed';
 import updateAttribute from './updateattribute';
-import { TEMPLATE, RENDER_IF_PROP, ELEMENT_NODE } from './constants';
+import { RENDER_IF_PROP, ELEMENT_NODE } from './constants';
 import { DomBindingReturnValue, SifrrBindType, SifrrNodeValue, SifrrNode } from './types';
 import { arrayOf } from './utils';
 
 const displayNone = 'none';
 const emptyArray = [];
 
-const renderIf = (
-  dom: HTMLElement | HTMLTemplateElement,
-  shouldRender = dom[RENDER_IF_PROP] != false
-) => {
+const renderIf = (dom: HTMLElement, shouldRender = dom[RENDER_IF_PROP] != false) => {
+  if (dom.nodeType !== ELEMENT_NODE) return true;
   if (dom.__oldRenderIf === shouldRender) return shouldRender;
 
   dom.__oldRenderIf = shouldRender;
@@ -48,7 +45,9 @@ function getNodesFromBindingValue(value: DomBindingReturnValue): (Node | ChildNo
 export default function update(tempElement: HTMLTemplateElement) {
   const element = tempElement.parent;
   if (!element) return;
-  if ((<HTMLElement>element).nodeType === ELEMENT_NODE && !renderIf(<HTMLElement>element)) return;
+  if (!renderIf(<HTMLElement>element)) {
+    return;
+  }
 
   // Update nodes
   for (let i = tempElement.refs ? tempElement.refs.length - 1 : -1; i > -1; --i) {
@@ -116,6 +115,9 @@ export default function update(tempElement: HTMLTemplateElement) {
       tempElement.refs[i].currentValues[j] = newValue;
     }
 
+    if (!renderIf(<HTMLElement>node)) {
+      continue;
+    }
     if (node.__sifrrTemplate) update(node.__sifrrTemplate);
   }
 }

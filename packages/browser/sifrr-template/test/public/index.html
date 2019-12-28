@@ -9,10 +9,12 @@
   <body>
     <script src="./sifrr.template.js"></script>
     <script>
-      const template = Sifrr.Template.createTemplate`asdd${({ i }, oldV) => {
-        console.log(i, oldV);
+      const template = Sifrr.Template.createTemplate`asdd<span :render-if="${({ i }) => i > 10}">${(
+        { i },
+        oldV
+      ) => {
         return `${Date.now()} + ${i * 1000}`;
-      }}sdfd`;
+      }}</span>sdfd`;
 
       const temp2 = Sifrr.Template.createTemplate`sfdf <div>${({ n }) => {
         return [...Array(n)].map((x, i) => template.clone({ i }).content.childNodes);
