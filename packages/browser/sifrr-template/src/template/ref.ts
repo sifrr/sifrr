@@ -5,33 +5,36 @@ import {
   SifrrBindCreatorFxn,
   SifrrBindMap,
   SifrrRefCollection,
-  DomBindingReturnValue,
   SifrrBindType
 } from './types';
 const TW_SHARED = TREE_WALKER();
 
-function collectValues(element: Node, bindMap: SifrrBindMap[]): DomBindingReturnValue[] {
-  const oldValues: DomBindingReturnValue[] = new Array(bindMap.length);
+function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
+  const oldValues = new Array(bindMap.length);
   for (let j = bindMap.length - 1; j > -1; --j) {
     const binding = bindMap[j];
 
     if (binding.type === SifrrBindType.Text) {
       oldValues[j] = [element];
     } else if (binding.type === SifrrBindType.Attribute) {
-      oldValues[j] = (<HTMLElement>element).getAttribute(binding.name);
+      oldValues[j] = null;
     } else if (binding.type === SifrrBindType.Prop) {
-      oldValues[j] = (<HTMLElement>element)[binding.name];
+      if (binding.name === 'style') {
+        oldValues[j] = {};
+      } else {
+        oldValues[j] = null;
+      }
     }
   }
   return oldValues;
 }
 
-export function collect(
+export function collect<T>(
   element: Node | DocumentFragment,
-  refMap: SifrrRef[]
-): SifrrRefCollection[] {
+  refMap: SifrrRef<T>[]
+): SifrrRefCollection<T>[] {
   const l = refMap.length,
-    refs: SifrrRefCollection[] = new Array(l);
+    refs: SifrrRefCollection<T>[] = new Array(l);
   TW_SHARED.currentNode = element;
   for (let i = 0, n: number; i < l; i++) {
     n = refMap[i].idx;
@@ -45,22 +48,22 @@ export function collect(
   return refs;
 }
 
-export function create(
-  node: HTMLElement | DocumentFragment,
-  fxn: SifrrBindCreatorFxn,
+export function create<T>(
+  node: Node,
+  fxn: SifrrBindCreatorFxn<T>,
   passedValue: any
-): SifrrRef[] {
+): SifrrRef<T>[] {
   const TW = TREE_WALKER();
-  const indices: SifrrRef[] = [];
-  let map: SifrrBindMap[] | 0,
+  const indices: SifrrRef<T>[] = [];
+  let map: SifrrBindMap<T>[] | 0,
     idx = 0,
-    ntr: HTMLElement;
+    ntr: ChildNode;
   TW.currentNode = node;
   while (node) {
     if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {
-      ntr = <HTMLElement>node;
-      node = <HTMLElement>TW.nextNode();
-      ntr.remove();
+      ntr = <ChildNode>node;
+      node = <Node>TW.nextNode();
+      ntr.remove && ntr.remove();
     } else {
       if ((map = fxn(<HTMLElement>node, passedValue))) {
         indices.push({ idx: idx + 1, map });
@@ -72,4 +75,19 @@ export function create(
     }
   }
   return indices;
+}
+
+export function cleanEmptyNodes(node: DocumentFragment | ChildNode) {
+  const TW = TREE_WALKER();
+  TW.currentNode = node;
+  let ntr: ChildNode;
+  while (node) {
+    if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {
+      ntr = <ChildNode>node;
+      node = <ChildNode>TW.nextNode();
+      ntr.remove && ntr.remove();
+    } else {
+      node = <HTMLElement>TW.nextNode();
+    }
+  }
 }

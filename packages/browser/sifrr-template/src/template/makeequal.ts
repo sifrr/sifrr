@@ -1,19 +1,32 @@
-import updateAttribute from './updateattribute';
 import update from './update';
 import { TEXT_NODE, COMMENT_NODE } from './constants';
-import { SifrrCloneFunction, TemplateProps } from './types';
-import { arrayOf } from '../utils';
+import { SifrrCreateFunction, SifrrProps, SifrrNodes } from './types';
+import { isSifrrNode } from './utils';
+
+function insertBefore(nodes: SifrrNodes<any>, parent: Node, child: ChildNode) {
+  for (let i = 0; i < nodes.length; i++) {
+    const nt = nodes[i];
+    if (Array.isArray(nt)) {
+      insertBefore(nt, parent, child);
+    } else {
+      parent.insertBefore(nt, child);
+    }
+  }
+}
 
 // oldChildren array should be continuous childnodes
-export function makeChildrenEqual(
+export function makeChildrenEqual<T>(
   oldChildren: ChildNode[],
-  newChildren: Node[] | TemplateProps[],
-  createFn?: SifrrCloneFunction
-) {
+  newChildren: Node[] | SifrrProps<T>[],
+  createFn?: SifrrCreateFunction<T>,
+  parent?: Node & ParentNode
+): Node[] {
   const newL = newChildren.length;
   const oldL = oldChildren.length;
-  const nextSib = oldChildren[oldL - 1].nextSibling;
-  const parent = oldChildren[oldL - 1].parentNode;
+  const nextSib = oldChildren[oldL - 1] && oldChildren[oldL - 1].nextSibling;
+  parent = parent || oldChildren[oldL - 1].parentNode;
+
+  const returnNodes = [];
 
   // Lesser children now
   if (oldL > newL) {
@@ -24,63 +37,52 @@ export function makeChildrenEqual(
     }
   }
 
-  let item: Node | TemplateProps,
+  let item: Node | SifrrProps<T>,
     head = oldChildren[0];
 
   let i = 0;
   // Make old children equal to new children
   while (i < oldL && i < newL) {
     item = makeEqual(head, newChildren[i]);
-    newChildren[i] = item;
+    returnNodes.push(item);
     head = item.nextSibling;
     i++;
   }
   // Add extra new children
   while (i < newL) {
     item = newChildren[i];
-    const toAppend = <Node>(
-      (item instanceof Node ? <ChildNode>item : createFn(<TemplateProps>item).content)
-    );
-    parent.insertBefore(toAppend, nextSib);
+    if (item instanceof Node) {
+      parent.insertBefore(item, nextSib);
+      returnNodes.push(item);
+    } else {
+      const nti = createFn(<SifrrProps<T>>item, null);
+      insertBefore(nti, parent, nextSib);
+      returnNodes.push(nti);
+    }
     i++;
   }
+
+  return returnNodes;
 }
 
-export function makeEqual(oldNode: ChildNode, newNode: Node | TemplateProps): ChildNode {
+export function makeEqual<T>(oldNode: ChildNode, newNode: Node | SifrrProps<T>): ChildNode {
   if (!(newNode instanceof Node)) {
-    oldNode.__sifrrTemplate.props = newNode;
-    update(oldNode.__sifrrTemplate);
+    if (isSifrrNode(oldNode)) update(oldNode, newNode);
     return oldNode;
   }
 
-  if (oldNode.nodeName !== newNode.nodeName) {
-    oldNode.replaceWith(newNode);
-    return <ChildNode>newNode;
-  }
-
   // Text or comment node
-  if (oldNode.nodeType === TEXT_NODE || oldNode.nodeType === COMMENT_NODE) {
+  if (
+    (oldNode.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) ||
+    (oldNode.nodeType === COMMENT_NODE && newNode.nodeType === COMMENT_NODE)
+  ) {
     if ((<Text>(<unknown>oldNode)).data !== (<Text>(<unknown>newNode)).data)
       (<Text>(<unknown>oldNode)).data = (<Text>(<unknown>newNode)).data;
     return oldNode;
   }
 
-  if (!(oldNode instanceof HTMLElement) || !(newNode instanceof HTMLElement)) return;
+  if (!(oldNode instanceof Node) || !(newNode instanceof Node)) return oldNode;
 
-  // copy Attributes
-  const oldAttrs = oldNode.attributes,
-    newAttrs = newNode.attributes;
-  for (let i = newAttrs.length - 1; i > -1; --i) {
-    updateAttribute(oldNode, newAttrs[i].name, newAttrs[i].value);
-  }
-
-  // Remove any extra attributes
-  for (let j = oldAttrs.length - 1; j > -1; --j) {
-    if (!newNode.hasAttribute(oldAttrs[j].name)) oldNode.removeAttribute(oldAttrs[j].name);
-  }
-
-  // make children equal
-  makeChildrenEqual(arrayOf(oldNode.childNodes), arrayOf<ChildNode>(newNode.childNodes));
-
-  return oldNode;
+  oldNode.replaceWith(newNode);
+  return <ChildNode>newNode;
 }

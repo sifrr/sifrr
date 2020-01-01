@@ -9,16 +9,16 @@ import {
 } from './constants';
 import updateAttribute from './updateattribute';
 
-import { SifrrBindType, SifrrBindCreatorFxn, SifrrBindMap } from './types';
+import { SifrrBindType, SifrrBindMap, SifrrFunctionMap } from './types';
 
 function attrToProp(attrName: string) {
   return attrName.substr(1).replace(/-([a-z])/g, g => g[1].toUpperCase());
 }
 
-const creator: SifrrBindCreatorFxn = (el, functionMap) => {
+const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
-    const textEl = <Text>(<unknown>el);
+    const textEl = <Text>el;
     const x = textEl.data;
     const exactMatch = x.match(REF_REG_EXACT);
     if (exactMatch) {
@@ -54,9 +54,10 @@ const creator: SifrrBindCreatorFxn = (el, functionMap) => {
 
   // ELEMENT Node
   if (el.nodeType === ELEMENT_NODE) {
-    const bm: SifrrBindMap[] = [];
+    const eln = <HTMLElement>el;
+    const bm: SifrrBindMap<T>[] = [];
     // attributes
-    const attrs = Array.prototype.slice.call(el.attributes),
+    const attrs = Array.prototype.slice.call(eln.attributes),
       l = attrs.length;
 
     for (let i = 0; i < l; i++) {
@@ -68,7 +69,7 @@ const creator: SifrrBindCreatorFxn = (el, functionMap) => {
 
       if (!exactMatch && middleMatch) {
         updateAttribute(
-          el,
+          eln,
           attribute.name,
           attribute.value.replace(REF_REG_GLOBAL, '${__bindingFunction__}')
         );
@@ -102,7 +103,7 @@ const creator: SifrrBindCreatorFxn = (el, functionMap) => {
         });
       }
 
-      updateAttribute(el, attribute.name, '');
+      updateAttribute(eln, attribute.name, '');
     }
     if (bm.length > 0) return bm;
   }

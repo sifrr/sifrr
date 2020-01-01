@@ -1,28 +1,30 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { RENDER_IF_PROP, ELEMENT_NODE } from './constants';
-import { DomBindingReturnValue, SifrrBindType } from './types';
-import { arrayOf } from '../utils';
+import { DomBindingReturnValue, SifrrBindType, SifrrNode, SifrrProps, SifrrNodes } from './types';
+import { arrayOf, isSifrrNode } from './utils';
 
 const displayNone = 'none';
 const emptyArray = [];
 
-const renderIf = (dom: HTMLElement, shouldRender = dom[RENDER_IF_PROP] != false) => {
+function renderIf<T>(dom: SifrrProps<T>, shouldRender = dom[RENDER_IF_PROP] != false) {
   if (dom.nodeType !== ELEMENT_NODE) return true;
-  if (dom.__oldRenderIf === shouldRender) return shouldRender;
 
-  dom.__oldRenderIf = shouldRender;
+  const domEl = <HTMLElement>(<unknown>dom);
+  if (domEl.__oldRenderIf === shouldRender) return shouldRender;
+
+  domEl.__oldRenderIf = shouldRender;
   if (shouldRender) {
-    dom.style.display = dom.__sifrrOldDisplay;
+    domEl.style.display = domEl.__sifrrOldDisplay;
     return true;
   } else {
-    dom.__sifrrOldDisplay = dom.style.display;
-    dom.style.display = displayNone;
+    domEl.__sifrrOldDisplay = domEl.style.display;
+    domEl.style.display = displayNone;
     return false;
   }
-};
+}
 
-function getNodesFromBindingValue(value: DomBindingReturnValue): (Node | ChildNode)[] {
+function getNodesFromBindingValue(value: DomBindingReturnValue): Node[] {
   if (value === null || value === undefined) {
     return emptyArray;
   } else if (Array.isArray(value)) {
@@ -42,28 +44,43 @@ function getNodesFromBindingValue(value: DomBindingReturnValue): (Node | ChildNo
   }
 }
 
-export default function update(tempElement: HTMLTemplateElement) {
-  const element = tempElement.props;
-  if (!element) return;
-  if (!renderIf(<HTMLElement>element)) {
+export default function update<T>(
+  tempElement: SifrrNode<T> | SifrrNode<T>[],
+  props: SifrrProps<T>
+) {
+  if (Array.isArray(tempElement)) {
+    const l = tempElement.length;
+    for (let i = 0; i < l; i++) {
+      update(tempElement[i], props);
+    }
+    return;
+  }
+
+  const { __sifrrRefs: refs } = tempElement;
+  if (!props || !refs) return;
+  if (!renderIf<T>(props)) {
     return;
   }
 
   // Update nodes
-  for (let i = tempElement.refs ? tempElement.refs.length - 1 : -1; i > -1; --i) {
-    const { node, bindMap, currentValues } = tempElement.refs[i];
+  for (let i = refs ? refs.length - 1 : -1; i > -1; --i) {
+    const { node, bindMap, currentValues } = refs[i];
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
       const oldValue = currentValues[j];
 
       // special direct props (events)
-      if (binding.type === SifrrBindType.Prop && binding.direct) {
+      if (
+        binding.type === SifrrBindType.Prop &&
+        binding.direct &&
+        node[binding.name] != binding.value
+      ) {
         node[binding.name] = binding.value;
         continue;
       }
 
-      let newValue = binding.value.call(null, element, oldValue);
+      let newValue = binding.value(props, oldValue);
       if (oldValue === newValue) continue;
 
       // text
@@ -84,9 +101,9 @@ export default function update(tempElement: HTMLTemplateElement) {
 
         // special case of no value return
         if (newValue.length < 1) {
-          newValue = [<Node>document.createTextNode('')];
+          newValue = [<Node>document.createElement('tr')];
         }
-        makeChildrenEqual(<ChildNode[]>oldValue, newValue);
+        newValue = makeChildrenEqual(<ChildNode[]>oldValue, newValue);
       } else if (binding.type === SifrrBindType.Attribute) {
         updateAttribute(<HTMLElement>node, binding.name, newValue);
       } else if (binding.type === SifrrBindType.Prop) {
@@ -102,21 +119,21 @@ export default function update(tempElement: HTMLTemplateElement) {
           for (let i = 0; i < newl; i++) {
             if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
               (<HTMLElement>node).style[newKeys[i]] = newValue[newKeys[i]] || ''; // remove undefined with empty string
-              oldValue[newKeys[i]] = newValue[newKeys[i]];
             }
           }
           for (let i = 0; i < oldl; i++) {
-            if (oldValue[oldKeys[i]] !== newValue[oldKeys[i]])
-              (<HTMLElement>node).style[oldKeys[i]] = newValue[oldKeys[i]] || '';
+            if (!newValue[oldKeys[i]]) (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
           }
         }
       }
-      tempElement.refs[i].currentValues[j] = newValue;
+      refs[i].currentValues[j] = newValue;
     }
 
     if (!renderIf(<HTMLElement>node)) {
       continue;
     }
-    if (node.__sifrrTemplate) update(node.__sifrrTemplate);
+    if (node !== tempElement && isSifrrNode(node)) {
+      update(node, props);
+    }
   }
 }

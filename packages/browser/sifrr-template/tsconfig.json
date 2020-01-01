@@ -9,17 +9,6 @@
     "lib": ["esnext", "es2019", "dom"],
     "strictBindCallApply": true
   },
-  "include": [
-    "src/*",
-    "src/template/keyed.ts",
-    "src/template/types.ts",
-    "src/template/makeequal.ts",
-    "src/template/Template.ts",
-    "src/template/ref.ts",
-    "src/template/update.ts",
-    "src/template/creator.ts",
-    "src/template/constants.ts",
-    "src/template/updateattribute.ts"
-  ],
+  "include": ["src/*"],
   "exclude": ["node_modules"]
 }

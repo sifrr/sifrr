@@ -1,25 +1,47 @@
-import { createTemplateFromString, functionMapCreator } from '../utils';
-import { create, collect } from './ref';
-import { TemplateProps } from './types';
+import { createTemplateFromString, functionMapCreator, arrayOf } from './utils';
+import { create, collect, cleanEmptyNodes } from './ref';
+import { SifrrProps, SifrrCreateFunction, SifrrNode, SifrrNodes } from './types';
 import creator from './creator';
 import update from './update';
+import { makeChildrenEqual } from './makeequal';
 
-const createTemplate = (str: TemplateStringsArray, ...substitutions: any[]) => {
-  const { functionMap, mergedString } = functionMapCreator(str, substitutions);
+const createTemplate = <T>(
+  str: TemplateStringsArray,
+  ...substitutions: any[]
+): SifrrCreateFunction<T> => {
+  const { functionMap, mergedString } = functionMapCreator<T>(str, substitutions);
   const template = createTemplateFromString(mergedString);
-  const refMap = create(template.content, creator, functionMap);
+  cleanEmptyNodes(template.content);
 
-  // cloning a document fragment, i.e. create instance of this template
-  return (props?: TemplateProps) => {
-    const temp = <HTMLTemplateElement>template.cloneNode(true);
-    temp.refs = collect(temp.content, refMap);
-    if (props) {
-      temp.props = props;
-      temp.props.__sifrrTemplate = temp;
+  const childNodes = arrayOf<ChildNode>(template.content.childNodes),
+    nodesLength = childNodes.length;
+  const refMaps = childNodes.map(cn => {
+    cn.remove();
+    return create<T>(cn, creator, functionMap);
+  });
+
+  const clone = (props: SifrrProps<T>): SifrrNodes<T> => {
+    const newNodes: SifrrNode<T>[] = new Array(nodesLength);
+
+    for (let i = 0; i < childNodes.length; i++) {
+      newNodes[i] = <SifrrNode<T>>childNodes[i].cloneNode(true);
+      if (refMaps[i].length < 1) continue;
+
+      newNodes[i].__sifrrRefs = collect(newNodes[i], refMaps[i]);
+      update(newNodes[i], props);
     }
-    update(temp);
-    return temp;
+    return newNodes;
   };
+
+  // cloning this template, can be used as binding function in another template
+  const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNodes<T>) => {
+    if (oldValue) {
+      return makeChildrenEqual(<ChildNode[]>oldValue, [props], clone);
+    }
+    return clone(props);
+  };
+
+  return createFxn;
 };
 
 export default createTemplate;

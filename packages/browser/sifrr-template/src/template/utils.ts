@@ -1,6 +1,6 @@
-import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './template/constants';
-import createUniqueString from './ustring';
-import { SifrrFunctionMap } from './template/types';
+import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
+import createUniqueString from '../ustring';
+import { SifrrFunctionMap, SifrrNode } from './types';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();
@@ -8,9 +8,9 @@ export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   return template;
 };
 
-export const functionMapCreator = (str: TemplateStringsArray, substitutions: any[]) => {
+export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: any[]) {
   const raw = str.raw;
-  const functionMap: SifrrFunctionMap = new Map();
+  const functionMap: SifrrFunctionMap<T> = new Map();
   const mergedString = raw
     .map((chunk, i) => {
       const subs = substitutions[i - 1];
@@ -18,6 +18,7 @@ export const functionMapCreator = (str: TemplateStringsArray, substitutions: any
         return chunk;
       }
       if (typeof subs === 'function') {
+        subs.type = subs.type;
         const randomString = createUniqueString(BIND_REF_LENGTH);
         functionMap.set(randomString, subs);
         return `\${${PREFIX + randomString}}` + chunk;
@@ -30,22 +31,12 @@ export const functionMapCreator = (str: TemplateStringsArray, substitutions: any
     mergedString,
     functionMap
   };
-};
-
-/**
- * Compares two object shallowly
- * @param target target
- * @param source new value to be merged in old value
- */
-export const shallowEqual = (target: any, source: any) => {
-  if (typeof target !== 'object') return target !== source;
-  if (target === null || source === null) return target === source;
-  for (const key in source) {
-    if (!(key in target) || target[key] !== source[key]) return true;
-  }
-  return false;
-};
+}
 
 export function arrayOf<T>(a: any): T[] {
   return Array.prototype.slice.call(a);
+}
+
+export function isSifrrNode(node: SifrrNode<any>): boolean {
+  return !!node.__sifrrRefs;
 }
