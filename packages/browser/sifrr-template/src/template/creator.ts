@@ -19,7 +19,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const textEl = <Text>el;
-    const x = textEl.data;
+    const x = textEl.data.trim();
     const exactMatch = x.match(REF_REG_EXACT);
     if (exactMatch) {
       textEl.data = '';
