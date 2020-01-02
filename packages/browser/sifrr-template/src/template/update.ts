@@ -43,7 +43,7 @@ export default function update<T>(
   }
 
   // Update nodes
-  for (let i = refs ? refs.length - 1 : -1; i > -1; --i) {
+  for (let i = refs.length - 1; i > -1; --i) {
     const { node, bindMap, currentValues } = refs[i];
 
     for (let j = bindMap.length - 1; j > -1; --j) {

@@ -1,7 +1,6 @@
 import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
 import createUniqueString from '../ustring';
 import { SifrrFunctionMap, SifrrNode, SifrrProps } from './types';
-import getNodesFromBindingValue from './getnodes';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();
@@ -131,7 +130,7 @@ export function flatLastElement<T>(vs: any[]): T {
   const values = <TRArray>vs;
   let i = values.length - 1,
     last: T,
-    lastArray: T | TRArray = values[i];
+    lastArray: T | TRArray;
 
   while (last === undefined && i > -1) {
     lastArray = values[i];
