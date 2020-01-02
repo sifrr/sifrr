@@ -20,6 +20,7 @@ import { flatLastElement } from './utils';
 // without maintaining nodes arrays, and manipulates dom only when required
 
 // only works with data nodes
+// TODO: cleanup
 export function makeChildrenEqualKeyed<T>(
   oldChildren: ChildNodeKeyed[],
   newData: SifrrKeyedProps<T>[],
