@@ -38,6 +38,7 @@ const before = function() {
       ELEMENT_NODE: 1
     }
   };
+  Object.assign(global, global.window);
   global.fetch = () => {};
 };
 

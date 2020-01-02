@@ -83,6 +83,7 @@ function dataToChildNodes(data) {
     node._setStub = sinon.stub().callsFake(v => (node.state = v));
     node.getState = node._getStub;
     node.setState = node._setStub;
+    node.key = d.key;
     return node;
   });
   ret.forEach(n => {
@@ -135,6 +136,7 @@ function parent(childNodes) {
     sinon.spy(parent, name);
   }
   parent.childNodes = childNodes;
+  childNodes.forEach(cn => (cn.parentNode = parent));
   Object.defineProperty(parent, 'firstChild', {
     get: () => parent.childNodes[0]
   });
