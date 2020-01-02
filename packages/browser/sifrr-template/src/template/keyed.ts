@@ -1,6 +1,13 @@
 /* eslint-disable max-lines */
 import { makeEqual } from './makeequal';
-import { SifrrCloneFunction, TemplateParentKeyed, ChildNodeKeyed } from './types';
+import {
+  ChildNodeKeyed,
+  SifrrCreateFunction,
+  SifrrNode,
+  SifrrKeyedProps,
+  DomBindingReturnValue
+} from './types';
+import { flatLastElement } from './utils';
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
@@ -13,21 +20,42 @@ import { SifrrCloneFunction, TemplateParentKeyed, ChildNodeKeyed } from './types
 // without maintaining nodes arrays, and manipulates dom only when required
 
 // only works with data nodes
-export function makeChildrenEqualKeyed(
+export function makeChildrenEqualKeyed<T>(
   oldChildren: ChildNodeKeyed[],
-  newData: TemplateParentKeyed[],
-  createFn: SifrrCloneFunction
+  newData: SifrrKeyedProps<T>[],
+  createFn: SifrrCreateFunction<T>
 ) {
   const newL = newData.length,
     oldL = oldChildren.length;
-  const nextSib = oldChildren[oldL - 1].nextSibling;
-  const parent = oldChildren[oldL - 1].parentNode;
+
+  const lastChild: ChildNode =
+    (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
+  const nextSib = lastChild && lastChild.nextSibling;
+  const parent = lastChild.parentNode;
+  const returnNodes = new Array(newL);
+
+  if (!parent) {
+    throw Error(
+      'Parent should be given of there were no Child Nodes Before. Open an issue on sifrr/sifrr if you think this is a bug.'
+    );
+  }
+
+  (<DomBindingReturnValue>returnNodes).reference = (<DomBindingReturnValue>oldChildren).reference;
+  // special case of no value return
+  if (returnNodes.length < 1 && !(<DomBindingReturnValue>returnNodes).reference) {
+    const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
+    (<DomBindingReturnValue>returnNodes).reference = referenceComment;
+    parent.insertBefore(referenceComment, lastChild);
+  }
 
   if (oldL === 0) {
     for (let i = 0; i < newL; i++) {
-      parent.insertBefore(createFn(newData[i]).content, nextSib);
+      const n = createFn(newData[i])[0];
+      n.key = newData[i].key;
+      returnNodes[i] = n;
+      parent.insertBefore(n, nextSib);
     }
-    return;
+    return returnNodes;
   }
 
   // reconciliation
@@ -41,15 +69,15 @@ export function makeChildrenEqualKeyed(
     finalNode,
     a: any,
     b: any,
-    _node: Node;
+    _node: SifrrNode<T>;
 
   fixes: while (loop) {
     loop = false;
 
     // Skip prefix
     (a = prevStartNode), (b = newData[newStart]);
-    while (a.key === b.key) {
-      makeEqual(prevStartNode, b);
+    while (b && a.key === b.key) {
+      returnNodes[newStart] = makeEqual(prevStartNode, b);
       prevStart++;
       prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
       newStart++;
@@ -59,8 +87,8 @@ export function makeChildrenEqualKeyed(
 
     // Skip suffix
     (a = prevEndNode), (b = newData[newEnd]);
-    while (a.key === b.key) {
-      makeEqual(prevEndNode, b);
+    while (b && a.key === b.key) {
+      returnNodes[newEnd] = makeEqual(prevEndNode, b);
       prevEnd--;
       finalNode = prevEndNode;
       prevEndNode = <ChildNodeKeyed>prevEndNode.previousSibling;
@@ -71,9 +99,9 @@ export function makeChildrenEqualKeyed(
 
     // Fast path to swap backward
     (a = prevEndNode), (b = newData[newStart]);
-    while (a.key === b.key) {
+    while (b && a.key === b.key) {
       loop = true;
-      makeEqual(prevEndNode, b);
+      returnNodes[newStart] = makeEqual(prevEndNode, b);
       _node = prevEndNode.previousSibling;
       parent.insertBefore(prevEndNode, prevStartNode);
       prevEndNode = <ChildNodeKeyed>_node;
@@ -85,9 +113,9 @@ export function makeChildrenEqualKeyed(
 
     // Fast path to swap forward
     (a = prevStartNode), (b = newData[newEnd]);
-    while (a.key === b.key) {
+    while (b && a.key === b.key) {
       loop = true;
-      makeEqual(prevStartNode, b);
+      returnNodes[newEnd] = makeEqual(prevStartNode, b);
       _node = prevStartNode.nextSibling;
       parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
       finalNode = prevStartNode;
@@ -115,19 +143,22 @@ export function makeChildrenEqualKeyed(
         prevEnd--;
       }
     }
-    return;
+    return returnNodes;
   }
 
   // Fast path for add
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
       while (newStart <= newEnd) {
-        _node = createFn(newData[newStart]);
+        _node = createFn(newData[newStart])[0];
+        _node.key = newData[newStart].key;
+
+        returnNodes[newStart] = _node;
         parent.insertBefore(_node, finalNode);
         newStart++;
       }
     }
-    return;
+    return returnNodes;
   }
 
   const oldKeys = new Array(newEnd + 1 - newStart),
@@ -164,31 +195,40 @@ export function makeChildrenEqualKeyed(
   if (reusingNodes === 0) {
     for (let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      parent.insertBefore(createFn(newData[i]), prevStartNode);
+      returnNodes[i] = createFn(newData[i])[0];
+      returnNodes[i].key = newData[i].key;
+
+      parent.insertBefore(returnNodes[i], prevStartNode);
     }
-    return;
+    return returnNodes;
   }
 
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   let lisIdx = longestSeq.length - 1,
-    tmpD: ChildNode;
+    tmpD: SifrrNode<T>;
   for (let i = newEnd; i >= newStart; i--) {
     if (longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
+      returnNodes[i] = finalNode;
+      // returnNodes[i] = finalNode; reused nodes, not needed to set key
       makeEqual(finalNode, newData[i]);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
-        tmpD = createFn(newData[i]);
+        tmpD = createFn(newData[i])[0];
+        tmpD.key = newData[i].key;
       } else {
         tmpD = nodes[oldKeys[i]];
         makeEqual(tmpD, newData[i]);
       }
+      returnNodes[i] = tmpD;
       parent.insertBefore(tmpD, finalNode);
       finalNode = tmpD;
     }
   }
+
+  return returnNodes;
 }
 
 // Picked from

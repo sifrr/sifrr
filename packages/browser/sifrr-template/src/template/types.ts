@@ -9,17 +9,16 @@ declare global {
 
 export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
+  key?: string | number;
 }
 
 export type SifrrProps<T> = T & {
-  __sifrrTemplate?: SifrrNode<T>;
-  __sifrrBaseTemplate?: HTMLTemplateElement;
   __oldRenderIf?: boolean;
   __sifrrOldDisplay?: string;
   nodeType?: number;
 };
 
-export type TemplateParentKeyed<T> = SifrrProps<T> & {
+export type SifrrKeyedProps<T> = SifrrProps<T> & {
   key: string | number;
 };
 
@@ -27,19 +26,21 @@ export type ChildNodeKeyed = ChildNode & {
   key: string | number;
 };
 
-type _RTValue = null | undefined | string | Node | _RTValue[];
-export type DomBindingReturnValue = _RTValue | NodeList;
+type _RTValue = null | undefined | string | Node | _RTValue[] | {};
+export type DomBindingReturnValue = (_RTValue | NodeList) & {
+  isRendered?: boolean;
+  reference?: ChildNode;
+};
 
-type _NA<T> = SifrrNode<T>[] | SifrrNode<T>;
-export type SifrrNodes<T> = _NA<T>[];
+export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[];
 
-export type BindingFxn<T, Y> = (parent: SifrrProps<T>, oldValue: DomBindingReturnValue) => Y;
+export type BindingFxn<T, O, N> = (parent: SifrrProps<T>, oldValue: O) => N;
 
 // clone/update a template element
 export type SifrrCreateFunction<T> = (
   parent: SifrrProps<T>,
-  oldValue?: SifrrNodes<T>
-) => SifrrNodes<T>;
+  oldValue?: SifrrNode<T>[]
+) => SifrrNode<T>[];
 
 export enum SifrrBindType {
   Text = 1,
@@ -50,17 +51,17 @@ export enum SifrrBindType {
 export type SifrrBindMap<T> =  // T = props type of parent
   | {
       type: SifrrBindType.Text;
-      value: BindingFxn<T, SifrrNodes<T>>;
+      value: BindingFxn<T, SifrrNodesArray<T>, DomBindingReturnValue>;
     }
   | {
       type: SifrrBindType.Attribute;
       name: string;
-      value: BindingFxn<T, string | false | null | undefined>;
+      value: BindingFxn<T, string | false | null | undefined, string | false | null | undefined>;
     }
   | {
       type: SifrrBindType.Prop;
       name: string;
-      value: BindingFxn<T, any>;
+      value: BindingFxn<T, any, any>;
       direct: boolean;
     };
 
@@ -80,7 +81,7 @@ export type SifrrRefCollection<T> = {
 };
 
 // uid -> fxn
-export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any>>; // T = props type of parent
+export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any, any>>; // T = props type of parent
 
 // create bind map for a base template
 export type SifrrBindCreatorFxn<T> = (

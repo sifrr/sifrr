@@ -1,6 +1,6 @@
 import { createTemplateFromString, functionMapCreator, arrayOf } from './utils';
 import { create, collect, cleanEmptyNodes } from './ref';
-import { SifrrProps, SifrrCreateFunction, SifrrNode, SifrrNodes } from './types';
+import { SifrrProps, SifrrCreateFunction, SifrrNode } from './types';
 import creator from './creator';
 import update from './update';
 import { makeChildrenEqual } from './makeequal';
@@ -20,7 +20,7 @@ const createTemplate = <T>(
     return create<T>(cn, creator, functionMap);
   });
 
-  const clone = (props: SifrrProps<T>): SifrrNodes<T> => {
+  const clone = (props: SifrrProps<T>): SifrrNode<T>[] => {
     const newNodes: SifrrNode<T>[] = new Array(nodesLength);
 
     for (let i = 0; i < childNodes.length; i++) {
@@ -34,9 +34,9 @@ const createTemplate = <T>(
   };
 
   // cloning this template, can be used as binding function in another template
-  const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNodes<T>) => {
+  const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNode<T>[]) => {
     if (oldValue) {
-      return makeChildrenEqual(<ChildNode[]>oldValue, [props], clone);
+      return <SifrrNode<T>[]>makeChildrenEqual(oldValue, [props], clone);
     }
     return clone(props);
   };

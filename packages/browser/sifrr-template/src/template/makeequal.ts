@@ -1,73 +1,59 @@
 import update from './update';
 import { TEXT_NODE, COMMENT_NODE } from './constants';
-import { SifrrCreateFunction, SifrrProps, SifrrNodes } from './types';
-import { isSifrrNode } from './utils';
-
-function insertBefore(nodes: SifrrNodes<any>, parent: Node, child: ChildNode) {
-  for (let i = 0; i < nodes.length; i++) {
-    const nt = nodes[i];
-    if (Array.isArray(nt)) {
-      insertBefore(nt, parent, child);
-    } else {
-      parent.insertBefore(nt, child);
-    }
-  }
-}
+import {
+  SifrrCreateFunction,
+  SifrrProps,
+  SifrrNode,
+  SifrrNodesArray,
+  DomBindingReturnValue
+} from './types';
+import { flatLastElement, flattenOperation, isSifrrNode } from './utils';
 
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual<T>(
-  oldChildren: ChildNode[],
-  newChildren: Node[] | SifrrProps<T>[],
+  oldChildren: SifrrNodesArray<T>,
+  newChildren: SifrrNodesArray<T> | SifrrProps<T>[],
   createFn?: SifrrCreateFunction<T>,
   parent?: Node & ParentNode
-): Node[] {
-  const newL = newChildren.length;
-  const oldL = oldChildren.length;
-  const nextSib = oldChildren[oldL - 1] && oldChildren[oldL - 1].nextSibling;
-  parent = parent || oldChildren[oldL - 1].parentNode;
+): SifrrNodesArray<T> {
+  const lastChild: ChildNode =
+    (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
+  const nextSib = lastChild && lastChild.nextSibling;
+  parent = parent || lastChild.parentNode;
 
-  const returnNodes = [];
-
-  // Lesser children now
-  if (oldL > newL) {
-    let i = oldL - 1;
-    while (i > newL - 1) {
-      oldChildren[i].remove();
-      i--;
-    }
+  if (!parent) {
+    throw Error(
+      'Parent should be given of there were no Child Nodes Before. Open an issue on sifrr/sifrr if you think this is a bug.'
+    );
   }
 
-  let item: Node | SifrrProps<T>,
-    head = oldChildren[0];
-
-  let i = 0;
-  // Make old children equal to new children
-  while (i < oldL && i < newL) {
-    item = makeEqual(head, newChildren[i]);
-    returnNodes.push(item);
-    head = item.nextSibling;
-    i++;
-  }
-  // Add extra new children
-  while (i < newL) {
-    item = newChildren[i];
-    if (item instanceof Node) {
-      parent.insertBefore(item, nextSib);
-      returnNodes.push(item);
-    } else {
-      const nti = createFn(<SifrrProps<T>>item, null);
-      insertBefore(nti, parent, nextSib);
-      returnNodes.push(nti);
-    }
-    i++;
+  (<DomBindingReturnValue>newChildren).reference = (<DomBindingReturnValue>oldChildren).reference;
+  // special case of no value return
+  if (newChildren.length < 1 && !(<DomBindingReturnValue>newChildren).reference) {
+    const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
+    (<DomBindingReturnValue>newChildren).reference = referenceComment;
+    parent.insertBefore(referenceComment, lastChild);
   }
 
-  return returnNodes;
+  return flattenOperation<SifrrNode<T>, SifrrProps<T>>(
+    oldChildren,
+    newChildren,
+    makeEqual,
+    (i) /* Node */ => (<ChildNode>i).remove(),
+    (i) /* Node */ => parent.insertBefore(i, nextSib),
+    i => !(i instanceof Node) && !!createFn && !isSifrrNode(i),
+    createFn
+  );
 }
 
-export function makeEqual<T>(oldNode: ChildNode, newNode: Node | SifrrProps<T>): ChildNode {
+export function makeEqual<T>(
+  oldNode: SifrrNode<T>,
+  newNode: SifrrNode<T> | SifrrProps<T>
+): SifrrNode<T> {
+  if (oldNode === newNode) return oldNode;
+
   if (!(newNode instanceof Node)) {
-    if (isSifrrNode(oldNode)) update(oldNode, newNode);
+    update(oldNode, newNode);
     return oldNode;
   }
 
@@ -81,8 +67,6 @@ export function makeEqual<T>(oldNode: ChildNode, newNode: Node | SifrrProps<T>):
     return oldNode;
   }
 
-  if (!(oldNode instanceof Node) || !(newNode instanceof Node)) return oldNode;
-
-  oldNode.replaceWith(newNode);
-  return <ChildNode>newNode;
+  (<ChildNode>oldNode).replaceWith(newNode);
+  return newNode;
 }

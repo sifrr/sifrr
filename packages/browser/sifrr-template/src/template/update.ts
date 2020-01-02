@@ -1,11 +1,11 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { RENDER_IF_PROP, ELEMENT_NODE } from './constants';
-import { DomBindingReturnValue, SifrrBindType, SifrrNode, SifrrProps, SifrrNodes } from './types';
-import { arrayOf, isSifrrNode } from './utils';
+import { SifrrBindType, SifrrNode, SifrrProps } from './types';
+import { isSifrrNode } from './utils';
+import getNodesFromBindingValue from './getnodes';
 
 const displayNone = 'none';
-const emptyArray = [];
 
 function renderIf<T>(dom: SifrrProps<T>, shouldRender = dom[RENDER_IF_PROP] != false) {
   if (dom.nodeType !== ELEMENT_NODE) return true;
@@ -21,26 +21,6 @@ function renderIf<T>(dom: SifrrProps<T>, shouldRender = dom[RENDER_IF_PROP] != f
     domEl.__sifrrOldDisplay = domEl.style.display;
     domEl.style.display = displayNone;
     return false;
-  }
-}
-
-function getNodesFromBindingValue(value: DomBindingReturnValue): Node[] {
-  if (value === null || value === undefined) {
-    return emptyArray;
-  } else if (Array.isArray(value)) {
-    const ret = [];
-    for (let i = 0; i < value.length; i++) {
-      Array.prototype.push.apply(ret, getNodesFromBindingValue(value[i]));
-    }
-    return ret;
-  } else if (value instanceof HTMLTemplateElement) {
-    return arrayOf(value.content.childNodes);
-  } else if (value instanceof Node) {
-    return [value];
-  } else if (value instanceof NodeList) {
-    return arrayOf(value);
-  } else {
-    return [document.createTextNode(value.toString())];
   }
 }
 
@@ -85,6 +65,12 @@ export default function update<T>(
 
       // text
       if (binding.type === SifrrBindType.Text) {
+        // fast path for pre-rendered
+        if (newValue && newValue.isRendered) {
+          refs[i].currentValues[j] = newValue;
+          continue;
+        }
+
         // fast path for one text node
         if (oldValue instanceof Text) {
           if (newValue instanceof Text) {
@@ -96,14 +82,9 @@ export default function update<T>(
           }
         }
 
-        // convert nodeList/HTML collection to array and string to text element
-        newValue = getNodesFromBindingValue(newValue);
-
-        // special case of no value return
-        if (newValue.length < 1) {
-          newValue = [<Node>document.createElement('tr')];
-        }
-        newValue = makeChildrenEqual(<ChildNode[]>oldValue, newValue);
+        // convert nodeList/HTML collection to array and string/undefined/null to text element
+        const nodes = getNodesFromBindingValue<T, null>(newValue);
+        newValue = makeChildrenEqual(oldValue, Array.isArray(nodes) ? nodes : [nodes]);
       } else if (binding.type === SifrrBindType.Attribute) {
         updateAttribute(<HTMLElement>node, binding.name, newValue);
       } else if (binding.type === SifrrBindType.Prop) {

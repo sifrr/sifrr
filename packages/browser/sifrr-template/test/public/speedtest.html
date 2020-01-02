@@ -9,8 +9,13 @@
   <body>
     <script src="./sifrr.template.js"></script>
     <script>
+      HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
+      HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+      document.$ = document.querySelector;
+      document.$$ = document.querySelectorAll;
+
       const useAnimation = window.location.href.indexOf('useAnim') >= 0;
-      // const keyedKey = window.location.href.indexOf('useKey') >= 0 ? 'id' : '';
+      const useKey = window.location.href.indexOf('useKey') >= 0;
       // const useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
 
       const css = useAnimation
@@ -43,7 +48,7 @@
       <style media="screen">
         ${css}
       </style>
-      <div class="container">
+      <div class="container" id="main">
         <div class="jumbotron">
           <div class="row">
             <div class="col-md-6">
@@ -81,7 +86,14 @@
         </div>
         <table class="table table-hover table-striped test-data">
           <tbody>
-            <!--${({ data = [] }, oldValue) => data.map(d => row(d))}-->
+            <!--${({ data = [] }, oldValue) => {
+              if (useKey) {
+                return Sifrr.Template.useForKeyed(row, data, oldValue);
+              } else {
+                return Sifrr.Template.useFor(row, data, oldValue);
+              }
+              // return data.map(i => row(i));
+            }}-->
           </tbody>
         </table>
         <span class='glyphicon glyphicon-remove' aria-hidden='true'>
@@ -154,6 +166,7 @@
         for (let i = 0; i < count; i++)
           data.push({
             id: i + frm,
+            key: i + frm,
             label:
               adjectives[_random(adjectives.length)] +
               ' ' +
