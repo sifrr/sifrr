@@ -21,7 +21,7 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
         subs.type = subs.type;
         const randomString = createUniqueString(BIND_REF_LENGTH);
         functionMap.set(randomString, subs);
-        return `\${${PREFIX + randomString}}` + chunk;
+        return `{{${PREFIX + randomString}}}` + chunk;
       }
       return substitutions[i - 1] + chunk;
     })
