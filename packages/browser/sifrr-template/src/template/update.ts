@@ -8,6 +8,7 @@ import getNodesFromBindingValue from './getnodes';
 const displayNone = 'none';
 
 function renderIf<T>(dom: SifrrProps<T>, shouldRender = dom[RENDER_IF_PROP] != false) {
+  if (dom[RENDER_IF_PROP] === undefined) return true;
   if (dom.nodeType !== ELEMENT_NODE) return true;
 
   const domEl = <HTMLElement>(<unknown>dom);
