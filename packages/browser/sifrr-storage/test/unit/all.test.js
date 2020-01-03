@@ -4,20 +4,29 @@ const JSONP = require('../../src/utils/json'),
   Storage = require('../../src/storages/storage').default;
 
 describe('SifrrStorage', () => {
+  before(() => {
+    global.__document = global.document;
+    global.document = undefined;
+  });
+
+  after(() => {
+    global.document = global.__document;
+  });
+
   describe('#new', () => {
     it('should return supported storage by default', () => {
-      let x = getStorage();
+      const x = getStorage();
       expect(x).to.be.an.instanceof(availableStores['indexeddb']);
       assert.equal(x.type, 'indexeddb');
     });
 
     Object.keys(availableStores).forEach(type => {
       it(`should return ${type} if ${type} is prioritized`, () => {
-        let x = getStorage({ priority: [type] });
+        const x = getStorage({ priority: [type] });
         expect(x).to.be.an.instanceof(availableStores[type]);
         assert.equal(x.type, type);
 
-        let y = getStorage(type);
+        const y = getStorage(type);
         expect(y).to.be.an.instanceof(availableStores[type]);
         assert.equal(y.type, type);
       });
