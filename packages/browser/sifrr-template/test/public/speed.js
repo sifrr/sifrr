@@ -171,7 +171,7 @@ window.buildData = function(count = 1000, frm = window.from) {
 };
 
 const div = document.createElement('div');
-div.id = '#main';
+div.id = 'main-element';
 const inner = template(div);
 div.append(...inner);
 document.body.append(div);
