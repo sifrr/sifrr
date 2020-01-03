@@ -28,8 +28,12 @@ const incss = useAnimation
 
 const row = html`
   <tr class=${({ className }) => className} :data-id=${({ id }) => id}>
-    <td class="col-md-1 id">${({ id }) => id}</td>
-    <td class="col-md-4"><a class="lbl">${({ label }) => label}</a></td>
+    <td class="col-md-1 id">
+      ${({ id }) => id}
+    </td>
+    <td class="col-md-4">
+      <a class="lbl">${({ label }) => label}</a>
+    </td>
     <td class="col-md-1">
       <a class="remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
     </td>
