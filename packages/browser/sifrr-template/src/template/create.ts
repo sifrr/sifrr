@@ -1,4 +1,4 @@
-import { createTemplateFromString, functionMapCreator, arrayOf, isSameSifrrNode } from './utils';
+import { createTemplateFromString, functionMapCreator, isSameSifrrNode } from './utils';
 import { create, collect, cleanEmptyNodes } from './ref';
 import { SifrrProps, SifrrCreateFunction, SifrrNode, DomBindingReturnValue } from './types';
 import creator from './creator';
@@ -15,7 +15,7 @@ const createTemplate = <T>(
   const template = createTemplateFromString(mergedString);
   cleanEmptyNodes(template.content);
 
-  const childNodes = arrayOf<ChildNode>(template.content.childNodes),
+  const childNodes = Array.prototype.slice.call(template.content.childNodes),
     nodeLength = childNodes.length;
   const refMaps = childNodes.map(cn => {
     const refs = create<T>(cn, creator, functionMap);
@@ -31,7 +31,7 @@ const createTemplate = <T>(
   const tempNums = childNodes.map(() => tempNum++);
 
   const clone = (props: SifrrProps<T>): SifrrNode<T>[] => {
-    const newNodes: SifrrNode<T>[] = arrayOf(template.content.cloneNode(true).childNodes);
+    const newNodes: SifrrNode<T>[] = Array.prototype.slice.call(template.content.cloneNode(true).childNodes);
 
     for (let i = 0; i < nodeLength; i++) {
       newNodes[i].__tempNum = tempNums[i];

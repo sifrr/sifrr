@@ -1,5 +1,4 @@
 import { DomBindingReturnValue, SifrrNodesArray, SifrrNode } from './types';
-import { arrayOf } from './utils';
 
 const emptyArray = [];
 
@@ -17,11 +16,11 @@ export default function getNodesFromBindingValue<T, X>(
     }
     return <SifrrNodesArray<T>>value;
   } else if (value instanceof HTMLTemplateElement) {
-    return arrayOf(value.content.childNodes);
+    return Array.prototype.slice.call(value.content.childNodes);
   } else if (value instanceof Node) {
     return <SifrrNode<T>>value;
   } else if (value instanceof NodeList) {
-    return arrayOf(value);
+    return Array.prototype.slice.call(value);
   } else if (retObject) {
     return <X>value;
   } else {

@@ -1,3 +1,5 @@
+const { html, css, update } = Sifrr.Template;
+
 HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
 HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
 document.$ = document.querySelector;
@@ -5,8 +7,6 @@ document.$$ = document.querySelectorAll;
 
 const useAnimation = window.location.href.indexOf('useAnim') >= 0;
 const useKey = window.location.href.indexOf('useKey') >= 0;
-// const useSifrrInArray = window.location.href.indexOf('useSifrr') >= 0;
-const { html, css } = Sifrr.Template;
 
 const incss = useAnimation
   ? css`
@@ -26,8 +26,10 @@ const incss = useAnimation
     `
   : '';
 
+let selected = null;
+
 const row = html`
-  <tr class=${({ className }) => className} :data-id=${({ id }) => id}>
+  <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
     <td class="col-md-1 id">
       ${({ id }) => id}
     </td>
@@ -41,7 +43,7 @@ const row = html`
   </tr>
 `;
 
-const template = html`<link href="./css/currentStyle.css" rel="stylesheet">
+const template = html`<link href="/css/currentStyle.css" rel="stylesheet">
       ${incss}
       <div class="container" id="main">
         <div class="jumbotron">
@@ -167,8 +169,7 @@ window.buildData = function(count = 1000, frm = window.from) {
         ' ' +
         colours[_random(colours.length)] +
         ' ' +
-        nouns[_random(nouns.length)],
-      className: ''
+        nouns[_random(nouns.length)]
     });
   window.from = window.from + count;
   return data;
@@ -187,7 +188,7 @@ function getParent(elem) {
 
 const setData = (window.setData = newData => {
   div.data = newData;
-  Sifrr.Template.update(inner, div);
+  update(inner, div);
 });
 
 div.addEventListener('click', e => {
@@ -200,12 +201,7 @@ div.addEventListener('click', e => {
     data.splice(todel, 1);
     setData(data);
   } else if (target.matches('.lbl, .lbl *')) {
-    let k = 0;
-    for (let i = 0; i < l; i++) {
-      if (data[i].className) (data[i].className = ''), k++;
-      if (data[i].id === id) (data[i].className = 'danger'), k++;
-      if (k > 1) break;
-    }
+    selected = id;
     setData(data);
   }
 });

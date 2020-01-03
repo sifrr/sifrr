@@ -33,10 +33,6 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
   };
 }
 
-export function arrayOf<T>(a: any): T[] {
-  return Array.prototype.slice.call(a);
-}
-
 export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): boolean {
   return !!node.__tempNum;
 }
@@ -58,11 +54,16 @@ export function recurseArray<T, X>(
   createFn?: (a: X) => T[]
 ): T | T[] {
   if (!Array.isArray(values)) {
-    const createdV = createFn ? createFn(<X>values) : <T>values;
-    if (Array.isArray(createdV)) {
-      return recurseArray(createdV, singleValFxn);
+    if (createFn) {
+      const createdV = createFn(<X>values);
+      if (Array.isArray(createdV)) {
+        if (createdV.length === 1) return singleValFxn(createdV[0]);
+        return recurseArray(createdV, singleValFxn);
+      } else {
+        return singleValFxn(createdV);
+      }
     } else {
-      return singleValFxn(createdV);
+      return singleValFxn(values);
     }
   }
 
@@ -74,6 +75,7 @@ export function recurseArray<T, X>(
   return retV;
 }
 
+// state of art recursive array equalising
 export function flattenOperation<T, X>(
   ovs: any[],
   nvs: any[],

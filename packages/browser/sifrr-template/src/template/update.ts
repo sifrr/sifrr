@@ -32,7 +32,7 @@ export default function update<T>(
       if (
         binding.type === SifrrBindType.Prop &&
         binding.direct &&
-        node[binding.name] != binding.value
+        node[binding.name] !== binding.value
       ) {
         node[binding.name] = binding.value;
         continue;
@@ -43,18 +43,18 @@ export default function update<T>(
 
       // text
       if (binding.type === SifrrBindType.Text) {
+        // fast path for one text node
+        if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
+          if (typeof newValue !== 'object') {
+            if (oldValue[0].data != newValue) oldValue[0].data = newValue; // important to use !=
+            continue;
+          }
+        }
+
         // fast path for pre-rendered
         if (newValue && newValue.isRendered) {
           refs[i].currentValues[j] = newValue;
           continue;
-        }
-
-        // fast path for one text node
-        if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
-          if (typeof newValue === 'string' || typeof newValue === 'number') {
-            if (oldValue[0].data !== newValue) oldValue[0].data = newValue;
-            continue;
-          }
         }
 
         // convert nodeList/HTML collection to array and string/undefined/null to text element
@@ -83,10 +83,6 @@ export default function update<T>(
         }
       }
       refs[i].currentValues[j] = newValue;
-    }
-
-    if (node !== tempElement && isSifrrNode(node)) {
-      update(node, props);
     }
   }
 }

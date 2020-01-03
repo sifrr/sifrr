@@ -9,6 +9,8 @@ import {
 } from './types';
 import { flatLastElement, flattenOperation, isSifrrNode } from './utils';
 
+const removeFxn = (i: ChildNode) => i.remove();
+
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual<T>(
   oldChildren: SifrrNodesArray<T>,
@@ -16,6 +18,7 @@ export function makeChildrenEqual<T>(
   createFn?: SifrrCreateFunction<T>,
   parent?: Node & ParentNode
 ): SifrrNodesArray<T> {
+
   const lastChild: ChildNode =
     (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
   const nextSib = lastChild && lastChild.nextSibling;
@@ -38,9 +41,9 @@ export function makeChildrenEqual<T>(
     oldChildren,
     newChildren,
     makeEqual,
-    (i) /* Node */ => (<ChildNode>i).remove(),
+    removeFxn,
     (i) /* Node */ => parent.insertBefore(i, reference || nextSib),
-    i => !(i instanceof Node) && !!createFn && !isSifrrNode(i),
+    i => !!createFn && !isSifrrNode(i),
     createFn
   );
   (<DomBindingReturnValue>returnValues).reference = reference;
