@@ -1,5 +1,5 @@
 import update from './update';
-import { TEXT_NODE, COMMENT_NODE } from './constants';
+import { TEXT_NODE, COMMENT_NODE, REFERENCE_COMMENT } from './constants';
 import {
   SifrrCreateFunction,
   SifrrProps,
@@ -23,14 +23,14 @@ export function makeChildrenEqual<T>(
 
   if (!parent) {
     throw Error(
-      'Parent should be given of there were no Child Nodes Before. Open an issue on sifrr/sifrr if you think this is a bug.'
+      'Parent should be present for old children given. Open an issue on sifrr if this is a bug.'
     );
   }
 
   (<DomBindingReturnValue>newChildren).reference = (<DomBindingReturnValue>oldChildren).reference;
   // special case of no value return
   if (newChildren.length < 1 && !(<DomBindingReturnValue>newChildren).reference) {
-    const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
+    const referenceComment = REFERENCE_COMMENT();
     (<DomBindingReturnValue>newChildren).reference = referenceComment;
     parent.insertBefore(referenceComment, lastChild);
   }

@@ -38,7 +38,18 @@ export function arrayOf<T>(a: any): T[] {
 }
 
 export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): boolean {
-  return !!node.__sifrrRefs;
+  return !!node.__tempNum;
+}
+
+export function isSameSifrrNode<T>(nodes: SifrrNode<T>[], tempNums: number[]) {
+  const ln = nodes.length,
+    tl = tempNums.length;
+
+  if (ln !== tl) return false;
+  for (let i = 0; i < ln; i++) {
+    if (nodes[i].__tempNum !== tempNums[i]) return false;
+  }
+  return true;
 }
 
 export function recurseArray<T, X>(

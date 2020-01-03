@@ -1,6 +1,6 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
-import { RENDER_IF_PROP, ELEMENT_NODE } from './constants';
+import { RENDER_IF_PROP, ELEMENT_NODE, TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps } from './types';
 import { isSifrrNode } from './utils';
 import getNodesFromBindingValue from './getnodes';
@@ -72,12 +72,9 @@ export default function update<T>(
         }
 
         // fast path for one text node
-        if (oldValue instanceof Text) {
-          if (newValue instanceof Text) {
-            oldValue.data = newValue.data;
-            continue;
-          } else if (typeof newValue === 'string') {
-            oldValue.data = newValue;
+        if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
+          if (typeof newValue === 'string' || typeof newValue === 'number') {
+            if (oldValue[0].data !== newValue) oldValue[0].data = newValue;
             continue;
           }
         }

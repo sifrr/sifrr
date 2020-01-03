@@ -10,8 +10,11 @@ export const REF_LENGTH = 3 /* for ${} */ + PREFIX.length + BIND_REF_LENGTH;
 
 // dom elements
 export const TEMPLATE = () => <HTMLTemplateElement>temp.cloneNode(false);
-export const TREE_WALKER = () =>
-  document.createTreeWalker(document, NodeFilter.SHOW_ALL, null, false);
+export const TREE_WALKER = (root: Node) =>
+  document.createTreeWalker(root, NodeFilter.SHOW_ALL, null, false);
+export const REFERENCE_COMMENT = () =>
+  document.createComment('Sifrr Reference Comment. Do not delete.');
+export const SIFRR_FRAGMENT = () => document.createElement('sifrr-fragment');
 
 // node types
 export const TEXT_NODE = Node.TEXT_NODE;

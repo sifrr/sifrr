@@ -7,7 +7,7 @@ import {
   SifrrRefCollection,
   SifrrBindType
 } from './types';
-const TW_SHARED = TREE_WALKER();
+const TW_SHARED = TREE_WALKER(document);
 
 function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
   const oldValues = new Array(bindMap.length);
@@ -49,20 +49,25 @@ export function collect<T>(
 }
 
 export function create<T>(
-  node: Node,
+  mainNode: Node,
   fxn: SifrrBindCreatorFxn<T>,
   passedValue: any
 ): SifrrRef<T>[] {
-  const TW = TREE_WALKER();
+  const TW = TREE_WALKER(mainNode);
   const indices: SifrrRef<T>[] = [];
   let map: SifrrBindMap<T>[] | 0,
     idx = 0,
-    ntr: ChildNode;
-  TW.currentNode = node;
+    ntr: ChildNode,
+    node = mainNode;
+  // TW.currentNode = node;
   while (node) {
-    if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {
+    if (
+      node !== mainNode &&
+      node.nodeType === TEXT_NODE &&
+      (<Text>(<unknown>node)).data.trim() === ''
+    ) {
       ntr = <ChildNode>node;
-      node = <Node>TW.nextNode();
+      node = TW.nextNode();
       ntr.remove && ntr.remove();
     } else {
       if ((map = fxn(<HTMLElement>node, passedValue))) {
@@ -78,8 +83,7 @@ export function create<T>(
 }
 
 export function cleanEmptyNodes(node: DocumentFragment | ChildNode) {
-  const TW = TREE_WALKER();
-  TW.currentNode = node;
+  const TW = TREE_WALKER(node);
   let ntr: ChildNode;
   while (node) {
     if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {

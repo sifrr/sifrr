@@ -9,6 +9,7 @@ declare global {
 
 export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
+  __tempNum?: number;
   key?: string | number;
 }
 
