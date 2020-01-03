@@ -170,7 +170,7 @@ window.buildData = function(count = 1000, frm = window.from) {
   return data;
 };
 
-const div = document.createElement('div');
+var div = (window.DIV = document.createElement('div'));
 div.id = 'main-element';
 const inner = template(div);
 div.append(...inner);
@@ -181,10 +181,10 @@ function getParent(elem) {
   return elem;
 }
 
-const setData = newData => {
+const setData = (window.setData = newData => {
   div.data = newData;
   Sifrr.Template.update(inner, div);
-};
+});
 
 div.addEventListener('click', e => {
   const target = e.composedPath()[0];

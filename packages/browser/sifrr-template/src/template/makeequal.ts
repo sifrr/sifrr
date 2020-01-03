@@ -27,15 +27,14 @@ export function makeChildrenEqual<T>(
     );
   }
 
-  (<DomBindingReturnValue>newChildren).reference = (<DomBindingReturnValue>oldChildren).reference;
+  let reference = (<DomBindingReturnValue>oldChildren).reference;
   // special case of no value return
-  if (newChildren.length < 1 && !(<DomBindingReturnValue>newChildren).reference) {
-    const referenceComment = REFERENCE_COMMENT();
-    (<DomBindingReturnValue>newChildren).reference = referenceComment;
-    parent.insertBefore(referenceComment, lastChild);
+  if (newChildren.length < 1 && !reference) {
+    reference = REFERENCE_COMMENT();
+    parent.insertBefore(reference, lastChild);
   }
 
-  return flattenOperation<SifrrNode<T>, SifrrProps<T>>(
+  const returnValues = flattenOperation<SifrrNode<T>, SifrrProps<T>>(
     oldChildren,
     newChildren,
     makeEqual,
@@ -44,6 +43,9 @@ export function makeChildrenEqual<T>(
     i => !(i instanceof Node) && !!createFn && !isSifrrNode(i),
     createFn
   );
+  (<DomBindingReturnValue>returnValues).reference = reference;
+
+  return returnValues;
 }
 
 export function makeEqual<T>(

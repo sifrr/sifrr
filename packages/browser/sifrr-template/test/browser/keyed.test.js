@@ -112,9 +112,6 @@ describe('keyed', () => {
   for (let i = 0; i < l; i++) {
     it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
       await page.goto(`${PATH}/speedtest.html?useKey`);
-      await page.evaluate(async () => {
-        await Sifrr.Dom.loading();
-      });
 
       await page.evaluate(() =>
         document.body
@@ -127,9 +124,6 @@ describe('keyed', () => {
       const arrangementKeyed = await page.evaluate(getStates);
 
       await page.goto(`${PATH}/speedtest.html`);
-      await page.evaluate(async () => {
-        await Sifrr.Dom.loading();
-      });
 
       await page.evaluate(() =>
         document.body

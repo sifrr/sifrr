@@ -91,6 +91,8 @@ export function flattenOperation<T, X>(
   const newL = newValues.length;
   const oldL = oldValues.length;
 
+  const returnValues = new Array(newL);
+
   // Lesser now
   if (oldL > newL) {
     let i = oldL - 1;
@@ -106,11 +108,19 @@ export function flattenOperation<T, X>(
     const ov = oldValues[i];
     const nv = newValues[i];
     if (!Array.isArray(ov) && !Array.isArray(nv)) {
-      newValues[i] = equaliser(ov, nv);
+      returnValues[i] = equaliser(ov, nv);
     } else if (Array.isArray(ov) && Array.isArray(nv)) {
-      newValues[i] = flattenOperation(ov, nv, equaliser, removeFxn, addFxn, shouldCreate, createFn);
+      returnValues[i] = flattenOperation(
+        ov,
+        nv,
+        equaliser,
+        removeFxn,
+        addFxn,
+        shouldCreate,
+        createFn
+      );
     } else if (Array.isArray(ov) && !Array.isArray(nv)) {
-      newValues[i] = flattenOperation(
+      returnValues[i] = flattenOperation(
         ov,
         [nv],
         equaliser,
@@ -120,7 +130,7 @@ export function flattenOperation<T, X>(
         createFn
       )[0];
     } else if (!Array.isArray(ov) && Array.isArray(nv)) {
-      newValues[i] = <T[]>(
+      returnValues[i] = <T[]>(
         flattenOperation([ov], nv, equaliser, removeFxn, addFxn, shouldCreate, createFn)
       );
     }
@@ -129,11 +139,11 @@ export function flattenOperation<T, X>(
 
   // Add extra new children
   while (i < newL) {
-    newValues[i] = recurseArray<T, X>(newValues[i], addFxn, createFn);
+    returnValues[i] = recurseArray<T, X>(newValues[i], addFxn, createFn);
     i++;
   }
 
-  return <TRArray>newValues;
+  return <TRArray>returnValues;
 }
 
 export function flatLastElement<T>(vs: any[]): T {
