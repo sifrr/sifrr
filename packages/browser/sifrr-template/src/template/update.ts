@@ -1,29 +1,9 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
-import { RENDER_IF_PROP, ELEMENT_NODE, TEXT_NODE } from './constants';
+import { TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps } from './types';
 import { isSifrrNode } from './utils';
 import getNodesFromBindingValue from './getnodes';
-
-const displayNone = 'none';
-
-function renderIf<T>(dom: SifrrProps<T>, shouldRender = dom[RENDER_IF_PROP] != false) {
-  if (dom[RENDER_IF_PROP] === undefined) return true;
-  if (dom.nodeType !== ELEMENT_NODE) return true;
-
-  const domEl = <HTMLElement>(<unknown>dom);
-  if (domEl.__oldRenderIf === shouldRender) return shouldRender;
-
-  domEl.__oldRenderIf = shouldRender;
-  if (shouldRender) {
-    domEl.style.display = domEl.__sifrrOldDisplay;
-    return true;
-  } else {
-    domEl.__sifrrOldDisplay = domEl.style.display;
-    domEl.style.display = displayNone;
-    return false;
-  }
-}
 
 export default function update<T>(
   tempElement: SifrrNode<T> | SifrrNode<T>[],
@@ -39,9 +19,6 @@ export default function update<T>(
 
   const { __sifrrRefs: refs } = tempElement;
   if (!props || !refs) return;
-  if (!renderIf<T>(props)) {
-    return;
-  }
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
@@ -108,9 +85,6 @@ export default function update<T>(
       refs[i].currentValues[j] = newValue;
     }
 
-    if (!renderIf(<HTMLElement>node)) {
-      continue;
-    }
     if (node !== tempElement && isSifrrNode(node)) {
       update(node, props);
     }

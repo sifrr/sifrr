@@ -1,23 +1,10 @@
-declare global {
-  interface Node {
-    __sifrrTemplate?: SifrrNode<any>;
-    __oldRenderIf?: boolean;
-    __sifrrOldDisplay?: string;
-    __oldData?: string;
-  }
-}
-
 export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
   __tempNum?: number;
   key?: string | number;
 }
 
-export type SifrrProps<T> = T & {
-  __oldRenderIf?: boolean;
-  __sifrrOldDisplay?: string;
-  nodeType?: number;
-};
+export type SifrrProps<T> = T;
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
   key: string | number;

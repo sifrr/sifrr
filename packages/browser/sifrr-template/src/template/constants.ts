@@ -20,6 +20,3 @@ export const SIFRR_FRAGMENT = () => document.createElement('sifrr-fragment');
 export const TEXT_NODE = Node.TEXT_NODE;
 export const COMMENT_NODE = Node.COMMENT_NODE;
 export const ELEMENT_NODE = Node.ELEMENT_NODE;
-
-// special props
-export const RENDER_IF_PROP = 'renderIf';
