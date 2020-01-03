@@ -27,11 +27,7 @@ const before = function() {
       }
     },
     history: { pushState: sinon.stub() },
-    console: {
-      log: sinon.stub(),
-      error: sinon.stub(),
-      warn: sinon.stub()
-    },
+    console: global.console,
     Node: {
       TEXT_NODE: 2,
       COMMENT_NODE: 8,
