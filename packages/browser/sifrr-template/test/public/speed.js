@@ -194,8 +194,7 @@ const setData = (window.setData = newData => {
 div.addEventListener('click', e => {
   const target = e.composedPath()[0];
   const id = (getParent(target) || {}).dataId;
-  const { data } = div,
-    l = data.length;
+  const { data } = div;
   if (target.matches('.remove, .remove *')) {
     const todel = data.findIndex(d => d.id === id);
     data.splice(todel, 1);
