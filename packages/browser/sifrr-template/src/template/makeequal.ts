@@ -39,7 +39,7 @@ export function makeChildrenEqual<T>(
     newChildren,
     makeEqual,
     (i) /* Node */ => (<ChildNode>i).remove(),
-    (i) /* Node */ => parent.insertBefore(i, nextSib),
+    (i) /* Node */ => parent.insertBefore(i, reference || nextSib),
     i => !(i instanceof Node) && !!createFn && !isSifrrNode(i),
     createFn
   );
