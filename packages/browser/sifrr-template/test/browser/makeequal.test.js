@@ -1,13 +1,15 @@
-function getStates() {
+function getIds() {
   const nodes = document.body.$('#main-element').$$('tr'),
     l = nodes.length;
   const ret = [];
   for (let i = 0; i < l; i++) {
-    ret.push({
-      id: nodes[i].$('td').firstChild.data
-    });
+    ret.push(parseInt(nodes[i].$('td').firstChild.data));
   }
   return ret;
+}
+
+function getDataIds() {
+  return window.DIV.data.map(d => d.id);
 }
 
 describe('keyed', () => {
@@ -107,7 +109,7 @@ describe('keyed', () => {
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
   });
 
-  const arrangements = require('./keyed.arrangements'),
+  const arrangements = require('./makeequal.arrangements'),
     l = arrangements.length;
   for (let i = 0; i < l; i++) {
     it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
@@ -121,7 +123,7 @@ describe('keyed', () => {
       );
       await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
       const arrangedKeyed = await page.evaluate(arrangements[i]);
-      const arrangementKeyed = await page.evaluate(getStates);
+      const arrangementKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html`);
 
@@ -133,9 +135,12 @@ describe('keyed', () => {
       );
       await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
       const arrangedNonKeyed = await page.evaluate(arrangements[i]);
-      const arrangementNonKeyed = await page.evaluate(getStates);
+      const arrangementNonKeyed = await page.evaluate(getIds);
+
+      const arrangementData = await page.evaluate(getDataIds);
 
       expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
+      expect(arrangementKeyed).to.deep.equal(arrangementData);
       assert.equal(arrangedKeyed, true);
       assert.equal(arrangedNonKeyed, true);
     });
