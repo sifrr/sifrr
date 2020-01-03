@@ -52,8 +52,8 @@ export function makeEqual<T>(
 ): SifrrNode<T> {
   if (oldNode === newNode) return oldNode;
 
-  if (!(newNode instanceof Node)) {
-    update(oldNode, newNode);
+  if (!newNode.nodeType) {
+    update(oldNode, <SifrrProps<T>>newNode);
     return oldNode;
   }
 
@@ -67,6 +67,6 @@ export function makeEqual<T>(
     return oldNode;
   }
 
-  (<ChildNode>oldNode).replaceWith(newNode);
-  return newNode;
+  (<ChildNode>oldNode).replaceWith(<SifrrNode<T>>newNode);
+  return <SifrrNode<T>>newNode;
 }

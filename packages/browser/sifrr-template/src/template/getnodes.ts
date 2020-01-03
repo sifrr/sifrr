@@ -9,6 +9,8 @@ export default function getNodesFromBindingValue<T, X>(
 ): SifrrNodesArray<T> | SifrrNode<T> | X {
   if (value === null || value === undefined) {
     return emptyArray;
+  } else if (typeof value === 'string') {
+    return document.createTextNode(value);
   } else if (Array.isArray(value)) {
     for (let i = 0; i < value.length; i++) {
       value[i] = <SifrrNodesArray<T> | SifrrNode<T>>getNodesFromBindingValue<T, X>(value[i]);
@@ -20,8 +22,6 @@ export default function getNodesFromBindingValue<T, X>(
     return <SifrrNode<T>>value;
   } else if (value instanceof NodeList) {
     return arrayOf(value);
-  } else if (typeof value === 'string') {
-    return document.createTextNode(value);
   } else if (retObject) {
     return <X>value;
   } else {

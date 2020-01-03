@@ -4,7 +4,9 @@ export interface SifrrNode<T> extends Node {
   key?: string | number;
 }
 
-export type SifrrProps<T> = T;
+export type SifrrProps<T> = T & {
+  nodeType?: number;
+};
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
   key: string | number;

@@ -1,3 +1,5 @@
+import { TEXT_NODE } from '../../src/template/constants';
+
 function _random(max) {
   return Math.round(Math.random() * 1000) % max;
 }
@@ -76,14 +78,17 @@ function buildData(count = 10, from = 1) {
 
 function dataToChildNodes(data) {
   const ret = data.map(d => {
+    const currVal = { data: d.label, nodeType: TEXT_NODE };
     const node = {
-      state: d
+      key: d.key,
+      val: currVal,
+      __sifrrRefs: [
+        {
+          bindMap: [{ type: 1, value: ({ label }) => label }],
+          currentValues: [currVal]
+        }
+      ]
     };
-    node._getStub = sinon.stub().callsFake(() => node.state);
-    node._setStub = sinon.stub().callsFake(v => (node.state = v));
-    node.getState = node._getStub;
-    node.setState = node._setStub;
-    node.key = d.key;
     return node;
   });
   ret.forEach(n => {
@@ -102,14 +107,14 @@ function dataToChildNodes(data) {
 }
 
 function dataToChildNode(d) {
-  return dataToChildNodes([d])[0];
+  return dataToChildNodes([d]);
 }
 
 function findIndex(childNodes, a) {
   if (typeof a === 'number') {
-    return childNodes.findIndex(n => n.state.id === a);
+    return childNodes.findIndex(n => n.key === a);
   } else {
-    return childNodes.findIndex(n => n.state.id === a.state.id);
+    return childNodes.findIndex(n => n.key === a.key);
   }
 }
 
