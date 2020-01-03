@@ -1016,7 +1016,7 @@
     typescript "^3.5.3"
     uWebSockets.js uNetworking/uWebSockets.js#v16.2.0
 
-"@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-template/packages/browser/sifrr-dom":
+"@sifrr/dom@file:./packages/browser/sifrr-dom":
   version "0.0.6"
 
 "@sifrr/eslint-config@^0.0.4":
