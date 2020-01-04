@@ -27,7 +27,7 @@ const incss = useAnimation
 
 let selected = null;
 const row = html`
-  <tr class=${({ id }) => (selected == id ? 'danger' : '')} :data-id=${({ id }) => id}>
+  <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
     <td class="col-md-1 id">
       ${({ id }) => id}
     </td>
@@ -41,59 +41,96 @@ const row = html`
   </tr>
 `;
 
-const template = html`<link href="/css/currentStyle.css" rel="stylesheet">
-      ${incss}
-      <div class="container" id="main">
-        <div class="jumbotron">
+const template = html`
+  <link href="/css/currentStyle.css" rel="stylesheet" />
+  ${incss}
+  <div class="container" id="main">
+    <div class="jumbotron">
+      <div class="row">
+        <div class="col-md-6">
+          <h1>Sifrr</h1>
+        </div>
+        <div class="col-md-6">
           <div class="row">
-            <div class="col-md-6">
-              <h1>Sifrr</h1>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.run}
+                id="run"
+              >
+                Create 1,000 rows
+              </button>
             </div>
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.run} id='run'>Create 1,000 rows</button>
-                </div>
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.runlots} id='runlots'>Create 10,000 rows</button>
-                </div>
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.add} id='add'>Append 1,000 rows</button>
-                </div>
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.clickUpdate} id='update'>Update every 10th row</button>
-                </div>
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.clear} id='clear'>Clear</button>
-                </div>
-                <div class="col-sm-6 smallpad">
-                  <button type='button' class='btn btn-primary btn-block' :onclick=${me =>
-                    me.swaprows} id='swaprows'>Swap Rows</button>
-                </div>
-              </div>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.runlots}
+                id="runlots"
+              >
+                Create 10,000 rows
+              </button>
+            </div>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.add}
+                id="add"
+              >
+                Append 1,000 rows
+              </button>
+            </div>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.clickUpdate}
+                id="update"
+              >
+                Update every 10th row
+              </button>
+            </div>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.clear}
+                id="clear"
+              >
+                Clear
+              </button>
+            </div>
+            <div class="col-sm-6 smallpad">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                :onclick=${me => me.swaprows}
+                id="swaprows"
+              >
+                Swap Rows
+              </button>
             </div>
           </div>
         </div>
-        <table class="table table-hover table-striped test-data">
-          <tbody>
-            <!--${({ data = [] }, oldValue) => {
-              if (useKey) {
-                return Sifrr.Template.bindForKeyed(row, data, oldValue);
-              } else if (useClean) {
-                return data.map((d, i) => row(d, oldValue[i]));
-              } else {
-                return Sifrr.Template.bindFor(row, data, oldValue);
-              }
-            }}-->
-          </tbody>
-        </table>
-        <span class='glyphicon glyphicon-remove' aria-hidden='true'>
-      </div>`;
+      </div>
+    </div>
+    <table class="table table-hover table-striped test-data">
+      <tbody>
+        <!--${({ data = [] }, oldValue) => {
+          if (useKey) {
+            return Sifrr.Template.bindForKeyed(row, data, oldValue);
+          } else if (useClean) {
+            return data.map((d, i) => row(d, oldValue[i]));
+          } else {
+            return Sifrr.Template.bindFor(row, data, oldValue);
+          }
+        }}-->
+      </tbody>
+    </table>
+  </div>
+`;
 
 window.from = 1;
 
