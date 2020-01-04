@@ -29,14 +29,6 @@ function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
   return oldValues;
 }
 
-function getNPromises(n: number): Promise<any>[] {
-  const promises = [];
-  for (let i = 0; i < n; i++) {
-    promises.push(Promise.resolve(true));
-  }
-  return promises;
-}
-
 export function collect<T>(
   element: Node | DocumentFragment,
   refMap: SifrrRef<T>[]
@@ -50,7 +42,7 @@ export function collect<T>(
     refs[i] = {
       node: <Node>element,
       currentValues: collectValues(<Node>element, refMap[i].map),
-      oldPromises: getNPromises(l),
+      oldPromises: new Array(l),
       bindMap: refMap[i].map
     };
   }

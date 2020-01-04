@@ -30,7 +30,7 @@ export default function update<T>(
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
-    const { node, bindMap, currentValues } = refs[i];
+    const { node, bindMap, currentValues, oldPromises } = refs[i];
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
@@ -49,7 +49,8 @@ export default function update<T>(
       let newValue = binding.value(props, oldValue);
 
       if (newValue instanceof Promise) {
-        newValue.then(nv => {
+        const newPromise = oldPromises[j] ? oldPromises[j].then(() => newValue) : newValue;
+        oldPromises[j] = newPromise.then(nv => {
           refs[i].currentValues[j] = updateOne(node, binding, oldValue, nv);
         });
       } else {

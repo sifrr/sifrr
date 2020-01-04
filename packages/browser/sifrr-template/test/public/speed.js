@@ -29,7 +29,11 @@ let selected = null;
 const row = html`
   <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
     <td class="col-md-1 id">
-      ${({ id }) => id}
+      ${({ id }) => {
+        return new Promise(res => {
+          setTimeout(() => res(id), Math.random() * 1000);
+        });
+      }}
     </td>
     <td class="col-md-4">
       <a class="lbl">${({ label }) => label}</a>
