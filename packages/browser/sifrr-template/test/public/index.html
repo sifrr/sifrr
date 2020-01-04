@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./sifrr.template.js"></script>
+    <script>
+      var template = Sifrr.Template.createTemplate`<p>a<span :render-if="${({ i }) => i >= 10}">${(
+        { i },
+        oldV
+      ) => {
+        return i + 1;
+      }}</span>b</p>`;
+
+      var temp2 = Sifrr.Template.createTemplate`second <div>${({ n }) => {
+        return [...Array(n)].map((x, i) => template({ i }));
+      }}</div><span>second</span>second`;
+
+      var ttt = temp2({ n: 10 });
+      document.body.append(...ttt);
+
+      function updateTTT(n) {
+        Sifrr.Template.update(ttt, { n });
+      }
+    </script>
+  </body>
+</html>

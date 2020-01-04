@@ -39,7 +39,8 @@ function moduleConfig(name, root, minify = false, type) {
       globals,
       exports: 'named'
     },
-    external
+    external,
+    preferConst: true
   };
 
   if (type === 'browser') {

@@ -8,7 +8,8 @@ const before = function() {
   global.window = {
     document: {
       addEventListener: sinon.stub(),
-      createElement: sinon.stub()
+      createElement: sinon.stub(),
+      createComment: sinon.stub()
     },
     addEventListener: sinon.stub(),
     location: {
@@ -27,17 +28,14 @@ const before = function() {
       }
     },
     history: { pushState: sinon.stub() },
-    console: {
-      log: sinon.stub(),
-      error: sinon.stub(),
-      warn: sinon.stub()
-    },
+    console: global.console,
     Node: {
       TEXT_NODE: 2,
       COMMENT_NODE: 8,
       ELEMENT_NODE: 1
     }
   };
+  Object.assign(global, global.window);
   global.fetch = () => {};
 };
 
@@ -123,8 +121,11 @@ const options = roots.map((root, i) => {
 });
 
 async function run() {
-  await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
-  await exec(`yarn upgrade @sifrr/dom`);
+  if (!dontRunPrecommand) {
+    await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
+    await exec(`yarn upgrade @sifrr/dom`);
+  }
+
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);

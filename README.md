@@ -29,13 +29,14 @@ Note that for 0.x releases of this library, the API is not considered stable yet
 
 | Package                                                        | Description                                                                                                    | NPM                                                                                                                         | Documentation                                                                                                                                  |                       Tests                       |
 | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- | :-----------------------------------------------: |
-| [sifrr-dom](./packages/browser/sifrr-dom/)                     | Small and :zap: Fast Library to build UIs with custom elements                                                 | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)                     | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-dom/)           |      [OK](./packages/browser/sifrr-dom/test)      |
+| [sifrr-dom](./packages/browser/sifrr-dom/)                     | Small Library to build UIs with custom elements                                                                | [![npm version](https://img.shields.io/npm/v/@sifrr/dom.svg)](https://www.npmjs.com/package/@sifrr/dom)                     | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-dom/)           |      [OK](./packages/browser/sifrr-dom/test)      |
+| [sifrr-template](./packages/browser/sifrr-template/)           | :zap: Fast HTML-JS Templating engine used in sifrr-dom                                                         | [![npm version](https://img.shields.io/npm/v/@sifrr/template.svg)](https://www.npmjs.com/package/@sifrr/dom)                | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-template/)      |   [WIP](./packages/browser/sifrr-template/test)   |
 | [sifrr-fetch](./packages/browser/sifrr-fetch/)                 | Wrapper library for Browser fetch API can be used in node too                                                  | [![npm version](https://img.shields.io/npm/v/@sifrr/fetch.svg)](https://www.npmjs.com/package/@sifrr/fetch)                 | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-fetch/)         |     [OK](./packages/browser/sifrr-fetch/test)     |
 | [sifrr-route](./packages/browser/sifrr-route/)                 | Routing for sifrr-dom                                                                                          | [![npm version](https://img.shields.io/npm/v/@sifrr/route.svg)](https://www.npmjs.com/package/@sifrr/route)                 | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-route/)         |     [OK](./packages/browser/sifrr-route/test)     |
 | [sifrr-serviceworker](./packages/browser/sifrr-serviceworker/) | Service worker wrapper library                                                                                 | [![npm version](https://img.shields.io/npm/v/@sifrr/serviceworker.svg)](https://www.npmjs.com/package/@sifrr/serviceworker) | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-serviceworker/) | [OK](./packages/browser/sifrr-serviceworker/test) |
 | [sifrr-storage](./packages/browser/sifrr-storage/)             | Browser persisted storage library (2kb alternate to [localforage](https://github.com/localForage/localForage)) | [![npm version](https://img.shields.io/npm/v/@sifrr/storage.svg)](https://www.npmjs.com/package/@sifrr/storage)             | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-storage/)       |    [OK](./packages/browser/sifrr-storage/test)    |
 
-`sifrr-dom`, `sifrr-fetch`, `sifrr-serviceworker`, `sifrr-storage` can be used independently. `sifrr-route` is a `sifrr-dom` element, hence it should be used with `sifrr-dom`.
+`sifrr-dom`, `sifrr-template`, `sifrr-fetch`, `sifrr-serviceworker`, `sifrr-storage` can be used independently. `sifrr-route` is a `sifrr-dom` element, hence it should be used with `sifrr-dom`.
 
 ### Server (NodeJS)
 
@@ -46,7 +47,7 @@ Note that for 0.x releases of this library, the API is not considered stable yet
 | [sifrr-seo](./packages/server/sifrr-seo/)       | Server side pre-rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)    |  [OK](./packages/server/sifrr-seo/test)   |
 | [sifrr-server](./packages/server/sifrr-server/) | Fast HTTP + WebSockets server                          | [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-server/) | [OK](./packages/server/sifrr-server/test) |
 
-`sifrr-api`, `sifrr-seo` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
+`sifrr-api`, `sifrr-seo`, `sifrr-server` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
 ## Usage
 
@@ -61,7 +62,8 @@ const SifrrDom = require('@sifrr/dom');
 ### ES6 modules (`import`)
 
 ```js
-import SifrrDom from '@sifrr/dom';
+import SifrrDom from '@sifrr/dom'; // default export
+import { Element } from '@sifrr/dom'; // named export
 ```
 
 ### standalone distributions (browser packages only)
