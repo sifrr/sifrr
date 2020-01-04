@@ -3356,7 +3356,7 @@ graphql-relay@^0.6.0:
   dependencies:
     prettier "^1.16.0"
 
-graphql-sequelize@^9.3.1, graphql-sequelize@^9.4.0:
+graphql-sequelize@^9.3.1, graphql-sequelize@^9.3.6, graphql-sequelize@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/graphql-sequelize/-/graphql-sequelize-9.4.0.tgz#451223fdf0c27021b8bf50824ae8ec66e979e91f"
   integrity sha512-hEoNoEcHn+v4dmWDb1yAh6/AFX6RcMGoHq3H3oiJcmRDRmS+8CVpPgaIW7E3ibWVpf/o2I1HOzgB+QFnPJ2LhQ==
@@ -4189,6 +4189,19 @@ loader-utils@^0.2.16:
     emojis-list "^2.0.0"
     json5 "^0.5.0"
     object-assign "^4.0.1"
+
+loadtest@^3.0.9:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-3.1.0.tgz#bcad6a1c489f865cf9514b0a91b38e0c6fc1fad6"
+  integrity sha512-5tO8lac9DBsO/Camnqpp8ZFR8Yeve/tURMjPy3422FasaKfrNFm2UcvBoYHMYxAl6EG/OkIztkZqtGPd9Qw1sg==
+  dependencies:
+    agentkeepalive "^2.0.3"
+    https-proxy-agent "^2.2.1"
+    log "1.4.*"
+    prototypes ">= 0.4.3"
+    stdio "^0.2.3"
+    testing "^1.1.1"
+    websocket "^1.0.28"
 
 loadtest@^4.0.0:
   version "4.0.0"
@@ -5616,7 +5629,7 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-prototypes@^3.0.1:
+"prototypes@>= 0.4.3", prototypes@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/prototypes/-/prototypes-3.0.1.tgz#34f5471217f46a91f4cce08b4801c3f188257fcc"
   integrity sha512-6yAXnqhrPslmAvynCwIHupJwphL2/4EeVCGRcCh2NQTrcyychdngZQUWNnxzXZ9h7TSrG5Fhjnr/kvZs5BfK1w==
@@ -6281,7 +6294,7 @@ sequelize-pool@^2.3.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-2.3.0.tgz#64f1fe8744228172c474f530604b6133be64993d"
   integrity sha512-Ibz08vnXvkZ8LJTiUOxRcj1Ckdn7qafNZ2t59jYHMX1VIebTAOYefWdRYFt6z6+hy52WGthAHAoLc9hvk3onqA==
 
-sequelize@^5.16.0, sequelize@^5.21.3:
+sequelize@^5.16.0, sequelize@^5.21.2, sequelize@^5.21.3:
   version "5.21.3"
   resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.21.3.tgz#f8a6fa0245f8995d70849e4da00c2c7c9aa9f569"
   integrity sha512-ptdeAxwTY0zbj7AK8m+SH3z52uHVrt/qmOTSIGo/kyfnSp3h5HeKlywkJf5GEk09kuRrPHfWARVSXH1W3IGU7g==
@@ -6956,7 +6969,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.5.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.4.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.5.0:
   version "16.2.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/8df7212c3e0117631fdd8e8e5c90094f5f97fb08"
 
@@ -7191,7 +7204,7 @@ ws@^6.1.0:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7.2.1:
+ws@^7.2.0, ws@^7.2.1:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.2.1.tgz#03ed52423cd744084b2cf42ed197c8b65a936b8e"
   integrity sha512-sucePNSafamSKoOqoNfBd8V0StlkzJKL2ZAhGQinCfNQ+oacw+Pk7lcdAElecBF2VkLNZRiIb5Oi1Q5lVUVt2A==
