@@ -11,16 +11,14 @@ const useKey = window.location.href.indexOf('useKey') >= 0;
 const incss = useAnimation
   ? css`
       tr {
-        animation: slide-up 0.4s ease;
+        animation: fade-in 0.4s ease;
       }
-      @keyframes slide-up {
+      @keyframes fade-in {
         0% {
           opacity: 0;
-          transform: translateY(20px);
         }
         100% {
           opacity: 1;
-          transform: translateY(0);
         }
       }
     `

@@ -9,7 +9,7 @@ module.exports = async function(
   metrics = ['ScriptDuration', 'LayoutCount', 'TaskDuration']
 ) {
   const BM = require(`./benchmarks/${benchmark}`);
-  let totals = {};
+  const totals = {};
   if (verbose)
     process.stdout.write(
       `Running ${benchmark} benchmark with ${warmups} warmups for ${runs} runs: \n`
@@ -18,11 +18,6 @@ module.exports = async function(
   // Reload page
   url = url || `http://localhost:${port}/speedtest.html`;
 
-  await page.evaluate(async () => {
-    if (typeof Sifrr !== 'undefined') {
-      if (typeof Sifrr.Dom.loading === 'function') await Sifrr.Dom.loading();
-    }
-  });
   const client = await page.target().createCDPSession();
 
   const times = (warmups + 1) * runs;
@@ -53,7 +48,7 @@ module.exports = async function(
     if (i % (warmups + 1) === warmups) {
       if (verbose) process.stdout.write(`${i + 1}R `);
       const diff = BM.metricsDiff(beforeMetrics, afterMetrics);
-      for (let m in diff) {
+      for (const m in diff) {
         totals[m] = totals[m] || 0;
         totals[m] += diff[m];
       }
@@ -64,7 +59,7 @@ module.exports = async function(
   if (verbose) process.stdout.write('\n');
 
   // Filter metrics
-  for (let m in totals) {
+  for (const m in totals) {
     if (metrics.indexOf(m) >= 0) {
       totals[m] = totals[m] / runs;
     } else {

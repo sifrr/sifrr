@@ -4,7 +4,6 @@ class Benchmark {
   }
 
   static async setup() {
-    await page.evaluate(async () => (window.Sifrr ? await Sifrr.Dom.loading() : null));
     this.start = await page.evaluate(`window.from - 1`);
   }
 
@@ -55,7 +54,7 @@ class Benchmark {
 
   static metricsDiff(oldM, newM) {
     const diff = {};
-    for (let m in oldM) {
+    for (const m in oldM) {
       diff[m] = Math.round((newM[m] - oldM[m]) * 100) / 100;
     }
     return diff;

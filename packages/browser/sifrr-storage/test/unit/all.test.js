@@ -47,6 +47,15 @@ describe('SifrrStorage', () => {
 describe('Parser', () => {
   const x = new Storage({ ttl: 100 });
 
+  before(() => {
+    global.__document = global.document;
+    global.document = undefined;
+  });
+
+  after(() => {
+    global.document = global.__document;
+  });
+
   describe('#parseSetValue', () => {
     it('should return data with ttl', () => {
       assert.equal(parseSetValue('a').value, 'a');
