@@ -61,9 +61,7 @@ export default function update<T>(
         let newValue = binding.value(props, oldValue);
 
         if (newValue instanceof Promise) {
-          currentValues[j] = newValue.then(nv => {
-            return updateOne(node, binding, oldValue, nv);
-          });
+          currentValues[j] = newValue.then(nv => updateOne(node, binding, oldValue, nv));
         } else {
           currentValues[j] = updateOne(node, binding, oldValue, newValue);
         }
