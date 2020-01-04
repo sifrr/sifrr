@@ -6,7 +6,13 @@ module.exports = async function(
   runs = 5,
   url,
   warmups = runs,
-  metrics = ['ScriptDuration', 'LayoutCount', 'TaskDuration']
+  metrics = [
+    'ScriptDuration',
+    'LayoutDuration',
+    'LayoutCount',
+    'TaskDuration',
+    'RecalcStyleDuration'
+  ]
 ) {
   const BM = require(`./benchmarks/${benchmark}`);
   const totals = {};
@@ -23,8 +29,14 @@ module.exports = async function(
   const times = (warmups + 1) * runs;
   for (let i = 0; i < times; i++) {
     if (i % (warmups + 1) === 0) {
-      if (url !== page.url()) await page.goto(url);
+      await page.goto(url);
       // await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.evaluate(() => {
+        HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
+        HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+        document.$ = document.querySelector;
+        document.$$ = document.querySelectorAll;
+      });
       await BM.setup();
 
       // Run before all

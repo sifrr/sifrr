@@ -7,6 +7,7 @@ document.$$ = document.querySelectorAll;
 
 const useAnimation = window.location.href.indexOf('useAnim') >= 0;
 const useKey = window.location.href.indexOf('useKey') >= 0;
+const useClean = window.location.href.indexOf('useClean') >= 0;
 
 const incss = useAnimation
   ? css`
@@ -25,9 +26,8 @@ const incss = useAnimation
   : '';
 
 let selected = null;
-
 const row = html`
-  <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
+  <tr class=${({ id }) => (selected == id ? 'danger' : '')} :data-id=${({ id }) => id}>
     <td class="col-md-1 id">
       ${({ id }) => id}
     </td>
@@ -84,10 +84,11 @@ const template = html`<link href="/css/currentStyle.css" rel="stylesheet">
             <!--${({ data = [] }, oldValue) => {
               if (useKey) {
                 return Sifrr.Template.bindForKeyed(row, data, oldValue);
+              } else if (useClean) {
+                return data.map((d, i) => row(d, oldValue[i]));
               } else {
                 return Sifrr.Template.bindFor(row, data, oldValue);
               }
-              // return data.map(i => row(i));
             }}-->
           </tbody>
         </table>

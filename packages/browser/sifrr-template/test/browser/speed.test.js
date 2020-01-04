@@ -47,15 +47,16 @@ pdescribe(__filename, 'Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 
-  const suffixes = ['', '?useKey'],
+  const suffixes = ['?', '?useKey', '?useClean'],
     compare = {};
   const url = getArg('url') || `${PATH}/speedtest.html`;
-  const urls = suffixes.map(s => url + s);
-  // const urls = [`http://localhost:8080/frameworks/non-keyed/sifrr/`, `http://localhost:8080/frameworks/non-keyed/stage0/`];
+  const urls = suffixes
+    .map(s => url + s)
+    .concat([`http://localhost:8080/frameworks/non-keyed/domc/`]);
 
   for (let j = 0; j < urls.length; j++) {
     const u = urls[j];
-    const shortu = u.replace(url, '');
+    const shortu = u.replace(url, '').replace('http://localhost:8080/frameworks', '');
 
     for (let i = 0; i < benchmarks.length; i++) {
       const bm = benchmarks[i];
@@ -74,7 +75,10 @@ pdescribe(__filename, 'Speed tests', async function() {
         );
 
         compare[bm] = compare[bm] || {};
-        compare[bm][shortu] = bmd['TaskDuration'];
+        compare[bm][shortu] = [
+          bmd['ScriptDuration'] + bmd['LayoutDuration'] + bmd['RecalcStyleDuration'],
+          bmd['TaskDuration']
+        ];
       });
     }
   }

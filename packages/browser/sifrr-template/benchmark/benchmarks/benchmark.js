@@ -4,7 +4,7 @@ class Benchmark {
   }
 
   static async setup() {
-    this.start = await page.evaluate(`window.from - 1`);
+    this.start = (await page.evaluate(`window.from - 1`)) || 0;
   }
 
   static beforeAll() {

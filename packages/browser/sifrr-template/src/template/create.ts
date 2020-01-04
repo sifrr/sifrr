@@ -31,11 +31,11 @@ const createTemplate = <T>(
   const tempNums = childNodes.map(() => tempNum++);
 
   const clone = (props: SifrrProps<T>): SifrrNode<T>[] => {
-    const newNodes: SifrrNode<T>[] = Array.prototype.slice.call(
-      template.content.cloneNode(true).childNodes
-    );
+    // https://jsbench.me/6qk4zc0s9x/1
+    const newNodes: SifrrNode<T>[] = new Array(nodeLength);
 
     for (let i = 0; i < nodeLength; i++) {
+      newNodes[i] = childNodes[i].cloneNode(true);
       newNodes[i].__tempNum = tempNums[i];
 
       if (refMaps[i].length < 1) continue;
@@ -49,7 +49,7 @@ const createTemplate = <T>(
   // cloning this template, can be used as binding function in another template
   const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNode<T>[]) => {
     if (oldValue && isSameSifrrNode(oldValue, tempNums)) {
-      update(oldValue, props);
+      oldValue.forEach(ov => update(ov, props));
       (<DomBindingReturnValue>oldValue).isRendered = true;
       return oldValue;
     }
