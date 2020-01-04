@@ -68,7 +68,6 @@ export type SifrrRefCollection<T> = {
   node: Node;
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
-  oldPromises: Promise<any>[];
 };
 
 // uid -> fxn

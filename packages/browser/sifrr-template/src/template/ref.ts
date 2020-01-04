@@ -42,7 +42,6 @@ export function collect<T>(
     refs[i] = {
       node: <Node>element,
       currentValues: collectValues(<Node>element, refMap[i].map),
-      oldPromises: new Array(l),
       bindMap: refMap[i].map
     };
   }

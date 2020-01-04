@@ -30,7 +30,7 @@ export default function update<T>(
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
-    const { node, bindMap, currentValues, oldPromises } = refs[i];
+    const { node, bindMap, currentValues } = refs[i];
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
@@ -46,15 +46,27 @@ export default function update<T>(
       }
 
       const oldValue = currentValues[j];
-      let newValue = binding.value(props, oldValue);
+      if (oldValue instanceof Promise) {
+        currentValues[j] = oldValue.then(oldValue => {
+          let newValue = binding.value(props, oldValue);
 
-      if (newValue instanceof Promise) {
-        const newPromise = oldPromises[j] ? oldPromises[j].then(() => newValue) : newValue;
-        oldPromises[j] = newPromise.then(nv => {
-          refs[i].currentValues[j] = updateOne(node, binding, oldValue, nv);
+          if (newValue instanceof Promise) {
+            return newValue.then(nv => updateOne(node, binding, oldValue, nv));
+          } else {
+            return updateOne(node, binding, oldValue, newValue);
+          }
         });
       } else {
-        refs[i].currentValues[j] = updateOne(node, binding, oldValue, newValue);
+        const oldValue = currentValues[j];
+        let newValue = binding.value(props, oldValue);
+
+        if (newValue instanceof Promise) {
+          currentValues[j] = newValue.then(nv => {
+            return updateOne(node, binding, oldValue, nv);
+          });
+        } else {
+          currentValues[j] = updateOne(node, binding, oldValue, newValue);
+        }
       }
     }
   }

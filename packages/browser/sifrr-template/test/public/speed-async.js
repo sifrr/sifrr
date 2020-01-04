@@ -129,13 +129,17 @@ const template = html`
     <table class="table table-hover table-striped test-data">
       <tbody>
         <!--${({ data = [] }, oldValue) => {
-          if (useKey) {
-            return Sifrr.Template.bindForKeyed(row, data, oldValue);
-          } else if (useClean) {
-            return data.map((d, i) => row(d, oldValue[i]));
-          } else {
-            return Sifrr.Template.bindFor(row, data, oldValue);
-          }
+          return new Promise(res => {
+            setTimeout(() => {
+              if (useKey) {
+                res(Sifrr.Template.bindForKeyed(row, data, oldValue));
+              } else if (useClean) {
+                res(data.map((d, i) => row(d, oldValue[i])));
+              } else {
+                res(Sifrr.Template.bindFor(row, data, oldValue));
+              }
+            }, Math.random() * 1000);
+          });
         }}-->
       </tbody>
     </table>
@@ -252,7 +256,7 @@ div.addEventListener('click', e => {
 });
 
 div.run = () => {
-  setData(window.buildData(1000));
+  setData(window.buildData(5));
 };
 
 div.runlots = () => {
