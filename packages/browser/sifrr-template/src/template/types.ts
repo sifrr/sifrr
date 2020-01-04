@@ -19,7 +19,7 @@ export type ChildNodeKeyed = ChildNode & {
 type _RTValue = null | undefined | string | Node | _RTValue[] | {};
 export type DomBindingReturnValue = (_RTValue | NodeList) & {
   isRendered?: boolean;
-  reference?: ChildNode;
+  reference?: Node;
 };
 
 export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[];

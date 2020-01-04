@@ -18,8 +18,7 @@ export function makeChildrenEqual<T>(
   createFn?: SifrrCreateFunction<T>,
   parent?: Node & ParentNode
 ): SifrrNodesArray<T> {
-
-  const lastChild: ChildNode =
+  const lastChild: Node =
     (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
   const nextSib = lastChild && lastChild.nextSibling;
   parent = parent || lastChild.parentNode;

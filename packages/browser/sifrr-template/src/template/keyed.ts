@@ -29,7 +29,7 @@ export function makeChildrenEqualKeyed<T>(
   const newL = newData.length,
     oldL = oldChildren.length;
 
-  const lastChild: ChildNode =
+  const lastChild: Node =
     (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
   const nextSib = lastChild && lastChild.nextSibling;
   const parent = lastChild.parentNode;
