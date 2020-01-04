@@ -31,7 +31,9 @@ const createTemplate = <T>(
   const tempNums = childNodes.map(() => tempNum++);
 
   const clone = (props: SifrrProps<T>): SifrrNode<T>[] => {
-    const newNodes: SifrrNode<T>[] = Array.prototype.slice.call(template.content.cloneNode(true).childNodes);
+    const newNodes: SifrrNode<T>[] = Array.prototype.slice.call(
+      template.content.cloneNode(true).childNodes
+    );
 
     for (let i = 0; i < nodeLength; i++) {
       newNodes[i].__tempNum = tempNums[i];

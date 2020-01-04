@@ -2,7 +2,6 @@ import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps } from './types';
-import { isSifrrNode } from './utils';
 import getNodesFromBindingValue from './getnodes';
 
 export default function update<T>(
