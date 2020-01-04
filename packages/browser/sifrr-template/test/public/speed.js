@@ -1,4 +1,4 @@
-const { html, css, update } = Sifrr.Template;
+const { html, css, update, memo } = Sifrr.Template;
 
 HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
 HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
@@ -37,7 +37,16 @@ const row = html`
     <td class="col-md-1">
       <a class="remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
     </td>
-    <td class="col-md-6"></td>
+    <td
+      :style=${memo(
+        ({ id }) => {
+          console.log('calculation');
+          return selected === id ? { backgroundColor: 'black' } : {};
+        },
+        ({ id }) => selected === id
+      )}
+      class="col-md-6"
+    ></td>
   </tr>
 `;
 
