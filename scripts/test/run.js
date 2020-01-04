@@ -8,7 +8,8 @@ const before = function() {
   global.window = {
     document: {
       addEventListener: sinon.stub(),
-      createElement: sinon.stub()
+      createElement: sinon.stub(),
+      createComment: sinon.stub()
     },
     addEventListener: sinon.stub(),
     location: {
