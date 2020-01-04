@@ -4,6 +4,8 @@ import { TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps } from './types';
 import getNodesFromBindingValue from './getnodes';
 
+const emptyObj = {};
+
 export default function update<T>(
   tempElement: SifrrNode<T> | SifrrNode<T>[],
   props: SifrrProps<T>
@@ -66,6 +68,7 @@ export default function update<T>(
 
         // special case for style prop
         if (binding.name === 'style') {
+          newValue = newValue || emptyObj;
           const newKeys = Object.keys(newValue),
             oldKeys = Object.keys(oldValue),
             newl = newKeys.length,

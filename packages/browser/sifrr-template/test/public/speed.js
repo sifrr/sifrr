@@ -39,10 +39,7 @@ const row = html`
     </td>
     <td
       :style=${memo(
-        ({ id }) => {
-          console.log('calculation');
-          return selected === id ? { backgroundColor: 'black' } : {};
-        },
+        ({ id }) => (selected === id ? { backgroundColor: 'black' } : {}),
         ({ id }) => selected === id
       )}
       class="col-md-6"
