@@ -1,25 +1,19 @@
-global.fetch = require('node-fetch');
-const { Fetch } = require('../../../../browser/sifrr-fetch');
+const GraphqlExecutor = require('../../src/api/graphqlexecutor');
+const schema = require('./utils/schema');
 
-function getReq(url) {
-  return Fetch.get(PATH + url);
-}
+const executer = new GraphqlExecutor(schema);
 
 describe('GraphqlExecutor', () => {
   it('executes given graphql', async () => {
-    const data = await getReq('/api/v1/pets');
-    assert.equal(data.data.getPet.length, 3);
-  });
-
-  it('executes given graphql with variables', async () => {
-    const data = (await getReq('/api/v1/pet/1?where={"id":2}')).data;
-
-    assert.equal(data.getPet.length, 1);
-    assert.equal(data.getPet[0].id, 1);
-
-    const pets = (await getReq('/api/v1/pets?where={"id":2}')).data;
-
-    assert.equal(pets.getPet.length, 1);
-    assert.equal(pets.getPet[0].id, 2);
+    const data = await executer.resolve(
+      `query user($id: String!) {
+      user(id: $id) {
+        id
+        name
+      }
+    }`,
+      { id: 'a' }
+    );
+    assert.equal(data.data.user.id, 'a');
   });
 });
