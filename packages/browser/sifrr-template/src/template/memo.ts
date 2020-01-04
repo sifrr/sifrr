@@ -9,10 +9,10 @@ export default function memo<T, O, N>(
   const isFunc = typeof deps === 'function';
   const depsL = !isFunc && deps.length;
   const memoValues: {
-    [k: string]: N;
+    [k: string]: N | Promise<N>;
   } = {};
 
-  return (props: SifrrProps<T>, oldValue: O): N => {
+  return (props: SifrrProps<T>, oldValue: O): N | Promise<N> => {
     let memoKey: string;
     if (isFunc) {
       memoKey = (<PropKeyFunction<T>>deps)(props);

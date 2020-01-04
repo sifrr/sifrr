@@ -24,7 +24,7 @@ export type DomBindingReturnValue = (_RTValue | NodeList) & {
 
 export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[];
 
-export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N;
+export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
 
 // clone/update a template element
 export type SifrrCreateFunction<T> = (
@@ -68,6 +68,7 @@ export type SifrrRefCollection<T> = {
   node: Node;
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
+  oldPromises: Promise<any>[];
 };
 
 // uid -> fxn
