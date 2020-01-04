@@ -1,9 +1,11 @@
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
-const schemaDir = path.join(__dirname, '../public/db');
+const schemaDir = path.join(__dirname, './schema');
 const { fileSeparator } = require('../../src/api/constants');
 const getlastfile = require('../../src/utils/getlastfile');
+const saveSchema = require('../../src/api/saveschema');
+const schema = require('./utils/schema');
 
 describe('createExecutableSchema', () => {
   before(() => {
@@ -15,7 +17,7 @@ describe('createExecutableSchema', () => {
   });
 
   it('creates correct schema', () => {
-    require('../public/config/setup')();
+    saveSchema(schema, { schemaDir });
     const schemaPath = getlastfile(schemaDir);
     expect(fs.existsSync(schemaPath)).to.equal(true);
 
@@ -32,7 +34,7 @@ describe('createExecutableSchema', () => {
   it("doesn't rewrite if schema hasn't changed", () => {
     const schemaPath = getlastfile(schemaDir);
 
-    require('../public/config/setup')();
+    saveSchema(schema, { schemaDir });
 
     const newSchema = getlastfile(schemaDir);
 
@@ -49,25 +51,9 @@ describe('createExecutableSchema', () => {
 }`
     );
 
-    require('../public/config/setup')();
+    saveSchema(schema, { schemaDir });
     const newSchema = getlastfile(schemaDir);
 
     expect(schemaPath).to.not.equal(newSchema);
-  });
-
-  it('should not rewrite schema if no schemaPath', () => {
-    const schemaPath = getlastfile(schemaDir);
-    fs.writeFileSync(
-      schemaPath,
-      fileSeparator +
-        `type New {
-  dummy: ok
-}`
-    );
-    require('../public/config/setup')(false);
-
-    const newSchema = getlastfile(schemaDir);
-
-    expect(schemaPath).to.equal(newSchema);
   });
 });

@@ -29,15 +29,10 @@
   },
   "dependencies": {
     "graphql": "^14.5.3",
-    "graphql-relay": "^0.6.0",
-    "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.3",
     "mkdirp": "^0.5.1"
   },
-  "peerDependencies": {
-    "graphql-sequelize": "^9.3.5",
-    "sequelize": "^5.8.6"
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.0",
     "@sifrr/dev": "^0.0.40",
