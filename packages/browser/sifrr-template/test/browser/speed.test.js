@@ -50,9 +50,8 @@ pdescribe(__filename, 'Speed tests', async function() {
   const suffixes = ['?', '?useKey', '?useClean'],
     compare = {};
   const url = getArg('url') || `${PATH}/speedtest.html`;
-  const urls = suffixes
-    .map(s => url + s)
-    .concat([`http://localhost:8080/frameworks/non-keyed/domc/`]);
+  const urls = suffixes.map(s => url + s);
+  // .concat([`http://localhost:8080/frameworks/non-keyed/domc/`]);
 
   for (let j = 0; j < urls.length; j++) {
     const u = urls[j];
