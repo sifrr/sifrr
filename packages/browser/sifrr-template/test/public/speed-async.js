@@ -29,11 +29,7 @@ let selected = null;
 const row = html`
   <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
     <td class="col-md-1 id">
-      ${({ id }) => {
-        return new Promise(res => {
-          setTimeout(() => res(id), Math.random() * 1000);
-        });
-      }}
+      ${async ({ id }) => id}
     </td>
     <td class="col-md-4">
       <a class="lbl">${({ label }) => label}</a>
@@ -128,18 +124,18 @@ const template = html`
     </div>
     <table class="table table-hover table-striped test-data">
       <tbody>
-        <!--${({ data = [] }, oldValue) => {
-          return new Promise(res => {
-            setTimeout(() => {
-              if (useKey) {
-                res(Sifrr.Template.bindForKeyed(row, data, oldValue));
-              } else if (useClean) {
-                res(data.map((d, i) => row(d, oldValue[i])));
-              } else {
-                res(Sifrr.Template.bindFor(row, data, oldValue));
-              }
-            }, Math.random() * 1000);
-          });
+        <!--${async ({ data = [] }, oldValue) => {
+          // return new Promise(res => {
+          // setTimeout(() => {
+          if (useKey) {
+            return Sifrr.Template.bindForKeyed(row, data, oldValue);
+          } else if (useClean) {
+            return data.map((d, i) => row(d, oldValue[i]));
+          } else {
+            return Sifrr.Template.bindFor(row, data, oldValue);
+          }
+          // }, Math.random() * 1000);
+          // });
         }}-->
       </tbody>
     </table>
@@ -256,7 +252,7 @@ div.addEventListener('click', e => {
 });
 
 div.run = () => {
-  setData(window.buildData(5));
+  setData(window.buildData(1000));
 };
 
 div.runlots = () => {
