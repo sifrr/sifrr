@@ -114,7 +114,6 @@ describe('keyed', () => {
   for (let i = 0; i < l; i++) {
     it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
       await page.goto(`${PATH}/speedtest.html?useKey`);
-
       await page.evaluate(() =>
         document.body
           .$('#main-element')
@@ -126,7 +125,6 @@ describe('keyed', () => {
       const arrangementKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html`);
-
       await page.evaluate(() =>
         document.body
           .$('#main-element')
@@ -138,7 +136,6 @@ describe('keyed', () => {
       const arrangementNonKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html?useAsync`);
-
       await page.evaluate(() =>
         document.body
           .$('#main-element')

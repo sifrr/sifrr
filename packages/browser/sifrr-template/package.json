@@ -29,7 +29,9 @@
     "test-build": "cd test/public && yarn build",
     "test-server": "yarn test -s"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@sifrr/dom": "file:./packages/browser/sifrr-dom"
+  },
   "peerDependencies": {},
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.0",
