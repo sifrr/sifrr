@@ -153,10 +153,10 @@ describe('keyed', () => {
 
       expect(arrangementNonKeyed).to.deep.equal(arrangementData);
       expect(arrangementKeyed).to.deep.equal(arrangementData);
-      expect(arrangedAsync).to.deep.equal(arrangementData);
+      expect(arrangementAsync).to.deep.equal(arrangementData);
       assert.equal(arrangedKeyed, true);
       assert.equal(arrangedNonKeyed, true);
-      assert.equal(arrangementAsync, true);
+      assert.equal(arrangedAsync, true);
     });
   }
 });
