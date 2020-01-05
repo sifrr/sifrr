@@ -53,6 +53,8 @@ Functions are not used, rather the return value of these functions are used.
 First argument in binding function is `props` passed in when creating/updating template instance.
 Second argument is oldValue (value returned by binding in last render) of that binding.
 
+All arguments given in binding function are immutable. Avoid updating them, else there might be unintended effects.
+
 There are three types of bindings:
 
 #### 1. DOM bindings
@@ -174,9 +176,9 @@ const renderHtml = CombinedHTML({ firstName: 'Aaditya', lastName: 'Taparia', cit
 
 ##### Optimizing Performance
 
-By default new template instance will be create whenever CombinedHTML is created. But since we are only changing props, we can reuse old rendered template and update that only.
-This is much more performant, since it only updates dom where needed, instead of replacing everything on updation.
-You can do this by passing oldValue to template creator functions, and it will update old template if present or will create new template.
+By default new template instance will be created whenever CombinedHTML is updated. But since we are only changing props, we can reuse old rendered template and update that.
+This is much more performant, since it only updates dom where needed, instead of replacing everything and creating new dom nodes.
+You can do this by passing oldValue to template creator functions, and it will update old template if present else create new template.
 
 ```js
 // combine
@@ -194,7 +196,7 @@ This was already handled in first case where you were directly giving template c
 #### CSS - special template
 
 ```js
-import { html, css, update } from '@sifrr/template'; // es module
+import { html, css, update } from '@sifrr/template';
 
 const CSSForTemplate = css`
   p {
@@ -219,4 +221,114 @@ const para = HTML({ color: 'red' });
 
 // updating
 update(para, { color: 'blue' }); // you can guess what will happen
+```
+
+#### For Loop
+
+- Normal
+
+```js
+import { html, css, update } from '@sifrr/template';
+
+const Row = html`
+  <tr>
+    <td>${({ id }) => id}</td>
+  </tr>
+`;
+
+// un-optimized
+const Table = html`
+  <table>
+    ${({ data = [] }, oldValue) => data.map(d => Row(d))}
+  </table>
+`;
+
+// optimized
+const Table = html`
+  <table>
+    ${({ data = [] }, oldValue) => data.map((d, i) => Row(d, oldValue[i]))}
+  </table>
+`;
+
+Table({ data: [{ id: '1' }, { id: '2' }] });
+// will render
+// <table>
+//  <tr>
+//  <td>1</td>
+//  </tr>
+//  <tr>
+//  <td>2</td>
+//  </tr>
+// </table>
+// when you update this instance with new data
+// it will render update old rows if present, and add/remove rows if needed
+```
+
+- Non keyed (more performant than looping yourself)
+
+```js
+import { html, css, update, bindFor } from '@sifrr/template';
+
+const Row = html`
+  <tr>
+    <td>${({ id }) => id}</td>
+  </tr>
+`;
+
+const Table = html`
+  <table>
+    ${({ data = [] }, oldValue) => bindFor(Row, data, oldValue)}
+  </table>
+`;
+
+Table({ data: [{ id: '1' }, { id: '2' }] });
+// will render
+// <table>
+//  <tr>
+//  <td>1</td>
+//  </tr>
+//  <tr>
+//  <td>2</td>
+//  </tr>
+// </table>
+// when you update this instance with new data
+// it will render update old rows if present, and add/remove rows if needed
+```
+
+- Keyed (read more about keyed updates [here](https://reactjs.org/docs/reconciliation.html#keys))
+
+Provide key prop to all data (equivalent to react's `key` prop)
+
+```js
+import { html, css, update, bindForKeyed } from '@sifrr/template';
+
+const Row = html`
+  <tr>
+    <td>${({ id }) => id}</td>
+  </tr>
+`;
+
+const Table = html`
+  <table>
+    ${({ data = [] }, oldValue) => bindForKeyed(Row, data, oldValue)}
+  </table>
+`;
+
+Table({
+  data: [
+    { id: '1', key: 1 },
+    { id: '2', key: 2 }
+  ]
+});
+// will render
+// <table>
+//  <tr>
+//  <td>1</td>
+//  </tr>
+//  <tr>
+//  <td>2</td>
+//  </tr>
+// </table>
+// but when you update this instance with new data
+// it will reuse nodes with same key, and add/remove/update if needed
 ```
