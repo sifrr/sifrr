@@ -1,14 +1,7 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { TEXT_NODE } from './constants';
-import {
-  SifrrBindType,
-  SifrrNode,
-  SifrrProps,
-  DomBindingReturnValue,
-  SifrrNodesArray,
-  SifrrBindMap
-} from './types';
+import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap } from './types';
 import getNodesFromBindingValue from './getnodes';
 
 const emptyObj = {};

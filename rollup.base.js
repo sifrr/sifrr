@@ -37,10 +37,10 @@ function moduleConfig(name, root, minify = false, type) {
       banner,
       footer,
       globals,
-      exports: 'named'
+      exports: 'named',
+      preferConst: true
     },
-    external,
-    preferConst: true
+    external
   };
 
   if (type === 'browser') {
