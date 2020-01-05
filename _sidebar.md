@@ -1,5 +1,6 @@
 - [Home](/ 'Sifrr - Create web-apps easily with JS')
 - [sifrr-dom](/packages/browser/sifrr-dom/ 'sifrr-dom Documentation')
+- [sifrr-template](/packages/browser/sifrr-template/ 'sifrr-template Documentation')
 - [sifrr-fetch](/packages/browser/sifrr-fetch/ 'sifrr-fetch Documentation')
 - [sifrr-serviceworker](/packages/browser/sifrr-serviceworker/ 'sifrr-serviceworker Documentation')
 - [sifrr-storage](/packages/browser/sifrr-storage/ 'sifrr-storage Documentation')
