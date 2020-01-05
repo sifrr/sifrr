@@ -81,19 +81,19 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         continue;
       }
 
-      if (attribute.name[0] === ':') {
+      if (attribute.name[0] === ':' && attribute.name[1] === ':') {
+        bm.push({
+          type: SifrrBindType.Prop,
+          name: attrToProp(attribute.name).substr(1),
+          value: functionMap.get(middleMatch[1]),
+          direct: true
+        });
+      } else if (attribute.name[0] === ':') {
         bm.push({
           type: SifrrBindType.Prop,
           name: attrToProp(attribute.name),
           value: functionMap.get(middleMatch[1]),
           direct: false
-        });
-      } else if (attribute.name[0] === '_') {
-        bm.push({
-          type: SifrrBindType.Prop,
-          name: attribute.name,
-          value: functionMap.get(middleMatch[1]),
-          direct: true
         });
       } else {
         bm.push({

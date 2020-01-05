@@ -24,17 +24,14 @@ export default function update<T>(
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
     const { node, bindMap, currentValues } = refs[i];
+    const hasOnPropChange = !!(<SifrrNode<any>>node).onPropChange;
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
 
       // special direct props (events)
-      if (
-        binding.type === SifrrBindType.Prop &&
-        binding.direct &&
-        node[binding.name] !== binding.value
-      ) {
-        node[binding.name] = binding.value;
+      if (binding.type === SifrrBindType.Prop && binding.direct) {
+        if (node[binding.name] !== binding.value) node[binding.name] = binding.value;
         continue;
       }
 
@@ -44,9 +41,9 @@ export default function update<T>(
           let newValue = binding.value(props, oldValue);
 
           if (newValue instanceof Promise) {
-            return newValue.then(nv => updateOne(node, binding, oldValue, nv));
+            return newValue.then(nv => updateOne(node, binding, oldValue, nv, hasOnPropChange));
           } else {
-            return updateOne(node, binding, oldValue, newValue);
+            return updateOne(node, binding, oldValue, newValue, hasOnPropChange);
           }
         });
       } else {
@@ -54,16 +51,24 @@ export default function update<T>(
         let newValue = binding.value(props, oldValue);
 
         if (newValue instanceof Promise) {
-          currentValues[j] = newValue.then(nv => updateOne(node, binding, oldValue, nv));
+          currentValues[j] = newValue.then(nv =>
+            updateOne(node, binding, oldValue, nv, hasOnPropChange)
+          );
         } else {
-          currentValues[j] = updateOne(node, binding, oldValue, newValue);
+          currentValues[j] = updateOne(node, binding, oldValue, newValue, hasOnPropChange);
         }
       }
     }
   }
 }
 
-function updateOne<T>(node: Node, binding: SifrrBindMap<T>, oldValue: any, newValue: any) {
+function updateOne<T>(
+  node: Node,
+  binding: SifrrBindMap<T>,
+  oldValue: any,
+  newValue: any,
+  hasOnPropChange: boolean
+) {
   if (oldValue === newValue) return oldValue;
 
   // text
@@ -106,6 +111,7 @@ function updateOne<T>(node: Node, binding: SifrrBindMap<T>, oldValue: any, newVa
         if (!newValue[oldKeys[i]]) (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
       }
     }
+    hasOnPropChange && (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
   }
   return newValue;
 }

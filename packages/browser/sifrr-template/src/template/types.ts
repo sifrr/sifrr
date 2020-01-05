@@ -2,6 +2,7 @@ export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
   __tempNum?: number;
   key?: string | number;
+  onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
 }
 
 export type SifrrProps<T> = T & {
@@ -16,7 +17,7 @@ export type ChildNodeKeyed = ChildNode & {
   key: string | number;
 };
 
-type _RTValue = null | undefined | string | Node | _RTValue[] | {};
+type _RTValue = null | undefined | string | Node | _RTValue[];
 export type DomBindingReturnValue = (_RTValue | NodeList) & {
   isRendered?: boolean;
   reference?: Node;
