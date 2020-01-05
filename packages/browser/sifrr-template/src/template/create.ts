@@ -17,7 +17,7 @@ const createTemplate = <T>(
 
   const childNodes = Array.prototype.slice.call(template.content.childNodes),
     nodeLength = childNodes.length;
-  const refMaps = childNodes.map(cn => {
+  const refMaps = childNodes.map((cn, i) => {
     const refs = create<T>(cn, creator, functionMap);
     // special case of binding in topmost element
     if (cn.nodeType === TEXT_NODE && refs.length === 1) {
@@ -25,6 +25,7 @@ const createTemplate = <T>(
       cn.replaceWith(newFragment);
       newFragment.appendChild(cn);
       refs[0].idx++;
+      childNodes[i] = newFragment;
     }
     return refs;
   });

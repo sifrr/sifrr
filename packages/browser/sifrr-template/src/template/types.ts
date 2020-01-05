@@ -54,6 +54,7 @@ export type SifrrBindMap<T> =  // T = props type of parent
       name: string;
       value: BindingFxn<T, any, any>;
       direct: boolean;
+      set: boolean;
     };
 
 // ref map for each base template element

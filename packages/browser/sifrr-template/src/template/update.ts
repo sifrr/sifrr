@@ -29,9 +29,12 @@ export default function update<T>(
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
 
-      // special direct props (events)
+      // special direct props (events/style)
       if (binding.type === SifrrBindType.Prop && binding.direct) {
-        if (node[binding.name] !== binding.value) node[binding.name] = binding.value;
+        if (!binding.set) {
+          binding.set = true;
+          node[binding.name] = binding.value;
+        }
         continue;
       }
 
@@ -92,8 +95,6 @@ function updateOne<T>(
   } else if (binding.type === SifrrBindType.Attribute) {
     updateAttribute(<HTMLElement>node, binding.name, newValue);
   } else if (binding.type === SifrrBindType.Prop) {
-    node[binding.name] = newValue;
-
     // special case for style prop
     if (binding.name === 'style') {
       newValue = newValue || emptyObj;
@@ -108,8 +109,12 @@ function updateOne<T>(
         }
       }
       for (let i = 0; i < oldl; i++) {
-        if (!newValue[oldKeys[i]]) (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
+        if (!newValue[oldKeys[i]]) {
+          (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
+        }
       }
+    } else {
+      node[binding.name] = newValue;
     }
     hasOnPropChange && (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
   }
