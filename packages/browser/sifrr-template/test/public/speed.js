@@ -8,6 +8,7 @@ document.$$ = document.querySelectorAll;
 const useAnimation = window.location.href.indexOf('useAnim') >= 0;
 const useKey = window.location.href.indexOf('useKey') >= 0;
 const useClean = window.location.href.indexOf('useClean') >= 0;
+const useAsync = window.location.href.indexOf('useAsync') >= 0;
 
 const incss = useAnimation
   ? css`
@@ -27,12 +28,15 @@ const incss = useAnimation
 
 let selected = null;
 const row = html`
-  <tr class=${({ id }) => (selected == id ? 'danger' : null)} :data-id=${({ id }) => id}>
+  <tr
+    class=${({ id }) => (selected == id ? 'danger' : null)}
+    :data-id=${useAsync ? async ({ id }) => id : ({ id }) => id}
+  >
     <td class="col-md-1 id">
-      ${({ id }) => id}
+      ${useAsync ? async ({ id }) => id : ({ id }) => id}
     </td>
     <td class="col-md-4">
-      <a class="lbl">${({ label }) => label}</a>
+      <a class="lbl">${useAsync ? async ({ label }) => label : ({ label }) => label}</a>
     </td>
     <td class="col-md-1">
       <a class="remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>

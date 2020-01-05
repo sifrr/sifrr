@@ -114,7 +114,6 @@ describe('keyed', () => {
   for (let i = 0; i < l; i++) {
     it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
       await page.goto(`${PATH}/speedtest.html?useKey`);
-
       await page.evaluate(() =>
         document.body
           .$('#main-element')
@@ -126,7 +125,6 @@ describe('keyed', () => {
       const arrangementKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html`);
-
       await page.evaluate(() =>
         document.body
           .$('#main-element')
@@ -137,12 +135,25 @@ describe('keyed', () => {
       const arrangedNonKeyed = await page.evaluate(arrangements[i]);
       const arrangementNonKeyed = await page.evaluate(getIds);
 
+      await page.goto(`${PATH}/speedtest.html?useAsync`);
+      await page.evaluate(() =>
+        document.body
+          .$('#main-element')
+          .$('#run')
+          .click()
+      );
+      await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
+      const arrangedAsync = await page.evaluate(arrangements[i]);
+      const arrangementAsync = await page.evaluate(getIds);
+
       const arrangementData = await page.evaluate(getDataIds);
 
-      expect(arrangementKeyed).to.deep.equal(arrangementNonKeyed);
+      expect(arrangementNonKeyed).to.deep.equal(arrangementData);
       expect(arrangementKeyed).to.deep.equal(arrangementData);
+      expect(arrangementAsync).to.deep.equal(arrangementData);
       assert.equal(arrangedKeyed, true);
       assert.equal(arrangedNonKeyed, true);
+      assert.equal(arrangedAsync, true);
     });
   }
 });

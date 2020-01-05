@@ -1,7 +1,7 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { TEXT_NODE } from './constants';
-import { SifrrBindType, SifrrNode, SifrrProps } from './types';
+import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap } from './types';
 import getNodesFromBindingValue from './getnodes';
 
 const emptyObj = {};
@@ -27,7 +27,6 @@ export default function update<T>(
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
-      const oldValue = currentValues[j];
 
       // special direct props (events)
       if (
@@ -39,52 +38,74 @@ export default function update<T>(
         continue;
       }
 
-      let newValue = binding.value(props, oldValue);
-      if (oldValue === newValue) continue;
+      const oldValue = currentValues[j];
+      if (oldValue instanceof Promise) {
+        currentValues[j] = oldValue.then(oldValue => {
+          let newValue = binding.value(props, oldValue);
 
-      // text
-      if (binding.type === SifrrBindType.Text) {
-        // fast path for one text node
-        if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
-          if (typeof newValue !== 'object') {
-            if (oldValue[0].data != newValue) oldValue[0].data = newValue; // important to use !=
-            continue;
+          if (newValue instanceof Promise) {
+            return newValue.then(nv => updateOne(node, binding, oldValue, nv));
+          } else {
+            return updateOne(node, binding, oldValue, newValue);
           }
-        }
+        });
+      } else {
+        const oldValue = currentValues[j];
+        let newValue = binding.value(props, oldValue);
 
-        // fast path for pre-rendered
-        if (newValue && newValue.isRendered) {
-          refs[i].currentValues[j] = newValue;
-          continue;
-        }
-
-        // convert nodeList/HTML collection to array and string/undefined/null to text element
-        const nodes = getNodesFromBindingValue<T, null>(newValue);
-        newValue = makeChildrenEqual(oldValue, Array.isArray(nodes) ? nodes : [nodes]);
-      } else if (binding.type === SifrrBindType.Attribute) {
-        updateAttribute(<HTMLElement>node, binding.name, newValue);
-      } else if (binding.type === SifrrBindType.Prop) {
-        node[binding.name] = newValue;
-
-        // special case for style prop
-        if (binding.name === 'style') {
-          newValue = newValue || emptyObj;
-          const newKeys = Object.keys(newValue),
-            oldKeys = Object.keys(oldValue),
-            newl = newKeys.length,
-            oldl = oldKeys.length;
-          // add new properties
-          for (let i = 0; i < newl; i++) {
-            if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
-              (<HTMLElement>node).style[newKeys[i]] = newValue[newKeys[i]] || ''; // remove undefined with empty string
-            }
-          }
-          for (let i = 0; i < oldl; i++) {
-            if (!newValue[oldKeys[i]]) (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
-          }
+        if (newValue instanceof Promise) {
+          currentValues[j] = newValue.then(nv => updateOne(node, binding, oldValue, nv));
+        } else {
+          currentValues[j] = updateOne(node, binding, oldValue, newValue);
         }
       }
-      refs[i].currentValues[j] = newValue;
     }
   }
+}
+
+function updateOne<T>(node: Node, binding: SifrrBindMap<T>, oldValue: any, newValue: any) {
+  if (oldValue === newValue) return oldValue;
+
+  // text
+  if (binding.type === SifrrBindType.Text) {
+    // fast path for one text node
+    if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
+      if (typeof newValue !== 'object') {
+        if (oldValue[0].data != newValue) oldValue[0].data = newValue; // important to use !=
+        return oldValue;
+      }
+    }
+
+    // fast path for pre-rendered
+    if (newValue && newValue.isRendered) {
+      return newValue;
+    }
+
+    // convert nodeList/HTML collection to array and string/undefined/null to text element
+    const nodes = getNodesFromBindingValue<T, null>(newValue);
+    newValue = makeChildrenEqual(oldValue, Array.isArray(nodes) ? nodes : [nodes]);
+  } else if (binding.type === SifrrBindType.Attribute) {
+    updateAttribute(<HTMLElement>node, binding.name, newValue);
+  } else if (binding.type === SifrrBindType.Prop) {
+    node[binding.name] = newValue;
+
+    // special case for style prop
+    if (binding.name === 'style') {
+      newValue = newValue || emptyObj;
+      const newKeys = Object.keys(newValue),
+        oldKeys = Object.keys(oldValue),
+        newl = newKeys.length,
+        oldl = oldKeys.length;
+      // add new properties
+      for (let i = 0; i < newl; i++) {
+        if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
+          (<HTMLElement>node).style[newKeys[i]] = newValue[newKeys[i]] || ''; // remove undefined with empty string
+        }
+      }
+      for (let i = 0; i < oldl; i++) {
+        if (!newValue[oldKeys[i]]) (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
+      }
+    }
+  }
+  return newValue;
 }

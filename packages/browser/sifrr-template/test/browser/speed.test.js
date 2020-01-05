@@ -47,7 +47,7 @@ pdescribe(__filename, 'Speed tests', async function() {
   this.timeout(0);
   this.retries(2);
 
-  const suffixes = ['?', '?useKey', '?useClean'],
+  const suffixes = ['?', '?useKey', '?useClean', '?useAsync'],
     compare = {};
   const url = getArg('url') || `${PATH}/speedtest.html`;
   const urls = suffixes.map(s => url + s);
