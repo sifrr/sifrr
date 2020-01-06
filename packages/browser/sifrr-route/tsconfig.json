@@ -11,8 +11,8 @@
     "strictBindCallApply": true,
     "baseUrl": "../../../",
     "paths": {
-      "@sifrr/dom": ["./packages/browser/sifrr-dom"],
-      "@sifrr/template": ["./packages/browser/sifrr-template"]
+      "@sifrr/dom": ["./packages/browser/sifrr-dom/src/sifrr.dom"],
+      "@sifrr/template": ["./packages/browser/sifrr-template/src/sifrr.template"]
     }
   },
   "include": ["src/*"],

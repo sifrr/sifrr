@@ -1,6 +1,5 @@
 import { ISifrrElement } from './types';
-import { SifrrCreateFunction, SifrrNode } from '@sifrr/template';
-import { update } from '@sifrr/template';
+import { SifrrCreateFunction, SifrrNode, update } from '@sifrr/template';
 import { trigger } from './event';
 
 function elementClassFactory(baseClass: typeof HTMLElement) {

@@ -10,7 +10,7 @@
     "strictBindCallApply": true,
     "baseUrl": "../../../",
     "paths": {
-      "@sifrr/template": ["./packages/browser/sifrr-template"]
+      "@sifrr/template": ["./packages/browser/sifrr-template/src/sifrr.template"]
     }
   },
   "include": ["src/*"],
