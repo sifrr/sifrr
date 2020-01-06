@@ -12,6 +12,8 @@ A superfast HTML in JS Templating engine that powers @sifrr/dom. Inspired from `
 ## Features
 
 - Written in TypeScript, usable in TypeScript as well as JavaScript
+- Simple, fast and powerful templating engine
+- Doesn't have props lifecycle management, use it as you wish
 
 ## How to use
 
@@ -80,6 +82,12 @@ html`
     ${({ name }) => name}
   </div>
 `;
+// even async functions are fine
+html`
+  <div>
+    ${async ({ name }) => fetch({...}}).then(data => data.name)}
+  </div>
+`;
 ```
 
 #### 2. Attribute bindings
@@ -87,7 +95,7 @@ html`
 ```js
 html`
   <div name=${({ name }) => name}></div>
-`;
+`; // async functions work here as well
 ```
 
 Attribute name on div will have value = `name` from props passed
@@ -116,11 +124,20 @@ Here you can use direct prop bindings
 
 ```js
 html`
-  <div id="divElement" ::onclick=${event => console.log(event.target)}></div>
+  <div
+    id="divElement"
+    ::style=${{ padding: '10px' }}
+    ::onclick=${event => console.log(event.target)}
+  ></div>
 `;
 ```
 
-here `div.onclick` will be equal to `event => console.log(event.target)`. Now click on this div will fire this function with click event.
+here `div.onclick` will be equal to `event => console.log(event.target)` and style will be applied. Now click on this div will fire this function with click event.
+
+**Notes**
+
+- direct bindings are used as is and are never recalculated.
+- prop names are case insensitive and hyphen-case will be converted to camelCase. eg. `some-prop` will be changed to `someProp`
 
 ### Advanced Usage
 
@@ -331,4 +348,63 @@ Table({
 // </table>
 // but when you update this instance with new data
 // it will reuse nodes with same key, and add/remove/update if needed
+```
+
+#### Memo
+
+for some bindings you might want to only update when necessary, and not everytime. In such case you can use memo.
+`memo` takes two arguments, 1st - binding function and 2nd - dependency array / key function
+
+```js
+import { memo } from '@sifrr/template';
+
+html`
+  <div
+    :style=${memo(() => {
+      padding: '10px';
+    }, [])}
+  ></div>
+`; // only calculated once
+
+html`
+  <div
+    :style=${memo(
+      props => {
+        display: props.visible ? 'block' : 'none';
+      },
+      ['visible']
+    )}
+  ></div>
+`; // only calculated when props.visible changes, similarly you can give multiple prop keys in array and binding will be calculated only if any of those props change
+// dependecies will be converted to strings for creating cache key, if you need to check for more complex prop you can
+// provide your own cache key function
+html`
+  <div
+    :style=${memo(
+      props => {
+        display: props.visible ? 'block' : 'none';
+      },
+      props => props.visible // key function, binding will be recalculated if cache key given by this function changes
+    )}
+  ></div>
+`;
+```
+
+#### onPropChange
+
+if any node has `onPropChange` property, it will be called with `(propName, oldValue, newValue)` whenever a prop binding on that node changes.
+
+```js
+html`
+  <div
+    :style=${memo(
+      props => {
+        display: props.visible ? 'block' : 'none';
+      },
+      props => props.visible
+    )}
+    :onclick=${memo(props => props.onDivClick, ['onDivClick'])}
+    ::on-prop-change=${console.log}
+  ></div>
+`; // console.log will be called whenever style prop changes
 ```
