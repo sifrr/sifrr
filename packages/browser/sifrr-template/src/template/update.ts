@@ -4,7 +4,7 @@ import { TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap } from './types';
 import getNodesFromBindingValue from './getnodes';
 
-const emptyObj = {};
+const emptyObj = Object.freeze(Object.create(null));
 
 export default function update<T>(
   tempElement: SifrrNode<T> | SifrrNode<T>[],
@@ -125,5 +125,6 @@ function updateOne<T>(
     }
     hasOnPropChange && (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
   }
+  typeof (<SifrrNode<any>>node).update === 'function' && (<SifrrNode<any>>node).update();
   return newValue;
 }

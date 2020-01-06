@@ -1,13 +1,7 @@
-import { BIND_SELECTOR } from './dom/constants';
 import Element from './dom/element';
-import twoWayBind from './dom/twowaybind';
 import Loader from './dom/loader';
-import SimpleElement from './dom/simpleelement';
 import * as Event from './dom/event';
-import { makeChildrenEqual, makeEqual } from './dom/makeequal';
-import { makeChildrenEqualKeyed } from './dom/keyed';
 import { Store, bindStoresToElement } from './dom/store';
-import template from './dom/template';
 import config from './dom/config';
 import { SifrrElement } from './dom/types';
 
@@ -76,13 +70,10 @@ const setup = function(newConfig: any) {
 
   config.events.push('input', 'change', 'update');
   config.events.forEach(e => Event.add(e));
-  Event.addListener('input', BIND_SELECTOR, twoWayBind);
-  Event.addListener('change', BIND_SELECTOR, twoWayBind);
-  Event.addListener('update', BIND_SELECTOR, twoWayBind);
 };
 
 // Load Element HTML/JS and execute script in it
-const load = function(elemName: string, { url = null, js = true } = {}) {
+function load(elemName: string, { url = null } = {}) {
   if (window.customElements.get(elemName)) {
     return Promise.resolve(
       window.console.warn(
@@ -93,7 +84,7 @@ const load = function(elemName: string, { url = null, js = true } = {}) {
   loadingElements[elemName] = window.customElements.whenDefined(elemName);
   const loader = new Loader(elemName, url);
   return loader
-    .executeScripts(js)
+    .executeScripts()
     .then(() => registering[elemName])
     .then(() => {
       if (!window.customElements.get(elemName)) {
@@ -107,7 +98,7 @@ const load = function(elemName: string, { url = null, js = true } = {}) {
       delete loadingElements[elemName];
       throw e;
     });
-};
+}
 
 const loading = () => {
   const promises = [];
@@ -119,15 +110,9 @@ const loading = () => {
 
 export {
   Element,
-  twoWayBind,
   Loader,
-  SimpleElement,
   Event,
-  makeChildrenEqual,
-  makeChildrenEqualKeyed,
-  makeEqual,
   Store,
-  template,
   register,
   setup,
   load,
@@ -139,15 +124,9 @@ export {
 
 export default {
   Element,
-  twoWayBind,
   Loader,
-  SimpleElement,
   Event,
-  makeChildrenEqual,
-  makeChildrenEqualKeyed,
-  makeEqual,
   Store,
-  template,
   register,
   setup,
   load,

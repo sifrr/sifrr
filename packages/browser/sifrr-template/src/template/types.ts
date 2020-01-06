@@ -3,6 +3,7 @@ export interface SifrrNode<T> extends Node {
   __tempNum?: number;
   key?: string | number;
   onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
+  update?: () => void;
 }
 
 export type SifrrProps<T> = T & {

@@ -35,12 +35,12 @@ export const getEventListener = (name: string): EventListener => {
       const eventHandler =
         dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
       if (typeof eventHandler === 'function') {
-        eventHandler.call(dom._root || window, e, target);
+        eventHandler.call(window, e, target);
       } else if (typeof eventHandler === 'string') {
-        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
+        new Function('event', 'target', eventHandler).call(window, event, target);
       }
       cssMatchEvent(e, name, dom, target);
-      dom = <HTMLElement>dom.parentNode || dom.host;
+      dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
     }
   };
 };
@@ -76,5 +76,5 @@ export const trigger = (
   options?: { detail: any; [n: string]: any }
 ) => {
   if (typeof el === 'string') el = <HTMLElement>document.$(el);
-  el.dispatchEvent(new CustomEvent(name, Object.assign(customOpts, options)));
+  el.dispatchEvent(new CustomEvent(name, Object.assign(options, customOpts, options)));
 };

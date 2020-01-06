@@ -20,7 +20,7 @@ function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
       oldValues[j] = null;
     } else if (binding.type === SifrrBindType.Prop) {
       if (binding.name === 'style') {
-        oldValues[j] = {};
+        oldValues[j] = Object.create(null);
       } else {
         oldValues[j] = null;
       }

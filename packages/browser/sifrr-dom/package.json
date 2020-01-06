@@ -37,7 +37,9 @@
     "test-server": "yarn test -s"
   },
   "dependencies": {},
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@sifrr/template": "0.0.6"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.7.0",
     "@sifrr/dev": "^0.0.40",
