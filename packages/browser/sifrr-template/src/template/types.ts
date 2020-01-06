@@ -36,7 +36,8 @@ export type SifrrCreateFunction<T> = (
 export enum SifrrBindType {
   Text = 1,
   Prop = 2,
-  Attribute = 3
+  DirectProp = 3,
+  Attribute = 4
 }
 
 export type SifrrBindMap<T> =  // T = props type of parent
@@ -53,7 +54,11 @@ export type SifrrBindMap<T> =  // T = props type of parent
       type: SifrrBindType.Prop;
       name: string;
       value: BindingFxn<T, any, any>;
-      direct: boolean;
+    }
+  | {
+      type: SifrrBindType.DirectProp;
+      name: string;
+      value: any;
       set: boolean;
     };
 
@@ -73,7 +78,7 @@ export type SifrrRefCollection<T> = {
 };
 
 // uid -> fxn
-export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any, any>>; // T = props type of parent
+export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any, any> | any>; // T = props type of parent
 
 // create bind map for a base template
 export type SifrrBindCreatorFxn<T> = (

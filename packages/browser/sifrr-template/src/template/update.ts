@@ -30,10 +30,17 @@ export default function update<T>(
       const binding = bindMap[j];
 
       // special direct props (events/style)
-      if (binding.type === SifrrBindType.Prop && binding.direct) {
+      if (binding.type === SifrrBindType.DirectProp) {
         if (!binding.set) {
           binding.set = true;
-          node[binding.name] = binding.value;
+          if (binding.name === 'style') {
+            const newValue = binding.value || emptyObj;
+            const keys = Object.keys(newValue),
+              len = keys.length;
+            for (let i = 0; i < len; i++) {
+              (<HTMLElement>node).style[keys[i]] = newValue[keys[i]] || ''; // remove undefined with empty string
+            }
+          } else node[binding.name] = binding.value;
         }
         continue;
       }

@@ -39,6 +39,9 @@ const CSS = css`
     margin: 0;
     padding: 0;
   }
+  * {
+    transition: all 0.3s ease-in-out;
+  }
   #main {
     padding: 16px;
   }
@@ -125,13 +128,13 @@ const Temp = html`
           }}
         />
       </div>
-      <div :style=${memo(() => ({ paddingTop: '20px' }))}>
+      <div ::style="${{ paddingTop: '20px' }}">
         <button
           :style=${memo(({ clock }) => (clock ? {} : { display: 'none' }), ['clock'])}
           ::onclick=${() => {
             window
               .html2canvas(document.querySelector('#container'), {
-                scale: 6
+                scale: 5
               })
               .then(canvas => {
                 const image = canvas

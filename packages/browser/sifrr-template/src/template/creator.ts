@@ -83,19 +83,16 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
 
       if (attribute.name[0] === ':' && attribute.name[1] === ':') {
         bm.push({
-          type: SifrrBindType.Prop,
+          type: SifrrBindType.DirectProp,
           name: attrToProp(attribute.name).substr(1),
           value: functionMap.get(middleMatch[1]),
-          direct: true,
           set: false
         });
       } else if (attribute.name[0] === ':') {
         bm.push({
           type: SifrrBindType.Prop,
           name: attrToProp(attribute.name),
-          value: functionMap.get(middleMatch[1]),
-          direct: false,
-          set: false
+          value: functionMap.get(middleMatch[1])
         });
       } else {
         bm.push({
