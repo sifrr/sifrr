@@ -6,26 +6,20 @@ const firstTitle = window.document.title;
 class SifrrRoute extends SifrrElement {
   static all: Set<SifrrRoute> = new Set();
   static currentUrl = window.location.pathname;
-
-  static get template() {
-    return '<slot></slot>';
-  }
+  static useShadowRoot = false;
 
   private routeRegex: RegexPath;
   private loaded: Promise<boolean>;
   public path: string;
 
-  onConnect() {
-    this.loaded = null;
+  constructor() {
+    super();
     (<typeof SifrrRoute>this.constructor).all.add(this);
+    this.loaded = null;
   }
 
-  onDisconnect() {
-    (<typeof SifrrRoute>this.constructor).all.delete(this);
-  }
-
-  onPropsChange(props: string[]) {
-    if (props.indexOf('path') > -1) {
+  onPropChange(prop: string) {
+    if (prop === 'path') {
       this.routeRegex = new RegexPath(this.path);
       this.refresh();
     }
@@ -44,7 +38,6 @@ class SifrrRoute extends SifrrElement {
   }
 
   activate() {
-    this.renderIf = true;
     if (!this.loaded) {
       const sifrrElements = this.dataset.sifrrElements;
       if (sifrrElements && sifrrElements.indexOf('-') > 0) {
@@ -68,7 +61,6 @@ class SifrrRoute extends SifrrElement {
   onActivate() {}
 
   deactivate() {
-    this.renderIf = false;
     this.update();
     Event.trigger(this, 'deactivate');
     this.onDeactivate();

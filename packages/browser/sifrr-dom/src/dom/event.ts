@@ -49,13 +49,12 @@ export const add = (name: string) => {
   if (SYNTHETIC_EVENTS[name]) return false;
   const namedEL = getEventListener(name);
   document.addEventListener(name, namedEL, listenOpts);
-  SYNTHETIC_EVENTS[name] = {};
+  SYNTHETIC_EVENTS[name] = Object.create(null);
   return true;
 };
 
 export const addListener = (name: string, css: string, fxn: SifrrEventListener) => {
-  if (!SYNTHETIC_EVENTS[name])
-    throw Error(`You need to call Sifrr.Dom.Event.add('${name}') before using listeners.`);
+  add(name);
   if (typeof css !== 'string') {
     fxn.__dom = css;
     css = 'element';
