@@ -32,7 +32,7 @@ class Loader {
   getUrl() {
     if (this.url) return this.url;
     if (typeof config.url === 'function') return config.url(this.elementName);
-    return `${config.baseUrl + '/'}elements/${this.elementName.split('-').join('/')}.js`;
+    return `${config.baseUrl + '/'}elements/${this.elementName}.js`;
   }
 
   static getFile(url: RequestInfo) {

@@ -1,17 +1,16 @@
 import Element from './dom/element';
 import Loader from './dom/loader';
 import * as Event from './dom/event';
-import { Store, bindStoresToElement } from './dom/store';
 import config from './dom/config';
 import { SifrrElement } from './dom/types';
 
 // Caches
-const elements = {};
-const loadingElements = {};
-const registering = {};
+const elements = Object.create(null);
+const loadingElements = Object.create(null);
+const registering = Object.create(null);
 
 // Register Custom Element Function
-const register = (
+function register(
   Element: typeof SifrrElement,
   {
     name,
@@ -21,8 +20,7 @@ const register = (
     name?: string;
     dependsOn?: string | string[];
   } & ElementDefinitionOptions = {}
-) => {
-  Element.useSR = config.useShadowRoot;
+) {
   name = name || Element.elementName;
   if (!name) {
     return Promise.reject(Error('Error creating Custom Element: No name given.'));
@@ -33,7 +31,7 @@ const register = (
     return Promise.resolve(false);
   } else if (name.indexOf('-') < 1) {
     return Promise.reject(
-      Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`)
+      Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`)
     );
   } else {
     let before;
@@ -55,10 +53,10 @@ const register = (
         throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
       });
   }
-};
+}
 
 // Initialize SifrrDom
-const setup = function(newConfig: any) {
+function setup(newConfig: typeof config) {
   HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
@@ -66,20 +64,15 @@ const setup = function(newConfig: any) {
   Object.assign(config, newConfig);
 
   if (typeof config.baseUrl !== 'string' && typeof config.url !== 'function')
-    throw Error('baseUrl should be a string, or url should be function');
+    throw Error('baseUrl should be a string, or url should be a function');
 
-  config.events.push('input', 'change', 'update');
   config.events.forEach(e => Event.add(e));
-};
+}
 
 // Load Element HTML/JS and execute script in it
 function load(elemName: string, { url = null } = {}) {
   if (window.customElements.get(elemName)) {
-    return Promise.resolve(
-      window.console.warn(
-        `Error loading Element: ${elemName} - Custom Element with this name is already defined.`
-      )
-    );
+    return Promise.resolve();
   }
   loadingElements[elemName] = window.customElements.whenDefined(elemName);
   const loader = new Loader(elemName, url);
@@ -108,30 +101,19 @@ const loading = () => {
   return Promise.all(promises);
 };
 
-export {
-  Element,
-  Loader,
-  Event,
-  Store,
-  register,
-  setup,
-  load,
-  loading,
-  config,
-  elements,
-  bindStoresToElement
-};
+export { Element, Loader, Event, register, setup, load, loading, config, elements };
+export * from './dom/types';
 
+import * as types from './dom/types';
 export default {
   Element,
   Loader,
   Event,
-  Store,
   register,
   setup,
   load,
   loading,
   config,
   elements,
-  bindStoresToElement
+  ...types
 };

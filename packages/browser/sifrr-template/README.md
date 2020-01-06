@@ -14,6 +14,11 @@ A superfast HTML in JS Templating engine that powers @sifrr/dom. Inspired from `
 - Written in TypeScript, usable in TypeScript as well as JavaScript
 - Simple, fast and powerful templating engine
 - Doesn't have props lifecycle management, use it as you wish
+- Small learning curve, as you use only HTML, CSS, JS and maybe TS if you want
+- Pure DOM bindings, without any virtual DOM
+- still fast(er) than most of famous frameworks (just ~10-20% slower than vanillaJS)
+- Low memory usage (just ~10-20% more than vanillaJS)
+- Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
 
 ## How to use
 
@@ -45,6 +50,7 @@ update(mainTemplateInstance, { name: 'new name' });
 // this will update the rendered html to
 // <div>new name</div>
 // all bindings are recalculated and rendered if needed on update call
+// Dom nodes are never recreated on update call, rather only the bindings are updated directly, which is very performant
 ```
 
 ### Bindings

@@ -1,6 +1,6 @@
 export default {
   baseUrl: '',
   useShadowRoot: true,
-  events: [],
+  events: ['input', 'change', 'update'],
   url: null
 };

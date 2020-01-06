@@ -5,7 +5,7 @@ const SYNTHETIC_EVENTS: {
   [name: string]: {
     [css: string]: Set<SifrrEventListener>;
   };
-} = {};
+} = Object.create(null);
 const listenOpts = { capture: true, passive: true };
 const customOpts = { composed: true, bubbles: true };
 

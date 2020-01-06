@@ -10,10 +10,6 @@ declare global {
   }
 }
 
-export type SifrrElementInterface = {
-  update: () => void;
-};
-
 export interface ISifrrElement extends HTMLElement {
   sifrrClone: (state: object) => ISifrrElement;
   state?: object;
@@ -34,7 +30,6 @@ export interface SifrrEventListener {
 export declare var SifrrElement: {
   new (): ISifrrElement;
   prototype: ISifrrElement;
-  useSR: boolean;
   elementName: string;
 };
 
