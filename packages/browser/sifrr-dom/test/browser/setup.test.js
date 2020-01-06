@@ -1,5 +1,3 @@
-const { BIND_SELECTOR } = require('../../src/dom/constants');
-
 describe('Sifrr.Dom.setup', () => {
   before(async () => {
     await page.goto(`${PATH}/nosifrrsetup.html`);
@@ -37,15 +35,9 @@ describe('Sifrr.Dom.setup', () => {
       },
       // Adds event listeners
       events: {
-        input: {
-          [BIND_SELECTOR]: {}
-        },
-        change: {
-          [BIND_SELECTOR]: {}
-        },
-        update: {
-          [BIND_SELECTOR]: {}
-        }
+        input: {},
+        change: {},
+        update: {}
       }
     });
   });
