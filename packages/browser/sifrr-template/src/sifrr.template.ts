@@ -5,6 +5,7 @@ import { default as update } from './template/update';
 import { default as bindFor } from './binders/bindfor';
 import { default as bindForKeyed } from './binders/bindforkeyed';
 import { default as memo } from './template/memo';
+import { default as Store } from './template/store';
 
 export { default as createUniqueString } from './ustring';
 export { default as html } from './template/create';
@@ -13,6 +14,7 @@ export { default as update } from './template/update';
 export { default as bindFor } from './binders/bindfor';
 export { default as bindForKeyed } from './binders/bindforkeyed';
 export { default as memo } from './template/memo';
+export { default as Store } from './template/store';
 
 export default {
   createUniqueString,
@@ -21,5 +23,6 @@ export default {
   update,
   bindFor,
   bindForKeyed,
-  memo
+  memo,
+  Store
 };

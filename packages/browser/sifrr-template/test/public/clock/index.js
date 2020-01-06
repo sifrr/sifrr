@@ -107,7 +107,7 @@ const Temp = html`
             })
           )}
       </select>
-      <p>${({ image }) => (image ? '' : 'Please upload a clock image')}</p>
+      <p>${memo(({ clock }) => (clock ? '' : 'Please upload a clock image'), ['clock'])}</p>
       <div>
         <input
           type="file"
