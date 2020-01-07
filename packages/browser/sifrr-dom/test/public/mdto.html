@@ -6,7 +6,8 @@
       * {
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         margin: 0;
         padding: 0;
         width: 100vw;
@@ -22,11 +23,15 @@
   </head>
   <body>
     <md-html></md-html>
-    <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
+    <script src="/sifrr.template.js" charset="utf-8"></script>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"
+      charset="utf-8"
+    ></script>
     <script>
       Sifrr.Dom.setup();
-      Sifrr.Dom.load('md-html', { js: false });
+      Sifrr.Dom.load('md-html');
     </script>
   </body>
 </html>

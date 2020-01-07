@@ -1,6 +1,5 @@
-<template>
-  <style media="screen">
-    h1,
+const { html, memo, createTemplateFromString } = Sifrr.Template;
+const CSS = `<style>h1,
     h3 {
       font-size: 24px;
       margin: 8px 0;
@@ -32,8 +31,9 @@
     * {
       box-sizing: border-box;
       font-family: system-ui;
-    }
-  </style>
+    }</style>`;
+const HTML = html`
+  ${CSS}
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@gh-pages/github-markdown.css"
@@ -48,29 +48,32 @@
     <h3 class="s-6">Live HTML Preview with github styles</h3>
   </div>
   <div class="s-12" id="converter">
-    <textarea class="s-6" id="md" :sifrr-bind="content" rows="10000">
-${this.state.content}</textarea
+    <textarea
+      class="s-6"
+      id="md"
+      :oninput=${memo(element => e => element.setState({ content: e.target.value }), [])}
+      :value=${({ state }) => state.content}
+      ::on-prop-change=${console.log}
+      rows="10000"
     >
-    <div class="s-6 markdown-body" id="html" :sifrr-html="true">${this.mdtohtml()}</div>
+    </textarea>
+    <div class="s-6 markdown-body" id="html" :sifrr-html="true">
+      ${el => createTemplateFromString(el.mdtohtml()).content.childNodes}
+    </div>
   </div>
-</template>
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"
-  charset="utf-8"
-></script>
-<script type="text/javascript">
-  const sd = new showdown.Converter({
-    ghCompatibleHeaderId: true,
-    ghMentionsLink: 'https://github.com/{u}',
-    smoothLivePreview: true,
-    tasklists: true,
-    ghCodeBlocks: true,
-    tables: true,
-    strikethrough: true,
-    parseImgDimensions: true,
-    simplifiedAutoLink: true
-  });
-  const content = `# ShowdownJS
+`;
+const sd = new window.showdown.Converter({
+  ghCompatibleHeaderId: true,
+  ghMentionsLink: 'https://github.com/{u}',
+  smoothLivePreview: true,
+  tasklists: true,
+  ghCodeBlocks: true,
+  tables: true,
+  strikethrough: true,
+  parseImgDimensions: true,
+  simplifiedAutoLink: true
+});
+const content = `# ShowdownJS
 
 Showdown is a Javascript Markdown to HTML converter, based on the original works by John Gruber. It can be used client side (in the browser) or server side (with Node or io).
 
@@ -810,22 +813,27 @@ This new ruleset is based on the comments of Markdown's author John Gruber in th
 [awkward effect]: http://i.imgur.com/YQ9iHTL.gif
 [emoji list]: https://github.com/showdownjs/showdown/wiki/emoji`;
 
-  class MdHtml extends Sifrr.Dom.Element {
-    onConnect() {
-      const me = this;
-      window.addEventListener(
-        'hashchange',
-        () => {
-          me.$(location.hash).scrollIntoView(true);
-        },
-        false
-      );
-    }
-
-    mdtohtml() {
-      return sd.makeHtml(this.state.content);
-    }
+class MdHtml extends Sifrr.Dom.Element {
+  constructor() {
+    super();
+    this.state = { content };
   }
-  MdHtml.defaultState = { content: content };
-  Sifrr.Dom.register(MdHtml);
-</script>
+
+  onConnect() {
+    const me = this;
+    window.addEventListener(
+      'hashchange',
+      () => {
+        me.$(location.hash).scrollIntoView(true);
+      },
+      false
+    );
+  }
+
+  mdtohtml() {
+    return sd.makeHtml(this.state.content);
+  }
+}
+MdHtml.template = HTML;
+
+Sifrr.Dom.register(MdHtml);

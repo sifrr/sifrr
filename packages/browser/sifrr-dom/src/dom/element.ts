@@ -33,14 +33,12 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       const constructor = <typeof SifrrElement>this.constructor;
       const temp = constructor.ctemp();
       if (temp) {
-        const content = temp(this);
+        this.__content = temp(null);
         if (constructor.useShadowRoot) {
           this.attachShadow({
             mode: 'open'
           });
-          this.shadowRoot.append(...content);
-        } else {
-          this.__content = content;
+          this.shadowRoot.append(...this.__content);
         }
       }
     }

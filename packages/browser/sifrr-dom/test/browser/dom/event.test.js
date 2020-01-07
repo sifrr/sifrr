@@ -1,8 +1,10 @@
 let client, documentId;
 async function getListeners(type = '') {
-  return (await client.send('DOMDebugger.getEventListeners', {
-    objectId: documentId
-  })).listeners.filter(l => l.type.indexOf(type) >= 0);
+  return (
+    await client.send('DOMDebugger.getEventListeners', {
+      objectId: documentId
+    })
+  ).listeners.filter(l => l.type.indexOf(type) >= 0);
 }
 
 describe('Sifrr.Dom.Event', () => {

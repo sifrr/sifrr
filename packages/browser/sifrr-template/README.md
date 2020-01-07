@@ -414,3 +414,62 @@ html`
   ></div>
 `; // console.log will be called whenever style prop changes
 ```
+
+### Tips
+
+- Since the changes in dom are per binding based, try to keep each binding as independent as possible. So, in future it will be easier to extract out the binding into a new component
+
+- use memo and oldvalue passing for max performace
+
+```jsx
+// in react you would generally do
+// recreates component on every change in loading
+loading ? <Loader /> : <SomeComponent />;
+
+// in sifrr you would do
+// recreates component on every change in loading
+html`
+  ${({ loading }) => (loading ? Loader() : SomeComponent())}
+`;
+
+// and for max performace
+// reuses old component if available on change in loading
+html`
+  ${memo(({ loading }) => (loading ? Loader() : SomeComponent()), ['loading'])}
+`;
+
+// don't memo for simple bindings which are fast already eg. `${({ text }) => text}`
+```
+
+```jsx
+// in react you would do
+// updates old dom
+<Loader prop1={prop1} />;
+
+// in sifrr you would do
+// recreates component on every update, slow
+html`
+  ${({ prop1 }) => Loader({ prop1 }))}
+`;
+
+// recreates component on every update in prop1, a bit better
+html`
+  ${memo(({ prop1 }) => Loader({ prop1 }), ['prop1'])}
+`;
+
+// reuses old component if available on change in loading
+html`
+  ${({ prop1 }, oldValue) => Loader({prop1}, oldValue))}
+`; // note that this only works when you are returning same component everytime (which is recommended)
+```
+
+- Binding functions can use any javascript object/variable from outside, and the context will be retained on every update
+  eg.
+
+```js
+let i = 0;
+
+html`
+  ${() => i++}
+`; // renders i and increases i on every update
+```

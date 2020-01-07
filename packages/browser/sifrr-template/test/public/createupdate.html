@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head> </head>
+  <body>
+    <h1>OK</h1>
+    <script src="/sifrr.template.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var { html, update } = Sifrr.Template;
+      /* eslint-disable */
+      var seText = html`
+        abcd
+      `()[0];
+
+      var seTextState = html`
+        ${({ text }) => text}
+      `({ text: 'yay' })[0];
+
+      var seBasic = html`
+        <div><p>abcd</p></div>
+      `()[0];
+
+      var seMultipleChild = html`
+        <div></div>
+        <p></p>
+      `();
+
+      var seStateBase = html`
+        <p>${({ p }) => p}</p>
+      `({ p: 'default' })[0];
+      var seState = seStateBase;
+
+      var seExtra = html`
+        <div>
+          <p>${({ p }) => p}</p>
+          <span></span>
+        </div>
+      `({
+        p: 'default'
+      })[0];
+
+      var seAttr = html`
+        <div>
+          <p data-attr=${({ attr }) => attr} class="${({ className }) => className}">
+            ${({ text }) => text}
+          </p>
+        </div>
+      `()[0];
+
+      var seComment = html`
+        <p>ab<!-- ${({ comment }) => comment} -->cd</p>
+      `({ comment: 'comment' })[0];
+    </script>
+  </body>
+</html>
