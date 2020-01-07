@@ -81,11 +81,12 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './')
   .split(/[ ,\n]/g)
   .map(p => path.join(__dirname, '../../', p));
-const { runTests, exec } = require('@sifrr/dev');
+const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
   const preCommand = [];
   if (!dontRunPrecommand) {
+    preCommand.push(`cd ${root} && yarn build`);
     if (fs.existsSync(path.join(root, './test/public/package.json'))) {
       preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
     }
