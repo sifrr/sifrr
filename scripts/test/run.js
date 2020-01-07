@@ -112,7 +112,7 @@ const options = roots.map((root, i) => {
       ],
       coverage: path.join(__dirname, '../../.nyc_output')
     },
-    sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
+    sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.(js|ts)$/,
     junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
     reporters,
     mochaOptions: {
