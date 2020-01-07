@@ -3,7 +3,62 @@ const { html, css, update, memo } = Sifrr.Template;
 const store = {
   backgrounds: [
     {
-      src: './bg1.jpg',
+      src: './wall1.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 31,
+        top: 24,
+        height: 312,
+        width: 312
+      }
+    },
+    {
+      src: './wall2.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 92,
+        top: 46,
+        height: 316,
+        width: 316
+      }
+    },
+    {
+      src: './wall3.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 88,
+        top: 27,
+        height: 323,
+        width: 323
+      }
+    },
+    {
+      src: './wall4.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 70,
+        top: 24,
+        height: 364,
+        width: 364
+      }
+    },
+    {
+      src: './wall5.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 98,
+        top: 55,
+        height: 308,
+        width: 308
+      }
+    },
+    {
+      src: './wall7.jpg',
       height: 500,
       width: 500,
       clockPosition: {
@@ -14,7 +69,51 @@ const store = {
       }
     },
     {
-      src: './bg2.jpg',
+      src: './wall8.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 150,
+        top: 150,
+        height: 70,
+        width: 70
+      }
+    },
+    {
+      src: './wall9.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 100,
+        top: 100,
+        height: 100,
+        width: 100
+      }
+    },
+    {
+      src: './wall10.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 150,
+        top: 150,
+        height: 70,
+        width: 70
+      }
+    },
+    {
+      src: './wall11.jpg',
+      height: 500,
+      width: 500,
+      clockPosition: {
+        left: 100,
+        top: 100,
+        height: 100,
+        width: 100
+      }
+    },
+    {
+      src: './wall12.jpg',
       height: 500,
       width: 500,
       clockPosition: {
@@ -25,11 +124,15 @@ const store = {
       }
     }
   ],
-  selectedBg: './bg1.jpg',
+  selectedBg: './wall1.jpg',
   clock: ''
 };
 
 const getSelectedBg = () => store.backgrounds.find(bg => bg.src === store.selectedBg);
+const setSelectedBg = bg => {
+  store.selectedBg = bg;
+  store.update();
+};
 
 const main = document.getElementById('main');
 
@@ -40,6 +143,7 @@ const CSS = css`
     padding: 0;
   }
   * {
+    box-sizing: border-box;
     transition: all 0.3s ease-in-out;
   }
   #main {
@@ -48,12 +152,68 @@ const CSS = css`
   .row {
     display: flex;
   }
+  button {
+    padding: 4px;
+  }
 `;
 
 const Option = html`
   <option value=${({ value }) => value} selected=${({ selected }) => selected}
     >${({ label }) => label}</option
   >
+`;
+
+const NumInput = html`
+  <style>
+    .span-b {
+      height: 32px;
+      width: 32px;
+      display: inline-block;
+      padding: 8px;
+      border: 1px solid black;
+      vertical-align: bottom;
+    }
+    .span-h {
+      width: 60px;
+      display: inline-block;
+    }
+    .n-input {
+      height: 32px;
+      width: 60px;
+      vertical-align: bottom;
+      text-align: center;
+    }
+  </style>
+  <div ::style=${{ padding: '4px' }}>
+    <span class="span-h">${({ name }) => name}</span>
+    <span
+      class="span-b"
+      :onclick=${({ value, name }) => () => {
+        value[name] = value[name] - 1;
+        store.update();
+      }}
+      >-</span
+    >
+    <input
+      class="n-input"
+      type="number"
+      min="0"
+      name=${({ name }) => name}
+      :value=${({ value, name }) => value[name]}
+      :onchange=${({ value, name }) => e => {
+        value[name] = parseInt(e.target.value);
+        store.update();
+      }}
+    />
+    <span
+      class="span-b"
+      :onclick=${({ value, name }) => () => {
+        value[name] = value[name] + 1;
+        store.update();
+      }}
+      >+</span
+    >
+  </div>
 `;
 
 const Temp = html`
@@ -68,12 +228,24 @@ const Temp = html`
         return {
           width: `${bg.width}px`,
           height: `${bg.height}px`,
-          backgroundImage: `url(${bg.src})`,
-          backgroundSize: 'cover',
           position: 'relative'
         };
       }}
     >
+      <img
+        src=${() => {
+          const bg = getSelectedBg();
+          return bg.src;
+        }}
+        ::style=${{
+          position: 'absolute',
+          zIndex: 1,
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      />
       <img
         src=${({ clock }) => clock}
         :style=${() => {
@@ -82,6 +254,7 @@ const Temp = html`
           const cp = bg.clockPosition;
           return {
             position: 'absolute',
+            zIndex: 2,
             width: `${cp.width}px`,
             height: `${cp.height}px`,
             left: `${cp.left}px`,
@@ -92,12 +265,7 @@ const Temp = html`
     </div>
     <div :style=${memo(() => ({ padding: '16px' }))}>
       <label for="bg-select">Select Background</label>
-      <select
-        ::onchange=${e => {
-          store.selectedBg = e.target.value;
-          store.update();
-        }}
-      >
+      <select ::onchange=${e => setSelectedBg(e.target.value)}>
         ${({ backgrounds, selectedBg }) =>
           backgrounds.map(bg =>
             Option({
@@ -128,25 +296,37 @@ const Temp = html`
           }}
         />
       </div>
-      <div ::style="${{ paddingTop: '20px' }}">
-        <button
-          :style=${memo(({ clock }) => (clock ? {} : { display: 'none' }), ['clock'])}
-          ::onclick=${() => {
-            window
-              .html2canvas(document.querySelector('#container'), {
-                scale: 5
-              })
-              .then(canvas => {
-                const image = canvas
-                  .toDataURL('image/jpeg')
-                  .replace('image/jpeg', 'image/octet-stream');
-                window.downloadImage(image, 'clock.jpg');
-              });
+      <div ::style="${{ padding: '20px 0' }}">
+        <div>
+          ${() => {
+            const selectedBg = getSelectedBg();
+            return [
+              NumInput({ value: selectedBg.clockPosition, name: 'left' }),
+              NumInput({ value: selectedBg.clockPosition, name: 'top' }),
+              NumInput({ value: selectedBg.clockPosition, name: 'width' }),
+              NumInput({ value: selectedBg.clockPosition, name: 'height' })
+            ];
           }}
-        >
-          Download image
-        </button>
+        </div>
       </div>
+      <button
+        :style=${memo(({ clock }) => (clock ? {} : { display: 'none' }), ['clock'])}
+        ::onclick=${() => {
+          window
+            .html2canvas(document.querySelector('#container'), {
+              scale: 5
+            })
+            .then(canvas => {
+              store.update();
+              const image = canvas
+                .toDataURL('image/jpeg')
+                .replace('image/jpeg', 'image/octet-stream');
+              window.downloadImage(image, 'clock.jpg');
+            });
+        }}
+      >
+        Download image
+      </button>
     </div>
   </div>
 `;

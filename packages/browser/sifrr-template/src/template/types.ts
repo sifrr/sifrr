@@ -60,7 +60,6 @@ export type SifrrBindMap<T> =  // T = props type of parent
       type: SifrrBindType.DirectProp;
       name: string;
       value: any;
-      set: boolean;
     };
 
 // ref map for each base template element
@@ -76,6 +75,7 @@ export type SifrrRefCollection<T> = {
   node: Node;
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
+  bindingSet: any[];
 };
 
 // uid -> fxn

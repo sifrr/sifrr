@@ -42,7 +42,8 @@ export function collect<T>(
     refs[i] = {
       node: <Node>element,
       currentValues: collectValues(<Node>element, refMap[i].map),
-      bindMap: refMap[i].map
+      bindMap: refMap[i].map,
+      bindingSet: new Array(l)
     };
   }
   return refs;

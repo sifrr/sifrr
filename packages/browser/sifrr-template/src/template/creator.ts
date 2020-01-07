@@ -85,8 +85,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         bm.push({
           type: SifrrBindType.DirectProp,
           name: attrToProp(attribute.name).substr(1),
-          value: functionMap.get(middleMatch[1]),
-          set: false
+          value: functionMap.get(middleMatch[1])
         });
       } else if (attribute.name[0] === ':') {
         bm.push({

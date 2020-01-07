@@ -23,7 +23,7 @@ export default function update<T>(
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
-    const { node, bindMap, currentValues } = refs[i];
+    const { node, bindMap, currentValues, bindingSet } = refs[i];
     const hasOnPropChange = !!(<SifrrNode<any>>node).onPropChange;
 
     for (let j = bindMap.length - 1; j > -1; --j) {
@@ -31,14 +31,14 @@ export default function update<T>(
 
       // special direct props (events/style)
       if (binding.type === SifrrBindType.DirectProp) {
-        if (!binding.set) {
-          binding.set = true;
+        if (!bindingSet[j]) {
+          bindingSet[j] = true;
           if (binding.name === 'style') {
             const newValue = binding.value || emptyObj;
             const keys = Object.keys(newValue),
               len = keys.length;
             for (let i = 0; i < len; i++) {
-              (<HTMLElement>node).style[keys[i]] = newValue[keys[i]] || ''; // remove undefined with empty string
+              (<HTMLElement>node).style[keys[i]] = `${newValue[keys[i]]}`; // remove undefined with empty string
             }
           } else node[binding.name] = binding.value;
         }
@@ -111,7 +111,7 @@ function updateOne<T>(
       // add new properties
       for (let i = 0; i < newl; i++) {
         if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
-          (<HTMLElement>node).style[newKeys[i]] = newValue[newKeys[i]] || ''; // remove undefined with empty string
+          (<HTMLElement>node).style[newKeys[i]] = `${newValue[newKeys[i]]}`;
         }
       }
       for (let i = 0; i < oldl; i++) {
