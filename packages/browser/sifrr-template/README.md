@@ -143,6 +143,7 @@ here `div.onclick` will be equal to `event => console.log(event.target)` and sty
 **Notes**
 
 - direct bindings are used as is and are never recalculated.
+- direct binding only works with object and functions. so if you want to set a prop to constant string, you need to do `${() => 'value'}`, `${'value'}` doesn't work and will just set it as attribute
 - prop names are case insensitive and hyphen-case will be converted to camelCase. eg. `some-prop` will be changed to `someProp`
 
 ### Advanced Usage
