@@ -79,10 +79,9 @@ function updateOne<T>(
   newValue: any,
   hasOnPropChange: boolean
 ) {
-  if (oldValue === newValue) return oldValue;
-
   // text
   if (binding.type === SifrrBindType.Text) {
+    if (oldValue === newValue) return oldValue;
     // fast path for one text node
     if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
       if (typeof newValue !== 'object') {
@@ -121,9 +120,11 @@ function updateOne<T>(
         }
       }
     } else {
+      oldValue = node[binding.name];
       node[binding.name] = newValue;
     }
-    hasOnPropChange && (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
+    if (oldValue !== newValue && hasOnPropChange)
+      (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
   }
   typeof (<SifrrNode<any>>node).update === 'function' && (<SifrrNode<any>>node).update();
   return newValue;

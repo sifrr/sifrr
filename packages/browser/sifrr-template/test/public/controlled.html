@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>controlled</title>
+  </head>
+  <body>
+    <div id="main"></div>
+    <script src="/sifrr.template.js"></script>
+    <script>
+      const { html, update } = Sifrr.Template;
+      var value = '';
+      var tavalue = '';
+      var cevalue = '';
+      var updater = {
+        update: () => {}
+      };
+      const a = html`
+        <input
+          :value=${() => value}
+          ::oninput=${e => {
+            value = e.target.value;
+            updater.update();
+          }}
+        />
+        <textarea
+          :value=${() => value}
+          ::oninput=${e => {
+            tavalue = e.target.value;
+            updater.update();
+          }}
+        ></textarea>
+        <div
+          contenteditable
+          ::oninput=${e => {
+            cevalue = e.target.innerText;
+            updater.update();
+          }}
+        >
+          ${() => cevalue}
+        </div>
+        <p>${() => tavalue}</p>
+      `({});
+      updater.update = () => update(a, {});
+      document.getElementById('main').append(...a);
+    </script>
+  </body>
+</html>
