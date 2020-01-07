@@ -8,17 +8,17 @@ function getArg(name) {
 }
 
 let benchmarks = [
-  '1k-run',
-  '10k-run',
-  '1k-replace',
-  '10k-replace',
-  '1k-clear',
-  '10k-clear',
-  '1k-swap',
-  '1k-select',
-  '1k-delete',
-  '10k-update10th',
-  '1k-append'
+  '1k-run'
+  // '10k-run',
+  // '1k-replace',
+  // '10k-replace',
+  // '1k-clear',
+  // '10k-clear',
+  // '1k-swap',
+  // '1k-select',
+  // '1k-delete',
+  // '10k-update10th',
+  // '1k-append'
 ];
 const runs = parseInt(getArg('runs') || 1, 10),
   warmups = parseInt(getArg('warmups') || 1, 10);
