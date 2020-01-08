@@ -23,7 +23,7 @@ class Loader {
     return (
       (this._exec = (<typeof Loader>this.constructor).executeJS(this.getUrl()).catch((e: any) => {
         console.error(e);
-        console.log(`JS file for '${this.elementName}' gave error.`);
+        console.log(`File for '${this.elementName}' gave error.`);
       })),
       this._exec
     );
@@ -31,15 +31,18 @@ class Loader {
 
   getUrl() {
     if (this.url) return this.url;
+    if (config.urls[this.elementName]) return config.urls[this.elementName];
     if (typeof config.url === 'function') return config.url(this.elementName);
-    return `${config.baseUrl + '/'}elements/${this.elementName}.js`;
+    throw Error(
+      `Can not get url for element: ${this.elementName}. Provide url in load or set urls or url function in config.`
+    );
   }
 
-  static getFile(url: RequestInfo) {
+  private static getFile(url: RequestInfo) {
     return window.fetch(url).then(resp => resp.text());
   }
 
-  static executeJS(url: string): Promise<unknown> {
+  private static executeJS(url: string): Promise<unknown> {
     return this.getFile(url).then(script => {
       return new Function(script + `\n //# sourceURL=${url}`).call(window);
     });

@@ -34,11 +34,13 @@ function register(
       Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`)
     );
   } else {
-    let before;
+    let before: Promise<any>;
     if (Array.isArray(dependsOn)) {
       before = Promise.all(dependsOn.map(en => load(en)));
     } else if (typeof dependsOn === 'string') {
       before = load(dependsOn);
+    } else if (typeof before === 'object' && before !== null) {
+      before = Promise.all(Object.keys(dependsOn).map(k => load(k, dependsOn[k])));
     } else before = Promise.resolve(true);
     const registeringPromise = before.then(() =>
       window.customElements.define(name, Element, options)
@@ -56,21 +58,17 @@ function register(
 }
 
 // Initialize SifrrDom
-function setup(newConfig: typeof config) {
+function setup(newConfig?: typeof config) {
   HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
   document.$$ = document.querySelectorAll;
   Object.assign(config, newConfig);
-
-  if (typeof config.baseUrl !== 'string' && typeof config.url !== 'function')
-    throw Error('baseUrl should be a string, or url should be a function');
-
   config.events.forEach(e => Event.add(e));
 }
 
 // Load Element HTML/JS and execute script in it
-function load(elemName: string, { url = null } = {}) {
+function load(elemName: string, url = null) {
   if (window.customElements.get(elemName)) {
     return Promise.resolve();
   }
@@ -83,13 +81,10 @@ function load(elemName: string, { url = null } = {}) {
       if (!window.customElements.get(elemName)) {
         window.console.warn(`Executing '${elemName}' file didn't register the element.`);
       }
-      delete registering[elemName];
-      delete loadingElements[elemName];
     })
-    .catch(e => {
+    .finally(() => {
       delete registering[elemName];
       delete loadingElements[elemName];
-      throw e;
     });
 }
 
