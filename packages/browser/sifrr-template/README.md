@@ -25,11 +25,11 @@ A superfast HTML in JS Templating engine that powers @sifrr/dom. Inspired from `
 ### Basic Usage
 
 ```js
-const { html, update } = require('@sifrr/template'); // node require
-import { html, update } from '@sifrr/template'; // es module
-const { html, update } = Sifrr.Template; // if distribution files are used directly
+const { html } = require('@sifrr/template'); // node require
+import { html } from '@sifrr/template'; // es module
+const { html } = Sifrr.Template; // if distribution files are used directly
 
-// define a template
+// define a Component
 const MainTemplate = html`
   <div>
     ${({ name }) => name}
@@ -45,8 +45,9 @@ document.body.append(...mainTemplateInstance);
 // <div>Aaditya</div>
 // inside body
 
-// updating template
-update(mainTemplateInstance, { name: 'new name' });
+// updating component instance
+// pass old instance to your Component function as second argument
+MainTemplate({ name: 'new name' }, mainTemplateInstance);
 // this will update the rendered html to
 // <div>new name</div>
 // all bindings are recalculated and rendered if needed on update call
@@ -58,8 +59,8 @@ update(mainTemplateInstance, { name: 'new name' });
 The functions (`${({ name }) => name}`) in between your html template literal you passed to `html` function are called bindings.
 Functions are not used, rather the return value of these functions are used.
 
-First argument in binding function is `props` passed in when creating/updating template instance.
-Second argument is oldValue (value returned by binding in last render) of that binding.
+First argument in binding function is `props` passed in when creating/updating component instance.
+Second argument is oldValue (current dom nodes present or last returned value of this function) of that binding.
 
 All arguments given in binding function are immutable. Avoid updating them, else there might be unintended effects.
 
@@ -115,7 +116,7 @@ return value of binding function is used
 ```js
 html`
   <div id="divElement" :name=${({ name }) => name}></div>
-`;
+`; // async functions work here as well
 
 // now
 document.querySelector('#divElement').name === props.name;
@@ -143,14 +144,14 @@ here `div.onclick` will be equal to `event => console.log(event.target)` and sty
 **Notes**
 
 - direct bindings are used as is and are never recalculated.
-- direct binding only works with object and functions. so if you want to set a prop to constant string, you need to do `${() => 'value'}`, `${'value'}` doesn't work and will just set it as attribute
-- prop names are case insensitive and hyphen-case will be converted to camelCase. eg. `some-prop` will be changed to `someProp`
+- direct binding only works with object and functions. so if you want to set a prop to constant string, you need to do `${() => 'value'}`, `${'value'}` doesn't work and will just set it as an attribute
+- prop names are case insensitive and hyphen-case will be converted to camelCase. eg. `some-prop` will be `someProp` prop
 
 ### Advanced Usage
 
-#### Using another template in binding
+#### Using another Component in binding
 
-maybe you want to break a template into two parts that uses same props
+maybe you want to break a Component into two parts that uses same props
 
 ```JavaScript
 const HTML1 = html`
@@ -174,7 +175,7 @@ const CombinedHTML = html`
 const renderHtml = CombinedHTML({ name: 'Aaditya', address: 'Tokyo' });
 ```
 
-OR render a template inside another template
+OR render a Component inside another Component
 
 ```JavaScript
 const HTML1 = html`
@@ -200,9 +201,9 @@ const renderHtml = CombinedHTML({ firstName: 'Aaditya', lastName: 'Taparia', cit
 
 ##### Optimizing Performance
 
-By default new template instance will be created whenever CombinedHTML is updated. But since we are only changing props, we can reuse old rendered template and update that.
+By default new Component instance will be created whenever CombinedHTML is updated. But since we are only changing props, we can reuse old rendered instance and update that.
 This is much more performant, since it only updates dom where needed, instead of replacing everything and creating new dom nodes.
-You can do this by passing oldValue to template creator functions, and it will update old template if present else create new template.
+You can do this by passing oldValue to Component creator function, and it will update old instance if present else create new instance.
 
 ```js
 // combine
@@ -215,12 +216,12 @@ const CombinedHTML = html`
 </div>
 ```
 
-This was already handled in first case where you were directly giving template creator function in binding `${HTML1}`
+This was already handled in first case where you were directly giving Component creator function in binding `${HTML1}`
 
-#### CSS - special template
+#### CSS - special Component
 
 ```js
-import { html, css, update } from '@sifrr/template';
+import { html, css } from '@sifrr/template';
 
 const CSSForTemplate = css`
   p {
@@ -244,7 +245,7 @@ const para = HTML({ color: 'red' });
 // <p>This text will be of red color</p>
 
 // updating
-update(para, { color: 'blue' }); // you can guess what will happen
+HTML({ color: 'blue' }, para); // you can guess what will happen
 ```
 
 #### For Loop
@@ -252,7 +253,7 @@ update(para, { color: 'blue' }); // you can guess what will happen
 - Normal
 
 ```js
-import { html, css, update } from '@sifrr/template';
+import { html, css } from '@sifrr/template';
 
 const Row = html`
   <tr>
@@ -291,7 +292,7 @@ Table({ data: [{ id: '1' }, { id: '2' }] });
 - Non keyed (more performant than looping yourself)
 
 ```js
-import { html, css, update, bindFor } from '@sifrr/template';
+import { html, css, bindFor } from '@sifrr/template';
 
 const Row = html`
   <tr>
@@ -321,10 +322,10 @@ Table({ data: [{ id: '1' }, { id: '2' }] });
 
 - Keyed (read more about keyed updates [here](https://reactjs.org/docs/reconciliation.html#keys))
 
-Provide key prop to all data (equivalent to react's `key` prop)
+Provide key prop in all array elements (equivalent to react's `key` prop)
 
 ```js
-import { html, css, update, bindForKeyed } from '@sifrr/template';
+import { html, css, bindForKeyed } from '@sifrr/template';
 
 const Row = html`
   <tr>
@@ -340,7 +341,7 @@ const Table = html`
 
 Table({
   data: [
-    { id: '1', key: 1 },
+    { id: '1', key: 1 }, // this key will be compared during reconciliation
     { id: '2', key: 2 }
   ]
 });
@@ -416,11 +417,61 @@ html`
 `; // console.log will be called whenever style prop changes
 ```
 
+#### Wrapping a Component / Higher Order Component
+
+You can wrap a Component like this to create new component, just pass oldValue with props as well
+
+```js
+const ComponentA = html`
+  ${({ name }) => name}
+`;
+
+// suspense like component, can be used directly in bindings easily
+const ComponentB = async ({ userId }, oldValue) => {
+  const name = await client.fetchUserName(userId);
+  return ComponentA({ name }, oldValue /* remember to pass oldValue for performance */);
+};
+```
+
+#### Async Components (can be used directly in bindings)
+
+```js
+// from above example
+// append yourself
+ComponentB({ userId: 1 }).then(els => document.body.append(...els));
+
+// use in bindings
+html`
+  Name: ${({ user }, oldValue) => ComponentB({ userId: user.id }, oldValue)}
+`;
+```
+
 ### Tips
+
+- Don't create new Template in a function, doing this will create new template on every function call.
+
+```js
+// bad
+function some({ name }) {
+  // do something
+  return html`
+    <p></p>
+  `({});
+}
+
+// good
+const HTML = html`
+  <p></p>
+`;
+function some({ name }) {
+  // do something
+  return HTML({});
+}
+```
 
 - Since the changes in dom are per binding based, try to keep each binding as independent as possible. So, in future it will be easier to extract out the binding into a new component
 
-- use memo and oldvalue passing for max performace
+- use memo and oldvalue passing for max performance
 
 ```jsx
 // in react you would generally do
@@ -433,7 +484,7 @@ html`
   ${({ loading }) => (loading ? Loader() : SomeComponent())}
 `;
 
-// and for max performace
+// and for max performance
 // reuses old component if available on change in loading
 html`
   ${memo(({ loading }) => (loading ? Loader() : SomeComponent()), ['loading'])}
