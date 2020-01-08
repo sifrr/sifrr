@@ -3,7 +3,7 @@ import { create, collect, cleanEmptyNodes } from './ref';
 import { SifrrProps, SifrrCreateFunction, SifrrNode, DomBindingReturnValue } from './types';
 import creator from './creator';
 import update from './update';
-import { TEXT_NODE, SIFRR_FRAGMENT } from './constants';
+import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
 
 let tempNum = 1;
 
@@ -15,18 +15,17 @@ const createTemplate = <T>(
   const template = createTemplateFromString(mergedString);
   cleanEmptyNodes(template.content);
 
-  const childNodes = Array.prototype.slice.call(template.content.childNodes),
+  const childNodes: ChildNode[] = Array.prototype.slice.call(template.content.childNodes),
     nodeLength = childNodes.length;
   const refMaps = childNodes.map((cn, i) => {
-    const refs = create<T>(cn, creator, functionMap);
     // special case of binding in topmost element
-    if (cn.nodeType === TEXT_NODE && refs.length === 1) {
+    if (cn.nodeType === TEXT_NODE && (<Text>cn).data.match(REF_REG)) {
       const newFragment = SIFRR_FRAGMENT();
       cn.replaceWith(newFragment);
       newFragment.appendChild(cn);
-      refs[0].idx++;
       childNodes[i] = newFragment;
     }
+    const refs = create<T>(childNodes[i], creator, functionMap);
     return refs;
   });
   const tempNums = childNodes.map(() => tempNum++);
@@ -49,10 +48,21 @@ const createTemplate = <T>(
 
   // cloning this template, can be used as binding function in another template
   const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNode<T>[]) => {
-    if (oldValue && isSameSifrrNode(oldValue, tempNums)) {
-      oldValue.forEach(ov => update(ov, props));
-      (<DomBindingReturnValue>oldValue).isRendered = true;
-      return oldValue;
+    if (oldValue) {
+      if (isSameSifrrNode(oldValue, tempNums)) {
+        oldValue.forEach(ov => update(ov, props));
+        (<DomBindingReturnValue>oldValue).isRendered = true;
+        return oldValue;
+      } else if (!Array.isArray(oldValue)) {
+        console.warn(`oldValue given to Component function was not an Array.
+        template: \`${String.raw(str, ...substitutions)}\``);
+      } else if (oldValue.length > 0) {
+        console.warn(`oldValue given to Component function was not created by this Component. 
+        This might be a bug or caused if you return different 
+        components in same binding function.
+        old nodes given: ${oldValue}
+        template: \`${String.raw(str, ...substitutions)}\``);
+      }
     }
     return clone(props);
   };

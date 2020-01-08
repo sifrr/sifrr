@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Async</title>
+  </head>
+  <body>
+    <div id="inside"></div>
+    <div id="hoc"></div>
+    <script src="/sifrr.template.js"></script>
+    <script>
+      const { html } = Sifrr.Template;
+
+      var Component = html`
+        Name:
+        ${({ id }) =>
+          fetch('/user.json')
+            .then(res => res.json())
+            .then(data => data[id].firstname + ' ' + data[id].lastname)}<br />
+        Id:
+        ${({ id }) =>
+          fetch('/user.json')
+            .then(res => res.json())
+            .then(data => data[id].id)}
+      `;
+      document.getElementById('inside').append(...Component({ id: '1' }));
+
+      var Component1 = html`
+        Name: ${({ firstname, lastname }) => firstname + ' ' + lastname}<br />
+        Id: ${({ id }) => id}
+      `;
+
+      var Component2 = async ({ id }, oldValue) => {
+        return Component1(
+          await fetch('/user.json')
+            .then(res => res.json())
+            .then(d => d[id]),
+          oldValue
+        );
+      };
+      Component2({ id: '2' }).then(els => document.getElementById('hoc').append(...els));
+    </script>
+  </body>
+</html>
