@@ -24,7 +24,7 @@ export default function update<T>(
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
     const { node, bindMap, currentValues, bindingSet } = refs[i];
-    const hasOnPropChange = !!(<SifrrNode<any>>node).onPropChange;
+    const hasOnPropChange = typeof (<SifrrNode<any>>node).onPropChange === 'function';
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];

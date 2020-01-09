@@ -469,7 +469,9 @@ function some({ name }) {
 }
 ```
 
-- Since the changes in dom are per binding based, try to keep each binding as independent as possible. So, in future it will be easier to extract out the binding into a new component
+- Since the changes in dom are per binding based, try to keep each binding as independent as possible. So, in future it will be easier to extract out the binding into a new component.
+
+- Order in which bindings are calculated is not fixed, so don't bet on it
 
 - use memo and oldvalue passing for max performance
 
