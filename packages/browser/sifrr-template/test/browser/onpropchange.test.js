@@ -3,28 +3,33 @@ describe('.onPropChange and .update', () => {
     await page.goto(`${PATH}/async.html`);
   });
 
-  it('calls onPropChange', async () => {
+  it('calls onPropChange on every prop and update once', async () => {
     assert.deepEqual(
-      await page.evaluate(() => {
+      await page.evaluate(async () => {
         let i = 0;
+        let b = 0;
         const a = [];
         const Temp = Sifrr.Template.html`<div :prop1=${() => i++} :prop2=${() =>
           i++} ::on-prop-change=${(name, oldValue, newValue) =>
-          a.push({ name, oldValue, newValue })}></div>`;
+          a.push({ name, oldValue, newValue })} ::update=${() => b++}></div>`;
         Temp({}, Temp({}));
-        return a;
+        await new Promise(res => setTimeout(res, 1));
+        return [a, b];
       }),
       [
-        {
-          name: 'prop2',
-          oldValue: 0,
-          newValue: 2
-        },
-        {
-          name: 'prop1',
-          oldValue: 1,
-          newValue: 3
-        }
+        [
+          {
+            name: 'prop2',
+            oldValue: 0,
+            newValue: 2
+          },
+          {
+            name: 'prop1',
+            oldValue: 1,
+            newValue: 3
+          }
+        ],
+        1
       ]
     );
   });
