@@ -13,17 +13,10 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 
 ## Tradeoffs
 
-- :+1: Small Size
+- :+1: Uses @sifrr/template and adds custom elements, prop/state management on top of it
 - :+1: Use latest web API standards (custom elements v1)
 - :+1: CSS scoping with shadow root
 - :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
-- :+1: Small learning curve, as you use only HTML, CSS, and JS (you can use other things too if you want to though)
-- :+1: Pure DOM bindings (one-way, two-way), without any virtual DOM,
-- :+1: still [fast(er)](#performance-comparison) (just ~10-20% slower than vanillaJS)
-- :-1: No virtual Dom (if that matters to you)
-- :+1: Low memory usage (just ~10-20% more than vanillaJS)
-- :+1: Works without transpiling any code (no special syntax like jsx), and can be hosted with only a static server
-- :+1: has Keyed implementation
 - :+1: In-built Synthetic event listeners and custom events
 
 ## Performance Comparison
@@ -39,46 +32,42 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 Add script tag in your website.
 
 ```html
+<!-- Sifrr.Template is also required -->
+<script src="https://unpkg.com/@sifrr/template@{version}/dist/sifrr.template.min.js"></script>
 <script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
 ```
 
 #### Browser API support needed for
 
-| APIs                                                   | caniuse                                       | polyfills                                          |
-| :----------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------- |
-| Custom Elements v1                                     | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
-| Promises API                                           | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
-| Shadow DOM v1                                          | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
-| Shadow DOM CSS v1 (if you are using ShadyDOM polyfill) | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadycss>        |
-| ES6 Modules (if you use type='module' on script tag)   | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
-| Fetch API (if you use `Sifrr.Dom.load`)                | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
+| APIs                                                 | caniuse                                       | polyfills                                          |
+| :--------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------- |
+| Custom Elements v1                                   | <https://caniuse.com/#feat=custom-elementsv1> | <https://github.com/webcomponents/custom-elements> |
+| Promises API                                         | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
+| Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
+| ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
+| Fetch API (if you use `Sifrr.Dom.load`)              | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
 
 If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
 ### Using npm
 
-Do `npm i @sifrr/dom` or `yarn add @sifrr/dom` or add the package to your `package.json` file.
+Do `npm i @sifrr/template @sifrr/dom` or `yarn add @sifrr/template @sifrr/dom` or add the package to your `package.json` file.
 
-example, put in your frontend js module (compatible with webpack/rollup/etc):
+Put in your frontend js module (compatible with webpack/rollup/etc).
 
-**Note**: setup will set `sifrr-dom` to global variable `window.Sifrr.Dom`.
-
-#### Commonjs
+#### Importing
 
 ```js
-// index.js
+// node require
+const { setup } = require('@sifrr/dom');
 
-const SifrrDom = require('@sifrr/dom');
-SifrrDom.setup();
-```
-
-#### ES modules
-
-```js
-// index.js
-
+// es6 module - supports both named and default export
+import { setup } from '@sifrr/dom';
 import SifrrDom from '@sifrr/dom';
-SifrrDom.setup();
+const { setup } = SifrrDom;
+
+// if using script tag
+const { setup } = Sifrr.Dom;
 ```
 
 ## Basic API usage
@@ -90,9 +79,12 @@ SifrrDom.setup();
 
 // Default Setup Config for Sifrr Dom
 const config = {
-  baseUrl: '', // base url for sifrr elements, should start with '/' and should not end with '/'
-  useShadowRoot: true, // use shadow root by default or not
-  events: [] // synthetic event listerners to add, read more in Synthetic Events section
+  events: ['input', 'change', 'update'], // synthetic event listerners to add, read more in Synthetic Events section
+  // config below will be used by `load` to figure out url of the element name given
+  urls: {
+    'element-name': '/element/name.js' // key-value pairs or element name and urls
+  },
+  url: null // function to get url of an element
 };
 // Set up Sifrr-Dom
 Sifrr.Dom.setup(config);
@@ -100,89 +92,55 @@ Sifrr.Dom.setup(config);
 
 ### Sifrr element
 
-**Note**: `Sifrr.Dom.load` requires Fetch API to work.
-
-#### HTML Element (can be used as static files)
-
-```html
-<!-- ${baseUrl}/elements/custom/tag.html  -->
-
-<template>
-  <style media="screen">
-    p {
-      color: blue; // Only applies to p's inside this element if useShadowRoot is true in setup config
-    }
-  </style>
-  <!-- Contents for element, this in binding ${} refers to the custom element itself -->
-  <!-- Bindings are updated automatically on state change -->
-  <p attr="${this.state.attr}">${this.state.id}</p>
-  <p>${this.data()}</p>
-  <!-- If you are using any custom methods in bindings, it is better they are based on state so that they are updated on state change -->
-</template>
-<script type="text/javascript">
-  // elements name will be changing class name from camelcase to dash separated
-  // eg. CutomTag -> custom-tag, LongCrazyNameElement -> long-crazy-name-element
-  class CustomTag extends Sifrr.Dom.Element {
-    // other methods for the custom element
-    data() {
-      return this.state.id * 2;
-    }
-  }
-  CustomTag.defaultState = {
-    // default state for this element
-    id: 1,
-    attr: 'abcd'
-  };
-  Sifrr.Dom.register(CustomTag, options);
-  // options: `dependsOn` -> Array of custom element tag names to load before registering this element, eg. `custom-tag`
-  // `extends` -> tag name of extended html element
-</script>
-```
-
-#### JS Element (If you are bundling or making exportable libraries)
-
 ```js
-// ${baseUrl}/elements/custom/tag.js
-class CustomTag extends Sifrr.Dom.Element {
+import { html } from '@sifrr/template';
+import { Element } from '@sifrr/template';
+
+class CustomTag extends Element {
   static get template() {
-    // Note if you use ${} in js template literals, you should escape it. Because ${}'s value will be resolved before being passing to Sifrr.
-    return Sifrr.Dom.template`<style media="screen">
-      p {
-        color: blue;
-      }
-    </style>
-    <p attr=\${this.state.attr}>\${this.state.id}</p>
-    <p>\${this.data()}</p>`;
+    return html`
+      <style media="screen">
+        p {
+          color: blue;
+        }
+      </style>
+      <p>${el => el.data()}</p>
+    `; // el is the element instance
   }
   // other methods for the custom element
   data() {
-    return this.state.id * 2;
+    return this.getAttribute('data');
   }
 }
-CustomTag.defaultState = {
-  // default state for this element, recommended to give a default state
-  id: 1,
-  attr: 'abcd'
-};
-Sifrr.Dom.register(CustomTag);
+Sifrr.Dom.register(CustomTag); // you should register in file itself to keep this file independently usable/downloadable
 module.exports = CustomTag;
 ```
 
 #### Loading element
 
-1.  Sifrr.Dom.load() - html elements or js elements (recommended for programmatic loading)
+**Note**: `Sifrr.Dom.load` requires Fetch API to work.
+
+1.  Sifrr.Dom.load() - downloads element file (recommended for async loading)
 
 ```js
-// index.js
+// 3 ways to declare download url for an element with load
 
+// key-value map
 const config = {
-  baseUrl: ''
+  urls: {
+    'custom-tag': '/custom-tag.js'
+  }
 };
-// Requires Fetch API
-Sifrr.Dom.load('custom-tag', (config = { url, js: true }));
-// If url is given in config, custom-tag element is loaded from that url, else
-// custom-tag element is loaded from ${baseUrl}/elements/custom/tag.js (if js === true)
-// or ${baseUrl}/elements/custom/tag.html (if js === false)
+Sifrr.Dom.load('custom-tag'); // downloads `/custom-tag.js`
+
+// url function
+const config = {
+  url: name => `/elements/${name}.js`
+};
+Sifrr.Dom.load('custom-tag'); // downloads `/elements/custom-tag.js`
+
+// url in load
+Sifrr.Dom.load('custom-tag', 'https://www.elements.com/custom-tag.js'); // download `https://www.elements.com/custom-tag.js`
 ```
 
 2.  As module - js elements only
@@ -191,22 +149,16 @@ Sifrr.Dom.load('custom-tag', (config = { url, js: true }));
 // index.html
 
 <script type="module">
-  import '${baseUrl}/elements/custom/tag';
+  import '/elements/custom-tag';
 </script>
-<script src="${baseUrl}/elements/custom/tag.js" type="module">
+<script src="/elements/custom-tag" type="module">
 ```
 
 3.  Normal script tag - js elements only (recommended for best browser support)
 
 ```js
 // index.html
-<script src="${baseUrl}/elements/custom/tag" />
-```
-
-4.  HTML imports - html elements only (not recommended - deprecated by browsers)
-
-```html
-<link rel="import" href="${baseUrl}/elements/custom/tag.html" />
+<script src="/elements/custom-tag" />
 ```
 
 #### Rendering

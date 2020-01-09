@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Style</title>
+  </head>
+  <body>
+    <script src="./sifrr.template.js"></script>
+    <script>
+      const { html } = Sifrr.Template;
+      var StyleEL = html`
+        <div id="style" :style=${({ style }) => style}></div>
+        <div
+          id="directstyle"
+          ::style=${{
+            paddingTop: '10px',
+            'margin-top': '20px'
+          }}
+        ></div>
+      `;
+      var st = StyleEL({ style: {} });
+      document.body.append(...st);
+      var setStyle = (style = {}) => {
+        return StyleEL({ style }, st);
+      };
+    </script>
+  </body>
+</html>

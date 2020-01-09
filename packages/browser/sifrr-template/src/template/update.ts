@@ -108,15 +108,15 @@ function updateOne<T>(
         oldKeys = Object.keys(oldValue),
         newl = newKeys.length,
         oldl = oldKeys.length;
+      for (let i = 0; i < oldl; i++) {
+        if (!newValue[oldKeys[i]]) {
+          (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
+        }
+      }
       // add new properties
       for (let i = 0; i < newl; i++) {
         if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
           (<HTMLElement>node).style[newKeys[i]] = `${newValue[newKeys[i]]}`;
-        }
-      }
-      for (let i = 0; i < oldl; i++) {
-        if (!newValue[oldKeys[i]]) {
-          (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
         }
       }
     } else {

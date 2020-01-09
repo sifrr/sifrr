@@ -1,12 +1,11 @@
 import config from './config';
 
 class Loader {
-  public static all = {};
+  private static all = {};
 
   private _exec: Promise<unknown>;
   public readonly elementName: string;
   public readonly url: string;
-  public template: HTMLTemplateElement;
 
   constructor(elemName: string, url?: string) {
     if (!fetch) throw Error('Sifrr.Dom.load requires window.fetch API to work.');
@@ -19,14 +18,13 @@ class Loader {
   }
 
   executeScripts() {
-    if (this._exec) return this._exec;
-    return (
-      (this._exec = (<typeof Loader>this.constructor).executeJS(this.getUrl()).catch((e: any) => {
+    this._exec =
+      this._exec ||
+      (<typeof Loader>this.constructor).executeJS(this.getUrl()).catch((e: any) => {
         console.error(e);
         console.log(`File for '${this.elementName}' gave error.`);
-      })),
-      this._exec
-    );
+      });
+    return this._exec;
   }
 
   getUrl() {

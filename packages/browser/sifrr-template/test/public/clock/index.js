@@ -1,5 +1,6 @@
 const { html, css, update, memo } = Sifrr.Template;
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const store = {
   backgrounds: [
     {
@@ -62,10 +63,10 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 100,
-        top: 100,
-        height: 100,
-        width: 100
+        left: 182,
+        top: 15,
+        height: 296,
+        width: 297
       }
     },
     {
@@ -73,10 +74,10 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 150,
-        top: 150,
-        height: 70,
-        width: 70
+        left: 124,
+        top: 23,
+        height: 339,
+        width: 339
       }
     },
     {
@@ -84,10 +85,10 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 100,
-        top: 100,
-        height: 100,
-        width: 100
+        left: 68,
+        top: 32,
+        height: 291,
+        width: 292
       }
     },
     {
@@ -95,10 +96,10 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 150,
-        top: 150,
-        height: 70,
-        width: 70
+        left: 94,
+        top: 31,
+        height: 291,
+        width: 291
       }
     },
     {
@@ -106,10 +107,10 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 100,
-        top: 100,
-        height: 100,
-        width: 100
+        left: 40,
+        top: 30,
+        height: 303,
+        width: 303
       }
     },
     {
@@ -117,21 +118,37 @@ const store = {
       height: 500,
       width: 500,
       clockPosition: {
-        left: 150,
-        top: 150,
-        height: 70,
-        width: 70
+        left: 60,
+        top: 23,
+        height: 265,
+        width: 265
       }
     }
   ],
   selectedBg: './wall1.jpg',
-  clock: ''
+  clock: '',
+  clockFileName: ''
 };
 
 const getSelectedBg = () => store.backgrounds.find(bg => bg.src === store.selectedBg);
-const setSelectedBg = bg => {
-  store.selectedBg = bg;
+const setSelectedBg = src => {
+  store.selectedBg = src;
   store.update();
+};
+const downloadBg = bg => {
+  setSelectedBg(bg.src);
+  window
+    .html2canvas(document.querySelector('#container'), {
+      scale: 5
+    })
+    .then(canvas => {
+      store.update();
+      const image = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
+      window.downloadImage(
+        image,
+        `${bg.src.split('.')[1].split('/')[1]}_${store.clockFileName.split('.')[0]}.jpg`
+      );
+    });
 };
 
 const main = document.getElementById('main');
@@ -172,6 +189,8 @@ const NumInput = html`
       padding: 8px;
       border: 1px solid black;
       vertical-align: bottom;
+      user-select: none;
+      cursor: pointer;
     }
     .span-h {
       width: 60px;
@@ -288,6 +307,7 @@ const Temp = html`
 
               reader.onload = function(e) {
                 store.clock = e.target.result;
+                store.clockFileName = files[0].name;
                 store.update();
               };
 
@@ -312,20 +332,21 @@ const Temp = html`
       <button
         :style=${memo(({ clock }) => (clock ? {} : { display: 'none' }), ['clock'])}
         ::onclick=${() => {
-          window
-            .html2canvas(document.querySelector('#container'), {
-              scale: 5
-            })
-            .then(canvas => {
-              store.update();
-              const image = canvas
-                .toDataURL('image/jpeg')
-                .replace('image/jpeg', 'image/octet-stream');
-              window.downloadImage(image, 'clock.jpg');
-            });
+          downloadBg(getSelectedBg());
         }}
       >
-        Download image
+        Download Current Image
+      </button>
+      <button
+        :style=${memo(({ clock }) => (clock ? {} : { display: 'none' }), ['clock'])}
+        ::onclick=${async () => {
+          for (let i = 0; i < store.backgrounds.length; i++) {
+            downloadBg(store.backgrounds[i]);
+            await delay(1000);
+          }
+        }}
+      >
+        Download All Images
       </button>
     </div>
   </div>
