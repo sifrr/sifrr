@@ -75,5 +75,5 @@ export const trigger = (
   options?: { detail: any; [n: string]: any }
 ) => {
   if (typeof el === 'string') el = <HTMLElement>document.$(el);
-  el.dispatchEvent(new CustomEvent(name, Object.assign(options, customOpts, options)));
+  el.dispatchEvent(new CustomEvent(name, Object.assign(options || {}, customOpts, options)));
 };

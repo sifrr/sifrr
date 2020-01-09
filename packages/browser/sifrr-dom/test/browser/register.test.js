@@ -37,7 +37,7 @@ describe('Sifrr.Dom.register', () => {
     );
 
     expect(error).to.eq(
-      "Error creating Element: nodash - Custom Element name must have one dash '-'"
+      "Error creating Element: nodash - Custom Element name must have one hyphen '-'"
     );
   });
 
