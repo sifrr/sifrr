@@ -20,7 +20,8 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const textEl = <Text>el;
     const x = textEl.data;
-    const exactMatch = x.match(REF_REG_EXACT);
+    const xTrim = textEl.data.trim();
+    const exactMatch = xTrim.match(REF_REG_EXACT);
     if (exactMatch) {
       textEl.data = '';
 
@@ -34,6 +35,10 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
 
     const middleMatch = x.match(REF_REG);
     if (middleMatch) {
+      if (textEl.nodeType === COMMENT_NODE) {
+        console.error('Bindings in middle of comments are not supported and will be ignored.');
+        return 0;
+      }
       if (middleMatch.index === 0) {
         textEl.splitText(REF_LENGTH);
         textEl.data = '';

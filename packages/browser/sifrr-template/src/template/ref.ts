@@ -71,13 +71,13 @@ export function create<T>(
       node = TW.nextNode();
       ntr.remove && ntr.remove();
     } else {
-      if ((map = fxn(<HTMLElement>node, passedValue))) {
+      if ((map = fxn(node, passedValue))) {
         indices.push({ idx: idx + 1, map });
         idx = 1;
       } else {
         idx++;
       }
-      node = <HTMLElement>TW.nextNode();
+      node = TW.nextNode();
     }
   }
   return indices;

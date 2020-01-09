@@ -84,7 +84,7 @@ export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any, any> | any>; //
 // create bind map for a base template
 export type SifrrBindCreatorFxn<T> = (
   // T = props type of parent
-  el: HTMLElement,
+  el: Node,
   functionMap: SifrrFunctionMap<T>
 ) => SifrrBindMap<T>[] | 0;
 
