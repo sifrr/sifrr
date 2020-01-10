@@ -363,6 +363,8 @@ Table({
 for some bindings you might want to only update when necessary, and not everytime. In such case you can use memo.
 `memo` takes two arguments, 1st - binding function and 2nd - dependency array / key function
 
+To be able to use `memo`, you need to keep identity of props same between updates. i.e. use same object and mutate that.
+
 ```js
 import { memo } from '@sifrr/template';
 

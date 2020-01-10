@@ -11,6 +11,13 @@ export default function memo<T, O, N>(
   const memoValues = new Map();
 
   return (props: SifrrProps<T>, oldValue: O): N | Promise<N> => {
+    let memoMap: Map<any, N | Promise<N>>;
+    if (memoValues.has(props)) {
+      memoMap = memoValues.get(props);
+    } else {
+      memoMap = new Map();
+      memoValues.set(props, memoMap);
+    }
     let memoKey: string;
     if (isFunc) {
       memoKey = (<PropKeyFunction<T>>deps)(props);
@@ -20,9 +27,9 @@ export default function memo<T, O, N>(
       }
     }
 
-    if (!memoValues.has(memoKey)) {
-      memoValues.set(memoKey, fxn(props, oldValue));
+    if (!memoMap.has(memoKey)) {
+      memoMap.set(memoKey, fxn(props, oldValue));
     }
-    return memoValues.get(memoKey);
+    return memoMap.get(memoKey);
   };
 }

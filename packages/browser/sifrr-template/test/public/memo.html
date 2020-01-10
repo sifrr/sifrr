@@ -24,7 +24,7 @@
       var st = El(elProps);
       document.body.append(...st);
       var setProps = (props = {}) => {
-        elProps = { ...elProps, ...props };
+        Object.assign(elProps, props);
         return El(elProps, st);
       };
     </script>
