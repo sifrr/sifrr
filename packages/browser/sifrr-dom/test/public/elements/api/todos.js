@@ -3,6 +3,7 @@ const { html, memo } = Sifrr.Template;
 const ApiTodo = html`
   <api-todo
     :completed=${({ completed }) => completed}
+    :loading=${({ loading }) => loading}
     :data-id=${({ id }) => id}
     :data-title=${({ title }) => title}
   ></api-todo>
@@ -23,7 +24,13 @@ class ApiTodos extends Sifrr.Dom.Element {
   constructor() {
     super();
     this.state = {
-      todos: [],
+      todos: [
+        {
+          id: '',
+          title: '',
+          loading: true
+        }
+      ],
       loading: true
     };
   }

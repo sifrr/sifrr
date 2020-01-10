@@ -34,7 +34,7 @@ class ApiTodo extends Sifrr.Dom.Element {
       ${memo(() => {
         return CSS();
       })}
-      <div class="${({ completed }) => (completed ? 'loaded' : 'loading')}">
+      <div class="${({ loading }) => (loading ? 'loading' : 'loaded')}">
         <p><span>${({ dataId }) => `${dataId} `}</span>${({ dataTitle }) => dataTitle}</p>
       </div>
     `;
