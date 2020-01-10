@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Memo</title>
+  </head>
+  <body>
+    <script src="./sifrr.template.js"></script>
+    <script>
+      const { html, memo } = Sifrr.Template;
+      var i = 0,
+        j = 0,
+        k = 0,
+        l = 0;
+      var El = html`
+        <div id="memo0">${memo(() => i++, [])}</div>
+        <div id="memo1">${memo(() => j++, ['text'])}</div>
+        <div id="memoobj">${memo(() => k++, ['object'])}</div>
+        <div id="memomulti">${memo(() => l++, ['text', 'text1'])}</div>
+      `;
+      var elProps = { text: 'a', text1: 'b', object: {} };
+      var st = El(elProps);
+      document.body.append(...st);
+      var setProps = (props = {}) => {
+        elProps = { ...elProps, ...props };
+        return El(elProps, st);
+      };
+    </script>
+  </body>
+</html>

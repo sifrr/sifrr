@@ -86,8 +86,8 @@ function updateOne<T>(
     if (oldValue === newValue) return oldValue;
     // fast path for one text node
     if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
-      if (typeof newValue !== 'object') {
-        if (oldValue[0].data != newValue) oldValue[0].data = newValue; // important to use !=
+      if (typeof newValue === 'string' || typeof newValue === 'number') {
+        if (oldValue[0].data !== newValue.toString()) oldValue[0].data = newValue; // important to use toString
         return oldValue;
       }
     }
