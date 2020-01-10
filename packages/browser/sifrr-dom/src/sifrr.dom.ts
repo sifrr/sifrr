@@ -45,7 +45,7 @@ function register(
     const registeringPromise = before.then(() =>
       window.customElements.define(name, Element, options)
     );
-    registering[name] = registering;
+    registering[name] = registeringPromise;
     return registeringPromise
       .then(() => {
         elements[name] = Element;
@@ -79,7 +79,9 @@ function load(elemName: string, url = null) {
     .then(() => registering[elemName])
     .then(() => {
       if (!window.customElements.get(elemName)) {
-        window.console.warn(`Executing '${elemName}' file didn't register the element.`);
+        window.console.warn(
+          `Executing '${loader.getUrl()}' file didn't register the element with name '${elemName}'. Give correct name to 'load' or fix the file.`
+        );
       }
     })
     .finally(() => {

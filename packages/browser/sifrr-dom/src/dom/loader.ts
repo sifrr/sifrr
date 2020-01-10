@@ -20,10 +20,12 @@ class Loader {
   executeScripts() {
     this._exec =
       this._exec ||
-      (<typeof Loader>this.constructor).executeJS(this.getUrl()).catch((e: any) => {
-        console.error(e);
-        console.log(`File for '${this.elementName}' gave error.`);
-      });
+      Promise.resolve(null)
+        .then(() => (<typeof Loader>this.constructor).executeJS(this.getUrl()))
+        .catch((e: any) => {
+          console.error(e);
+          console.log(`File for '${this.elementName}' gave error.`);
+        });
     return this._exec;
   }
 

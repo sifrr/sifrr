@@ -30,7 +30,11 @@
       charset="utf-8"
     ></script>
     <script>
-      Sifrr.Dom.setup();
+      Sifrr.Dom.setup({
+        urls: {
+          'md-html': './elements/md-html.js'
+        }
+      });
       Sifrr.Dom.load('md-html');
     </script>
   </body>
