@@ -2,6 +2,7 @@ import Element from './dom/element';
 import Loader from './dom/loader';
 import * as Event from './dom/event';
 import config from './dom/config';
+import createElement from './dom/createElement';
 import { SifrrElement } from './dom/types';
 
 // Caches
@@ -98,7 +99,7 @@ const loading = () => {
   return Promise.all(promises);
 };
 
-export { Element, Loader, Event, register, setup, load, loading, config, elements };
+export { Element, Loader, Event, register, setup, load, loading, config, elements, createElement };
 export * from './dom/types';
 
 import * as types from './dom/types';
@@ -112,5 +113,6 @@ export default {
   loading,
   config,
   elements,
+  createElement,
   ...types
 };

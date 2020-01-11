@@ -1,10 +1,11 @@
 import { ISifrrElement } from './types';
-import { SifrrCreateFunction, SifrrNode, update } from '@sifrr/template';
+import { SifrrCreateFunction, SifrrNode, update, SifrrProps } from '@sifrr/template';
 import { trigger } from './event';
 
 function elementClassFactory(baseClass: typeof HTMLElement) {
   return class SifrrElement extends baseClass implements ISifrrElement {
     private static _ctemp: SifrrCreateFunction<SifrrElement>;
+    private static _elName: string;
     static useShadowRoot: boolean = true;
     static template: SifrrCreateFunction<SifrrElement> = null;
     static defaultState: object = null;
@@ -14,7 +15,10 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     static get elementName() {
-      return this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      return (
+        this._elName ||
+        ((this._elName = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()), this._elName)
+      );
     }
 
     static ctemp() {
@@ -67,6 +71,13 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
+
+    setProps(props: SifrrProps<any>) {
+      Object.keys(props).forEach(prop => {
+        this[prop] = props[prop];
+      });
+      this.connected && this.update();
+    }
 
     onPropChange(prop: string, oldVal: any, newVal: any): void {}
 

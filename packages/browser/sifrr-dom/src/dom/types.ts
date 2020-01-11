@@ -16,6 +16,7 @@ export interface ISifrrElement extends HTMLElement {
   defaultState?: object;
   update: () => void;
   setState(state: any): void;
+  setProps(props: object): void;
 }
 
 export interface EventListener {
