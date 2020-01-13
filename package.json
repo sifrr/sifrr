@@ -57,7 +57,7 @@
     "cache-manager": "^2.10.1",
     "graphql-subscriptions": "^1.1.0",
     "isomorphic-ws": "^4.0.1",
-    "loadtest": "^4.0.0",
+    "loadtest": "^4.1.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v17.0.0",
     "ws": "^7.2.1"
   },
