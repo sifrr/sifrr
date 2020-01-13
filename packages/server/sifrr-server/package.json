@@ -38,7 +38,7 @@
     "uWebSockets.js": "uNetworking/uWebSockets.js#v16.5.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.0",
     "@sifrr/dev": "^0.0.40",
     "axios": "^0.19.1",
     "cache-manager": "^2.10.1",
