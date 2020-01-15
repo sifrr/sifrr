@@ -993,7 +993,7 @@
     magic-string "^0.25.2"
     rollup-pluginutils "^2.6.0"
 
-"@sifrr/dev@0.0.41", "@sifrr/dev@^0.0.40", "@sifrr/dev@^0.0.41":
+"@sifrr/dev@0.0.41", "@sifrr/dev@^0.0.41":
   version "0.0.41"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.41.tgz#daf5da746d20f612bbe37c693ff4560b16fa189f"
   integrity sha512-viNROcnIHopdrkyD+9K5S3JS8XC0bK7oyubG9UicY7KRmxAMXxW7GLF8gBZbQ0qDSmGMEB+9aQlibDVafuAQHA==
@@ -6685,7 +6685,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v16.5.0", uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v17.0.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v16.2.0, uWebSockets.js@uNetworking/uWebSockets.js#v16.5.0, uWebSockets.js@uNetworking/uWebSockets.js#v17.0.0:
   version "16.2.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/8df7212c3e0117631fdd8e8e5c90094f5f97fb08"
 
