@@ -3995,15 +3995,14 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-4.0.0.tgz#58fdc15cfbc74eaf941b5029f1b1f4f4939ca662"
-  integrity sha512-9AGuPIQeFaPvWwnecVL7SizlnEmsmYJ0Y3y2XN2Men2UvZlI6+qlyhoIqNb9bso4yLoaPN/zfxbAkt80pnkqQg==
+loadtest@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-4.1.0.tgz#9cd0b4e3c6e22e79278d0c26cb8cde4eac0790c5"
+  integrity sha512-FgDvIq8ACgzhCaY2elbq6qLur9UCaAYQhH8o68wu4ZarZcR1cqhOtp0NLbQpJQCUg/NxIRH3nozhRmkyKjGceA==
   dependencies:
     agentkeepalive "^2.0.3"
     https-proxy-agent "^2.2.1"
     log "1.4.*"
-    prototypes "^3.0.1"
     stdio "^0.2.3"
     testing "^1.1.1"
     websocket "^1.0.28"
@@ -5348,11 +5347,6 @@ promise.series@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/promise.series/-/promise.series-0.2.0.tgz#2cc7ebe959fc3a6619c04ab4dbdc9e452d864bbd"
   integrity sha1-LMfr6Vn8OmYZwEq029yeRS2GS70=
-
-prototypes@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/prototypes/-/prototypes-3.0.1.tgz#34f5471217f46a91f4cce08b4801c3f188257fcc"
-  integrity sha512-6yAXnqhrPslmAvynCwIHupJwphL2/4EeVCGRcCh2NQTrcyychdngZQUWNnxzXZ9h7TSrG5Fhjnr/kvZs5BfK1w==
 
 proxy-addr@~2.0.5:
   version "2.0.5"
