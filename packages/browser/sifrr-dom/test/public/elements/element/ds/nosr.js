@@ -1,11 +1,15 @@
 class ElementDsNosr extends Sifrr.Dom.Element {
   static get template() {
-    return Sifrr.Dom.template`<p>Sifrr \${this.state.ok} Simple</p>`;
+    return Sifrr.Template.html`<p>Sifrr ${({ state }) => state.ok} Simple</p>`;
   }
 
   static get useShadowRoot() {
     return false;
   }
+
+  constructor() {
+    super();
+    this.state = { ok: 'ok' };
+  }
 }
-ElementDsNosr.defaultState = { ok: 'ok' };
 Sifrr.Dom.register(ElementDsNosr);

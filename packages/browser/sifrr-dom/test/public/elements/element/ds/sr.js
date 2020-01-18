@@ -1,7 +1,11 @@
 class ElementDsSr extends Sifrr.Dom.Element {
   static get template() {
-    return Sifrr.Dom.template`<p>Sifrr \${this.state.ok} Simple</p>`;
+    return Sifrr.Template.html`<p>Sifrr ${({ state }) => state.ok} Simple</p>`;
+  }
+
+  constructor() {
+    super();
+    this.state = { ok: 'ok' };
   }
 }
-ElementDsSr.defaultState = { ok: 'ok' };
 Sifrr.Dom.register(ElementDsSr);

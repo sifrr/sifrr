@@ -7,7 +7,11 @@
     "noImplicitAny": false,
     "target": "es2015",
     "lib": ["es5", "es2015", "dom"],
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "baseUrl": "../../../",
+    "paths": {
+      "@sifrr/template": ["./packages/browser/sifrr-template/src/sifrr.template"]
+    }
   },
   "include": ["src/*"],
   "exclude": ["node_modules"]

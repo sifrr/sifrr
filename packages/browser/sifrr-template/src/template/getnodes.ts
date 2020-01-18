@@ -3,8 +3,7 @@ import { DomBindingReturnValue, SifrrNodesArray, SifrrNode } from './types';
 const emptyArray = [];
 
 export default function getNodesFromBindingValue<T, X>(
-  value: DomBindingReturnValue | X,
-  retObject: boolean = false
+  value: DomBindingReturnValue | X
 ): SifrrNodesArray<T> | SifrrNode<T> | X {
   if (value === null || value === undefined) {
     return emptyArray;
@@ -21,8 +20,6 @@ export default function getNodesFromBindingValue<T, X>(
     return <SifrrNode<T>>value;
   } else if (value instanceof NodeList) {
     return Array.prototype.slice.call(value);
-  } else if (retObject) {
-    return <X>value;
   } else {
     return document.createTextNode(value.toString());
   }

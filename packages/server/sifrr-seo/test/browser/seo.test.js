@@ -24,12 +24,12 @@ describe('sifrr-seo', () => {
       assert.equal(sifrr, 'undefined');
     });
 
-    it('renders sifrr-test on server (with sr)', async () => {
-      const html = await page.$eval('sifrr-test', el => el.innerHTML.trim());
+    // it('renders sifrr-test on server (with sr)', async () => {
+    //   const html = await page.$eval('sifrr-test', el => el.innerHTML.trim());
 
-      expect(html).to.have.string('Simple element');
-      expect(html).to.have.string('1');
-    });
+    //   expect(html).to.have.string('Simple element');
+    //   expect(html).to.have.string('1');
+    // });
 
     it('renders sifrr-test on server (without sr)', async () => {
       const html = await page.$eval('sifrr-nosr', el => el.innerHTML.trim());

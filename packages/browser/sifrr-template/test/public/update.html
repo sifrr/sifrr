@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>update</title>
+  </head>
+  <body>
+    <script src="/sifrr.template.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      const { html } = Sifrr.Template;
+      var el = html`
+        <div>
+          <div
+            id="props"
+            :string=${() => 'value'}
+            :object=${() => ({
+              a: 'b'
+            })}
+            ::direct-object=${{
+              b: 'c'
+            }}
+          >
+            abcdefgh
+          </div>
+          <div
+            id="attr"
+            attr1=${() => 'some'}
+            nullattr=${() => null}
+            udattr=${() => undefined}
+            esattr=${() => ''}
+            falseattr=${() => false}
+            falsesattr=${() => 'false'}
+          ></div>
+        </div>
+      `({})[0];
+      document.body.append(el);
+    </script>
+  </body>
+</html>

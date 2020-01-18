@@ -4,7 +4,7 @@ import { TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap } from './types';
 import getNodesFromBindingValue from './getnodes';
 
-const emptyObj = {};
+const emptyObj = Object.freeze(Object.create(null));
 
 export default function update<T>(
   tempElement: SifrrNode<T> | SifrrNode<T>[],
@@ -23,22 +23,23 @@ export default function update<T>(
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
-    const { node, bindMap, currentValues } = refs[i];
-    const hasOnPropChange = !!(<SifrrNode<any>>node).onPropChange;
+    const { node, bindMap, currentValues, bindingSet } = refs[i];
+    const hasOnPropChange = typeof (<SifrrNode<any>>node).onPropChange === 'function';
+    const hasUpdate = typeof (<SifrrNode<any>>node).update === 'function';
 
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
 
       // special direct props (events/style)
       if (binding.type === SifrrBindType.DirectProp) {
-        if (!binding.set) {
-          binding.set = true;
+        if (!bindingSet[j]) {
+          bindingSet[j] = true;
           if (binding.name === 'style') {
             const newValue = binding.value || emptyObj;
             const keys = Object.keys(newValue),
               len = keys.length;
             for (let i = 0; i < len; i++) {
-              (<HTMLElement>node).style[keys[i]] = newValue[keys[i]] || ''; // remove undefined with empty string
+              (<HTMLElement>node).style[keys[i]] = `${newValue[keys[i]]}`; // remove undefined with empty string
             }
           } else node[binding.name] = binding.value;
         }
@@ -69,6 +70,7 @@ export default function update<T>(
         }
       }
     }
+    hasUpdate && Promise.all(currentValues).then(() => (<SifrrNode<any>>node).update());
   }
 }
 
@@ -79,14 +81,13 @@ function updateOne<T>(
   newValue: any,
   hasOnPropChange: boolean
 ) {
-  if (oldValue === newValue) return oldValue;
-
   // text
   if (binding.type === SifrrBindType.Text) {
+    if (oldValue === newValue) return oldValue;
     // fast path for one text node
     if (oldValue.length === 1 && oldValue[0].nodeType === TEXT_NODE) {
-      if (typeof newValue !== 'object') {
-        if (oldValue[0].data != newValue) oldValue[0].data = newValue; // important to use !=
+      if (typeof newValue === 'string' || typeof newValue === 'number') {
+        if (oldValue[0].data !== newValue.toString()) oldValue[0].data = newValue; // important to use toString
         return oldValue;
       }
     }
@@ -109,21 +110,23 @@ function updateOne<T>(
         oldKeys = Object.keys(oldValue),
         newl = newKeys.length,
         oldl = oldKeys.length;
-      // add new properties
-      for (let i = 0; i < newl; i++) {
-        if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
-          (<HTMLElement>node).style[newKeys[i]] = newValue[newKeys[i]] || ''; // remove undefined with empty string
-        }
-      }
       for (let i = 0; i < oldl; i++) {
         if (!newValue[oldKeys[i]]) {
           (<HTMLElement>node).style[oldKeys[i]] = ''; // remove if newValue doesn't have that property
         }
       }
+      // add new properties
+      for (let i = 0; i < newl; i++) {
+        if (oldValue[newKeys[i]] !== newValue[newKeys[i]]) {
+          (<HTMLElement>node).style[newKeys[i]] = `${newValue[newKeys[i]]}`;
+        }
+      }
     } else {
+      oldValue = node[binding.name];
       node[binding.name] = newValue;
     }
-    hasOnPropChange && (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
+    if (oldValue !== newValue && hasOnPropChange)
+      (<SifrrNode<any>>node).onPropChange(binding.name, oldValue, newValue);
   }
   return newValue;
 }

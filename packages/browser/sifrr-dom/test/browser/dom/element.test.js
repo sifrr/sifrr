@@ -37,20 +37,6 @@ describe('Sifrr.Dom.Element', () => {
     });
   });
 
-  it('works with string template', async () => {
-    const res = await page.$eval('element-string', el => {
-      return {
-        isSifrr: el.isSifrr(),
-        content: el.shadowRoot.innerHTML
-      };
-    });
-
-    expect(res).to.deep.equal({
-      isSifrr: true,
-      content: '<p>string</p>'
-    });
-  });
-
   describe('connect', () => {
     it('calls onConnect', async () => {
       const res = await page.evaluate(() => {
@@ -94,12 +80,12 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   describe('states', () => {
-    it('works without defaultState', async () => {
+    it('works without defaultState and has comment for empty place', async () => {
       const srhtml = await page.$eval('element-nods-sr', el => el.shadowRoot.innerHTML);
       const nosrhtml = await page.$eval('element-nods-nosr', el => el.innerHTML);
 
-      assert.equal(srhtml, '<p>Sifrr  Simple</p>');
-      assert.equal(nosrhtml, '<p>Sifrr  Simple</p>');
+      assert.equal(srhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
+      assert.equal(nosrhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
     });
 
     it('works with defaultState', async () => {
@@ -120,7 +106,7 @@ describe('Sifrr.Dom.Element', () => {
 
     it('updates only once on connect', async () => {
       const res = await page.evaluate(() => {
-        const types = ['element-nods', 'element-ds', 'element-ps', 'element-as'],
+        const types = ['element-nods', 'element-ds', 'element-ps'],
           result = {};
 
         types.forEach(t => {
@@ -131,8 +117,8 @@ describe('Sifrr.Dom.Element', () => {
         return result;
       });
 
-      assert.equal(Object.keys(res).length, 8);
-      for (let el in res) {
+      assert.equal(Object.keys(res).length, 6);
+      for (const el in res) {
         assert.equal(res[el], 1, el);
       }
     });
@@ -232,46 +218,6 @@ describe('Sifrr.Dom.Element', () => {
         sr: 2,
         nosr: 2
       });
-    });
-  });
-
-  describe('root', () => {
-    it('gives root element with shadow root', async () => {
-      const res = await page.evaluate(() => {
-        const parent = document.createElement('element-nods-sr');
-        document.body.appendChild(parent);
-        const child = document.createElement('element-nods-sr');
-        parent.shadowRoot.appendChild(child);
-        child.root;
-
-        return child.root === parent;
-      });
-
-      assert(res);
-    });
-
-    it('gives root element without shadow root', async () => {
-      const res = await page.evaluate(() => {
-        const parent = document.createElement('element-nods-nosr');
-        document.body.appendChild(parent);
-        const child = document.createElement('element-nods-nosr');
-        parent.appendChild(child);
-
-        return child.root === parent;
-      });
-
-      assert(res);
-    });
-
-    it('returns undefined if no root', async () => {
-      const res = await page.evaluate(() => {
-        const child = document.createElement('element-nods-nosr');
-        document.body.appendChild(child);
-
-        return child.root === undefined;
-      });
-
-      assert(res);
     });
   });
 });

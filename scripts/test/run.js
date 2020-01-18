@@ -81,12 +81,12 @@ if (process.env.LCOV === 'true') reporters.push('lcov');
 const roots = (process.argv[2] || './')
   .split(/[ ,\n]/g)
   .map(p => path.join(__dirname, '../../', p));
-const { runTests, exec } = require('@sifrr/dev');
+const { runTests } = require('@sifrr/dev');
 
 const options = roots.map((root, i) => {
   const preCommand = [];
   if (!dontRunPrecommand) {
-    if (root.indexOf('sifrr-dom') < 0) preCommand.push(`cd ${root} && yarn build`);
+    preCommand.push(`cd ${root} && yarn build`);
     if (fs.existsSync(path.join(root, './test/public/package.json'))) {
       preCommand.push(`cd ${path.join(root, './test/public')} && yarn && yarn build`);
     }
@@ -107,11 +107,12 @@ const options = roots.map((root, i) => {
     folders: {
       static: [
         path.join(__dirname, '../../packages/browser/sifrr-dom/dist'),
+        path.join(__dirname, '../../packages/browser/sifrr-template/dist'),
         path.join(__dirname, '../../packages/browser/sifrr-fetch/dist')
       ],
       coverage: path.join(__dirname, '../../.nyc_output')
     },
-    sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.js$/,
+    sourceFileRegex: /sifrr-[a-z-]+\/src\/.*\.(js|ts)$/,
     junitXmlFile: path.join(__dirname, `../../test-results/${path.basename(root)}/results.xml`),
     reporters,
     mochaOptions: {
@@ -121,11 +122,6 @@ const options = roots.map((root, i) => {
 });
 
 async function run() {
-  if (!dontRunPrecommand) {
-    await exec(`cd ${path.join(__dirname, '../../packages/browser/sifrr-dom')} && yarn build`);
-    await exec(`yarn upgrade @sifrr/dom`);
-  }
-
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);

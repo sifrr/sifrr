@@ -46,8 +46,6 @@ const row = html`
         ({ id }) => (selected === id ? { backgroundColor: 'black' } : {}),
         ({ id }) => selected === id
       )}
-      ::onclick=${e => console.log(e.target)}
-      ::on-prop-change=${console.log}
       class="col-md-6"
     ></td>
   </tr>

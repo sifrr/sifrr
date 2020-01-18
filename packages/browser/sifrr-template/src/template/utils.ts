@@ -18,7 +18,6 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
         return chunk;
       }
       if (typeof subs === 'function' || typeof subs === 'object' || typeof subs === 'symbol') {
-        subs.type = subs.type;
         const randomString = createUniqueString(BIND_REF_LENGTH);
         functionMap.set(randomString, subs);
         return `{{${PREFIX + randomString}}}` + chunk;

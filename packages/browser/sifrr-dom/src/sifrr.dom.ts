@@ -1,23 +1,17 @@
-import { BIND_SELECTOR } from './dom/constants';
 import Element from './dom/element';
-import twoWayBind from './dom/twowaybind';
 import Loader from './dom/loader';
-import SimpleElement from './dom/simpleelement';
 import * as Event from './dom/event';
-import { makeChildrenEqual, makeEqual } from './dom/makeequal';
-import { makeChildrenEqualKeyed } from './dom/keyed';
-import { Store, bindStoresToElement } from './dom/store';
-import template from './dom/template';
 import config from './dom/config';
+import createElement from './dom/createElement';
 import { SifrrElement } from './dom/types';
 
 // Caches
-const elements = {};
-const loadingElements = {};
-const registering = {};
+const elements = Object.create(null);
+const loadingElements = Object.create(null);
+const registering = Object.create(null);
 
 // Register Custom Element Function
-const register = (
+function register(
   Element: typeof SifrrElement,
   {
     name,
@@ -27,8 +21,7 @@ const register = (
     name?: string;
     dependsOn?: string | string[];
   } & ElementDefinitionOptions = {}
-) => {
-  Element.useSR = config.useShadowRoot;
+) {
   name = name || Element.elementName;
   if (!name) {
     return Promise.reject(Error('Error creating Custom Element: No name given.'));
@@ -39,19 +32,21 @@ const register = (
     return Promise.resolve(false);
   } else if (name.indexOf('-') < 1) {
     return Promise.reject(
-      Error(`Error creating Element: ${name} - Custom Element name must have one dash '-'`)
+      Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`)
     );
   } else {
-    let before;
+    let before: Promise<any>;
     if (Array.isArray(dependsOn)) {
       before = Promise.all(dependsOn.map(en => load(en)));
     } else if (typeof dependsOn === 'string') {
       before = load(dependsOn);
+    } else if (typeof before === 'object' && before !== null) {
+      before = Promise.all(Object.keys(dependsOn).map(k => load(k, dependsOn[k])));
     } else before = Promise.resolve(true);
     const registeringPromise = before.then(() =>
       window.customElements.define(name, Element, options)
     );
-    registering[name] = registering;
+    registering[name] = registeringPromise;
     return registeringPromise
       .then(() => {
         elements[name] = Element;
@@ -61,53 +56,40 @@ const register = (
         throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
       });
   }
-};
+}
 
 // Initialize SifrrDom
-const setup = function(newConfig: any) {
+function setup(newConfig?: typeof config) {
   HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
   HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
   document.$ = document.querySelector;
   document.$$ = document.querySelectorAll;
   Object.assign(config, newConfig);
-
-  if (typeof config.baseUrl !== 'string' && typeof config.url !== 'function')
-    throw Error('baseUrl should be a string, or url should be function');
-
-  config.events.push('input', 'change', 'update');
   config.events.forEach(e => Event.add(e));
-  Event.addListener('input', BIND_SELECTOR, twoWayBind);
-  Event.addListener('change', BIND_SELECTOR, twoWayBind);
-  Event.addListener('update', BIND_SELECTOR, twoWayBind);
-};
+}
 
 // Load Element HTML/JS and execute script in it
-const load = function(elemName: string, { url = null, js = true } = {}) {
+function load(elemName: string, url = null) {
   if (window.customElements.get(elemName)) {
-    return Promise.resolve(
-      window.console.warn(
-        `Error loading Element: ${elemName} - Custom Element with this name is already defined.`
-      )
-    );
+    return Promise.resolve();
   }
   loadingElements[elemName] = window.customElements.whenDefined(elemName);
   const loader = new Loader(elemName, url);
   return loader
-    .executeScripts(js)
+    .executeScripts()
     .then(() => registering[elemName])
     .then(() => {
       if (!window.customElements.get(elemName)) {
-        window.console.warn(`Executing '${elemName}' file didn't register the element.`);
+        window.console.warn(
+          `Executing '${loader.getUrl()}' file didn't register the element with name '${elemName}'. Give correct name to 'load' or fix the file.`
+        );
       }
-      delete registering[elemName];
-      delete loadingElements[elemName];
     })
-    .catch(e => {
+    .finally(() => {
       delete registering[elemName];
       delete loadingElements[elemName];
-      throw e;
     });
-};
+}
 
 const loading = () => {
   const promises = [];
@@ -117,42 +99,20 @@ const loading = () => {
   return Promise.all(promises);
 };
 
-export {
-  Element,
-  twoWayBind,
-  Loader,
-  SimpleElement,
-  Event,
-  makeChildrenEqual,
-  makeChildrenEqualKeyed,
-  makeEqual,
-  Store,
-  template,
-  register,
-  setup,
-  load,
-  loading,
-  config,
-  elements,
-  bindStoresToElement
-};
+export { Element, Loader, Event, register, setup, load, loading, config, elements, createElement };
+export * from './dom/types';
 
+import * as types from './dom/types';
 export default {
   Element,
-  twoWayBind,
   Loader,
-  SimpleElement,
   Event,
-  makeChildrenEqual,
-  makeChildrenEqualKeyed,
-  makeEqual,
-  Store,
-  template,
   register,
   setup,
   load,
   loading,
   config,
   elements,
-  bindStoresToElement
+  createElement,
+  ...types
 };

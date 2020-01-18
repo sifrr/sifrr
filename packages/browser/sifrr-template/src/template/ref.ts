@@ -20,7 +20,7 @@ function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
       oldValues[j] = null;
     } else if (binding.type === SifrrBindType.Prop) {
       if (binding.name === 'style') {
-        oldValues[j] = {};
+        oldValues[j] = Object.create(null);
       } else {
         oldValues[j] = null;
       }
@@ -42,7 +42,8 @@ export function collect<T>(
     refs[i] = {
       node: <Node>element,
       currentValues: collectValues(<Node>element, refMap[i].map),
-      bindMap: refMap[i].map
+      bindMap: refMap[i].map,
+      bindingSet: new Array(l)
     };
   }
   return refs;
@@ -70,13 +71,13 @@ export function create<T>(
       node = TW.nextNode();
       ntr.remove && ntr.remove();
     } else {
-      if ((map = fxn(<HTMLElement>node, passedValue))) {
+      if ((map = fxn(node, passedValue))) {
         indices.push({ idx: idx + 1, map });
         idx = 1;
       } else {
         idx++;
       }
-      node = <HTMLElement>TW.nextNode();
+      node = TW.nextNode();
     }
   }
   return indices;

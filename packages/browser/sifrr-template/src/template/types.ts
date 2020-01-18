@@ -3,6 +3,7 @@ export interface SifrrNode<T> extends Node {
   __tempNum?: number;
   key?: string | number;
   onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
+  update?: () => void;
 }
 
 export type SifrrProps<T> = T & {
@@ -59,7 +60,6 @@ export type SifrrBindMap<T> =  // T = props type of parent
       type: SifrrBindType.DirectProp;
       name: string;
       value: any;
-      set: boolean;
     };
 
 // ref map for each base template element
@@ -75,6 +75,7 @@ export type SifrrRefCollection<T> = {
   node: Node;
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
+  bindingSet: any[];
 };
 
 // uid -> fxn
@@ -83,7 +84,7 @@ export type SifrrFunctionMap<T> = Map<string, BindingFxn<T, any, any> | any>; //
 // create bind map for a base template
 export type SifrrBindCreatorFxn<T> = (
   // T = props type of parent
-  el: HTMLElement,
+  el: Node,
   functionMap: SifrrFunctionMap<T>
 ) => SifrrBindMap<T>[] | 0;
 

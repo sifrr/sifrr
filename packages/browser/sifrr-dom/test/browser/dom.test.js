@@ -10,6 +10,5 @@ describe('Siffr.Dom', () => {
     assert(await page.evaluate(() => !!Sifrr.Dom.Event));
     assert(await page.evaluate(() => !!Sifrr.Dom.register));
     assert(await page.evaluate(() => !!Sifrr.Dom.load));
-    assert(await page.evaluate(() => !!Sifrr.Dom.template));
   });
 });

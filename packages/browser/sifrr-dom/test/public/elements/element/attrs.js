@@ -1,5 +1,5 @@
 class ElementAttrs extends Sifrr.Dom.Element {
-  static observedAttrs() {
+  static get observedAttributes() {
     return ['custom-attr'];
   }
 }

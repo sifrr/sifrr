@@ -5,7 +5,7 @@ const SYNTHETIC_EVENTS: {
   [name: string]: {
     [css: string]: Set<SifrrEventListener>;
   };
-} = {};
+} = Object.create(null);
 const listenOpts = { capture: true, passive: true };
 const customOpts = { composed: true, bubbles: true };
 
@@ -35,12 +35,12 @@ export const getEventListener = (name: string): EventListener => {
       const eventHandler =
         dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
       if (typeof eventHandler === 'function') {
-        eventHandler.call(dom._root || window, e, target);
+        eventHandler.call(window, e, target);
       } else if (typeof eventHandler === 'string') {
-        new Function('event', 'target', eventHandler).call(dom._root || window, event, target);
+        new Function('event', 'target', eventHandler).call(window, event, target);
       }
       cssMatchEvent(e, name, dom, target);
-      dom = <HTMLElement>dom.parentNode || dom.host;
+      dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
     }
   };
 };
@@ -49,13 +49,12 @@ export const add = (name: string) => {
   if (SYNTHETIC_EVENTS[name]) return false;
   const namedEL = getEventListener(name);
   document.addEventListener(name, namedEL, listenOpts);
-  SYNTHETIC_EVENTS[name] = {};
+  SYNTHETIC_EVENTS[name] = Object.create(null);
   return true;
 };
 
 export const addListener = (name: string, css: string, fxn: SifrrEventListener) => {
-  if (!SYNTHETIC_EVENTS[name])
-    throw Error(`You need to call Sifrr.Dom.Event.add('${name}') before using listeners.`);
+  add(name);
   if (typeof css !== 'string') {
     fxn.__dom = css;
     css = 'element';
@@ -76,5 +75,5 @@ export const trigger = (
   options?: { detail: any; [n: string]: any }
 ) => {
   if (typeof el === 'string') el = <HTMLElement>document.$(el);
-  el.dispatchEvent(new CustomEvent(name, Object.assign(customOpts, options)));
+  el.dispatchEvent(new CustomEvent(name, Object.assign(options || {}, customOpts, options)));
 };

@@ -1,7 +1,13 @@
 class ElementSelSr extends Sifrr.Dom.Element {
   static get template() {
-    return Sifrr.Dom
-      .template`<p class="ok">Sifrr \${this.state.ok} Simple</p><div class="ok">Sifrr \${this.state.ok} Simple</div>`;
+    return Sifrr.Template.html`<p class="ok">Sifrr ${({ state }) =>
+      state && state.ok} Simple</p><div class="ok">Sifrr ${({ state }) =>
+      state && state.ok} Simple</div>`;
+  }
+
+  constructor() {
+    super();
+    this.state = { ok: 'ok' };
   }
 }
 ElementSelSr.defaultState = { ok: 'ok' };

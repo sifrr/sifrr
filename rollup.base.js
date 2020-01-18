@@ -15,6 +15,7 @@ const external = [
   'graphql-sequelize',
   'graphql-tools',
   '@sifrr/dom',
+  '@sifrr/template',
   '@sifrr/fetch',
   'puppeteer',
   'events',
@@ -25,6 +26,7 @@ const external = [
 ];
 const globals = {
   '@sifrr/dom': 'Sifrr.Dom',
+  '@sifrr/template': 'Sifrr.Template',
   '@sifrr/fetch': 'Sifrr.Fetch'
 };
 const footer = '/*! (c) @aadityataparia */';
