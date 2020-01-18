@@ -4,9 +4,9 @@ Server Side Pre-Redering for any js based app using puppeteer (headless chrome) 
 
 ## Features
 
--   Works with Custom Elements, Shadow DOM
--   Add custom JS to execute before or after rendering
--   key based Caching
+- Works with Custom Elements, Shadow DOM
+- Add custom JS to execute before or after rendering
+- key based Caching
 
 ## How to use
 
@@ -93,8 +93,8 @@ Change `sifrrSeo.shouldRender`, by default it returns `this._isUserAgent(headers
 sifrrSeo.shouldRender = (url, headers) => {
   // req is request argument given by server (express/connect)
   // return true to render it server-side, return false to not render it.
-  return this.isUserAgent(req) && req.fullUrl.indexOf('html') >= 0
-}
+  return this.isUserAgent(req) && req.fullUrl.indexOf('html') >= 0;
+};
 ```
 
 ### Clearing cache
@@ -154,29 +154,9 @@ sifrrSeo.puppeteerOptions;
 
 ## Tips
 
--   Don't use external scripts in pages without a good cache age.
+- Don't use external scripts in pages without a good cache age.
 
--   How to use with sifrr-dom:
-
-    -   Add web components (shadowdom v1 spec) polyfills from [here](https://github.com/webcomponents/webcomponentsjs). Needs [ShadyDOM](https://github.com/webcomponents/shadydom) and [ShadyCSS](https://github.com/webcomponents/shadycss) polyfills.
-    -   Change options to force shadyDOM in server render.
-    -   Example in [tests](./test/public/server.js)
-
-```js
-seoOptions = {
-  beforeRender: () => {
-    // Force shadyDom (no shadow root)
-    ShadyDOM = { force: true };
-  },
-  afterRender: async () => {
-    // Wait till all sifrr elements are loaded
-    if (typeof Sifrr === 'undefined' || typeof Sifrr.Dom === 'undefined') return false;
-    await Sifrr.Dom.loading();
-  }
-}
-```
-
--   Pre-render a bunch of urls
+- Pre-render a bunch of urls
 
 ```js
 const fs = require('fs');
@@ -185,16 +165,25 @@ const joinPath = require('path').join;
 const seo = new SifrrSeo();
 seo.shouldRender = () => true;
 
-async function renderUrls(urls = [/* array of urls */], path = (url) => url) {
+async function renderUrls(
+  urls = [
+    /* array of urls */
+  ],
+  path = url => url
+) {
   for (let i = 0; i < urls.length; i++) {
     const html = await seo.render(urls[i]);
-    await new Promise((res, rej) => fs.writeFile(path(urls[i]), html, (err) => {
-      if (err) rej(err);
-      res('The file has been saved!');
-    }));
+    await new Promise((res, rej) =>
+      fs.writeFile(path(urls[i]), html, err => {
+        if (err) rej(err);
+        res('The file has been saved!');
+      })
+    );
   }
   await seo.close();
 }
 
-renderUrls(['http://localhost:8080/abcd', 'http://localhost:8080/whatever'], (u) => joinPath(__dirname, '.' + u.slice(21)));
+renderUrls(['http://localhost:8080/abcd', 'http://localhost:8080/whatever'], u =>
+  joinPath(__dirname, '.' + u.slice(21))
+);
 ```

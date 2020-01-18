@@ -1,8 +1,6 @@
 import '@webcomponents/shadycss';
 import '@webcomponents/shadydom';
 
-window.Sifrr.Dom.setup({
-  useShadowRoot: true
-});
-window.Sifrr.Dom.load('sifrr-test');
-window.Sifrr.Dom.load('sifrr-nosr');
+window.Sifrr.Dom.setup();
+window.Sifrr.Dom.load('sifrr-test', '/elements/sifrr/test.js');
+window.Sifrr.Dom.load('sifrr-nosr', '/elements/sifrr/nosr.js');

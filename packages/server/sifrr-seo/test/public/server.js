@@ -52,9 +52,9 @@ if (global.ENV === 'development') {
 
 // serve sifrr-fetch and sifrr-dom
 const baseDir = path.join(__dirname, '../../../../');
+server.use(serveStatic(path.join(baseDir, './browser/sifrr-template/dist')));
 server.use(serveStatic(path.join(baseDir, './browser/sifrr-dom/dist')));
-server.use(serveStatic(path.join(baseDir, './browser/sifrr-fetch/dist')));
-process.stdout.write('Serving sifrr-dom and sifrr-fetch \n');
+process.stdout.write('Serving sifrr-dom and sifrr-template \n');
 
 // export server for importing
 server.use(seo.getExpressMiddleware(expressReq => `${PATH}${expressReq.originalUrl}`));
