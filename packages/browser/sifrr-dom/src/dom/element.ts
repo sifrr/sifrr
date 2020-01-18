@@ -28,7 +28,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       return this._ctemp;
     }
 
-    private __content: SifrrNode<SifrrElement>[];
+    private __content: SifrrNode<SifrrElement>[] = [];
     public connected: boolean = false;
     public state: object;
 
@@ -49,7 +49,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
 
     connectedCallback() {
       this.connected = true;
-      if (!this.shadowRoot) {
+      if (!this.shadowRoot && this.__content.length > 0) {
         if (this.childNodes.length !== 0) this.textContent = '';
         this.append(...this.__content);
       }

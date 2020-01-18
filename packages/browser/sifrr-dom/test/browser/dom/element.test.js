@@ -80,12 +80,12 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   describe('states', () => {
-    it('works without defaultState', async () => {
+    it('works without defaultState and has comment for empty place', async () => {
       const srhtml = await page.$eval('element-nods-sr', el => el.shadowRoot.innerHTML);
       const nosrhtml = await page.$eval('element-nods-nosr', el => el.innerHTML);
 
-      assert.equal(srhtml, '<p>Sifrr  Simple</p>');
-      assert.equal(nosrhtml, '<p>Sifrr  Simple</p>');
+      assert.equal(srhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
+      assert.equal(nosrhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
     });
 
     it('works with defaultState', async () => {
@@ -106,7 +106,7 @@ describe('Sifrr.Dom.Element', () => {
 
     it('updates only once on connect', async () => {
       const res = await page.evaluate(() => {
-        const types = ['element-nods', 'element-ds', 'element-ps', 'element-as'],
+        const types = ['element-nods', 'element-ds', 'element-ps'],
           result = {};
 
         types.forEach(t => {
@@ -117,7 +117,7 @@ describe('Sifrr.Dom.Element', () => {
         return result;
       });
 
-      assert.equal(Object.keys(res).length, 8);
+      assert.equal(Object.keys(res).length, 6);
       for (const el in res) {
         assert.equal(res[el], 1, el);
       }
