@@ -515,6 +515,14 @@ module.exports = CustomTag;
 someStore.set({ a: 'c' });
 ```
 
+#### Execute JS File 
+
+Execute a JS file
+
+```js
+Sifrr.Dom.Loader.executeJS(url);
+```
+
 #### slots
 
 - Slots work same as it would in web components, but note that bindings in slot elements won't work
@@ -529,5 +537,5 @@ someStore.set({ a: 'c' });
 
 ## Special thanks to
 
-- <https://github.com/Freak613/stage0> for optimization bindings and reconciliation algorithm
+- <https://github.com/Freak613/stage0> for reconciliation algorithm
 - <https://github.com/krausest/js-framework-benchmark> for benchmarking performance, sifrr implementation was added [here](https://github.com/krausest/js-framework-benchmark/pull/503)

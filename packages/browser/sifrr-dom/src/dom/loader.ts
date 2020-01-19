@@ -42,7 +42,7 @@ class Loader {
     return window.fetch(url).then(resp => resp.text());
   }
 
-  private static executeJS(url: string): Promise<unknown> {
+  public static executeJS(url: string): Promise<unknown> {
     return this.getFile(url).then(script => {
       return new Function(script + `\n //# sourceURL=${url}`).call(window);
     });
