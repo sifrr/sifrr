@@ -529,3 +529,27 @@ html`
   ${() => i++}
 `; // renders i and increases i on every update
 ```
+
+#### Stores
+
+```js
+// create a new store
+const someStore = new Sifrr.Template.Store({ a: 'b' });
+
+const Template = Sifrr.Template.html`${() => someStore.value}`;
+
+// get current value of store
+someSore.value; // { initial: 'value' }
+
+// update value
+someStore.set({ a: 'c' });
+
+const temp = Template({}); // renders `b`
+
+// add a listener on store value update
+someStore.addListener(() => {
+  // do somthing
+  // this function will be called whenever store is updated
+  Template({}, temp); // update temp instance with new store values, will render `c`
+});
+```

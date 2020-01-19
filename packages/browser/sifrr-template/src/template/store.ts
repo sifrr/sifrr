@@ -6,7 +6,7 @@ export default class Store<T> {
     this.value = initialValue;
   }
 
-  update(newValue: T) {
+  set(newValue: T) {
     this.value = newValue;
     this.onUpdate();
   }
