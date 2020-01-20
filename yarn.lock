@@ -993,7 +993,7 @@
     magic-string "^0.25.2"
     rollup-pluginutils "^2.6.0"
 
-"@sifrr/dev@0.0.42", "@sifrr/dev@^0.0.40", "@sifrr/dev@^0.0.42":
+"@sifrr/dev@0.0.42", "@sifrr/dev@^0.0.42":
   version "0.0.42"
   resolved "https://registry.yarnpkg.com/@sifrr/dev/-/dev-0.0.42.tgz#eab17f085af17063a11a5defba83dbb807f053f5"
   integrity sha512-QDQ4uCs8y5DB3EzWL/ozrlH7czZlTeMjUEPVMrWkoYj9qMswAoQSHUgBJeFllRDlsdZ4ti5oAHMMwnivDS7yeg==
@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-64ae17cd-b4c3-410f-bd07-c9b616a9ec77-1579517650980/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-3caacfcc-3c32-4bd8-bad6-6c86cfbdfc9a-1579517728239/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -6687,7 +6687,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v17.0.0", uWebSockets.js@uNetworking/uWebSockets.js#v17.0.0, uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v17.0.0, uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0:
   version "16.5.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/69026e121ae4a8d4f285c68b565710ef697b5dac"
 
