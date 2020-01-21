@@ -31,14 +31,14 @@ export const getEventListener = (name: string): EventListener => {
   return (e: Event) => {
     const target = <HTMLElement>(e.composedPath ? e.composedPath()[0] : e.target);
     let dom = target;
+    const eventHandler =
+      dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
+    if (typeof eventHandler === 'function') {
+      eventHandler.call(window, e, target);
+    } else if (typeof eventHandler === 'string') {
+      new Function('event', 'target', eventHandler).call(window, event, target);
+    }
     while (dom) {
-      const eventHandler =
-        dom[`_${name}`] || (dom.hasAttribute ? dom.getAttribute(`_${name}`) : null);
-      if (typeof eventHandler === 'function') {
-        eventHandler.call(window, e, target);
-      } else if (typeof eventHandler === 'string') {
-        new Function('event', 'target', eventHandler).call(window, event, target);
-      }
       cssMatchEvent(e, name, dom, target);
       dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
     }
