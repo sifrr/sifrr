@@ -43,6 +43,8 @@ export default function update<T>(
               (<HTMLElement>node).style[keys[i]] = `${newValue[keys[i]]}`; // remove undefined with empty string
             }
           } else node[binding.name] = binding.value;
+          hasOnPropChange &&
+            (<SifrrNode<any>>node).onPropChange(binding.name, undefined, binding.value);
         }
         continue;
       }
