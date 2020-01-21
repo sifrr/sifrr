@@ -40,7 +40,11 @@ export const getEventListener = (name: string): EventListener => {
     }
     while (dom) {
       cssMatchEvent(e, name, dom, target);
-      dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
+      if (e.bubbles) {
+        dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
+      } else {
+        dom = null;
+      }
     }
   };
 };
