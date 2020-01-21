@@ -27,6 +27,7 @@ export default function update<T>(
     const hasOnPropChange = typeof (<SifrrNode<any>>node).onPropChange === 'function';
     const hasUpdate = typeof (<SifrrNode<any>>node).update === 'function';
 
+    let promise = false;
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j];
 
@@ -48,13 +49,14 @@ export default function update<T>(
 
       const oldValue = currentValues[j];
       if (oldValue instanceof Promise) {
-        currentValues[j] = oldValue.then(oldValue => {
-          let newValue = binding.value(props, oldValue);
+        promise = true;
+        currentValues[j] = oldValue.then(oldv => {
+          let newValue = binding.value(props, oldv);
 
           if (newValue instanceof Promise) {
-            return newValue.then(nv => updateOne(node, binding, oldValue, nv, hasOnPropChange));
+            return newValue.then(nv => updateOne(node, binding, oldv, nv, hasOnPropChange));
           } else {
-            return updateOne(node, binding, oldValue, newValue, hasOnPropChange);
+            return updateOne(node, binding, oldv, newValue, hasOnPropChange);
           }
         });
       } else {
@@ -62,6 +64,7 @@ export default function update<T>(
         let newValue = binding.value(props, oldValue);
 
         if (newValue instanceof Promise) {
+          promise = true;
           currentValues[j] = newValue.then(nv =>
             updateOne(node, binding, oldValue, nv, hasOnPropChange)
           );
@@ -70,7 +73,11 @@ export default function update<T>(
         }
       }
     }
-    hasUpdate && Promise.all(currentValues).then(() => (<SifrrNode<any>>node).update());
+    if (hasUpdate) {
+      promise
+        ? Promise.all(currentValues).then(() => (<SifrrNode<any>>node).update())
+        : (<SifrrNode<any>>node).update();
+    }
   }
 }
 

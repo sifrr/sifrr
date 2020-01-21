@@ -90,6 +90,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     onStateChange() {}
 
     update() {
+      if (!this.connected) return;
       this.beforeUpdate();
       update(this.__content, this);
       trigger(this, 'update', { detail: { state: this.state } });

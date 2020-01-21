@@ -56,6 +56,7 @@ const createTemplate = <T>(
       } else if (!Array.isArray(oldValue)) {
         console.warn(`oldValue given to Component function was not an Array.
         template: \`${String.raw(str, ...substitutions)}\``);
+      } else if (oldValue.length == 1 && oldValue[0].nodeType === TEXT_NODE) {
       } else if (oldValue.length > 0) {
         console.warn(`oldValue given to Component function was not created by this Component. 
         This might be a bug or caused if you return different 
