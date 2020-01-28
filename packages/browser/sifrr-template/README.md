@@ -448,6 +448,47 @@ html`
 `;
 ```
 
+#### Stores
+
+```js
+// create a new store
+const someStore = new Sifrr.Template.Store({ a: 'b' });
+
+const Template = Sifrr.Template.html`${() => someStore.value}`;
+
+// get current value of store
+someSore.value; // { initial: 'value' }
+
+// update value
+someStore.set({ a: 'c' });
+
+const temp = Template({}); // renders `b`
+
+// add a listener on store value update
+someStore.addListener(() => {
+  // do somthing
+  // this function will be called whenever store is updated
+  Template({}, temp); // update temp instance with new store values, will render `c`
+});
+```
+
+#### Unique classname styling (like styled-components)
+
+```js
+import { html, styled } from '@sifrr/template';
+
+const { css, className } = styled`
+    color: red;
+`;
+
+const HTML = html`
+  ${css} // a component class from `css` function
+  <p class="${className}">This text will be of red color</p>
+`;
+```
+
+Note that classname will be applied to all components so should be used with that in mind (binding value in css will be changed for all component instances).
+
 ### Tips
 
 - Don't create new Template in a function, doing this will create new template on every function call.
@@ -528,28 +569,4 @@ let i = 0;
 html`
   ${() => i++}
 `; // renders i and increases i on every update
-```
-
-#### Stores
-
-```js
-// create a new store
-const someStore = new Sifrr.Template.Store({ a: 'b' });
-
-const Template = Sifrr.Template.html`${() => someStore.value}`;
-
-// get current value of store
-someSore.value; // { initial: 'value' }
-
-// update value
-someStore.set({ a: 'c' });
-
-const temp = Template({}); // renders `b`
-
-// add a listener on store value update
-someStore.addListener(() => {
-  // do somthing
-  // this function will be called whenever store is updated
-  Template({}, temp); // update temp instance with new store values, will render `c`
-});
 ```
