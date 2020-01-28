@@ -16,11 +16,11 @@ module.exports = class Cluster {
         ports = [port];
       }
       ports.forEach(p => {
-        if (typeof p !== 'number') throw Error(`Port should be a number, given ${port}`);
+        if (typeof p !== 'number') throw Error(`Port should be a number, given ${p}`);
         if (this.listens[p]) return;
 
         app.listen(p, socket => {
-          onListen.call(app, socket, port);
+          onListen.call(app, socket, p);
         });
         this.listens[p] = app;
       });
