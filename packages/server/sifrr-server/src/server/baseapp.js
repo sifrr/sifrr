@@ -14,6 +14,32 @@ const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
 const { stob } = require('./utils');
 
+const handleBody = (res, req) => {
+  const contType = req.getHeader('content-type');
+
+  res.bodyStream = function() {
+    const stream = new Readable();
+    stream._read = noOp;
+
+    this.onData((ab, isLast) => {
+      // uint and then slicing is bit faster than slice and then uint
+      stream.push(new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)));
+      if (isLast) {
+        stream.push(null);
+      }
+    });
+
+    return stream;
+  };
+
+  res.body = () => stob(res.bodyStream());
+
+  if (contType.indexOf('application/json') > -1)
+    res.json = async () => JSON.parse(await res.body());
+  if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
+    res.formData = formData.bind(res, contType);
+};
+
 class BaseApp {
   _staticPaths = new Map();
   _watched = new Map();
@@ -101,29 +127,28 @@ class BaseApp {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
-      const contType = req.getHeader('content-type');
+      handleBody(res, req);
+      handler(res, req);
+    });
+    return this;
+  }
 
-      res.bodyStream = function() {
-        const stream = new Readable();
-        stream._read = noOp;
+  put(pattern, handler) {
+    if (typeof handler !== 'function')
+      throw Error(`handler should be a function, given ${typeof handler}.`);
+    this._put(pattern, (res, req) => {
+      handleBody(res, req);
 
-        this.onData((ab, isLast) => {
-          // uint and then slicing is bit faster than slice and then uint
-          stream.push(new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)));
-          if (isLast) {
-            stream.push(null);
-          }
-        });
+      handler(res, req);
+    });
+    return this;
+  }
 
-        return stream;
-      };
-
-      res.body = () => stob(res.bodyStream());
-
-      if (contType.indexOf('application/json') > -1)
-        res.json = async () => JSON.parse(await res.body());
-      if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
-        res.formData = formData.bind(res, contType);
+  patch(pattern, handler) {
+    if (typeof handler !== 'function')
+      throw Error(`handler should be a function, given ${typeof handler}.`);
+    this._patch(pattern, (res, req) => {
+      handleBody(res, req);
 
       handler(res, req);
     });
