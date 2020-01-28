@@ -5,7 +5,7 @@ const GQL_START = 'start';
 const GQL_STOP = 'stop';
 // server -> client
 const GQL_DATA = 'data';
-const GQL_STOPPED = 'stopped';
+const GQL_QUERY = 'query';
 
 async function getGraphqlParams(res, req) {
   // query and variables
@@ -125,7 +125,7 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
           break;
 
         default:
-          ws.send(JSON.stringify({ payload: await execute(params), id: opId }));
+          ws.send(JSON.stringify({ payload: await execute(params), type: GQL_QUERY, id: opId }));
           break;
       }
     },
