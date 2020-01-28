@@ -33,7 +33,7 @@ app.post('/stream', res => {
     if (err) throw Error(err);
   });
 
-  for (let h in headers) {
+  for (const h in headers) {
     writeHeaders(res, h, headers[h]);
   }
   res.writeHeader('content-type', 'application/json');
@@ -57,7 +57,7 @@ app.post('/tmpdir', res => {
     if (err) throw Error(err);
   });
 
-  for (let h in headers) {
+  for (const h in headers) {
     writeHeaders(res, h, headers[h]);
   }
   res.writeHeader('content-type', 'application/json');

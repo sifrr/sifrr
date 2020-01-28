@@ -15,13 +15,18 @@ const noOp = () => true;
 const { stob } = require('./utils');
 
 class BaseApp {
+  _staticPaths = new Map();
+  _watched = new Map();
+  _sockets = new Map();
+  __livereloadenabled = false;
+
   file(pattern, filePath, options = {}) {
-    if (this._staticPaths[pattern]) {
+    if (this._staticPaths.has(pattern)) {
       if (options.failOnDuplicateRoute)
         throw Error(
           `Error serving '${filePath}' for '${pattern}', already serving '${
-            this._staticPaths[pattern][0]
-          }' file for this patter.`
+            this._staticPaths.get(pattern)[0]
+          }' file for this pattern.`
         );
       else if (!options.overwriteRoute) return this;
     }
@@ -32,7 +37,7 @@ class BaseApp {
       this.__livereloadenabled = true;
     }
 
-    this._staticPaths[pattern] = [filePath, options];
+    this._staticPaths.set(pattern, [filePath, options]);
     this.get(pattern, this._serveStatic);
     return this;
   }
@@ -64,12 +69,12 @@ class BaseApp {
     });
 
     if (options && options.watch) {
-      if (!this._watched[folder]) {
+      if (!this._watched.has(folder)) {
         const w = chokidar.watch(folder);
 
         w.on('unlink', filePath => {
           const url = '/' + path.relative(base, filePath);
-          delete this._staticPaths[prefix + url];
+          this._staticPaths.delete(prefix + url);
         });
 
         w.on('add', filePath => {
@@ -77,7 +82,7 @@ class BaseApp {
           this.file(prefix + url, filePath, options);
         });
 
-        this._watched[folder] = w;
+        this._watched.set(folder, w);
       }
     }
     return this;
@@ -85,7 +90,7 @@ class BaseApp {
 
   _serveStatic(res, req) {
     res.onAborted(noOp);
-    const options = this._staticPaths[req.getUrl()];
+    const options = this._staticPaths.get(req.getUrl());
     if (typeof options === 'undefined') {
       res.writeStatus('404 Not Found');
       res.end();
@@ -143,12 +148,12 @@ class BaseApp {
   listen(h, p = noOp, cb) {
     if (typeof cb === 'function') {
       this._listen(h, p, socket => {
-        this._sockets[p] = socket;
+        this._sockets.set(p, socket);
         cb(socket);
       });
     } else {
       this._listen(h, socket => {
-        this._sockets[h] = socket;
+        this._sockets.set(h, socket);
         p(socket);
       });
     }
@@ -156,24 +161,19 @@ class BaseApp {
   }
 
   close(port = null) {
-    for (let f in this._watched) {
-      this._watched[f].close();
-    }
+    this._watched.forEach(v => v.close());
+    this._watched.clear();
     if (port) {
-      this._sockets[port] && uWS.us_listen_socket_close(this._sockets[port]);
-      delete this._sockets[port];
+      this._sockets.has(port) && uWS.us_listen_socket_close(this._sockets.get(port));
+      this._sockets.delete(port);
     } else {
-      for (let p in this._sockets) {
-        uWS.us_listen_socket_close(this._sockets[p]);
-        delete this._sockets[p];
-      }
+      this._sockets.forEach(app => {
+        uWS.us_listen_socket_close(app);
+      });
+      this._sockets.clear();
     }
     return this;
   }
 }
-
-BaseApp.prototype._staticPaths = {};
-BaseApp.prototype._watched = {};
-BaseApp.prototype._sockets = {};
 
 module.exports = BaseApp;

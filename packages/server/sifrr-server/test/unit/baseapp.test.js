@@ -45,7 +45,7 @@ describe('speed test', () => {
       baseapp.file('ok1', 'ok');
       baseapp.file('ok1', 'oknew');
 
-      expect(baseapp._staticPaths['ok1'][0]).to.equal('ok');
+      expect(baseapp._staticPaths.get('ok1')[0]).to.equal('ok');
     });
 
     it('throws error if pattern is added twice with failOnDuplicateRoute', () => {
@@ -59,7 +59,7 @@ describe('speed test', () => {
       baseapp.file('ok3', 'ok');
       baseapp.file('ok3', 'oknew', { overwriteRoute: true });
 
-      expect(baseapp._staticPaths['ok3'][0]).to.equal('oknew');
+      expect(baseapp._staticPaths.get('ok3')[0]).to.equal('oknew');
     });
   });
 });

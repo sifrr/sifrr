@@ -5,7 +5,7 @@ const { extend } = require('./utils');
 class SSLApp extends uWS.SSLApp {
   constructor(options) {
     super(options);
-    extend(this, BaseApp);
+    extend(this, new BaseApp());
   }
 }
 
