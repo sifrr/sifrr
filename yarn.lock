@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-282f9968-10b8-4c47-8377-b742868b2ccc-1579787853659/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-49b1d89f-a023-499e-bd79-8654f1e77e79-1580448896862/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1589,12 +1589,13 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-cache-manager@^2.10.1:
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-2.10.1.tgz#d8f312381255966cfc19c990bc8834c8d24edb2a"
-  integrity sha512-bk17v9IkLqNcbCzggEh82LEJhjHp+COnL57L7a0ESbM/cOuXIIBatdVjD/ps7vOsofI48++zAC14Ye+8v50flg==
+cache-manager@^2.10.1, cache-manager@^2.10.2:
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-2.10.2.tgz#7ecabfb82db9e80290dc6705f3a555ded1c9cc8c"
+  integrity sha512-VueuJaWPfugreadk88pZ23g0nGVd4qqG4Y8X8y9LQePEN+EhaDlXbJM5pbJB0CdpuTmqVPCmcWgtEDxLqbT1zw==
   dependencies:
     async "1.5.2"
+    lodash.clonedeep "4.5.0"
     lru-cache "4.0.0"
 
 caller-callsite@^2.0.0:
@@ -4117,6 +4118,11 @@ lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha1-soqmKIorn8ZRA1x3EfZathkDMaY=
+
+lodash.clonedeep@4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
 
 lodash.get@^4.4.2:
   version "4.4.2"
