@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-03bf8ffc-8113-43a8-8049-b56a9f15db11-1580709220336/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-751a0675-2cd2-40ae-b20c-22c4aef74314-1580709300890/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1589,7 +1589,7 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-cache-manager@^2.10.1, cache-manager@^2.10.2, cache-manager@^2.11.0:
+cache-manager@^2.10.1, cache-manager@^2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-2.11.0.tgz#5ce7515a0079e73106c5e9eb80290cc1a0c87db3"
   integrity sha512-eKmGx69rnSBfT0eEDX6WhfxOG00LqvosnTmLpf8SNhvVFbOh1aHSsox1Tp3feNZ5tdkLCBZkmhQpaDfh0gDNTA==
