@@ -36,7 +36,7 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@sifrr/dev": "^0.0.44",
     "axios": "^0.19.2",
-    "cache-manager": "^2.10.2",
+    "cache-manager": "^2.11.1",
     "graphql-subscriptions": "^1.1.0",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^4.1.0",
