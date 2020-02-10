@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   let files;
@@ -40,4 +40,4 @@ function loadRoutes(dir, { filter = () => true, basePath = '' } = {}) {
   return paths;
 }
 
-module.exports = loadRoutes;
+export default loadRoutes;

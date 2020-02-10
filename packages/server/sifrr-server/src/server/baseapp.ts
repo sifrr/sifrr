@@ -1,18 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const { Readable } = require('stream');
-const uWS = require('uWebSockets.js');
-const chokidar = require('chokidar');
+import fs from 'fs';
+import path from 'path';
+import { Readable } from 'stream';
+import uWS from 'uWebSockets.js';
+import chokidar from 'chokidar';
 
-const { wsConfig } = require('./livereload');
-const sendFile = require('./sendfile');
-const formData = require('./formdata');
-const loadroutes = require('./loadroutes');
-const { graphqlPost, graphqlWs } = require('./graphql');
+import { wsConfig } from './livereload';
+import sendFile from './sendfile';
+import formData from './formdata';
+import loadroutes from './loadroutes';
+import { graphqlPost, graphqlWs } from './graphql';
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
-const { stob } = require('./utils');
+import { stob } from './utils';
 
 const handleBody = (res, req) => {
   const contType = req.getHeader('content-type');
@@ -201,4 +201,4 @@ class BaseApp {
   }
 }
 
-module.exports = BaseApp;
+export default BaseApp;

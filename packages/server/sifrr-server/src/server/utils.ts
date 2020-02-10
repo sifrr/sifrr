@@ -42,8 +42,4 @@ function stob(stream) {
   });
 }
 
-module.exports = {
-  writeHeaders,
-  extend,
-  stob
-};
+export { writeHeaders, extend, stob };

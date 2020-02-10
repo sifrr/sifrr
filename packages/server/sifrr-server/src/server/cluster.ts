@@ -1,11 +1,12 @@
-const noop = () => {};
+const noop = (a, b) => {};
 
-module.exports = class Cluster {
+export default class Cluster {
+  apps: any[];
+  listens: {};
   // apps = [ { app: SifrrServerApp, port/ports: int } ]
   constructor(apps) {
     if (!Array.isArray(apps)) apps = [apps];
     this.apps = apps;
-    this.listens = {};
   }
 
   listen(onListen = noop) {
@@ -44,4 +45,4 @@ module.exports = class Cluster {
     }
     return this;
   }
-};
+}

@@ -1,5 +1,5 @@
-const queryString = require('query-string');
-const { createAsyncIterator, forAwaitEach, isAsyncIterable } = require('iterall');
+import queryString from 'query-string';
+import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
 // client -> server
 const GQL_START = 'start';
 const GQL_STOP = 'stop';
@@ -134,7 +134,4 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
   };
 }
 
-module.exports = {
-  graphqlPost,
-  graphqlWs
-};
+export { graphqlPost, graphqlWs };

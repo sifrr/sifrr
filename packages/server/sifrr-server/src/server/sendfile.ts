@@ -1,5 +1,5 @@
-const fs = require('fs');
-const zlib = require('zlib');
+import fs from 'fs';
+import zlib from 'zlib';
 const watchedPaths = new Set();
 
 const compressions = {
@@ -7,15 +7,15 @@ const compressions = {
   gzip: zlib.createGzip,
   deflate: zlib.createDeflate
 };
-const { writeHeaders } = require('./utils');
-const getMime = require('./mime').getMime;
+import { writeHeaders } from './utils';
+import { getMime } from './mime';
 const bytes = 'bytes=';
-const { stob } = require('./utils');
+import { stob } from './utils';
+import { sendSignal } from './livereload';
 
 function sendFile(res, req, path, options) {
   if (options && options.livereload && !watchedPaths.has(path)) {
     watchedPaths.add(path);
-    const { sendSignal } = require('./livereload');
     fs.watch(path, sendSignal);
   }
 
@@ -167,4 +167,4 @@ function sendFileToRes(
     });
 }
 
-module.exports = sendFile;
+export default sendFile;

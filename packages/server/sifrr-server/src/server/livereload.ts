@@ -29,8 +29,5 @@ const sendSignal = (type, path) => {
   for (let i in websockets) websockets[i].dirty = true;
 };
 
-module.exports = {
-  websockets,
-  wsConfig,
-  sendSignal
-};
+export default { websockets, wsConfig, sendSignal };
+export { websockets, wsConfig, sendSignal };

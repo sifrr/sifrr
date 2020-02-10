@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const Busboy = require('busboy');
-const mkdirp = require('mkdirp');
+import fs from 'fs';
+import path from 'path';
+import Busboy from 'busboy';
+import mkdirp from 'mkdirp';
 
 function formData(contType, options = {}) {
   options.headers = {
@@ -72,4 +72,4 @@ function setRetValue(ret, fieldname, value) {
   }
 }
 
-module.exports = formData;
+export default formData;
