@@ -1,4 +1,4 @@
-function writeHeaders(res, headers, other) {
+function writeHeaders(res, headers, other?) {
   if (typeof other !== 'undefined') {
     res.writeHeader(headers, other.toString());
   } else {

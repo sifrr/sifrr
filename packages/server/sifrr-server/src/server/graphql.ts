@@ -1,4 +1,4 @@
-import queryString from 'query-string';
+import { parse } from 'query-string';
 import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
 // client -> server
 const GQL_START = 'start';
@@ -9,7 +9,7 @@ const GQL_QUERY = 'query';
 
 async function getGraphqlParams(res, req) {
   // query and variables
-  const queryParams = queryString.parse(req.getQuery());
+  const queryParams = parse(req.getQuery());
   let { query, variables, operationName } = queryParams;
   if (typeof variables === 'string') variables = JSON.parse(variables);
 
@@ -27,7 +27,7 @@ async function getGraphqlParams(res, req) {
   };
 }
 
-function graphqlPost(schema, graphqlOptions = {}, graphql = {}) {
+function graphqlPost(schema, graphqlOptions: any = {}, graphql: any = {}) {
   const execute = graphql.graphql || require('graphql').graphql;
 
   return async (res, req) => {
@@ -59,7 +59,7 @@ function stopGqsSubscription(operations, reqOpId) {
   delete operations[reqOpId];
 }
 
-function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
+function graphqlWs(schema, graphqlOptions: any = {}, uwsOptions: any = {}, graphql: any = {}) {
   const subscribe = graphql.subscribe || require('graphql').subscribe;
   const execute = graphql.graphql || require('graphql').graphql;
 

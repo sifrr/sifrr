@@ -1,9 +1,9 @@
-import fs from 'fs';
-import path from 'path';
+import { createWriteStream } from 'fs';
+import { join, dirname } from 'path';
 import Busboy from 'busboy';
 import mkdirp from 'mkdirp';
 
-function formData(contType, options = {}) {
+function formData(contType, options: any = {}) {
   options.headers = {
     'content-type': contType
   };
@@ -21,7 +21,7 @@ function formData(contType, options = {}) {
     });
 
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      const value = {
+      const value: any = {
         filename,
         encoding,
         mimetype
@@ -29,10 +29,10 @@ function formData(contType, options = {}) {
 
       if (typeof options.tmpDir === 'string') {
         if (typeof options.filename === 'function') filename = options.filename(filename);
-        const fileToSave = path.join(options.tmpDir, filename);
-        mkdirp(path.dirname(fileToSave));
+        const fileToSave = join(options.tmpDir, filename);
+        mkdirp(dirname(fileToSave));
 
-        file.pipe(fs.createWriteStream(fileToSave));
+        file.pipe(createWriteStream(fileToSave));
         value.filePath = fileToSave;
       } else options.onFile(fieldname, file, filename, encoding, mimetype);
 

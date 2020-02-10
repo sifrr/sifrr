@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import { readdirSync, statSync } from 'fs';
+import { join, relative } from 'path';
 import { Readable } from 'stream';
-import uWS from 'uWebSockets.js';
-import chokidar from 'chokidar';
+import { us_listen_socket_close } from 'uWebSockets.js';
+import { watch } from 'chokidar';
 
 import { wsConfig } from './livereload';
 import sendFile from './sendfile';
@@ -11,8 +11,9 @@ import loadroutes from './loadroutes';
 import { graphqlPost, graphqlWs } from './graphql';
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
-const noOp = () => true;
+const noOp = s => true;
 import { stob } from './utils';
+import { UwsApp } from './types';
 
 const handleBody = (res, req) => {
   const contType = req.getHeader('content-type');
@@ -45,8 +46,14 @@ class BaseApp {
   _watched = new Map();
   _sockets = new Map();
   __livereloadenabled = false;
+  ws: any;
+  get: any;
+  _post: any;
+  _put: any;
+  _patch: any;
+  _listen: any;
 
-  file(pattern, filePath, options = {}) {
+  file(pattern, filePath, options: any = {}) {
     if (this._staticPaths.has(pattern)) {
       if (options.failOnDuplicateRoute)
         throw Error(
@@ -59,7 +66,7 @@ class BaseApp {
 
     if (options.livereload && !this.__livereloadenabled) {
       this.ws('/__sifrrLiveReload', wsConfig);
-      this.file('/livereload.js', path.join(__dirname, './livereloadjs.js'));
+      this.file('/livereload.js', join(__dirname, './livereloadjs.js'));
       this.__livereloadenabled = true;
     }
 
@@ -70,7 +77,7 @@ class BaseApp {
 
   folder(prefix, folder, options, base = folder) {
     // not a folder
-    if (!fs.statSync(folder).isDirectory()) {
+    if (!statSync(folder).isDirectory()) {
       throw Error('Given path is not a directory: ' + folder);
     }
 
@@ -80,31 +87,31 @@ class BaseApp {
 
     // serve folder
     const filter = options ? options.filter || noOp : noOp;
-    fs.readdirSync(folder).forEach(file => {
+    readdirSync(folder).forEach(file => {
       // Absolute path
-      const filePath = path.join(folder, file);
+      const filePath = join(folder, file);
       // Return if filtered
       if (!filter(filePath)) return;
 
-      if (fs.statSync(filePath).isDirectory()) {
+      if (statSync(filePath).isDirectory()) {
         // Recursive if directory
         this.folder(prefix, filePath, options, base);
       } else {
-        this.file(prefix + '/' + path.relative(base, filePath), filePath, options);
+        this.file(prefix + '/' + relative(base, filePath), filePath, options);
       }
     });
 
     if (options && options.watch) {
       if (!this._watched.has(folder)) {
-        const w = chokidar.watch(folder);
+        const w = watch(folder);
 
         w.on('unlink', filePath => {
-          const url = '/' + path.relative(base, filePath);
+          const url = '/' + relative(base, filePath);
           this._staticPaths.delete(prefix + url);
         });
 
         w.on('add', filePath => {
-          const url = '/' + path.relative(base, filePath);
+          const url = '/' + relative(base, filePath);
           this.file(prefix + url, filePath, options);
         });
 
@@ -155,13 +162,13 @@ class BaseApp {
     return this;
   }
 
-  graphql(route, schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
+  graphql(route, schema, graphqlOptions: any = {}, uwsOptions = {}, graphql) {
     const handler = graphqlPost(schema, graphqlOptions, graphql);
     this.post(route, handler);
     this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
     // this.get(route, handler);
     if (graphqlOptions && graphqlOptions.graphiqlPath)
-      this.file(graphqlOptions.graphiqlPath, path.join(__dirname, './graphiql.html'));
+      this.file(graphqlOptions.graphiqlPath, join(__dirname, './graphiql.html'));
     return this;
   }
 
@@ -189,11 +196,11 @@ class BaseApp {
     this._watched.forEach(v => v.close());
     this._watched.clear();
     if (port) {
-      this._sockets.has(port) && uWS.us_listen_socket_close(this._sockets.get(port));
+      this._sockets.has(port) && us_listen_socket_close(this._sockets.get(port));
       this._sockets.delete(port);
     } else {
       this._sockets.forEach(app => {
-        uWS.us_listen_socket_close(app);
+        us_listen_socket_close(app);
       });
       this._sockets.clear();
     }

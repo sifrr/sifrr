@@ -1,4 +1,4 @@
-import queryString from 'query-string';
+import { parse } from 'query-string';
 import App from './server/app';
 import SSLApp from './server/sslapp';
 import { mimes, getMime } from './server/mime';
@@ -6,12 +6,16 @@ import { writeHeaders } from './server/utils';
 import sendFile from './server/sendfile';
 import Cluster from './server/cluster';
 import livereload from './server/livereload';
+import * as types from './server/types';
 
 const getQuery = req => {
-  return queryString.parse(req.getQuery());
+  return parse(req.getQuery());
 };
 
-module.exports = {
+export { App, SSLApp, mimes, getMime, writeHeaders, sendFile, Cluster, livereload, getQuery };
+export * from './server/types';
+
+export default {
   App,
   SSLApp,
   mimes,
@@ -20,5 +24,6 @@ module.exports = {
   sendFile,
   Cluster,
   livereload,
-  getQuery
+  getQuery,
+  ...types
 };
