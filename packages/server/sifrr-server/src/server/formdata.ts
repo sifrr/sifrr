@@ -51,8 +51,10 @@ function formData(
         file.pipe(createWriteStream(fileToSave));
         value.filePath = fileToSave;
       }
-      value.filePath =
-        options.onFile(fieldname, file, filename, encoding, mimetype) || value.filePath;
+      if (typeof options.onFile === 'function') {
+        value.filePath =
+          options.onFile(fieldname, file, filename, encoding, mimetype) || value.filePath;
+      }
 
       setRetValue(ret, fieldname, value);
     });
