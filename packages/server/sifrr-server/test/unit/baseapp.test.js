@@ -1,4 +1,4 @@
-const BaseApp = require('../../src/server/baseapp');
+const BaseApp = require('../../src/server/baseapp').default;
 const baseapp = new BaseApp();
 
 describe('speed test', () => {

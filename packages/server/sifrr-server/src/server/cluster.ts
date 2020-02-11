@@ -2,7 +2,7 @@ const noop = (a, b) => {};
 
 export default class Cluster {
   apps: any[];
-  listens: {};
+  listens = {};
   // apps = [ { app: SifrrServerApp, port/ports: int } ]
   constructor(apps) {
     if (!Array.isArray(apps)) apps = [apps];

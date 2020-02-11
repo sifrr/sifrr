@@ -13,7 +13,7 @@ function extend(who, from, overwrite = true) {
     Object.keys(from)
   );
   ownProps.forEach(prop => {
-    if (prop === 'constructor') return;
+    if (prop === 'constructor' || from[prop] === undefined) return;
     if (who[prop] && overwrite) {
       who[`_${prop}`] = who[prop];
     }
