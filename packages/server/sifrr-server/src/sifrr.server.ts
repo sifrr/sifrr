@@ -1,4 +1,5 @@
 import { parse } from 'query-string';
+import { HttpRequest } from 'uWebSockets.js';
 import App from './server/app';
 import SSLApp from './server/sslapp';
 import { mimes, getMime } from './server/mime';
@@ -8,7 +9,7 @@ import Cluster from './server/cluster';
 import livereload from './server/livereload';
 import * as types from './server/types';
 
-const getQuery = req => {
+const getQuery = (req: HttpRequest) => {
   return parse(req.getQuery());
 };
 

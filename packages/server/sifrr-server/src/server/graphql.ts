@@ -1,5 +1,6 @@
 import { parse } from 'query-string';
 import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
+import { HttpResponse, HttpRequest } from 'uWebSockets.js';
 // client -> server
 const GQL_START = 'start';
 const GQL_STOP = 'stop';
@@ -7,7 +8,7 @@ const GQL_STOP = 'stop';
 const GQL_DATA = 'data';
 const GQL_QUERY = 'query';
 
-async function getGraphqlParams(res, req) {
+async function getGraphqlParams(res: HttpResponse, req: HttpRequest) {
   // query and variables
   const queryParams = parse(req.getQuery());
   let { query, variables, operationName } = queryParams;
@@ -30,7 +31,7 @@ async function getGraphqlParams(res, req) {
 function graphqlPost(schema, graphqlOptions: any = {}, graphql: any = {}) {
   const execute = graphql.graphql || require('graphql').graphql;
 
-  return async (res, req) => {
+  return async (res: HttpResponse, req: HttpRequest) => {
     res.onAborted(console.error);
 
     res.writeHeader('content-type', 'application/json');

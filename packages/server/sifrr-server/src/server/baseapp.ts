@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import { Readable } from 'stream';
-import { us_listen_socket_close } from 'uWebSockets.js';
+import { us_listen_socket_close, TemplatedApp, HttpResponse, HttpRequest } from 'uWebSockets.js';
 import { watch } from 'chokidar';
 
 import { wsConfig } from './livereload';
@@ -9,13 +9,13 @@ import sendFile from './sendfile';
 import formData from './formdata';
 import loadroutes from './loadroutes';
 import { graphqlPost, graphqlWs } from './graphql';
+import { stob } from './utils';
+import { SendFileOptions, Handler } from './types';
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
-const noOp = s => true;
-import { stob } from './utils';
-import { UwsApp } from './types';
+const noOp = () => true;
 
-const handleBody = (res, req) => {
+const handleBody = (res: HttpResponse, req: HttpRequest) => {
   const contType = req.getHeader('content-type');
 
   res.bodyStream = function() {
@@ -46,14 +46,14 @@ class BaseApp {
   _watched = new Map();
   _sockets = new Map();
   __livereloadenabled = false;
-  ws: any;
-  get: any;
-  _post: any;
-  _put: any;
-  _patch: any;
-  _listen: any;
+  ws: TemplatedApp['ws'];
+  get: TemplatedApp['get'];
+  _post: TemplatedApp['post'];
+  _put: TemplatedApp['put'];
+  _patch: TemplatedApp['patch'];
+  _listen: TemplatedApp['listen'];
 
-  file(pattern, filePath, options: any = {}) {
+  file(pattern: string, filePath: string, options: SendFileOptions = {}) {
     if (this._staticPaths.has(pattern)) {
       if (options.failOnDuplicateRoute)
         throw Error(
@@ -75,7 +75,7 @@ class BaseApp {
     return this;
   }
 
-  folder(prefix, folder, options, base = folder) {
+  folder(prefix: string, folder: string, options: SendFileOptions, base: string = folder) {
     // not a folder
     if (!statSync(folder).isDirectory()) {
       throw Error('Given path is not a directory: ' + folder);
@@ -121,7 +121,7 @@ class BaseApp {
     return this;
   }
 
-  _serveStatic(res, req) {
+  _serveStatic(res: HttpResponse, req: HttpRequest) {
     res.onAborted(noOp);
     const options = this._staticPaths.get(req.getUrl());
     if (typeof options === 'undefined') {
@@ -130,7 +130,7 @@ class BaseApp {
     } else sendFile(res, req, options[0], options[1]);
   }
 
-  post(pattern, handler) {
+  post(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
@@ -140,7 +140,7 @@ class BaseApp {
     return this;
   }
 
-  put(pattern, handler) {
+  put(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._put(pattern, (res, req) => {
@@ -151,7 +151,7 @@ class BaseApp {
     return this;
   }
 
-  patch(pattern, handler) {
+  patch(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._patch(pattern, (res, req) => {
@@ -162,7 +162,7 @@ class BaseApp {
     return this;
   }
 
-  graphql(route, schema, graphqlOptions: any = {}, uwsOptions = {}, graphql) {
+  graphql(route: string, schema, graphqlOptions: any = {}, uwsOptions = {}, graphql) {
     const handler = graphqlPost(schema, graphqlOptions, graphql);
     this.post(route, handler);
     this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
@@ -172,27 +172,32 @@ class BaseApp {
     return this;
   }
 
-  load(dir, options) {
+  load(dir: string, options) {
     loadroutes.call(this, dir, options);
     return this;
   }
 
-  listen(h, p = noOp, cb) {
-    if (typeof cb === 'function') {
+  listen(h: string | number, p: Function | number = noOp, cb?: Function) {
+    if (typeof p === 'number' && typeof h === 'string') {
       this._listen(h, p, socket => {
         this._sockets.set(p, socket);
         cb(socket);
       });
-    } else {
+    } else if (typeof h === 'number' && typeof p === 'function') {
       this._listen(h, socket => {
         this._sockets.set(h, socket);
         p(socket);
       });
+    } else {
+      throw Error(
+        'Argument types: (host: string, port: number, cb?: Function) | (port: number, cb?: Function)'
+      );
     }
+
     return this;
   }
 
-  close(port = null) {
+  close(port: null | number = null) {
     this._watched.forEach(v => v.close());
     this._watched.clear();
     if (port) {

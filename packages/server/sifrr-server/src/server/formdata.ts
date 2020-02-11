@@ -3,7 +3,22 @@ import { join, dirname } from 'path';
 import Busboy from 'busboy';
 import mkdirp from 'mkdirp';
 
-function formData(contType, options: any = {}) {
+function formData(
+  contType: string,
+  options: busboy.BusboyConfig & {
+    abortOnLimit?: boolean;
+    tmpDir?: string;
+    onFile?: (
+      fieldname: string,
+      file: NodeJS.ReadableStream,
+      filename: string,
+      encoding: string,
+      mimetype: string
+    ) => string;
+    onField?: (fieldname: string, value: any) => void;
+    filename?: (oldName: string) => string;
+  } = {}
+) {
   options.headers = {
     'content-type': contType
   };
@@ -21,10 +36,11 @@ function formData(contType, options: any = {}) {
     });
 
     busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      const value: any = {
+      const value = {
         filename,
         encoding,
-        mimetype
+        mimetype,
+        filePath: undefined
       };
 
       if (typeof options.tmpDir === 'string') {
@@ -34,7 +50,9 @@ function formData(contType, options: any = {}) {
 
         file.pipe(createWriteStream(fileToSave));
         value.filePath = fileToSave;
-      } else options.onFile(fieldname, file, filename, encoding, mimetype);
+      }
+      value.filePath =
+        options.onFile(fieldname, file, filename, encoding, mimetype) || value.filePath;
 
       setRetValue(ret, fieldname, value);
     });
@@ -53,7 +71,11 @@ function formData(contType, options: any = {}) {
   });
 }
 
-function setRetValue(ret, fieldname, value) {
+function setRetValue(
+  ret: { [x: string]: any },
+  fieldname: string,
+  value: { filename: string; encoding: string; mimetype: string; filePath?: string } | any
+) {
   if (fieldname.slice(-2) === '[]') {
     fieldname = fieldname.slice(0, fieldname.length - 2);
     if (Array.isArray(ret[fieldname])) {

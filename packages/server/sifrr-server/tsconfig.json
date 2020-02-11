@@ -7,7 +7,9 @@
     "noImplicitAny": false,
     "target": "es2015",
     "lib": ["esnext", "es2019", "dom"],
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/*"],
   "exclude": ["node_modules"]

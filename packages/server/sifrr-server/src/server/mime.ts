@@ -168,7 +168,7 @@ const mimes = {
   default: 'text/html'
 };
 
-const getMime = path => {
+const getMime = (path: string): string => {
   const i = path.lastIndexOf('.');
   return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
 };

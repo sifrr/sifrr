@@ -12,8 +12,10 @@ import { getMime } from './mime';
 const bytes = 'bytes=';
 import { stob } from './utils';
 import { sendSignal } from './livereload';
+import { SendFileOptions } from './types';
+import { HttpResponse, HttpRequest } from 'uWebSockets.js';
 
-function sendFile(res, req, path, options) {
+function sendFile(res: HttpResponse, req: HttpRequest, path: string, options: SendFileOptions) {
   if (options && options.livereload && !watchedPaths.has(path)) {
     watchedPaths.add(path);
     watch(path, sendSignal);
@@ -32,9 +34,9 @@ function sendFile(res, req, path, options) {
 }
 
 function sendFileToRes(
-  res,
-  reqHeaders,
-  path,
+  res: HttpResponse,
+  reqHeaders: { [name: string]: string },
+  path: string,
   {
     lastModified = true,
     headers = {},
