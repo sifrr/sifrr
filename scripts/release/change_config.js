@@ -1,4 +1,5 @@
 const pkg = require('../../package.json');
+const path = require('path');
 const fs = require('fs');
 const stringify = require('./stringify');
 
@@ -28,12 +29,14 @@ module.exports = function(folder, isBrowser) {
     files: ['bin', 'dist', 'src']
   };
 
-  if (isBrowser) {
+  if (fs.existsSync(path.join(folder, 'tsconfig.json'))) {
     pkgToMerge.module = `dist/${jsFileName}.module.js`;
     pkgToMerge.main = `dist/${jsFileName}.cjs.js`;
-    pkgToMerge.browser = `dist/${jsFileName}.min.js`;
     pkgToMerge.types = `dist/types/${jsFileName}.d.ts`;
+  }
 
+  if (isBrowser) {
+    pkgToMerge.browser = `dist/${jsFileName}.min.js`;
     pkgToMerge.browserslist = pkg.browserslist;
   }
 

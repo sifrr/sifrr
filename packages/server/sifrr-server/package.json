@@ -41,8 +41,6 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@sifrr/dev": "^0.0.44",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
     "axios": "^0.19.2",
     "cache-manager": "^2.11.1",
     "graphql-subscriptions": "^1.1.0",
