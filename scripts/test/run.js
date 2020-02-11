@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('@sifrr/dev');
 
 const before = function() {
   const sinon = require('sinon');
@@ -122,6 +123,10 @@ const options = roots.map((root, i) => {
 });
 
 async function run() {
+  if (!dontRunPrecommand) {
+    await exec(`cd ${path.join(__dirname, '../../packages/server/sifrr-server')} && yarn build`);
+    await exec(`yarn upgrade @sifrr/server`);
+  }
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);

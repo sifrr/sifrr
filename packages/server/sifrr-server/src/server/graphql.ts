@@ -1,5 +1,6 @@
-const queryString = require('query-string');
-const { createAsyncIterator, forAwaitEach, isAsyncIterable } = require('iterall');
+import { parse } from 'query-string';
+import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
+import { HttpResponse, HttpRequest } from 'uWebSockets.js';
 // client -> server
 const GQL_START = 'start';
 const GQL_STOP = 'stop';
@@ -7,9 +8,9 @@ const GQL_STOP = 'stop';
 const GQL_DATA = 'data';
 const GQL_QUERY = 'query';
 
-async function getGraphqlParams(res, req) {
+async function getGraphqlParams(res: HttpResponse, req: HttpRequest) {
   // query and variables
-  const queryParams = queryString.parse(req.getQuery());
+  const queryParams = parse(req.getQuery());
   let { query, variables, operationName } = queryParams;
   if (typeof variables === 'string') variables = JSON.parse(variables);
 
@@ -27,10 +28,10 @@ async function getGraphqlParams(res, req) {
   };
 }
 
-function graphqlPost(schema, graphqlOptions = {}, graphql = {}) {
+function graphqlPost(schema, graphqlOptions: any = {}, graphql: any = {}) {
   const execute = graphql.graphql || require('graphql').graphql;
 
-  return async (res, req) => {
+  return async (res: HttpResponse, req: HttpRequest) => {
     res.onAborted(console.error);
 
     res.writeHeader('content-type', 'application/json');
@@ -59,7 +60,7 @@ function stopGqsSubscription(operations, reqOpId) {
   delete operations[reqOpId];
 }
 
-function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
+function graphqlWs(schema, graphqlOptions: any = {}, uwsOptions: any = {}, graphql: any = {}) {
   const subscribe = graphql.subscribe || require('graphql').subscribe;
   const execute = graphql.graphql || require('graphql').graphql;
 
@@ -134,7 +135,4 @@ function graphqlWs(schema, graphqlOptions = {}, uwsOptions = {}, graphql = {}) {
   };
 }
 
-module.exports = {
-  graphqlPost,
-  graphqlWs
-};
+export { graphqlPost, graphqlWs };

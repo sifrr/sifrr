@@ -1,22 +1,24 @@
-const fs = require('fs');
-const zlib = require('zlib');
+import { watch, statSync, createReadStream } from 'fs';
+import { createBrotliCompress, createGzip, createDeflate } from 'zlib';
 const watchedPaths = new Set();
 
 const compressions = {
-  br: zlib.createBrotliCompress,
-  gzip: zlib.createGzip,
-  deflate: zlib.createDeflate
+  br: createBrotliCompress,
+  gzip: createGzip,
+  deflate: createDeflate
 };
-const { writeHeaders } = require('./utils');
-const getMime = require('./mime').getMime;
+import { writeHeaders } from './utils';
+import { getMime } from './mime';
 const bytes = 'bytes=';
-const { stob } = require('./utils');
+import { stob } from './utils';
+import { sendSignal } from './livereload';
+import { SendFileOptions } from './types';
+import { HttpResponse, HttpRequest } from 'uWebSockets.js';
 
-function sendFile(res, req, path, options) {
+function sendFile(res: HttpResponse, req: HttpRequest, path: string, options: SendFileOptions) {
   if (options && options.livereload && !watchedPaths.has(path)) {
     watchedPaths.add(path);
-    const { sendSignal } = require('./livereload');
-    fs.watch(path, sendSignal);
+    watch(path, sendSignal);
   }
 
   sendFileToRes(
@@ -32,20 +34,20 @@ function sendFile(res, req, path, options) {
 }
 
 function sendFileToRes(
-  res,
-  reqHeaders,
-  path,
+  res: HttpResponse,
+  reqHeaders: { [name: string]: string },
+  path: string,
   {
     lastModified = true,
-    headers,
+    headers = {},
     compress = false,
     compressionOptions = {
       priority: ['gzip', 'br', 'deflate']
     },
     cache = false
-  } = {}
+  }: { cache: any } & any = {}
 ) {
-  let { mtime, size } = fs.statSync(path);
+  let { mtime, size } = statSync(path);
   mtime.setMilliseconds(0);
   const mtimeutc = mtime.toUTCString();
 
@@ -81,9 +83,9 @@ function sendFileToRes(
   // for size = 0
   if (end < 0) end = 0;
 
-  let readStream = fs.createReadStream(path, { start, end });
+  let readStream = createReadStream(path, { start, end });
   // Compression;
-  let compressed = false;
+  let compressed: boolean | string = false;
   if (compress) {
     const l = compressionOptions.priority.length;
     for (let i = 0; i < l; i++) {
@@ -167,4 +169,4 @@ function sendFileToRes(
     });
 }
 
-module.exports = sendFile;
+export default sendFile;

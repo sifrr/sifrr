@@ -1,5 +1,12 @@
-function writeHeaders(res, headers, other) {
-  if (typeof other !== 'undefined') {
+import { HttpResponse } from 'uWebSockets.js';
+import { ReadStream } from 'fs';
+
+function writeHeaders(
+  res: HttpResponse,
+  headers: { [name: string]: string } | string,
+  other?: string
+) {
+  if (typeof headers === 'string') {
     res.writeHeader(headers, other.toString());
   } else {
     for (const n in headers) {
@@ -8,12 +15,12 @@ function writeHeaders(res, headers, other) {
   }
 }
 
-function extend(who, from, overwrite = true) {
+function extend(who: object, from: object, overwrite = true) {
   const ownProps = Object.getOwnPropertyNames(Object.getPrototypeOf(from)).concat(
     Object.keys(from)
   );
   ownProps.forEach(prop => {
-    if (prop === 'constructor') return;
+    if (prop === 'constructor' || from[prop] === undefined) return;
     if (who[prop] && overwrite) {
       who[`_${prop}`] = who[prop];
     }
@@ -22,7 +29,7 @@ function extend(who, from, overwrite = true) {
   });
 }
 
-function stob(stream) {
+function stob(stream: ReadStream): Promise<Buffer> {
   return new Promise(resolve => {
     const buffers = [];
     stream.on('data', buffers.push.bind(buffers));
@@ -42,8 +49,4 @@ function stob(stream) {
   });
 }
 
-module.exports = {
-  writeHeaders,
-  extend,
-  stob
-};
+export { writeHeaders, extend, stob };

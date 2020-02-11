@@ -1,8 +1,10 @@
+import { WebSocketBehavior, WebSocket } from 'uWebSockets.js';
+
 const websockets = {};
 let id = 0;
 
-const wsConfig = {
-  open: ws => {
+const wsConfig: WebSocketBehavior = {
+  open: (ws: WebSocket & { id: number }, req) => {
     websockets[id] = {
       dirty: false
     };
@@ -24,13 +26,10 @@ const wsConfig = {
   }
 };
 
-const sendSignal = (type, path) => {
+const sendSignal = (type: string, path: string) => {
   console.log(type, 'signal for file: ', path);
   for (let i in websockets) websockets[i].dirty = true;
 };
 
-module.exports = {
-  websockets,
-  wsConfig,
-  sendSignal
-};
+export default { websockets, wsConfig, sendSignal };
+export { websockets, wsConfig, sendSignal };

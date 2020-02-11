@@ -168,10 +168,9 @@ const mimes = {
   default: 'text/html'
 };
 
-module.exports = {
-  getMime: path => {
-    const i = path.lastIndexOf('.');
-    return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
-  },
-  mimes
+const getMime = (path: string): string => {
+  const i = path.lastIndexOf('.');
+  return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
 };
+
+export { getMime, mimes };

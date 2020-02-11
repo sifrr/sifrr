@@ -1,20 +1,21 @@
-const fs = require('fs');
-const path = require('path');
-const { Readable } = require('stream');
-const uWS = require('uWebSockets.js');
-const chokidar = require('chokidar');
+import { readdirSync, statSync } from 'fs';
+import { join, relative } from 'path';
+import { Readable } from 'stream';
+import { us_listen_socket_close, TemplatedApp, HttpResponse, HttpRequest } from 'uWebSockets.js';
+import { watch } from 'chokidar';
 
-const { wsConfig } = require('./livereload');
-const sendFile = require('./sendfile');
-const formData = require('./formdata');
-const loadroutes = require('./loadroutes');
-const { graphqlPost, graphqlWs } = require('./graphql');
+import { wsConfig } from './livereload';
+import sendFile from './sendfile';
+import formData from './formdata';
+import loadroutes from './loadroutes';
+import { graphqlPost, graphqlWs } from './graphql';
+import { stob } from './utils';
+import { SendFileOptions, Handler } from './types';
 
 const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
-const { stob } = require('./utils');
 
-const handleBody = (res, req) => {
+const handleBody = (res: HttpResponse, req: HttpRequest) => {
   const contType = req.getHeader('content-type');
 
   res.bodyStream = function() {
@@ -45,8 +46,14 @@ class BaseApp {
   _watched = new Map();
   _sockets = new Map();
   __livereloadenabled = false;
+  ws: TemplatedApp['ws'];
+  get: TemplatedApp['get'];
+  _post: TemplatedApp['post'];
+  _put: TemplatedApp['put'];
+  _patch: TemplatedApp['patch'];
+  _listen: TemplatedApp['listen'];
 
-  file(pattern, filePath, options = {}) {
+  file(pattern: string, filePath: string, options: SendFileOptions = {}) {
     if (this._staticPaths.has(pattern)) {
       if (options.failOnDuplicateRoute)
         throw Error(
@@ -59,7 +66,7 @@ class BaseApp {
 
     if (options.livereload && !this.__livereloadenabled) {
       this.ws('/__sifrrLiveReload', wsConfig);
-      this.file('/livereload.js', path.join(__dirname, './livereloadjs.js'));
+      this.file('/livereload.js', join(__dirname, './livereloadjs.js'));
       this.__livereloadenabled = true;
     }
 
@@ -68,9 +75,9 @@ class BaseApp {
     return this;
   }
 
-  folder(prefix, folder, options, base = folder) {
+  folder(prefix: string, folder: string, options: SendFileOptions, base: string = folder) {
     // not a folder
-    if (!fs.statSync(folder).isDirectory()) {
+    if (!statSync(folder).isDirectory()) {
       throw Error('Given path is not a directory: ' + folder);
     }
 
@@ -80,31 +87,31 @@ class BaseApp {
 
     // serve folder
     const filter = options ? options.filter || noOp : noOp;
-    fs.readdirSync(folder).forEach(file => {
+    readdirSync(folder).forEach(file => {
       // Absolute path
-      const filePath = path.join(folder, file);
+      const filePath = join(folder, file);
       // Return if filtered
       if (!filter(filePath)) return;
 
-      if (fs.statSync(filePath).isDirectory()) {
+      if (statSync(filePath).isDirectory()) {
         // Recursive if directory
         this.folder(prefix, filePath, options, base);
       } else {
-        this.file(prefix + '/' + path.relative(base, filePath), filePath, options);
+        this.file(prefix + '/' + relative(base, filePath), filePath, options);
       }
     });
 
     if (options && options.watch) {
       if (!this._watched.has(folder)) {
-        const w = chokidar.watch(folder);
+        const w = watch(folder);
 
         w.on('unlink', filePath => {
-          const url = '/' + path.relative(base, filePath);
+          const url = '/' + relative(base, filePath);
           this._staticPaths.delete(prefix + url);
         });
 
         w.on('add', filePath => {
-          const url = '/' + path.relative(base, filePath);
+          const url = '/' + relative(base, filePath);
           this.file(prefix + url, filePath, options);
         });
 
@@ -114,7 +121,7 @@ class BaseApp {
     return this;
   }
 
-  _serveStatic(res, req) {
+  _serveStatic(res: HttpResponse, req: HttpRequest) {
     res.onAborted(noOp);
     const options = this._staticPaths.get(req.getUrl());
     if (typeof options === 'undefined') {
@@ -123,7 +130,7 @@ class BaseApp {
     } else sendFile(res, req, options[0], options[1]);
   }
 
-  post(pattern, handler) {
+  post(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._post(pattern, (res, req) => {
@@ -133,7 +140,7 @@ class BaseApp {
     return this;
   }
 
-  put(pattern, handler) {
+  put(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._put(pattern, (res, req) => {
@@ -144,7 +151,7 @@ class BaseApp {
     return this;
   }
 
-  patch(pattern, handler) {
+  patch(pattern: string, handler: Handler) {
     if (typeof handler !== 'function')
       throw Error(`handler should be a function, given ${typeof handler}.`);
     this._patch(pattern, (res, req) => {
@@ -155,45 +162,50 @@ class BaseApp {
     return this;
   }
 
-  graphql(route, schema, graphqlOptions = {}, uwsOptions = {}, graphql) {
+  graphql(route: string, schema, graphqlOptions: any = {}, uwsOptions = {}, graphql) {
     const handler = graphqlPost(schema, graphqlOptions, graphql);
     this.post(route, handler);
     this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
     // this.get(route, handler);
     if (graphqlOptions && graphqlOptions.graphiqlPath)
-      this.file(graphqlOptions.graphiqlPath, path.join(__dirname, './graphiql.html'));
+      this.file(graphqlOptions.graphiqlPath, join(__dirname, './graphiql.html'));
     return this;
   }
 
-  load(dir, options) {
+  load(dir: string, options) {
     loadroutes.call(this, dir, options);
     return this;
   }
 
-  listen(h, p = noOp, cb) {
-    if (typeof cb === 'function') {
+  listen(h: string | number, p: Function | number = noOp, cb?: Function) {
+    if (typeof p === 'number' && typeof h === 'string') {
       this._listen(h, p, socket => {
         this._sockets.set(p, socket);
         cb(socket);
       });
-    } else {
+    } else if (typeof h === 'number' && typeof p === 'function') {
       this._listen(h, socket => {
         this._sockets.set(h, socket);
         p(socket);
       });
+    } else {
+      throw Error(
+        'Argument types: (host: string, port: number, cb?: Function) | (port: number, cb?: Function)'
+      );
     }
+
     return this;
   }
 
-  close(port = null) {
+  close(port: null | number = null) {
     this._watched.forEach(v => v.close());
     this._watched.clear();
     if (port) {
-      this._sockets.has(port) && uWS.us_listen_socket_close(this._sockets.get(port));
+      this._sockets.has(port) && us_listen_socket_close(this._sockets.get(port));
       this._sockets.delete(port);
     } else {
       this._sockets.forEach(app => {
-        uWS.us_listen_socket_close(app);
+        us_listen_socket_close(app);
       });
       this._sockets.clear();
     }
@@ -201,4 +213,4 @@ class BaseApp {
   }
 }
 
-module.exports = BaseApp;
+export default BaseApp;
