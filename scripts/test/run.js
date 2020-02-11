@@ -124,7 +124,7 @@ const options = roots.map((root, i) => {
 
 async function run() {
   if (!dontRunPrecommand)
-    exec(`cd ${path.join(__dirname, '../../packages/server/sifrr-server')} && yarn build`);
+    await exec(`cd ${path.join(__dirname, '../../packages/server/sifrr-server')} && yarn build`);
   runTests(options.length === 0 ? options[0] : options, process.env.PARALLEL === 'true').then(
     ({ failures, coverage }) => {
       console.table(coverage);
