@@ -31,7 +31,9 @@ describe('elementgenerate()', () => {
 
 describe('element template', () => {
   it('returns string', () => {
-    expect(require('../../../src/templates/element')('ElementName', 'HTMLNew')).to.have.string('extends(HTMLNew)');
+    expect(require('../../../src/templates/element')('ElementName', 'HTMLNew')).to.have.string(
+      'extends(HTMLNew)'
+    );
     expect(require('../../../src/templates/element')('ElementName')).to.not.have.string('extends:');
   });
 });

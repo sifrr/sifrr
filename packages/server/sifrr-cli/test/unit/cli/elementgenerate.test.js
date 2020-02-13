@@ -20,12 +20,7 @@ describe('element:generate', () => {
   });
 
   it('provides default options', () => {
-    process.argv = [
-      'node',
-      'sifrr',
-      'element:generate',
-      'new-element'
-    ];
+    process.argv = ['node', 'sifrr', 'element:generate', 'new-element'];
 
     require('../../../src/sifrr.cli');
     const args = spy.lastArgs();
@@ -37,14 +32,7 @@ describe('element:generate', () => {
   });
 
   it('provides path', () => {
-    process.argv = [
-      'node',
-      'sifrr',
-      'element:generate',
-      'random-element',
-      '--path',
-      '/randomPath'
-    ];
+    process.argv = ['node', 'sifrr', 'element:generate', 'random-element', '--path', '/randomPath'];
 
     require('../../../src/sifrr.cli');
     const args = spy.lastArgs();
@@ -53,14 +41,7 @@ describe('element:generate', () => {
   });
 
   it('provides force', () => {
-    process.argv = [
-      'node',
-      'sifrr',
-      'element:generate',
-      'random-element',
-      '--force',
-      'true'
-    ];
+    process.argv = ['node', 'sifrr', 'element:generate', 'random-element', '--force', 'true'];
 
     require('../../../src/sifrr.cli');
     const args = spy.lastArgs();
