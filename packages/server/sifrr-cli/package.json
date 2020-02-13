@@ -12,10 +12,11 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "src/sifrr.cli.js",
+  "main": "dist/sifrr.cli.cjs.js",
   "module": "dist/sifrr.cli.module.js",
+  "types": "dist/types/sifrr.cli.d.ts",
   "bin": {
-    "sifrr": "./src/sifrr.cli"
+    "sifrr-cli": "./entry.js"
   },
   "keywords": [
     "sifrr",
@@ -37,6 +38,7 @@
     "@sifrr/dev": "^0.0.44",
     "@types/busboy": "^0.2.3",
     "@types/mkdirp": "^1.0.0",
+    "@types/yargs": "^15.0.3",
     "axios": "^0.19.2",
     "cache-manager": "^2.11.1",
     "graphql-subscriptions": "^1.1.0",
