@@ -46,7 +46,7 @@ describe('element:generate', () => {
     require('../../../src/sifrr.cli');
     const args = spy.lastArgs();
 
-    expect(args.force).to.eq('true');
+    expect(args.force).to.eq(true);
   });
 
   it('provides extends', () => {

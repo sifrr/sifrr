@@ -14,7 +14,7 @@ const ElementGenerate: Command = (argv, config) => {
 
   const elemHtml = elemTemplate(className, argv.extends);
 
-  createFile(elemPath, elemHtml, argv.force === 'true');
+  createFile(elemPath, elemHtml, argv.force === true);
 };
 
 export default ElementGenerate;

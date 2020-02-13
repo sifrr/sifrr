@@ -15,7 +15,7 @@ describe('elementgenerate()', () => {
   });
 
   it('passes given options to createFile', () => {
-    const elementgenerate = require('../../../src/commands/elementgenerate');
+    const elementgenerate = require('../../../src/commands/elementgenerate').default;
 
     elementgenerate({
       name: 'element-name',
@@ -31,9 +31,11 @@ describe('elementgenerate()', () => {
 
 describe('element template', () => {
   it('returns string', () => {
-    expect(require('../../../src/templates/element')('ElementName', 'HTMLNew')).to.have.string(
-      'extends(HTMLNew)'
+    expect(
+      require('../../../src/templates/element').default('ElementName', 'HTMLNew')
+    ).to.have.string('extends(HTMLNew)');
+    expect(require('../../../src/templates/element').default('ElementName')).to.not.have.string(
+      'extends:'
     );
-    expect(require('../../../src/templates/element')('ElementName')).to.not.have.string('extends:');
   });
 });
