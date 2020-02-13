@@ -11,7 +11,6 @@ module.exports = (elemPath, content, force = false) => {
   if (fs.existsSync(elemPath) && !force) {
     process.stderr.write(`File already exists at ${elemPath}`);
     process.exit(1);
-    return false;
   }
 
   fs.writeFileSync(elemPath, content, err => {

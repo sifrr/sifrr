@@ -1,8 +1,9 @@
-const elemTemplate = require('../templates/element');
-const createFile = require('../utils/createfile');
-const path = require('path');
+import { Command } from '../types';
+import elemTemplate from '../templates/element';
+import createFile from '../utils/createfile';
+import path from 'path';
 
-module.exports = argv => {
+const ElementGenerate: Command = (argv, config) => {
   // Element class
   const elemName = argv.name;
   // Loader
@@ -15,3 +16,5 @@ module.exports = argv => {
 
   createFile(elemPath, elemHtml, argv.force === 'true');
 };
+
+export default ElementGenerate;
