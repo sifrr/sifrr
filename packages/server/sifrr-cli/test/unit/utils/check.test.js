@@ -1,4 +1,4 @@
-const check = require('../../../src/utils/check');
+const check = require('../../../src/utils/check').default;
 
 describe('Check', () => {
   before(() => {

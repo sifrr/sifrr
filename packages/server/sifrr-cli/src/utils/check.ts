@@ -1,7 +1,7 @@
-const exec = require('child_process').execSync;
+import { execSync as exec } from 'child_process';
 
-function check(cmnd, err) {
-  let isWorking;
+function check(cmnd: string, err: string) {
+  let isWorking: boolean;
   try {
     exec(cmnd, { stdio: 'ignore' });
     isWorking = true;
@@ -12,10 +12,9 @@ function check(cmnd, err) {
   if (!isWorking) {
     process.stderr.write(err);
     process.exit(1);
-    return false;
   }
 
   return true;
 }
 
-module.exports = check;
+export default check;

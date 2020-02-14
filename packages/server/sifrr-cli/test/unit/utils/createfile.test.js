@@ -1,5 +1,5 @@
 const path = require('path');
-const createFile = require('../../../src/utils/createfile');
+const createFile = require('../../../src/utils/createfile').default;
 const exec = require('child_process').execSync;
 
 describe('Create File', () => {
