@@ -1,20 +1,19 @@
 import path from 'path';
 import program from 'yargs';
-import { CONFIG_FILE_NAME } from './constants';
-
 // commands
-import ElementGenerate from './commands/elementgenerate';
 import ConfigGenerate from './commands/configgenerate';
-import { SifrrConfig } from './types';
+import ElementGenerate from './commands/elementgenerate';
+import { CONFIG_FILE_NAME } from './constants';
+import { defaultConfig } from './templates/config';
 
 // config
 const configPath = path.resolve(CONFIG_FILE_NAME);
-let sifrrConfig: SifrrConfig = {};
+let sifrrConfig = defaultConfig();
 try {
-  sifrrConfig = require(configPath);
+  sifrrConfig = Object.assign(sifrrConfig, require(configPath));
 } catch (error) {
   console.error(
-    'sifrr.config.js not found. Generate config with command `sifrr-cli config:generate`'
+    'sifrr.config.js not found. Generate config with command `sifrr-cli config:generate` \n'
   );
 }
 
@@ -39,8 +38,7 @@ const cli = program
         .option('path', {
           alias: 'p',
           describe: 'base directory for elements',
-          type: 'string',
-          default: './public/elements'
+          type: 'string'
         })
         .option('extends', {
           type: 'string',
@@ -75,10 +73,10 @@ const args = cli.argv;
 if (!args._[0]) {
   console.log(`
 =====================
-      _  __  
+     _  __  
  ___(_)/ _|_ __ _ __ 
 / __| | |_| '__| '__|
-\__ \ |  _| |  | |   
+\\__ \\ |  _| |  | |   
 |___/_|_| |_|  |_| 
 
 =====================
@@ -88,6 +86,6 @@ if (!args._[0]) {
   cli.showHelp();
 }
 
-export * from './types';
 export * from './constants';
+export * from './types';
 export { ElementGenerate, ConfigGenerate };

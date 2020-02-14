@@ -1,20 +1,34 @@
-import { Command } from '../types';
-import elemTemplate from '../templates/element';
-import createFile from '../utils/createfile';
+import fs from 'fs';
 import path from 'path';
+import elemTemplate from '../templates/element';
+import { Command } from '../types';
+import createFile from '../utils/createfile';
 
-const ElementGenerate: Command = (argv, config) => {
+const ElementGenerate: Command = (
+  { name, path: filePath, force, extends: ext },
+  { elementNameToFileName, elementMapFile, elementsFolder }
+) => {
   // Element class
-  const elemName = argv.name;
+  const elemName: string = name;
+  const fileName = `./${elementNameToFileName(elemName)}`;
   // Loader
-  const elemPath = path.resolve(argv.path, `./${elemName.split('-').join('/')}.js`);
+  const elemPath = filePath ? filePath : path.resolve(elementsFolder, fileName);
   const className = elemName
-    .replace(/-([a-z])/g, g => g[1].toUpperCase())
-    .replace(/^([a-z])/, g => g[0].toUpperCase());
+    .replace(/-([a-z])/g, (g: string) => g[1].toUpperCase())
+    .replace(/^([a-z])/, (g: string) => g[0].toUpperCase());
 
-  const elemHtml = elemTemplate(className, argv.extends);
+  const elemHtml = elemTemplate(className, ext);
 
-  createFile(elemPath, elemHtml, argv.force === true);
+  createFile(elemPath, elemHtml, force === true);
+
+  if (fs.existsSync(elementMapFile)) {
+    fs.appendFileSync(
+      elementMapFile,
+      `\n
+export const ${elemName} = '${path.relative(elementMapFile, elemPath)}';
+`
+    );
+  }
 };
 
 export default ElementGenerate;

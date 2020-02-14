@@ -3,20 +3,18 @@ export default (name: string, extended: string) => {
 import { Element, register } from '@sifrr/dom';
 
 const CSS = css\`\`;
-const Template = html\`\${CSS}\`;
+const Template = html\`
+  \${CSS}
+\`;
 
 class ${name} extends Element${extended ? `.extends(${extended})` : ''} {
   static get template() {
     return Template;
   }
 
-  onConnect() {
+  onConnect() {}
 
-  }
-
-  onDisconnect() {
-
-  }
+  onDisconnect() {}
 }
 register(${name}${extended ? ", { extends: '/* html-tag-of-element-you-want-to-extend */' }" : ''});
 

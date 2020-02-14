@@ -1,6 +1,7 @@
 export type SifrrConfig = {
+  typescript?: boolean;
   elementsFolder?: string;
-  elementMap?: string;
+  elementMapFile?: string;
   elementNameToFileName?: (elementName: string) => string;
 };
 
