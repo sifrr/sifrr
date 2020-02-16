@@ -3,10 +3,11 @@ import path from 'path';
 import elemTemplate from '../templates/element';
 import { Command } from '../types';
 import createFile from '../utils/createfile';
+import { defaultConfig } from '../templates/config';
 
 const ElementGenerate: Command = (
   { name, path: filePath, force, extends: ext },
-  { elementNameToFileName, elementMapFile, elementsFolder }
+  { elementNameToFileName, elementMapFile, elementsFolder } = defaultConfig()
 ) => {
   // Element class
   const elemName: string = name;

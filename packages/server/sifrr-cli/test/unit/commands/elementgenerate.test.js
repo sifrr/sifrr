@@ -19,13 +19,13 @@ describe('elementgenerate()', () => {
 
     elementgenerate({
       name: 'element-name',
-      path: './abcd',
+      path: './abcd.js',
       force: false,
       extends: 'random'
     });
 
     assert(stub.calledWith('ElementName', 'random'));
-    assert(spy.calledWith(Path.resolve('./abcd', 'element/name.js'), 'template', false));
+    assert(spy.calledWith('./abcd.js', 'template', false));
   });
 });
 

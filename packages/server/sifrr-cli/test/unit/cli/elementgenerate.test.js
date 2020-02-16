@@ -28,7 +28,6 @@ describe('element:generate', () => {
     assert(spy.called);
     expect(args.name).to.eq('new-element');
     expect(args.force).to.eq(false);
-    expect(args.path).to.eq('./public/elements');
   });
 
   it('provides path', () => {
