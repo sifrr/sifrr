@@ -97,9 +97,9 @@ Sifrr browser packages officially supports these browser versions (for dist file
 | Safari                | >= 10.1 |
 | Safari (iOS browsers) | >= 10.1 |
 
-Individual libraries may support older versions too with polyfills listed Doscifys, or by bundling it with polyfills using babel etc.
+Individual libraries may support older versions too with polyfills listed in docs, or by bundling it with polyfills using babel etc.
 
-Approximately amounts to > 80% of total worldwide browser usage.
+Approximately amounts to ~90% of total worldwide browser usage.
 
 To support mini browsers (opera mini, uc browser etc.), You can use sifrr-seo to provide server side rendering.
 
