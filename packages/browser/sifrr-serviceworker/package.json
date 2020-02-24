@@ -42,7 +42,7 @@
     "@types/mkdirp": "^1.0.0",
     "@types/yargs": "^15.0.3",
     "axios": "^0.19.2",
-    "cache-manager": "^2.11.1",
+    "cache-manager": "^3.0.0",
     "graphql-subscriptions": "^1.1.0",
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^4.1.0",
