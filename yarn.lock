@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-eee18d51-fec7-4454-831a-6f309359b514-1583131291307/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-d82ff231-4831-4560-a8ad-c9d74ec1cbd3-1583205549388/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1177,14 +1177,14 @@
     "@types/yargs-parser" "*"
 
 "@webcomponents/shadycss@^1.9.1":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.4.tgz#4f9d8ea1526bab084c60b53d4854dc39fdb2bb48"
-  integrity sha512-tgNcVEaKssyeZPbUBjVQf4aryO5Fi7fxRvOxV982ZJuRVDcefmIblBh0SXAbcvAAlQ2zpNEP4SuQUnr8uApIpw==
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.5.tgz#52672a34c18bb6dcdc95d1aa288015b2a75cd678"
+  integrity sha512-ivJ47Gq4WJONLErim7FR1TGIX0epNx8b2N9Q7c4AKKd5Mbax+CoKoFLZ2lfFvx8vs/jz1YK+8UIbM+diSy27HQ==
 
 "@webcomponents/shadydom@^1.6.0":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadydom/-/shadydom-1.7.1.tgz#51786c00dcd9bd01237d7b096f92e829a0f41fed"
-  integrity sha512-5+6sadjLBuYqNgfT/jw56hpZjhNrMfasx9PG4ysR1Q7cu1ldVsceBnyR3TcmqsHhExv+7s0h99/uM9Ln1Te4Kw==
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadydom/-/shadydom-1.7.2.tgz#af0945ccb0c5e799bc96e4fd429db184ba663131"
+  integrity sha512-XqOx3I2mYYIi8fUbHJCVzKa+5qGbNXSasbYAs9NumNKUy/sBrwzMuDibMb+y0DxEmunKuqhEe3AbstPsM595xA==
 
 "@wry/equality@^0.1.2":
   version "0.1.9"
@@ -6653,9 +6653,9 @@ tslib@1.10.0, tslib@^1.9.0:
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tslib@^1.10.0, tslib@^1.9.3:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.0.tgz#f1f3528301621a53220d58373ae510ff747a66bc"
-  integrity sha512-BmndXUtiTn/VDDrJzQE7Mm22Ix3PxgLltW9bSNLoeCY31gnG2OPx0QqJnuc9oMIKioYrz487i6K9o4Pdn0j+Kg==
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
+  integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
