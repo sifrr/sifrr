@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-8ab89c2a-5a70-44bb-a5e6-c835da25b038-1584725144480/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-f1aac6dd-6a71-4caa-833b-625bc3c5ed1a-1584725235626/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -4126,18 +4126,6 @@ loader-utils@^0.2.16:
     emojis-list "^2.0.0"
     json5 "^0.5.0"
     object-assign "^4.0.1"
-
-loadtest@^4.1.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-4.2.0.tgz#c752da47cf1397089ebc8d901140fc33bda3b733"
-  integrity sha512-mcdOvWdtaMn14+K1goNyoE7+snJL9p9xy92z5e+WoRX7VdJ1kQO4wWnPdQvXuUsgk0Hhb9swT/n+nXUnf6fkcQ==
-  dependencies:
-    agentkeepalive "^2.0.3"
-    https-proxy-agent "^2.2.1"
-    log "1.4.*"
-    stdio "^0.2.3"
-    testing "^1.1.1"
-    websocket "^1.0.28"
 
 loadtest@^5.0.0:
   version "5.0.0"
