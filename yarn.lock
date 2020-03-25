@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-2f53d965-7456-41bc-a92d-5449df4bcf95-1584281693664/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-832ca7a8-064d-4d7b-9df8-cd153efc0ef1-1584725070059/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1177,14 +1177,14 @@
     "@types/yargs-parser" "*"
 
 "@webcomponents/shadycss@^1.9.1":
-  version "1.9.5"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.5.tgz#52672a34c18bb6dcdc95d1aa288015b2a75cd678"
-  integrity sha512-ivJ47Gq4WJONLErim7FR1TGIX0epNx8b2N9Q7c4AKKd5Mbax+CoKoFLZ2lfFvx8vs/jz1YK+8UIbM+diSy27HQ==
+  version "1.9.6"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.6.tgz#a8c5db867e49200a05cf8d5008029c09b7861979"
+  integrity sha512-5fFjvP0jQJZoXK6YzYeYcIDGJ5oEsdjr1L9VaYLw5yxNd4aRz4srMpwCwldeNG0A6Hvr9igbG7fCsBeiiCXd7A==
 
 "@webcomponents/shadydom@^1.6.0":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadydom/-/shadydom-1.7.2.tgz#af0945ccb0c5e799bc96e4fd429db184ba663131"
-  integrity sha512-XqOx3I2mYYIi8fUbHJCVzKa+5qGbNXSasbYAs9NumNKUy/sBrwzMuDibMb+y0DxEmunKuqhEe3AbstPsM595xA==
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadydom/-/shadydom-1.7.3.tgz#cbb6b17be619d4cae2dd97f5d9bf1448523fabb9"
+  integrity sha512-wAQCuHX6x3pJHRNGbgGhKgY1kZoXwXwWNLe0FdyUpCeyHqmGI8Q8wthyHroUQQIsmoKzM09iTlqO/1JmPWZERg==
 
 "@wry/equality@^0.1.2":
   version "0.1.9"
@@ -1624,10 +1624,10 @@ cache-manager@^2.10.1:
     lodash.clonedeep "4.5.0"
     lru-cache "4.0.0"
 
-cache-manager@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-3.1.0.tgz#a39851e54d0d2e51622bd687d95b4b8def9d7920"
-  integrity sha512-ptrCPy+O0DhCDeN/YGHCJsOabcKtbL5RoMU8INsMhTvZbuzU9uWoWJvO3rt0GFN59lbKdpwW45Eg6Bmz9Vizrw==
+cache-manager@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-3.2.0.tgz#32d76a18bd39fd0fc2b25bbc078208f0cdcafd00"
+  integrity sha512-RkYKgbhAzWo9TtE27/BgS4/HWfmt2GWQBusjIaTK0DfBAC4ruMmEdHF/Z59O05jKujIoW7a+HVsgdkA4EFPo8w==
   dependencies:
     async "1.5.2"
     lodash.clonedeep "4.5.0"
