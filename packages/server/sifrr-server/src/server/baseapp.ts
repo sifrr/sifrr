@@ -54,6 +54,7 @@ class BaseApp {
   _listen: TemplatedApp['listen'];
 
   file(pattern: string, filePath: string, options: SendFileOptions = {}) {
+    pattern=pattern.replace(/\\/g,'/');
     if (this._staticPaths.has(pattern)) {
       if (options.failOnDuplicateRoute)
         throw Error(
