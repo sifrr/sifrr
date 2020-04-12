@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-31524cd6-a157-460e-a5f8-428911596810-1585895418141/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-14de8393-1826-4591-a23a-91dbc30d0eb7-1586410332201/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1187,9 +1187,9 @@
   integrity sha512-wAQCuHX6x3pJHRNGbgGhKgY1kZoXwXwWNLe0FdyUpCeyHqmGI8Q8wthyHroUQQIsmoKzM09iTlqO/1JmPWZERg==
 
 "@wry/equality@^0.1.2":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.1.9.tgz#b13e18b7a8053c6858aa6c85b54911fb31e3a909"
-  integrity sha512-mB6ceGjpMGz1ZTza8HYnrPGos2mC6So4NhS1PtZ8s4Qt0K7fBiIGhpSxUbQmhwcSWE3no+bYxmI2OL6KuXYmoQ==
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.1.11.tgz#35cb156e4a96695aa81a9ecc4d03787bc17f1790"
+  integrity sha512-mwEVBDUVODlsQQ5dfuLUS5/Tf7jqUKyhKYHmVi4fPB6bDMOfWvUPJmKgS1Z7Za/sOI3vzWt4+O7yCiL/70MogA==
   dependencies:
     tslib "^1.9.3"
 
@@ -1991,6 +1991,14 @@ concat-with-sourcemaps@^1.0.5:
   integrity sha512-4gEjHJFT9e+2W/77h/DS5SGUgwDaOwprX8L/gl5+3ixnzkVJJsZWDSelmN3Oilw3LNDZjZV0yqH1hLG3k6nghg==
   dependencies:
     source-map "^0.6.1"
+
+confinode@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/confinode/-/confinode-2.1.1.tgz#6831961ca48fb3c9f7d5ff063022e2bc40bea86e"
+  integrity sha512-u5u0ZHpYMnVWtelxjalNtLvL+SdP7B/7s0JTFUIkyvqqIf67DAvy6SKaE6WZiwbufLPk+6zJKsh5SdpbtbFi9g==
+  dependencies:
+    quick-lru "^5.0.0"
+    yaml "^1.7.2"
 
 console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   version "1.1.0"
@@ -4124,12 +4132,13 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-4.1.0.tgz#9cd0b4e3c6e22e79278d0c26cb8cde4eac0790c5"
-  integrity sha512-FgDvIq8ACgzhCaY2elbq6qLur9UCaAYQhH8o68wu4ZarZcR1cqhOtp0NLbQpJQCUg/NxIRH3nozhRmkyKjGceA==
+loadtest@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-5.0.1.tgz#1f02cb329aa817f55ec3b51d7a0c432db6153a18"
+  integrity sha512-I5987MW752cR6jwfuXZNKukfaMfx2l2KB5vA3LhzWApQWJlG3eNkBFdSC+CD1o6t2/heyEx2GOV9whqwgwvR/Q==
   dependencies:
     agentkeepalive "^2.0.3"
+    confinode "^2.1.1"
     https-proxy-agent "^2.2.1"
     log "1.4.*"
     stdio "^0.2.3"
@@ -5559,6 +5568,11 @@ quick-lru@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
   integrity sha1-Q2CxfGETatOAeDl/8RQW4Ybc+7g=
+
+quick-lru@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.0.tgz#1602f339bde554c4dace47880227ec9c2869f2e8"
+  integrity sha512-WjAKQ9ORzvqjLijJXiXWqc3Gcs1ivoxCj6KJmEjoWBE6OtHwuaDLSAUqGHALUiid7A1KqGqsSHZs8prxF5xxAQ==
 
 ramda@^0.26.1:
   version "0.26.1"
