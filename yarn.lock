@@ -1052,7 +1052,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.6"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-c481b3b6-dc1e-486d-a7ae-38b493a89c1e-1586757481014/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-387ee782-abac-46e1-bb13-a7c245183694-1586757551382/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -4132,7 +4132,7 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loadtest@^5.0.1, loadtest@^5.0.2:
+loadtest@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/loadtest/-/loadtest-5.0.2.tgz#d9c1ebaa98047bb34548c442bac5e215fe776892"
   integrity sha512-QhrhVUNtCU8loa2Zb/Sx+nzPUNGPquZ54dSLfyS6ayCKzMBecUR1OXuxgfBhH1V6EOXCe7t0zn3SykC3E9N5CQ==
