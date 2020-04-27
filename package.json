@@ -62,7 +62,7 @@
     "isomorphic-ws": "^4.0.1",
     "loadtest": "^5.0.3",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v17.3.0",
-    "ws": "^7.2.3"
+    "ws": "^7.2.5"
   },
   "resolutions": {
     "@sifrr/dev": "0.0.44",
