@@ -40,7 +40,7 @@
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@sifrr/dev": "^0.0.44",
     "@types/busboy": "^0.2.3",
     "@types/mkdirp": "^1.0.0",
