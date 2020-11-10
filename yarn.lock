@@ -1177,9 +1177,9 @@
     uWebSockets.js uNetworking/uWebSockets.js#v17.1.0
 
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
-  version "0.0.6"
+  version "0.0.7"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.6-461ca81c-9ee5-4341-9ead-33779b6f79af-1605026360795/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.7-7e6e0913-2776-4c2c-bbed-a60469a8fd1e-1605027082459/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1192,11 +1192,11 @@
     eslint-plugin-mocha "^6.0.0"
     eslint-plugin-prettier "^3.1.0"
 
-"@sifrr/fetch@file:./packages/browser/sifrr-fetch":
-  version "0.0.6"
+"@sifrr/fetch@^0.0.6", "@sifrr/fetch@file:./packages/browser/sifrr-fetch":
+  version "0.0.7"
 
-"@sifrr/server@file:./packages/server/sifrr-server":
-  version "0.0.6"
+"@sifrr/server@^0.0.6", "@sifrr/server@file:./packages/server/sifrr-server":
+  version "0.0.7"
   dependencies:
     busboy "^0.3.0"
     chokidar "^3.0.1"
