@@ -1,4 +1,9 @@
-# Unreleased (2019-07-27)
+## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10)
+
+
+### Features
+
+* migrate to ts ([#320](https://github.com/sifrr/sifrr/issues/320)) ([a8a4673](https://github.com/sifrr/sifrr/commit/a8a4673b995311dc5f60a79a99c089d95701c09a))
 
 
 
@@ -11,7 +16,12 @@
 
 ### Features
 
-* update to use import syntax ([81e0f34](https://github.com/sifrr/sifrr/commit/81e0f34))
+* update to use import syntax ([81e0f34](https://github.com/sifrr/sifrr/commit/81e0f342d808df418791998d9f617d523d4e2191))
+
+
+### Reverts
+
+* Revert "feat(sifrr-dom): make deep twoway binding work" ([205936b](https://github.com/sifrr/sifrr/commit/205936bd4bae1b715867c126885ea145a4ffb1cf))
 
 
 
@@ -20,7 +30,7 @@
 
 ### Features
 
-* remove db:reset setup tasks ([9bbd829](https://github.com/sifrr/sifrr/commit/9bbd829))
+* remove db:reset setup tasks ([9bbd829](https://github.com/sifrr/sifrr/commit/9bbd829e475f29cdd4154f2a53af64bf0867c4c8))
 
 
 
@@ -29,12 +39,12 @@
 
 ### Bug Fixes
 
-* Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c8))
+* Don't use use-shadow-root attribute ([d56a6c8](https://github.com/sifrr/sifrr/commit/d56a6c828d673895d3d2957e3c42b5c40673d4f4))
 
 
 ### Features
 
-* Update element:generate to create js ([cebe29a](https://github.com/sifrr/sifrr/commit/cebe29a))
+* Update element:generate to create js ([cebe29a](https://github.com/sifrr/sifrr/commit/cebe29ab2b27f94271c9cac0b61271e52d3c28bb))
 
 
 

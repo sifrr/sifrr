@@ -1,4 +1,11 @@
-# Unreleased (2019-07-27)
+## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10)
+
+
+### Features
+
+* migrate to typescript ([7a6911e](https://github.com/sifrr/sifrr/commit/7a6911e24dbc1bcbcd6f2d4f691a247106b2ad1f))
+* use :path prop for setting paths ([ca07421](https://github.com/sifrr/sifrr/commit/ca0742161dd6c9d5b74dd96e099f27beb6b96e60))
+* use renderIf to show/hide routes ([8df443f](https://github.com/sifrr/sifrr/commit/8df443f44ede022ed2e4d27f0523822d247e252c))
 
 
 
@@ -7,7 +14,7 @@
 
 ### Features
 
-* add json support in data-sifrr-elements ([fc48a62](https://github.com/sifrr/sifrr/commit/fc48a62))
+* add json support in data-sifrr-elements ([fc48a62](https://github.com/sifrr/sifrr/commit/fc48a627477f538de36304e32b374b8a77573b17))
 
 
 
@@ -16,8 +23,13 @@
 
 ### Features
 
-* add events on activation and deactivation ([16a8911](https://github.com/sifrr/sifrr/commit/16a8911))
-* don't add Route to Dom, add to Sifrr.Route ([8bde333](https://github.com/sifrr/sifrr/commit/8bde333))
+* add events on activation and deactivation ([16a8911](https://github.com/sifrr/sifrr/commit/16a8911fb6bad93264e743d9397036e401c036a3))
+* don't add Route to Dom, add to Sifrr.Route ([8bde333](https://github.com/sifrr/sifrr/commit/8bde3336df2dfe59e733604b91610412d21732af))
+
+
+### Reverts
+
+* Revert "feat(sifrr-dom): make deep twoway binding work" ([205936b](https://github.com/sifrr/sifrr/commit/205936bd4bae1b715867c126885ea145a4ffb1cf))
 
 
 
@@ -30,19 +42,19 @@
 
 ### Bug Fixes
 
-* Directly assign state of element instead of attribute ([2046c35](https://github.com/sifrr/sifrr/commit/2046c35))
-* Don't use history API when not available ([7ecf792](https://github.com/sifrr/sifrr/commit/7ecf792))
-* Show no animation by default ([a182e6d](https://github.com/sifrr/sifrr/commit/a182e6d))
-* Use composed path instead of path to support safari ([ace938f](https://github.com/sifrr/sifrr/commit/ace938f))
+* Directly assign state of element instead of attribute ([2046c35](https://github.com/sifrr/sifrr/commit/2046c35e3e750bf766a186506834b2410d1885ec))
+* Don't use history API when not available ([7ecf792](https://github.com/sifrr/sifrr/commit/7ecf792be1869fe26a53ad508c7aed5befd559fa))
+* Show no animation by default ([a182e6d](https://github.com/sifrr/sifrr/commit/a182e6da355a9f2c250443408ec88386c2c3698e))
+* Use composed path instead of path to support safari ([ace938f](https://github.com/sifrr/sifrr/commit/ace938ff0fc20c1c368c9929c70f542f32a6cb5d))
 
 
 ### Features
 
-* Add onactivation and ondeactivation callbacks ([9596993](https://github.com/sifrr/sifrr/commit/9596993))
-* Add support for regex groups ([19bbb85](https://github.com/sifrr/sifrr/commit/19bbb85))
-* change attribute from data-sifrr-path to plain path ([2d988dc](https://github.com/sifrr/sifrr/commit/2d988dc))
-* Don't refresh routes if link is same as before ([d9c3f81](https://github.com/sifrr/sifrr/commit/d9c3f81))
-* Support hash and query string ([8af76b6](https://github.com/sifrr/sifrr/commit/8af76b6))
+* Add onactivation and ondeactivation callbacks ([9596993](https://github.com/sifrr/sifrr/commit/95969939643f028a1b139601e8acdb8a52d73e05))
+* Add support for regex groups ([19bbb85](https://github.com/sifrr/sifrr/commit/19bbb857f6cfc092d6acba647d4e91a7d64a8837))
+* change attribute from data-sifrr-path to plain path ([2d988dc](https://github.com/sifrr/sifrr/commit/2d988dcc65085f07c85a8ce86194dd2b852e8984))
+* Don't refresh routes if link is same as before ([d9c3f81](https://github.com/sifrr/sifrr/commit/d9c3f81573e2959e120e3c00190f1f11795de74f))
+* Support hash and query string ([8af76b6](https://github.com/sifrr/sifrr/commit/8af76b6f8348fedcde0a1c99c9c2b7f42ede99f7))
 
 
 

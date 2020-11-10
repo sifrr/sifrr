@@ -1,4 +1,10 @@
-# Unreleased (2019-07-27)
+## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10)
+
+
+### Features
+
+* convert to es6 module syntax ([20724af](https://github.com/sifrr/sifrr/commit/20724af88051df23b11f754d301cc6d804401b87))
+* migrate to typescript ([2904591](https://github.com/sifrr/sifrr/commit/2904591ac619a3679726fd6a18eb222239da07fe))
 
 
 
@@ -7,6 +13,11 @@
 
 
 ## [0.0.5](https://github.com/sifrr/sifrr/compare/v0.0.4...v0.0.5) (2019-05-20 17:36:45 +0900)
+
+
+### Reverts
+
+* Revert "feat(sifrr-dom): make deep twoway binding work" ([205936b](https://github.com/sifrr/sifrr/commit/205936bd4bae1b715867c126885ea145a4ffb1cf))
 
 
 
@@ -19,7 +30,7 @@
 
 ### Features
 
-* Add cache_and_update policy ([3169670](https://github.com/sifrr/sifrr/commit/3169670))
+* Add cache_and_update policy ([3169670](https://github.com/sifrr/sifrr/commit/3169670a9bdcdb158f7179c35d148ce0999457e0))
 
 
 
