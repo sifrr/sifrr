@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/template",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "HTML in JS templating engine",
   "license": "MIT",
   "repository": {

@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/api",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Create normal/GraphQL APIs using sequelize/graphql-sequelize/express.",
   "license": "MIT",
   "repository": {
