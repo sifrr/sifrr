@@ -1,4 +1,8 @@
-## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10)
+## [0.0.8](https://github.com/sifrr/sifrr/compare/v0.0.7...v0.0.8) (2020-11-12)
+
+
+
+## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10 16:57:32 +0000)
 
 
 

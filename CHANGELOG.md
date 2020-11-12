@@ -1,3 +1,7 @@
+## [0.0.8](https://github.com/sifrr/sifrr/compare/v0.0.7...v0.0.8) (2020-11-12)
+
+
+
 ## [0.0.7](https://github.com/sifrr/sifrr/compare/v0.0.6...v0.0.7) (2020-11-10)
 
 
@@ -11,12 +15,12 @@
 * **sifrr-dom:** state prop change doesn't trigger update bug ([9123a1c](https://github.com/sifrr/sifrr/commit/9123a1c1d8fa607425a70b65972654bfc94d8796))
 * **sifrr-fetch:** set content-type json if body is an array ([3115905](https://github.com/sifrr/sifrr/commit/31159058a505525f7c0e6e4af1ccc60f635d6f56))
 * **sifrr-fetch:** stringify body even if content type manually set ([5f6fd63](https://github.com/sifrr/sifrr/commit/5f6fd63647a98494b4831dee62314216f2ab168b))
+* graphql npe fix ([d0e0244](https://github.com/sifrr/sifrr/commit/d0e0244edf73c13ce1aa5cd46c20d413665151c1))
 * **sifrr-server:** only need graphql if it is used ([5b53b9f](https://github.com/sifrr/sifrr/commit/5b53b9f9df245d373beee84657f8023356fae331))
 * **sifrr-server:** remove prohibited headers ([849986f](https://github.com/sifrr/sifrr/commit/849986f08933fbf097ea92144218541329a7dc00))
 * **sifrr-tempalte:** small bug fixes ([3ce4879](https://github.com/sifrr/sifrr/commit/3ce4879d2cd8ed27d46c5b0137d1ea48768f137b))
 * **sifrr-template:** call onPropChange on direct prop also ([46363ed](https://github.com/sifrr/sifrr/commit/46363ed93464acb903d6adf575073d6aa2bbaaf9))
 * **sifrr-template:** fix style reset bug, and fragment bug ([ff06855](https://github.com/sifrr/sifrr/commit/ff068552d4cbec659e90dd001421d36289569ce4))
-* graphql npe fix ([d0e0244](https://github.com/sifrr/sifrr/commit/d0e0244edf73c13ce1aa5cd46c20d413665151c1))
 
 
 ### Features
@@ -103,12 +107,12 @@
 * **sifrr-seo:** rename middleware to more specific express middleware ([528890a](https://github.com/sifrr/sifrr/commit/528890ad1c2b9f2be87d8b62bad4dd889d534783))
 * **sifrr-server:** add createCluster function ([98bca3a](https://github.com/sifrr/sifrr/commit/98bca3a4a3933389fb6ecdb420e30c3d92a53584))
 * **sifrr-server:** add graphql server to sifrr-server ([d5efcc2](https://github.com/sifrr/sifrr/commit/d5efcc23c4b75d0984c06fe2b3ab67adef2c5553))
+* add timeout and instance with default options ([05476c7](https://github.com/sifrr/sifrr/commit/05476c799b9e6e753e2cbab19913ccb2f706e5b8))
 * **sifrr-server:** add livereload feature (experimental) ([fb1005b](https://github.com/sifrr/sifrr/commit/fb1005bec8f96277acf71c1ed06c6968ac8f8acc))
 * **sifrr-server:** add options to overwrite/fail on dup static route ([c515745](https://github.com/sifrr/sifrr/commit/c5157451e76e1c221fd019193371550e7950f134))
 * **sifrr-server:** cache works for compressed file as well ([c0821e0](https://github.com/sifrr/sifrr/commit/c0821e013838658a33c05e706d19498a54cf038d))
 * **sifrr-server:** close watchers on server close ([0cca0a1](https://github.com/sifrr/sifrr/commit/0cca0a125241f35326082d9b864e460216dcbe3d))
 * **sifrr-server:** make live reload js importable ([9c29147](https://github.com/sifrr/sifrr/commit/9c29147ccdfed5173a73420359e8d4c24b17a634))
-* add timeout and instance with default options ([05476c7](https://github.com/sifrr/sifrr/commit/05476c799b9e6e753e2cbab19913ccb2f706e5b8))
 * **sifrr-server:** update uWS.js to 15.11.0 ([dc81e97](https://github.com/sifrr/sifrr/commit/dc81e97f35faaab566329d214f92774b33425039))
 * **sifrr-storage:** refactor cookies to support larger data ([00ae6c8](https://github.com/sifrr/sifrr/commit/00ae6c84a41bc7b39d049a9567be8fdd9866893b))
 
@@ -176,13 +180,13 @@
 ### Bug Fixes
 
 * **sifrr-dom:** fix event error message ([70c510f](https://github.com/sifrr/sifrr/commit/70c510f44ea97ddb08bf55dbc7b14053104d75b3))
+* **sifrr-dom:** fix keyed couldn't add elements in front ([efbced4](https://github.com/sifrr/sifrr/commit/efbced403ca7e7d8bdb9bf453f5de30510eac21b))
+* **sifrr-dom:** only bind event attribute if it has ${} ([2bc019e](https://github.com/sifrr/sifrr/commit/2bc019e5a40b5efc0f49c589dbec828b330e5c53))
 * **sifrr-dom:** remove dependency on isHtml from nextNode ([2e116d7](https://github.com/sifrr/sifrr/commit/2e116d73cdd07051acbf2685c29abc833ba822e7))
+* **sifrr-dom:** treat repeating elements as html bindings ([96103d6](https://github.com/sifrr/sifrr/commit/96103d6f5802bd0fcaccf0b4374f6aa37eedc3eb))
 * **sifrr-dom:** use diff TW in different creators ([bc05b8f](https://github.com/sifrr/sifrr/commit/bc05b8f750a6bcc3710a1c7822a84bec906b5a0a))
 * **sifrr-fetch:** don't set content-type if already set ([e9509c8](https://github.com/sifrr/sifrr/commit/e9509c883214098bcd7f6f60a68c87dc4bb6b6f7))
 * tests ([afabbe9](https://github.com/sifrr/sifrr/commit/afabbe96656230dc0b016bd60f619120c5cf93ed))
-* **sifrr-dom:** fix keyed couldn't add elements in front ([efbced4](https://github.com/sifrr/sifrr/commit/efbced403ca7e7d8bdb9bf453f5de30510eac21b))
-* **sifrr-dom:** only bind event attribute if it has ${} ([2bc019e](https://github.com/sifrr/sifrr/commit/2bc019e5a40b5efc0f49c589dbec828b330e5c53))
-* **sifrr-dom:** treat repeating elements as html bindings ([96103d6](https://github.com/sifrr/sifrr/commit/96103d6f5802bd0fcaccf0b4374f6aa37eedc3eb))
 * **sifrr-server:** content-length for ranged responses ([6612526](https://github.com/sifrr/sifrr/commit/6612526237b85cc5ce3da4c93531263ad8fa06c3))
 * **sifrr-server:** don't extend constructor ([9038a1e](https://github.com/sifrr/sifrr/commit/9038a1e779fad3d526bab80e3459ad386cda9096))
 * **sifrr-server:** fix serving from basePath ([4d04976](https://github.com/sifrr/sifrr/commit/4d04976238ca302cf215dc825dda07d8f1590d86))
@@ -275,11 +279,11 @@
 * **sifrr-seo:** Fix error on node 8 ([7db1ab2](https://github.com/sifrr/sifrr/commit/7db1ab220ea907d815fd9017f9d7e3cf7c4e6339))
 * **sifrr-seo:** Fix pending resolver bug ([1db1e95](https://github.com/sifrr/sifrr/commit/1db1e95349ad0562664ab67b4d816c5a8e15dec5))
 * **sifrr-seo:** Fix variables not parsing ([db201f5](https://github.com/sifrr/sifrr/commit/db201f568cc105b8ea2947be283b40cb262bf31a))
+* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc69783590656e27fc6aa259a2b2963cc0b8d0))
 * **sifrr-seo:** Move puppeteer config to renderer ([59276a6](https://github.com/sifrr/sifrr/commit/59276a6180e687dcecd94a1c88aa21f897e92f74))
 * **sifrr-seo:** Pass rendering error to express's next ([8663605](https://github.com/sifrr/sifrr/commit/8663605922182b84137f348bd65220ef9359ef20))
 * **sifrr-storage:** Check for openDatabase in webSQL ([d92d437](https://github.com/sifrr/sifrr/commit/d92d4379bcad15e2cad2be55e0145a16c2cf4159))
 * **sifrr-storage:** Replace unnecessary let with const ([5396521](https://github.com/sifrr/sifrr/commit/5396521fff3786bf9f1918937c84785f2a7ed84e))
-* Make babel.config.js work ([aedc697](https://github.com/sifrr/sifrr/commit/aedc69783590656e27fc6aa259a2b2963cc0b8d0))
 * **sifrr-storage:** Return null if null ([aa8e7ba](https://github.com/sifrr/sifrr/commit/aa8e7bae825f2e7bf7e49d3b92958a39783bff25))
 
 
