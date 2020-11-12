@@ -11,5 +11,5 @@ const { exec } = require('@sifrr/dev');
     commitMsg: 'chore: update changelog'
   });
   await require('@sifrr/dev').releaseTag();
-  await exec(`sh ./scripts/repeat "./packages/*/*" "npm publish --access=public"`);
+  await exec(`bash ./scripts/repeat "./packages/*/*" "npm publish --access=public"`);
 })();
