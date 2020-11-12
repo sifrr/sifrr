@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Sifrr Cli for creating web apps.",
   "license": "MIT",
   "repository": {
