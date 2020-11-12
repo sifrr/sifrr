@@ -5,7 +5,7 @@
     "packages/*/*",
     "packages/*/*/test/public"
   ],
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "a fullstack nodeJS/vanillaJS framework",
   "license": "MIT",
   "browserslist": [
