@@ -1179,7 +1179,7 @@
 "@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
   version "0.0.8"
   dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.8-28009b0c-d35b-4942-8d17-83601bd8ef66-1606111418515/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
+    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.8-ce0972ac-34ff-42d9-8a5c-347532ef6324-1606718086313/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -7094,7 +7094,7 @@ typescript@^3.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0, uWebSockets.js@uNetworking/uWebSockets.js#v18.10.0, uWebSockets.js@uNetworking/uWebSockets.js#v18.4.0:
+uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0, uWebSockets.js@uNetworking/uWebSockets.js#v18.11.0, uWebSockets.js@uNetworking/uWebSockets.js#v18.4.0:
   version "16.5.0"
   resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/69026e121ae4a8d4f285c68b565710ef697b5dac"
 
