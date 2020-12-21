@@ -1,3 +1,12 @@
+## [0.0.9](https://github.com/sifrr/sifrr/compare/v0.0.8...v0.0.9) (2020-12-21)
+
+
+### Bug Fixes
+
+* **sifrr-dom:** dependencies ([99ee4e4](https://github.com/sifrr/sifrr/commit/99ee4e49c6c8d15c4bfde8c8fe78c0aff25e3b59))
+
+
+
 ## [0.0.8](https://github.com/sifrr/sifrr/compare/v0.0.7...v0.0.8) (2020-11-12)
 
 
