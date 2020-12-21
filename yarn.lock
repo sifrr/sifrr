@@ -1176,10 +1176,8 @@
     typescript "^3.5.3"
     uWebSockets.js uNetworking/uWebSockets.js#v17.1.0
 
-"@sifrr/dom@file:./packages/browser/sifrr-dom", "@sifrr/dom@file:./packages/browser/sifrr-dom/packages/browser/sifrr-dom":
+"@sifrr/dom@file:./packages/browser/sifrr-dom":
   version "0.0.8"
-  dependencies:
-    "@sifrr/dom" "file:../.cache/yarn/v6/npm-@sifrr-dom-0.0.8-a2eada24-ca0a-4689-9fc4-f3d7c2d53f58-1608216000271/node_modules/@sifrr/dom/packages/browser/sifrr-dom"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
