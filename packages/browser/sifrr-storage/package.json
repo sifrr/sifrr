@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/storage",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Frontend key-value(JSON to JSON) persisted storage library",
   "license": "MIT",
   "repository": {
