@@ -1177,7 +1177,7 @@
     uWebSockets.js uNetworking/uWebSockets.js#v17.1.0
 
 "@sifrr/dom@file:./packages/browser/sifrr-dom":
-  version "0.0.8"
+  version "0.0.9"
 
 "@sifrr/eslint-config@^0.0.4":
   version "0.0.4"
@@ -1191,10 +1191,10 @@
     eslint-plugin-prettier "^3.1.0"
 
 "@sifrr/fetch@^0.0.6", "@sifrr/fetch@file:./packages/browser/sifrr-fetch":
-  version "0.0.8"
+  version "0.0.9"
 
 "@sifrr/server@^0.0.6", "@sifrr/server@file:./packages/server/sifrr-server":
-  version "0.0.8"
+  version "0.0.9"
   dependencies:
     busboy "^0.3.0"
     chokidar "^3.0.1"
@@ -7390,10 +7390,10 @@ ws@^6.1.0:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7.4.1:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.1.tgz#a333be02696bd0e54cea0434e21dcc8a9ac294bb"
-  integrity sha512-pTsP8UAfhy3sk1lSk/O/s4tjD0CRwvMnzvwr4OKGX7ZvqZtUyx4KIJB5JWbkykPoc55tixMGgTNoh3k4FkNGFQ==
+ws@^7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
+  integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==
 
 xml@^1.0.0:
   version "1.0.1"
