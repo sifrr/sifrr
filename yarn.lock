@@ -1802,7 +1802,7 @@ cache-manager@^2.10.1:
     lodash.clonedeep "4.5.0"
     lru-cache "4.0.0"
 
-cache-manager@^3.4.0, cache-manager@^3.4.1:
+cache-manager@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-3.4.1.tgz#57d366efc4b06fe2b1246d84356df7bc5e24674d"
   integrity sha512-yE50UL7AcuQ1ZydREl9OvPYD74gw3qS9HtZTY+2gS7fcZeIsyiof2UF+WReqg5ZX+852anbDe1fAtjsaMYT2yw==
