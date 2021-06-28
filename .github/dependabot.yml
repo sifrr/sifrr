@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  versioning-strategy: increase
+- package-ecosystem: npm
+  directory: "/packages/server/sifrr-server/test/public"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/packages/server/sifrr-seo/test/public"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/packages/browser/sifrr-fetch/test/public"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
