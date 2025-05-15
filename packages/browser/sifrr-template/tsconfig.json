@@ -1,14 +1,12 @@
 {
+  "extends": "@sifrr/typescript-config/base.json",
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
-    "declaration": true,
-    "sourceMap": true,
-    "declarationDir": "./dist/types",
-    "module": "es6",
-    "noImplicitAny": false,
-    "target": "es2015",
     "lib": ["esnext", "es2019", "dom"],
-    "strictBindCallApply": true
-  },
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+    "baseUrl": ".",
+    "removeComments": false,
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
 }

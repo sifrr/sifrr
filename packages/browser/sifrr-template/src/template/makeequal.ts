@@ -1,15 +1,9 @@
 import update from './update';
 import { TEXT_NODE, COMMENT_NODE, REFERENCE_COMMENT } from './constants';
-import {
-  SifrrCreateFunction,
-  SifrrProps,
-  SifrrNode,
-  SifrrNodesArray,
-  DomBindingReturnValue
-} from './types';
+import { SifrrCreateFunction, SifrrProps, SifrrNode, SifrrNodesArray } from './types';
 import { flatLastElement, flattenOperation, isSifrrNode } from './utils';
 
-const removeFxn = (i: ChildNode) => i.remove();
+const removeFxn = (i?: ChildNode) => i?.remove();
 
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual<T>(
@@ -18,10 +12,11 @@ export function makeChildrenEqual<T>(
   createFn?: SifrrCreateFunction<T>,
   parent?: Node & ParentNode
 ): SifrrNodesArray<T> {
-  const lastChild: Node =
-    (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
-  const nextSib = lastChild && lastChild.nextSibling;
-  parent = parent || lastChild.parentNode;
+  const lastChild: Node = oldChildren.reference || flatLastElement(oldChildren);
+  const nextSib = lastChild ? lastChild.nextSibling : null;
+  parent = parent ?? (lastChild.parentNode || undefined);
+
+  console.log(oldChildren, newChildren, lastChild);
 
   if (!parent) {
     throw Error(
@@ -29,7 +24,7 @@ export function makeChildrenEqual<T>(
     );
   }
 
-  let reference = (<DomBindingReturnValue>oldChildren).reference;
+  let reference = oldChildren.reference;
   // special case of no value return
   if (newChildren.length < 1 && !reference) {
     reference = REFERENCE_COMMENT();
@@ -41,11 +36,11 @@ export function makeChildrenEqual<T>(
     newChildren,
     makeEqual,
     removeFxn,
-    (i) /* Node */ => parent.insertBefore(i, reference || nextSib),
-    i => !!createFn && !isSifrrNode(i),
+    (i) /* Node */ => parent.insertBefore(i as Node, reference || nextSib),
+    (i) => !!createFn && !isSifrrNode(i),
     createFn
   );
-  (<DomBindingReturnValue>returnValues).reference = reference;
+  (returnValues as any).reference = reference;
 
   return returnValues;
 }

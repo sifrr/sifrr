@@ -12,7 +12,17 @@ import updateAttribute from './updateattribute';
 import { SifrrBindType, SifrrBindMap, SifrrFunctionMap } from './types';
 
 function attrToProp(attrName: string) {
-  return attrName.substr(1).replace(/-([a-z])/g, g => g[1].toUpperCase());
+  return attrName.substring(1).replace(/-([a-z])/g, (g) => g[1]!.toUpperCase());
+}
+
+function getAllMatches(regex: RegExp, str: string) {
+  const result = [];
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    result.push(match[0]);
+    if (!regex.global) break; // Avoid infinite loop if global flag is missing
+  }
+  return result;
 }
 
 const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
@@ -21,19 +31,19 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     const textEl = <Text>el;
     const x = textEl.data;
     const xTrim = textEl.data.trim();
-    const exactMatch = xTrim.match(REF_REG_EXACT);
+    const exactMatch = REF_REG_EXACT.exec(xTrim);
     if (exactMatch) {
       textEl.data = '';
 
       return [
         {
           type: SifrrBindType.Text,
-          value: functionMap.get(exactMatch[1])
+          value: functionMap.get(exactMatch[1]!)
         }
       ];
     }
 
-    const middleMatch = x.match(REF_REG);
+    const middleMatch = REF_REG.exec(x);
     if (middleMatch) {
       if (textEl.nodeType === COMMENT_NODE) {
         console.error('Bindings in middle of comments are not supported and will be ignored.');
@@ -46,7 +56,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         return [
           {
             type: SifrrBindType.Text,
-            value: functionMap.get(middleMatch[1])
+            value: functionMap.get(middleMatch[1]!)
           }
         ];
       } else {
@@ -89,7 +99,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
       if (attribute.name[0] === ':' && attribute.name[1] === ':') {
         bm.push({
           type: SifrrBindType.DirectProp,
-          name: attrToProp(attribute.name).substr(1),
+          name: attrToProp(attribute.name).substring(1),
           value: functionMap.get(middleMatch[1])
         });
       } else if (attribute.name[0] === ':') {

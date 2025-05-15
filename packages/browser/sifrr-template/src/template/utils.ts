@@ -32,7 +32,7 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
   };
 }
 
-export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): boolean {
+export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): node is SifrrNode<any> {
   return !!node.__tempNum;
 }
 
@@ -42,14 +42,14 @@ export function isSameSifrrNode<T>(nodes: SifrrNode<T>[], tempNums: number[]) {
 
   if (ln !== tl) return false;
   for (let i = 0; i < ln; i++) {
-    if (nodes[i].__tempNum !== tempNums[i]) return false;
+    if (nodes[i]?.__tempNum !== tempNums[i]) return false;
   }
   return true;
 }
 
 export function recurseArray<T, X>(
   values: any | any[],
-  singleValFxn: (a: T) => any,
+  singleValFxn: (a: T | undefined) => any,
   createFn?: (a: X) => T[]
 ): T | T[] {
   if (!Array.isArray(values)) {
@@ -67,9 +67,9 @@ export function recurseArray<T, X>(
   }
 
   const l = values.length,
-    retV = [];
+    retV: T[] = [];
   for (let i = 0; i < l; i++) {
-    retV.push(recurseArray(values[i], singleValFxn, createFn));
+    retV.push(recurseArray(values[i], singleValFxn, createFn) as T);
   }
   return retV;
 }
@@ -79,8 +79,8 @@ export function flattenOperation<T, X>(
   ovs: any[],
   nvs: any[],
   equaliser: (oldv: T, newv: T | X) => T,
-  removeFxn: (old: T) => void,
-  addFxn: (newv: T) => T,
+  removeFxn: (old: ChildNode | undefined) => void,
+  addFxn: (newv: T | undefined) => T,
   shouldCreate?: (newv: X | T) => boolean,
   createFn?: (newv: X) => T[]
 ) {
@@ -109,7 +109,7 @@ export function flattenOperation<T, X>(
     const ov = oldValues[i];
     const nv = newValues[i];
     if (!Array.isArray(ov) && !Array.isArray(nv)) {
-      returnValues[i] = equaliser(ov, nv);
+      returnValues[i] = equaliser(ov!, nv!);
     } else if (Array.isArray(ov) && Array.isArray(nv)) {
       returnValues[i] = flattenOperation(
         ov,
@@ -151,8 +151,8 @@ export function flatLastElement<T>(vs: any[]): T {
   type TRArray = (T | TRArray)[];
   const values = <TRArray>vs;
   let i = values.length - 1,
-    last: T,
-    lastArray: T | TRArray;
+    last: T | undefined = undefined,
+    lastArray: T | TRArray | undefined = undefined;
 
   while (last === undefined && i > -1) {
     lastArray = values[i];

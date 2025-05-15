@@ -7,7 +7,7 @@ export default function memo<T, O, N>(
   deps: string[] | PropKeyFunction<T> = []
 ): BindingFxn<T, O, N> {
   const isFunc = typeof deps === 'function';
-  const depsL = !isFunc && deps.length;
+  const depsL = !isFunc ? deps.length : 0;
   const memoValues = new Map();
 
   return (props: SifrrProps<T>, oldValue: O): N | Promise<N> => {
@@ -18,18 +18,19 @@ export default function memo<T, O, N>(
       memoMap = new Map();
       memoValues.set(props, memoMap);
     }
-    let memoKey: string;
+    let memoKey: string = '';
     if (isFunc) {
       memoKey = (<PropKeyFunction<T>>deps)(props);
     } else {
       for (let i = 0; i < depsL; i++) {
-        memoKey = memoKey ? `${memoKey}_${props[deps[i]]}` : props[deps[i]];
+        const k = deps[i]!;
+        memoKey = memoKey ? `${memoKey}_${props[k]}` : props[k];
       }
     }
 
     if (!memoMap.has(memoKey)) {
       memoMap.set(memoKey, fxn(props, oldValue));
     }
-    return memoMap.get(memoKey);
+    return memoMap.get(memoKey)!;
   };
 }

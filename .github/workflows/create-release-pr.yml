@@ -11,7 +11,7 @@ concurrency:
 jobs:
   create:
     if: ${{ !startsWith(github.event.head_commit.message, 'release') }}
-    runs-on: paypay-default-runner
+    runs-on: default-runner
 
     steps:
       - name: Checkout

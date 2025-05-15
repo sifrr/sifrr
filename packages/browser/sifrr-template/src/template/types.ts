@@ -4,10 +4,12 @@ export interface SifrrNode<T> extends Node {
   key?: string | number;
   onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
   update?: () => void;
+  [x: string]: any;
 }
 
 export type SifrrProps<T> = T & {
   nodeType?: number;
+  [x: string]: any;
 };
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
@@ -19,12 +21,21 @@ export type ChildNodeKeyed = ChildNode & {
 };
 
 type _RTValue = null | undefined | string | Node | _RTValue[];
-export type DomBindingReturnValue = (_RTValue | NodeList) & {
+export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
   isRendered?: boolean;
   reference?: Node;
 };
+export type DomBindingReturnValue =
+  | _RTValue
+  | (NodeList & {
+      isRendered?: boolean;
+      reference?: Node;
+    });
 
-export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[];
+export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[] & {
+  reference?: Node;
+  isRendered?: boolean;
+};
 
 export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
 
@@ -41,26 +52,27 @@ export enum SifrrBindType {
   Attribute = 4
 }
 
-export type SifrrBindMap<T> =  // T = props type of parent
-  | {
-      type: SifrrBindType.Text;
-      value: BindingFxn<T, SifrrNodesArray<T>, DomBindingReturnValue>;
-    }
-  | {
-      type: SifrrBindType.Attribute;
-      name: string;
-      value: BindingFxn<T, string | false | null | undefined, string | false | null | undefined>;
-    }
-  | {
-      type: SifrrBindType.Prop;
-      name: string;
-      value: BindingFxn<T, any, any>;
-    }
-  | {
-      type: SifrrBindType.DirectProp;
-      name: string;
-      value: any;
-    };
+export type SifrrBindMap<T> = // T = props type of parent
+
+    | {
+        type: SifrrBindType.Text;
+        value: BindingFxn<T, SifrrNodesArray<T>, DomBindingReturnValue>;
+      }
+    | {
+        type: SifrrBindType.Attribute;
+        name: string;
+        value: BindingFxn<T, string | false | null | undefined, string | false | null | undefined>;
+      }
+    | {
+        type: SifrrBindType.Prop;
+        name: string;
+        value: BindingFxn<T, any, any>;
+      }
+    | {
+        type: SifrrBindType.DirectProp;
+        name: string;
+        value: any;
+      };
 
 // ref map for each base template element
 export type SifrrRef<T> = {
@@ -72,7 +84,7 @@ export type SifrrRef<T> = {
 // collection of ref for each sifrr template element
 export type SifrrRefCollection<T> = {
   // T = props type of parent
-  node: Node;
+  node: SifrrNode<unknown>;
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
   bindingSet: any[];

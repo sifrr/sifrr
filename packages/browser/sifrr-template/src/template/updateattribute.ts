@@ -3,7 +3,12 @@ export default (element: HTMLElement, name: string, newValue: string | false | n
   if (newValue === false || newValue === null || newValue === undefined)
     element.hasAttribute(name) && element.removeAttribute(name);
   else if (name === 'class') element.className = newValue;
-  else if ((name === 'id' || name === 'value') && element[name] !== newValue)
-    element[name] = newValue;
+  else if (name === 'id' && element[name] !== newValue) element[name] = newValue;
+  else if (
+    name === 'value' &&
+    'name' in element &&
+    (element as HTMLInputElement)[name] !== newValue
+  )
+    (element as HTMLInputElement)[name] = newValue;
   else if (element.getAttribute(name) !== newValue) element.setAttribute(name, newValue);
 };

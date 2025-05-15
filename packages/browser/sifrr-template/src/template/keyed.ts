@@ -1,11 +1,12 @@
 /* eslint-disable max-lines */
+// @ts-nocheck
 import { makeEqual } from './makeequal';
 import {
   ChildNodeKeyed,
   SifrrCreateFunction,
   SifrrNode,
   SifrrKeyedProps,
-  DomBindingReturnValue
+  DomBindingReturnArrayValue
 } from './types';
 import { flatLastElement } from './utils';
 
@@ -29,11 +30,10 @@ export function makeChildrenEqualKeyed<T>(
   const newL = newData.length,
     oldL = oldChildren.length;
 
-  const lastChild: Node =
-    (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
-  const nextSib = lastChild && lastChild.nextSibling;
+  const lastChild: Node = oldChildren.reference ?? flatLastElement(oldChildren);
+  const nextSib = lastChild.nextSibling;
   const parent = lastChild.parentNode;
-  const returnNodes = new Array(newL);
+  const returnNodes: DomBindingReturnArrayValue = new Array(newL);
 
   if (!parent) {
     throw Error(
@@ -41,11 +41,11 @@ export function makeChildrenEqualKeyed<T>(
     );
   }
 
-  (<DomBindingReturnValue>returnNodes).reference = (<DomBindingReturnValue>oldChildren).reference;
+  returnNodes.reference = oldChildren.reference;
   // special case of no value return
-  if (returnNodes.length < 1 && !(<DomBindingReturnValue>returnNodes).reference) {
+  if (returnNodes.length < 1 && !returnNodes.reference) {
     const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
-    (<DomBindingReturnValue>returnNodes).reference = referenceComment;
+    returnNodes.reference = referenceComment;
     parent.insertBefore(referenceComment, lastChild);
   }
 
@@ -76,18 +76,21 @@ export function makeChildrenEqualKeyed<T>(
     loop = false;
 
     // Skip prefix
-    (a = prevStartNode), (b = newData[newStart]);
+    a = prevStartNode;
+    b = newData[newStart];
     while (b && a.key === b.key) {
       returnNodes[newStart] = makeEqual(prevStartNode, b);
       prevStart++;
       prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode), (b = newData[newStart]);
+      a = prevStartNode;
+      b = newData[newStart];
     }
 
     // Skip suffix
-    (a = prevEndNode), (b = newData[newEnd]);
+    a = prevEndNode;
+    b = newData[newEnd];
     while (b && a.key === b.key) {
       returnNodes[newEnd] = makeEqual(prevEndNode, b);
       prevEnd--;
@@ -95,11 +98,13 @@ export function makeChildrenEqualKeyed<T>(
       prevEndNode = <ChildNodeKeyed>prevEndNode.previousSibling;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode), (b = newData[newEnd]);
+      a = prevEndNode;
+      b = newData[newEnd];
     }
 
     // Fast path to swap backward
-    (a = prevEndNode), (b = newData[newStart]);
+    a = prevEndNode;
+    b = newData[newStart];
     while (b && a.key === b.key) {
       loop = true;
       returnNodes[newStart] = makeEqual(prevEndNode, b);
@@ -109,11 +114,13 @@ export function makeChildrenEqualKeyed<T>(
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode), (b = newData[newStart]);
+      a = prevEndNode;
+      b = newData[newStart];
     }
 
     // Fast path to swap forward
-    (a = prevStartNode), (b = newData[newEnd]);
+    a = prevStartNode;
+    b = newData[newEnd];
     while (b && a.key === b.key) {
       loop = true;
       returnNodes[newEnd] = makeEqual(prevStartNode, b);
@@ -125,7 +132,8 @@ export function makeChildrenEqualKeyed<T>(
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode), (b = newData[newEnd]);
+      a = prevStartNode;
+      b = newData[newEnd];
     }
   }
 
@@ -188,18 +196,18 @@ export function makeChildrenEqualKeyed<T>(
   }
 
   // Remove extra nodes
-  for (let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(toDelete[i]);
+  for (const node of toDelete) {
+    parent.removeChild(node);
   }
 
   // Fast path for full replace
   if (reusingNodes === 0) {
     for (let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      returnNodes[i] = createFn(newData[i])[0];
-      returnNodes[i].key = newData[i].key;
+      returnNodes[i] = createFn(newData[i]!)[0];
+      (returnNodes[i]! as ChildNodeKeyed).key = newData[i]!.key;
 
-      parent.insertBefore(returnNodes[i], prevStartNode);
+      parent.insertBefore(returnNodes[i] as Node, prevStartNode!);
     }
     return returnNodes;
   }
@@ -213,15 +221,15 @@ export function makeChildrenEqualKeyed<T>(
       finalNode = nodes[oldKeys[i]];
       returnNodes[i] = finalNode;
       // returnNodes[i] = finalNode; reused nodes, not needed to set key
-      makeEqual(finalNode, newData[i]);
+      makeEqual(finalNode, newData[i]!);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
-        tmpD = createFn(newData[i])[0];
-        tmpD.key = newData[i].key;
+        tmpD = createFn(newData[i]!)[0]!;
+        tmpD.key = newData[i]!.key;
       } else {
         tmpD = nodes[oldKeys[i]];
-        makeEqual(tmpD, newData[i]);
+        makeEqual(tmpD, newData[i]!);
       }
       returnNodes[i] = tmpD;
       parent.insertBefore(tmpD, finalNode);
@@ -237,28 +245,28 @@ export function makeChildrenEqualKeyed<T>(
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
 export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number) {
-  const seq = [],
+  const seq: number[] = [],
     is = [],
     pre = new Array(ns.length);
   let l = -1;
 
   for (let i = newStart, len = ns.length; i < len; i++) {
     const n = ns[i];
-    if (n < 0) continue;
-    const j = findGreatestIndexLEQ(seq, n);
+    if (n! < 0) continue;
+    const j = findGreatestIndexLEQ(seq, n!);
     if (j !== -1) pre[i] = is[j];
     if (j === l) {
       l++;
-      seq[l] = n;
+      seq[l] = n!;
       is[l] = i;
-    } else if (n < seq[j + 1]) {
-      seq[j + 1] = n;
+    } else if (n! < seq[j + 1]!) {
+      seq[j + 1] = n!;
       is[j + 1] = i;
     }
   }
 
-  for (let i = is[l]; l > -1; i = pre[i], l--) {
-    seq[l] = i;
+  for (let i = is[l]; l > -1; i = pre[i!], l--) {
+    seq[l] = i!;
   }
 
   return seq;
@@ -271,11 +279,11 @@ function findGreatestIndexLEQ(seq: number[], n: number) {
     hi = seq.length;
 
   // fast path for simple increasing sequences
-  if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
+  if (hi > 0 && seq[hi - 1]! <= n) return hi - 1;
 
   while (hi - lo > 1) {
     const mid = Math.floor((lo + hi) / 2);
-    if (seq[mid] > n) {
+    if (seq[mid]! > n) {
       hi = mid;
     } else {
       lo = mid;

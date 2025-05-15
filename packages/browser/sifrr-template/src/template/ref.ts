@@ -12,7 +12,7 @@ const TW_SHARED = TREE_WALKER(document);
 function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
   const oldValues = new Array(bindMap.length);
   for (let j = bindMap.length - 1; j > -1; --j) {
-    const binding = bindMap[j];
+    const binding = bindMap[j]!;
 
     if (binding.type === SifrrBindType.Text) {
       oldValues[j] = [element];
@@ -37,12 +37,14 @@ export function collect<T>(
     refs: SifrrRefCollection<T>[] = new Array(l);
   TW_SHARED.currentNode = element;
   for (let i = 0, n: number; i < l; i++) {
-    n = refMap[i].idx;
-    while (--n) element = TW_SHARED.nextNode();
+    n = refMap[i]!.idx;
+    while (--n) {
+      TW_SHARED.nextNode();
+    }
     refs[i] = {
-      node: <Node>element,
-      currentValues: collectValues(<Node>element, refMap[i].map),
-      bindMap: refMap[i].map,
+      node: TW_SHARED.currentNode,
+      currentValues: collectValues(TW_SHARED.currentNode, refMap[i]!.map),
+      bindMap: refMap[i]!.map,
       bindingSet: new Array(l)
     };
   }
@@ -59,17 +61,12 @@ export function create<T>(
   let map: SifrrBindMap<T>[] | 0,
     idx = 0,
     ntr: ChildNode,
-    node = mainNode;
-  // TW.currentNode = node;
+    node: Node | null = mainNode;
   while (node) {
-    if (
-      node !== mainNode &&
-      node.nodeType === TEXT_NODE &&
-      (<Text>(<unknown>node)).data.trim() === ''
-    ) {
+    if (node !== mainNode && node.nodeType === TEXT_NODE && (node as Text).data.trim() === '') {
       ntr = <ChildNode>node;
       node = TW.nextNode();
-      ntr.remove && ntr.remove();
+      ntr.remove?.();
     } else {
       if ((map = fxn(node, passedValue))) {
         indices.push({ idx: idx + 1, map });

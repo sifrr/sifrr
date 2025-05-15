@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build-lint-test:
-    runs-on: paypay-default-runner
+    runs-on: default-runner
     timeout-minutes: 10
     strategy:
       matrix:

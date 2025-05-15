@@ -3,17 +3,11 @@
   "private": true,
   "workspaces": [
     "packages/*/*",
-    "packages/*/*/test/public"
+    "apps/*"
   ],
-  "version": "0.0.9",
+  "version": "0.0.0",
   "description": "a fullstack nodeJS/vanillaJS framework",
   "license": "MIT",
-  "browserslist": [
-    "chrome >= 55",
-    "safari >= 10.1",
-    "opera >= 42",
-    "firefox >= 63"
-  ],
   "scripts": {
     "build": "turbo build",
     "test": "turbo test",
@@ -49,9 +43,11 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
+  "packageManager": "yarn@1.22.22",
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@sifrr/typescript-config": "*",
     "@types/busboy": "^0.2.3",
     "@types/mkdirp": "^1.0.0",
     "@types/yargs": "^15.0.12",

@@ -11,7 +11,7 @@ concurrency:
 jobs:
   tag-release:
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') }}
-    runs-on: paypay-default-runner
+    runs-on: default-runner
 
     steps:
       - name: Checkout
@@ -94,7 +94,7 @@ jobs:
               Install by running \`yarn add <package-name>@<version>\` or \`yarn add <package-name>@${{ steps.get-tag.outputs.tag }}\`
 
 
-              You can also view docs for deployed versions [here](https://pay-baymax.github.io/paypay-web-core-tools) if available.
+              You can also view docs for deployed versions [here](https://sifrr.github.io/sifrr) if available.
 
               > [!WARNING]
               > These versions are for testing only. Versions released to production after the merge may differ.
@@ -134,7 +134,7 @@ jobs:
 
   update-visual-snapshots:
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/update-visual-snapshots') }}
-    runs-on: paypay-default-runner
+    runs-on: default-runner
 
     steps:
       - name: Checkout
