@@ -1,24 +1,26 @@
 class Benchmark {
-  constructor(i) {
+  constructor(i, page) {
     this.i = i;
+    this.page = page;
   }
 
-  static async setup() {
-    this.start = (await page.evaluate(`window.from - 1`)) || 0;
+  async setup() {
+    this.start = (await this.page.evaluate(`window.from - 1`)) || 0;
   }
 
-  static beforeAll() {
+  beforeAll() {
     return Promise.resolve(true);
   }
 
   before() {
     return Promise.resolve(true);
   }
+
   run() {
     return Promise.resolve(true);
   }
 
-  static beforeAllWait() {
+  beforeAllWait() {
     return '1 === 1';
   }
 
@@ -38,13 +40,14 @@ class Benchmark {
   }
 
   mainClick(selector) {
-    return page.$eval('#main', (el, selector) => el.$(selector).click(), selector);
+    return this.page.$eval('#main', (el, selector) => el.$(selector).click(), selector);
   }
 
-  static async metrics() {
+  async metrics() {
     const ret = {};
-    const ms = (await page._client.send('Performance.getMetrics')).metrics;
-    ms.forEach(m => {
+    const client = await this.page.context().newCDPSession(this.page);
+    const ms = (await client.send('Performance.getMetrics')).metrics;
+    ms.forEach((m) => {
       if (m.name.indexOf('Duration') > 0) {
         ret[m.name] = m.value * 1000;
       } else ret[m.name] = m.value;
@@ -52,7 +55,7 @@ class Benchmark {
     return ret;
   }
 
-  static metricsDiff(oldM, newM) {
+  metricsDiff(oldM, newM) {
     const diff = {};
     for (const m in oldM) {
       diff[m] = Math.round((newM[m] - oldM[m]) * 100) / 100;

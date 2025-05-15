@@ -1,31 +1,21 @@
 const path = require('path');
-const server = require('@sifrr/dev/src/test/server');
 const runClickBenchmark = require('./runclickbenchmark');
 
 class BenchmarkRunner {
-  constructor(benchmarks = [], { port = 1111, runs = 5, url, warmups = runs } = {}) {
+  constructor(benchmarks = [], { port = 1111, runs = 5, url, warmups = runs, page } = {}) {
     this.benchmarks = benchmarks;
     this.port = port;
     this.runs = runs;
     this.url = url;
     this.warmups = warmups;
     this.speedMetrics = {};
-  }
-
-  startServer() {
-    this.server = server(path.join(__dirname, '../test/public'), {
-      port: this.port
-    });
-  }
-
-  closeServer() {
-    if (this.server) this.server.close();
+    this.page = page;
   }
 
   async run() {
-    if (!this.url) this.startServer();
+    const client = await this.page.context().newCDPSession(this.page);
 
-    await page._client.send('Performance.enable');
+    await client.send('Performance.enable');
 
     const l = this.benchmarks.length;
     for (let i = 0; i < l; i++) {
@@ -35,11 +25,12 @@ class BenchmarkRunner {
         this.port,
         this.runs,
         this.url,
-        this.warmups
+        this.warmups,
+        undefined,
+        this.page
       );
     }
 
-    this.closeServer();
     return this.speedMetrics;
   }
 }

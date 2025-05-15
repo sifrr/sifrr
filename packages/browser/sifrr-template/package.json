@@ -27,12 +27,13 @@
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
     "test": "ts-jest",
+    "test:storybook": "test-storybook",
+    "test:playwright": "playwright test",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
     "test-server": "cd test/public && npx http-server -o -p 3000",
     "storybook:dev": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
-    "storybook:test": "test-storybook"
+    "storybook:build": "storybook build"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",

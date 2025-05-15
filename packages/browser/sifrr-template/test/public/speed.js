@@ -32,9 +32,7 @@ const row = html`
     class=${({ id }) => (selected == id ? 'danger' : null)}
     :data-id=${useAsync ? async ({ id }) => id : ({ id }) => id}
   >
-    <td class="col-md-1 id">
-      ${useAsync ? async ({ id }) => id : ({ id }) => id}
-    </td>
+    <td class="col-md-1 id">${useAsync ? async ({ id }) => id : ({ id }) => id}</td>
     <td class="col-md-4">
       <a class="lbl">${useAsync ? async ({ label }) => label : ({ label }) => label}</a>
     </td>
@@ -66,7 +64,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.run}
+                :onclick=${(me) => me.run}
                 id="run"
               >
                 Create 1,000 rows
@@ -76,7 +74,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.runlots}
+                :onclick=${(me) => me.runlots}
                 id="runlots"
               >
                 Create 10,000 rows
@@ -86,7 +84,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.add}
+                :onclick=${(me) => me.add}
                 id="add"
               >
                 Append 1,000 rows
@@ -96,7 +94,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.clickUpdate}
+                :onclick=${(me) => me.clickUpdate}
                 id="update"
               >
                 Update every 10th row
@@ -106,7 +104,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.clear}
+                :onclick=${(me) => me.clear}
                 id="clear"
               >
                 Clear
@@ -116,7 +114,7 @@ const template = html`
               <button
                 type="button"
                 class="btn btn-primary btn-block"
-                :onclick=${me => me.swaprows}
+                :onclick=${(me) => me.swaprows}
                 id="swaprows"
               >
                 Swap Rows
@@ -148,7 +146,7 @@ function _random(max) {
   return Math.round(Math.random() * 1000) % max;
 }
 
-window.buildData = function(count = 1000, frm = window.from) {
+window.buildData = function (count = 1000, frm = window.from) {
   const adjectives = [
     'pretty',
     'large',
@@ -221,7 +219,7 @@ window.buildData = function(count = 1000, frm = window.from) {
   return data;
 };
 
-var div = (window.DIV = document.createElement('div'));
+const div = (window.DIV = document.createElement('div'));
 div.id = 'main-element';
 const inner = template(div);
 div.append(...inner);
@@ -232,17 +230,17 @@ function getParent(elem) {
   return elem;
 }
 
-const setData = (window.setData = newData => {
+const setData = (window.setData = (newData) => {
   div.data = newData;
   update(inner, div);
 });
 
-div.addEventListener('click', e => {
+div.addEventListener('click', (e) => {
   const target = e.composedPath()[0];
   const id = (getParent(target) || {}).dataId;
   const { data } = div;
   if (target.matches('.remove, .remove *')) {
-    const todel = data.findIndex(d => d.id === id);
+    const todel = data.findIndex((d) => d.id === id);
     data.splice(todel, 1);
     setData(data);
   } else if (target.matches('.lbl, .lbl *')) {

@@ -1,12 +1,12 @@
 const Benchmark = require('./benchmark');
 
 class TenkUpdate10th extends Benchmark {
-  static beforeAll() {
-    return this.prototype.mainClick('#runlots');
+  beforeAll() {
+    return this.mainClick('#runlots');
   }
 
-  static beforeAllWait() {
-    return `${this.prototype.main} && ${this.prototype.main}.$$('tr').length === 10000`;
+  beforeAllWait() {
+    return `${this.main} && ${this.main}.$$('tr').length === 10000`;
   }
 
   run() {

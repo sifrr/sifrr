@@ -1,6 +1,6 @@
 const verbose = Math.max(process.argv.indexOf(`--verbose`), process.argv.indexOf(`-v`)) > 0;
 
-module.exports = async function(
+module.exports = async function (
   benchmark,
   port,
   runs = 5,
@@ -12,9 +12,11 @@ module.exports = async function(
     'LayoutCount',
     'TaskDuration',
     'RecalcStyleDuration'
-  ]
+  ],
+  page
 ) {
   const BM = require(`./benchmarks/${benchmark}`);
+
   const totals = {};
   if (verbose)
     process.stdout.write(
@@ -22,12 +24,15 @@ module.exports = async function(
     );
 
   // Reload page
-  url = url || `http://localhost:${port}/speedtest.html`;
+  url =
+    url ||
+    `http://localhost:${port}/iframe.html?globals=&id=sifrr-template-speed--primary&viewMode=story`;
 
-  const client = await page.target().createCDPSession();
+  const client = await page.context().newCDPSession(page);
 
   const times = (warmups + 1) * runs;
   for (let i = 0; i < times; i++) {
+    const bm = new BM(i % (warmups + 1), page);
     if (i % (warmups + 1) === 0) {
       await page.goto(url);
       // await page.goto(url, { waitUntil: 'networkidle0' });
@@ -37,29 +42,29 @@ module.exports = async function(
         document.$ = document.querySelector;
         document.$$ = document.querySelectorAll;
       });
-      await BM.setup();
+      await bm.setup();
+      await page.waitForFunction(bm.main);
 
       // Run before all
-      BM.beforeAll();
-      await page.waitForFunction(BM.beforeAllWait());
+      bm.beforeAll();
+      await page.waitForFunction(bm.beforeAllWait());
     }
-    const bm = new BM(i % (warmups + 1));
 
     // Run before
     bm.before();
     await page.waitForFunction(bm.beforeWait());
-    const beforeMetrics = await BM.metrics();
+    const beforeMetrics = await bm.metrics();
 
     // Run bechmark
     await client.send('Emulation.setCPUThrottlingRate', { rate: bm.cpuSlowdown });
-    bm.run();
+    bm.run(page);
     await page.waitForFunction(bm.runWait());
     await client.send('Emulation.setCPUThrottlingRate', { rate: 1 });
-    const afterMetrics = await BM.metrics();
+    const afterMetrics = await bm.metrics();
 
     if (i % (warmups + 1) === warmups) {
       if (verbose) process.stdout.write(`${i + 1}R `);
-      const diff = BM.metricsDiff(beforeMetrics, afterMetrics);
+      const diff = bm.metricsDiff(beforeMetrics, afterMetrics);
       for (const m in diff) {
         totals[m] = totals[m] || 0;
         totals[m] += diff[m];
@@ -71,13 +76,13 @@ module.exports = async function(
   if (verbose) process.stdout.write('\n');
 
   // Filter metrics
-  for (const m in totals) {
-    if (metrics.indexOf(m) >= 0) {
-      totals[m] = totals[m] / runs;
-    } else {
-      delete totals[m];
-    }
-  }
+  // for (const m in totals) {
+  //   if (metrics.indexOf(m) >= 0) {
+  //     totals[m] = totals[m] / runs;
+  //   } else {
+  //     delete totals[m];
+  //   }
+  // }
 
   // Save metrics
   return totals;

@@ -5,5 +5,5 @@ export default function css(str: TemplateStringsArray, ...substitutions: any[]) 
   raw.unshift('<style>');
   raw.push('</style>');
   raw.raw = raw;
-  return createTemplate(<TemplateStringsArray>raw, '', ...substitutions, '');
+  return createTemplate(<TemplateStringsArray>raw, ...substitutions);
 }

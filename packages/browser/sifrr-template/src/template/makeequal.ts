@@ -16,8 +16,6 @@ export function makeChildrenEqual<T>(
   const nextSib = lastChild ? lastChild.nextSibling : null;
   parent = parent ?? (lastChild.parentNode || undefined);
 
-  console.log(oldChildren, newChildren, lastChild);
-
   if (!parent) {
     throw Error(
       'Parent should be present for old children given. Open an issue on sifrr if this is a bug.'

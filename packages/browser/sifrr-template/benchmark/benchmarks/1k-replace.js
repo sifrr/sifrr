@@ -1,12 +1,12 @@
 const Benchmark = require('./benchmark');
 
 class OnekReplace extends Benchmark {
-  static beforeAll() {
-    return this.prototype.mainClick('#run');
+  beforeAll() {
+    return this.mainClick('#run');
   }
 
-  static beforeAllWait() {
-    return `${this.prototype.main}.$$('tr').length === 1000`;
+  beforeAllWait() {
+    return `${this.main}.$$('tr').length === 1000`;
   }
 
   run() {
@@ -14,10 +14,9 @@ class OnekReplace extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor
-      .start +
-      1000 * (this.i + 1) +
-      1}'`;
+    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${
+      1000 * (this.i + 1) + 1
+    }'`;
   }
 }
 
