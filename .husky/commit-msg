@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+commitlint -e $HUSKY_GIT_PARAMS

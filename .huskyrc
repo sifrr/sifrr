@@ -1,6 +1,0 @@
-{
-  "hooks": {
-    "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
-    "pre-commit": "LIST=`git diff-index --name-only HEAD | grep .js;`; if [ $LIST ]; then yarn eslint --fix $LIST; git add $LIST; echo $LIST; fi"
-  }
-}

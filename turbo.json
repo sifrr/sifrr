@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".github"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["lint", "build"]
+    },
+    "test:e2e": {
+      "dependsOn": ["lint", "build"]
+    },
+    "pre-release": {},
+    "publish-package": {},
+    "release-it": {
+      "dependsOn": ["^release-it"]
+    },
+    "post-release": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

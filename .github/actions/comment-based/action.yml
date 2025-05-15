@@ -1,0 +1,51 @@
+name: Setup comment based action
+description: Setup comment based action
+
+inputs:
+  token:
+    required: true
+    description: Github api token
+
+outputs:
+  sha:
+    description: Git commit SHA
+    value: ${{ steps.gitsha.outputs.sha }}
+  short-sha:
+    description: Git commit Short SHA
+    value: ${{ steps.gitsha.outputs.short-sha }}
+
+# Note: when using this action in a workflow add id `comment-based` to the step, add following step at the end of your workflow:
+# - name: Set final commit status
+#   uses: myrotvorets/set-commit-status-action@master
+#   if: success() || cancelled() || failure()
+#   with:
+#     token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+#     status: ${{ job.status }}
+#     context: PR Comment - ${{ github.event.comment.body }}
+#     sha: ${{ steps.comment-based.outputs.sha }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Checkout Pull Request
+      shell: bash
+      run: hub pr checkout ${{ github.event.issue.number }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Get git sha
+      id: gitsha
+      shell: bash
+      run: |
+        git pull --ff-only
+        echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Set commit status as pending
+      uses: myrotvorets/set-commit-status-action@master
+      with:
+        token: ${{ inputs.token }}
+        status: pending
+        context: PR Comment - ${{ github.event.comment.body }}
+        sha: ${{ steps.gitsha.outputs.sha }}

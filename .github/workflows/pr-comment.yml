@@ -1,0 +1,177 @@
+name: Comments on PR
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}-${{ github.event.comment.body }}
+  cancel-in-progress: true
+
+jobs:
+  tag-release:
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') }}
+    runs-on: paypay-default-runner
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup comment based action
+        id: comment-based
+        uses: ./.github/actions/comment-based
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+
+      - name: Setup Workspace
+        uses: ./.github/actions/setup
+        with:
+          node-version: 20.x
+
+      - name: Get Tag
+        id: get-tag
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          SHA: ${{ steps.comment-based.outputs.short-sha }}
+        run: |
+          RGX="^\/release\ [a-z0-9\-]+$"
+          echo "Checking comment - $COMMENT_BODY"
+
+          if [[ "$COMMENT_BODY" == "/release" ]]; then
+            echo "tag=$SHA" >> $GITHUB_OUTPUT
+            echo "preid=$SHA" >> $GITHUB_OUTPUT
+            echo "Using git commit sha as tag - $SHA"
+            exit 0
+          fi
+
+          if [[ "$COMMENT_BODY" =~ $RGX ]]; then
+              tag="$(echo "$COMMENT_BODY" | cut -d' ' -f2)"
+              if [[ $tag == 'latest' ]]; then
+                echo "latest tag is not permitted"
+                exit 1
+              fi
+              echo "tag=$tag" >> $GITHUB_OUTPUT
+              echo "preid=$tag-$SHA" >> $GITHUB_OUTPUT
+              echo "Comment is in correct format with tag - $tag"
+          else
+              echo "Comment is not in correct format - /release( [a-z0-9-]+)?"
+              exit 1
+          fi
+
+      - name: Release changed packages
+        if: ${{ steps.get-tag.outputs.tag }}
+        uses: ./.github/actions/release
+        with:
+          tag: ${{ steps.get-tag.outputs.tag }}
+          preid: ${{ steps.get-tag.outputs.preid }}
+          github_token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+
+      - name: Output versions
+        id: versions
+        shell: bash
+        if: always()
+        run: |
+          echo 'packages<<DELIMITER' >> $GITHUB_OUTPUT
+          echo "$(./scripts/getPreReleaseVersions)" >> $GITHUB_OUTPUT
+          echo 'DELIMITER' >> $GITHUB_OUTPUT
+
+      - name: Commenting success on PR
+        uses: actions/github-script@v7.0.1
+        id: comment-success
+        with:
+          github-token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+          script: |
+            return await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Released new packages with versions:
+              \`\`\`json
+              ${{ steps.versions.outputs.packages }}
+              \`\`\`
+              Install by running \`yarn add <package-name>@<version>\` or \`yarn add <package-name>@${{ steps.get-tag.outputs.tag }}\`
+
+
+              You can also view docs for deployed versions [here](https://pay-baymax.github.io/paypay-web-core-tools) if available.
+
+              > [!WARNING]
+              > These versions are for testing only. Versions released to production after the merge may differ.
+              `
+            })
+
+      - name: Commenting failure on PR
+        uses: actions/github-script@v7.0.1
+        id: comment-failure
+        if: failure()
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        with:
+          github-token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+          script: |
+            return await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Released new packages with versions:
+              \`\`\`json
+              ${{ steps.versions.outputs.packages }}
+              \`\`\`
+              Install by running \`yarn add <package-name>@<version>\`
+              
+              There were failures during publishing one or more packages, please check in actions for more details.`
+            })
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        if: success() || cancelled() || failure()
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+          status: ${{ job.status }}
+          context: PR Comment - ${{ github.event.comment.body }}
+          sha: ${{ steps.comment-based.outputs.sha }}
+
+  update-visual-snapshots:
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/update-visual-snapshots') }}
+    runs-on: paypay-default-runner
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+
+      - name: Setup comment based action
+        id: comment-based
+        uses: ./.github/actions/comment-based
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+
+      - name: Setup Workspace
+        uses: ./.github/actions/setup
+        with:
+          node-version: 20.x
+
+      - name: Update snapshots
+        run: |
+          yarn build
+          yarn test:e2e -u
+
+      - name: Commit snapshots
+        run: |
+          git config --global user.name "aadityataparia"
+          git config --global user.email "aadityataparia@gmail.com"
+          git add **/__image_snapshots__/**
+          git commit -m "chore: update snapshots"
+          git push
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        if: success() || cancelled() || failure()
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+          status: ${{ job.status }}
+          context: PR Comment - ${{ github.event.comment.body }}
+          sha: ${{ steps.comment-based.outputs.sha }}
