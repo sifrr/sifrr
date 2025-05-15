@@ -150,7 +150,7 @@ export const Primary: Story = {
                       for (let i = 0; i < l; i += 10) {
                         data.value[i].label = data.value[i].label + ' !!!';
                       }
-                      setData(data);
+                      setData(data.value);
                     }}
                     id="update"
                   >
