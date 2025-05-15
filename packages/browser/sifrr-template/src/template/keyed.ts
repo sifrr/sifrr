@@ -45,7 +45,7 @@ export function makeChildrenEqualKeyed<T>(
   returnNodes.reference = oldChildren.reference;
   // special case of no value return
   if (returnNodes.length < 1 && !returnNodes.reference) {
-    returnNodes.reference = REFERENCE_COMMENT;
+    returnNodes.reference = REFERENCE_COMMENT();
     parent.insertBefore(returnNodes.reference, lastChild);
   }
 

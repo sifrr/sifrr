@@ -16,24 +16,42 @@ declare global {
   }
 }
 
-const meta: Meta<{}> = {
-  title: 'Sifrr/Template/Speed'
+type Args = {
+  type: 'keyed' | 'clean' | 'normal';
+  useAnimation: boolean;
+  useAsync: boolean;
+};
+
+const meta: Meta<Args> = {
+  title: 'Sifrr/Template/Speed',
+  argTypes: {
+    type: {
+      type: 'string',
+      options: ['keyed', 'clean', 'normal']
+    },
+    useAnimation: {
+      type: 'boolean'
+    },
+    useAsync: {
+      type: 'boolean'
+    }
+  }
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<Args>;
 
 export const Primary: Story = {
-  render: () => {
+  render: (args) => {
     HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
     HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
     document.$ = document.querySelector;
     document.$$ = document.querySelectorAll;
 
-    const useAnimation = window.location.href.indexOf('useAnim') >= 0;
-    const useKey = window.location.href.indexOf('useKey') >= 0;
-    const useClean = window.location.href.indexOf('useClean') >= 0;
-    const useAsync = window.location.href.indexOf('useAsync') >= 0;
+    const useAnimation = window.location.href.indexOf('useAnim') >= 0 || args.useAnimation;
+    const useKey = window.location.href.indexOf('useKey') >= 0 || args.type === 'keyed';
+    const useClean = window.location.href.indexOf('useClean') >= 0 || args.type === 'clean';
+    const useAsync = window.location.href.indexOf('useAsync') >= 0 || args.useAsync;
 
     const incss = useAnimation
       ? css`
@@ -381,5 +399,10 @@ export const Primary: Story = {
     expect((table?.$$('tr')[998] as any)?.dataId).toEqual(12999);
 
     await userEvent.click(clear);
+  },
+  args: {
+    type: 'normal',
+    useAnimation: false,
+    useAsync: false
   }
 };

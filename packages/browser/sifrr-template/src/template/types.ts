@@ -28,9 +28,7 @@ export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
 
 export type SifrrNodesArray<T> = SifrrNode<T>[] & {
   reference?: Node;
-  nodeType?: number;
   isRendered?: boolean;
-  __tempNum?: number;
   update?: (p: SifrrProps<T>) => void;
 };
 
