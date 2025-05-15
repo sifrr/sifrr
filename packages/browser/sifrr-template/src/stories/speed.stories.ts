@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
-import { html, css, update, bindForKeyed, bindFor } from '@/index';
+import { html, css, ref, bindForKeyed, bindFor } from '@/index';
 import currentStyle from './utils/currentStyle.css?inline';
 import { rearrange, rearrange2 } from './utils/speedtest.arrangements';
 
@@ -26,7 +26,7 @@ const meta: Meta<Args> = {
   title: 'Sifrr/Template/Speed',
   argTypes: {
     type: {
-      type: 'string',
+      control: 'select',
       options: ['keyed', 'clean', 'normal']
     },
     useAnimation: {
@@ -89,7 +89,7 @@ export const Primary: Story = {
       </tr>
     `;
 
-    const template = html<any>`
+    const template = html<{ data: { value: any[] } }>`
       <style>
         ${currentStyle} .remove,
         .lbl {
@@ -109,7 +109,9 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.run}
+                    ::onclick=${() => {
+                      setData(buildData(1000));
+                    }}
                     id="run"
                   >
                     Create 1,000 rows
@@ -119,7 +121,9 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.runlots}
+                    ::onclick=${() => {
+                      setData(buildData(10000));
+                    }}
                     id="runlots"
                   >
                     Create 10,000 rows
@@ -129,7 +133,9 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.add}
+                    ::onclick=${() => {
+                      setData(data.value.concat(buildData(1000)));
+                    }}
                     id="add"
                   >
                     Append 1,000 rows
@@ -139,7 +145,13 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.clickUpdate}
+                    ::onclick=${() => {
+                      const l = data.value.length;
+                      for (let i = 0; i < l; i += 10) {
+                        data.value[i].label = data.value[i].label + ' !!!';
+                      }
+                      setData(data);
+                    }}
                     id="update"
                   >
                     Update every 10th row
@@ -149,7 +161,9 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.clear}
+                    ::onclick=${() => {
+                      setData([]);
+                    }}
                     id="clear"
                   >
                     Clear
@@ -159,7 +173,14 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    :onclick=${(me) => me.swaprows}
+                    ::onclick=${() => {
+                      if (data.value.length > 998) {
+                        const a = data.value[1];
+                        data.value[1] = data.value[998];
+                        data.value[998] = a;
+                        setData(data.value);
+                      }
+                    }}
                     id="swaprows"
                   >
                     Swap Rows
@@ -172,7 +193,7 @@ export const Primary: Story = {
                     ::onclick=${() => {
                       rearrange(
                         {
-                          data: div.data
+                          data: data.value
                         },
                         setData
                       );
@@ -189,7 +210,7 @@ export const Primary: Story = {
                     ::onclick=${() => {
                       rearrange2(
                         {
-                          data: div.data
+                          data: data.value
                         },
                         setData
                       );
@@ -207,11 +228,11 @@ export const Primary: Story = {
           <tbody>
             <!--${({ data = [] }, oldValue) => {
               if (useKey) {
-                return bindForKeyed(row, data, oldValue);
+                return bindForKeyed(row, data.value, oldValue);
               } else if (useClean) {
-                return data.map((d: any, i: number) => row(d, oldValue[i]));
+                return data.value.map((d: any, i: number) => row(d, oldValue[i]));
               } else {
-                return bindFor(row, data, oldValue);
+                return bindFor(row, data.value, oldValue);
               }
             }}-->
           </tbody>
@@ -220,6 +241,7 @@ export const Primary: Story = {
     `;
 
     let from = 1;
+    const data = ref<any[]>([]);
 
     function _random(max: number) {
       return Math.round(Math.random() * 1000) % max;
@@ -300,7 +322,7 @@ export const Primary: Story = {
 
     const div: any = document.createElement('div');
     div.id = 'main-element';
-    const inner = template(div);
+    const inner = template({ data }, undefined, [data]);
     div.append(...inner);
 
     function getParent(elem: Node | null) {
@@ -309,13 +331,13 @@ export const Primary: Story = {
     }
 
     const setData = (newData: any) => {
-      div.data = newData;
-      inner.update?.(div);
+      data.value = newData;
     };
 
     div.addEventListener('click', (e: any) => {
       const target = e.composedPath()[0];
       const id = (getParent(target as Node) as any)?.dataId;
+      if (!id) return;
       const { data } = div;
       if (target.matches('.remove, .remove *')) {
         const todel = data.findIndex((d: any) => d.id === id);
@@ -323,46 +345,10 @@ export const Primary: Story = {
         setData(data);
       } else if (target.matches('.lbl, .lbl *')) {
         selected = id;
-        setData(data);
+        inner.update?.(div);
       }
     });
 
-    div.run = () => {
-      setData(buildData(1000));
-    };
-
-    div.runlots = () => {
-      setData(buildData(10000));
-    };
-
-    div.add = () => {
-      setData(div.data.concat(buildData(1000)));
-    };
-
-    div.clickUpdate = () => {
-      const { data } = div;
-      const l = data.length;
-      for (let i = 0; i < l; i += 10) {
-        data[i].label = data[i].label + ' !!!';
-      }
-      setData(data);
-    };
-
-    div.clear = () => {
-      setData([]);
-    };
-
-    div.swaprows = () => {
-      const data = div.data;
-      if (data.length > 998) {
-        const a = data[1];
-        data[1] = data[998];
-        data[998] = a;
-        setData(data);
-      }
-    };
-
-    setData([]);
     return div;
   },
   play: async ({ canvasElement, canvas }) => {
