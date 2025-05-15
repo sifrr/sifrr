@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
 import { html, css, update, bindForKeyed, bindFor } from '@/index';
-import currentStyle from './currentStyle.css?inline';
-import { rearrange, rearrange2 } from '@/stories/speedtest.arrangements';
+import currentStyle from './utils/currentStyle.css?inline';
+import { rearrange, rearrange2 } from './utils/speedtest.arrangements';
 
 declare global {
   interface Element {
