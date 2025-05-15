@@ -312,7 +312,7 @@ export const Primary: Story = {
     return div;
   },
   play: async ({ canvasElement, canvas }) => {
-    if (window.location.href.indexOf('viewMode=story') >= 0) return;
+    if (window.location.href.indexOf('speedtest') >= 0) return;
 
     const table = canvasElement.querySelector('table');
     const run = canvasElement.querySelector('#run')!;

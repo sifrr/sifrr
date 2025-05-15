@@ -1,3 +1,9 @@
 #!/usr/bin/env sh
 
-LIST=`git diff-index --name-only HEAD | grep .js;`; if [ $LIST ]; then yarn eslint --fix $LIST; git add $LIST; echo $LIST; fi
+LIST=`git diff-index --name-only HEAD | grep .ts;`; 
+if [ $LIST ]; 
+then 
+  yarn prettier --write $LIST; 
+  git add $LIST; 
+  echo $LIST; 
+fi

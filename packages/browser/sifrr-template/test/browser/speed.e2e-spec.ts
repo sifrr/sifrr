@@ -48,7 +48,7 @@ const suffixes = ['', '&useKey', '&useClean', '&useAsync'],
   compare: any = {};
 const url =
   getArg('url') ||
-  `http://localhost:6006/iframe.html?globals=&id=sifrr-template-speed--primary&viewMode=story`;
+  `http://localhost:6006/iframe.html?globals=&id=sifrr-template-speed--primary&viewMode=story&speedtest=true`;
 const urls = suffixes.map((s) => url + s);
 // .concat([`http://localhost:8080/frameworks/non-keyed/domc/`]);
 
