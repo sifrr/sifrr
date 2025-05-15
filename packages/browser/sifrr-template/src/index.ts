@@ -23,6 +23,7 @@ export { default as styled } from './template/styled';
 export { createTemplateFromString } from './template/utils';
 export { makeChildrenEqual as makeEqualArray, makeEqual } from './template/makeequal';
 export * from './template/types';
+export * from './template/ref-state';
 
 export default {
   createUniqueString,

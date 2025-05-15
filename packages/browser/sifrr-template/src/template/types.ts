@@ -1,3 +1,5 @@
+import { Ref } from '@/template/ref-state';
+
 export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
   __tempNum?: number;
@@ -7,10 +9,7 @@ export interface SifrrNode<T> extends Node {
   [x: string]: any;
 }
 
-export type SifrrProps<T> = T & {
-  nodeType?: number;
-  [x: string]: any;
-};
+export type SifrrProps<T> = T;
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
   key: string | number;
@@ -20,21 +19,19 @@ export type ChildNodeKeyed = ChildNode & {
   key: string | number;
 };
 
-type _RTValue = null | undefined | string | Node | _RTValue[];
+type _RTValue = null | undefined | string | number | Node | _RTValue[];
 export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
   isRendered?: boolean;
   reference?: Node;
 };
-export type DomBindingReturnValue =
-  | _RTValue
-  | (NodeList & {
-      isRendered?: boolean;
-      reference?: Node;
-    });
+export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
 
-export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[] & {
+export type SifrrNodesArray<T> = SifrrNode<T>[] & {
   reference?: Node;
+  nodeType?: number;
   isRendered?: boolean;
+  __tempNum?: number;
+  update?: (p: SifrrProps<T>) => void;
 };
 
 export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
@@ -42,8 +39,9 @@ export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Pro
 // clone/update a template element
 export type SifrrCreateFunction<T> = (
   parent: SifrrProps<T>,
-  oldValue?: SifrrNode<T>[]
-) => SifrrNode<T>[];
+  oldValue?: SifrrNode<T>[],
+  refs?: Ref<any>[]
+) => SifrrNodesArray<T>;
 
 export enum SifrrBindType {
   Text = 1,

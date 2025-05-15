@@ -292,7 +292,7 @@ export const Primary: Story = {
 
     const setData = (newData: any) => {
       div.data = newData;
-      update(inner, div);
+      inner.update?.(div);
     };
 
     div.addEventListener('click', (e: any) => {

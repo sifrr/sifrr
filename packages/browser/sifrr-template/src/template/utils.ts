@@ -1,6 +1,6 @@
 import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
 import createUniqueString from '../ustring';
-import { SifrrFunctionMap, SifrrNode, SifrrProps } from './types';
+import { SifrrFunctionMap, SifrrNode, SifrrNodesArray, SifrrProps } from './types';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();
@@ -36,7 +36,7 @@ export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): node is Sif
   return !!node.__tempNum;
 }
 
-export function isSameSifrrNode<T>(nodes: SifrrNode<T>[], tempNums: number[]) {
+export function isSameSifrrNode<T>(nodes: SifrrNodesArray<T>, tempNums: number[]) {
   const ln = nodes.length,
     tl = tempNums.length;
 
@@ -75,7 +75,7 @@ export function recurseArray<T, X>(
 }
 
 // state of art recursive array equalising
-export function flattenOperation<T, X>(
+export function flattenOperation<P, T = SifrrNode<P>, X = SifrrProps<P>>(
   ovs: any[],
   nvs: any[],
   equaliser: (oldv: T, newv: T | X) => T,
@@ -144,7 +144,7 @@ export function flattenOperation<T, X>(
     i++;
   }
 
-  return <TRArray>returnValues;
+  return <SifrrNodesArray<any>>returnValues;
 }
 
 export function flatLastElement<T>(vs: any[]): T {

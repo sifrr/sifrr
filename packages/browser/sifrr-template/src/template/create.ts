@@ -1,15 +1,25 @@
 import { createTemplateFromString, functionMapCreator, isSameSifrrNode } from './utils';
 import { create, collect, cleanEmptyNodes } from './ref';
-import { SifrrProps, SifrrCreateFunction, SifrrNode } from './types';
+import {
+  SifrrProps,
+  SifrrCreateFunction,
+  SifrrNode,
+  DomBindingReturnValue,
+  SifrrNodesArray
+} from './types';
 import creator from './creator';
 import update from './update';
 import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
+import { Ref } from '@/template/ref-state';
 
 let tempNum = 1;
 
 const createTemplate = <T>(
   str: TemplateStringsArray,
-  ...substitutions: ((p: T, oldValue?: any) => any)[]
+  ...substitutions: ((
+    p: any,
+    oldValue?: any
+  ) => DomBindingReturnValue | Promise<DomBindingReturnValue> | void)[]
 ): SifrrCreateFunction<T> => {
   const { functionMap, mergedString } = functionMapCreator<T>(str, substitutions);
   const template = createTemplateFromString(mergedString);
@@ -30,7 +40,7 @@ const createTemplate = <T>(
   });
   const tempNums = childNodes.map(() => tempNum++);
 
-  const clone = (props: SifrrProps<T>): SifrrNode<T>[] => {
+  const clone = (props: SifrrProps<T>): SifrrNodesArray<T> => {
     // https://jsbench.me/6qk4zc0s9x/1
     const newNodes: SifrrNode<T>[] = new Array(nodeLength);
 
@@ -47,11 +57,15 @@ const createTemplate = <T>(
   };
 
   // cloning this template, can be used as binding function in another template
-  const createFxn = (props: SifrrProps<T>, oldValue?: SifrrNode<T>[]) => {
+  const createFxn = function (
+    props: SifrrProps<T>,
+    oldValue?: SifrrNodesArray<T>,
+    refs?: Ref<any>[]
+  ) {
     if (oldValue) {
       if (isSameSifrrNode(oldValue, tempNums)) {
         update(oldValue, props);
-        (oldValue as any).isRendered = true;
+        oldValue.isRendered = true;
         return oldValue;
       } else if (!Array.isArray(oldValue)) {
         console.warn(`oldValue given to Component function was not an Array.
@@ -69,7 +83,16 @@ const createTemplate = <T>(
         );
       }
     }
-    return clone(props);
+    const retValue = clone(props);
+    refs?.forEach((ref) => {
+      ref.__sifrrOnChange?.push(() => update(retValue, props));
+    });
+
+    retValue.update = (p: SifrrProps<T>) => {
+      update(retValue, p);
+      retValue.isRendered = true;
+    };
+    return retValue;
   };
 
   return createFxn;

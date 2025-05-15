@@ -17,7 +17,7 @@ const fetchData = async (): Promise<{
     id: number;
   };
 }> => {
-  await new Promise((resolve) => setTimeout(resolve, 10));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   return {
     '1': {
       name: 'Aaditya',

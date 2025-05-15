@@ -1,13 +1,13 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { TEXT_NODE } from './constants';
-import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap } from './types';
+import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap, SifrrNodesArray } from './types';
 import getNodesFromBindingValue from './getnodes';
 
 const emptyObj = Object.freeze(Object.create(null));
 
 export default function update<T>(
-  tempElement: SifrrNode<T> | SifrrNode<T>[],
+  tempElement: SifrrNodesArray<T> | SifrrNode<T>,
   props: SifrrProps<T>
 ) {
   if (Array.isArray(tempElement)) {
@@ -48,26 +48,17 @@ export default function update<T>(
       }
 
       const oldValue = currentValues[j];
-      if (oldValue instanceof Promise) {
-        promise = true;
-        currentValues[j] = oldValue.then((oldv) => {
-          const newValue = binding.value(props, oldv);
 
-          if (newValue instanceof Promise) {
-            return newValue.then((nv) => updateOne(node, binding, oldv, nv));
-          } else {
-            return updateOne(node, binding, oldv, newValue);
-          }
+      const newValue = binding.value(props, oldValue);
+
+      if (newValue instanceof Promise) {
+        promise = true;
+        newValue.then((nv) => {
+          currentValues[j] = nv;
+          updateOne(node, binding, oldValue, nv);
         });
       } else {
-        const newValue = binding.value(props, oldValue);
-
-        if (newValue instanceof Promise) {
-          promise = true;
-          currentValues[j] = newValue.then((nv) => updateOne(node, binding, oldValue, nv));
-        } else {
-          currentValues[j] = updateOne(node, binding, oldValue, newValue);
-        }
+        currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
     promise ? Promise.all(currentValues).then(() => node.update?.()) : node.update?.();

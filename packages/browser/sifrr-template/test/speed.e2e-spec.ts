@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import BenchmarkRunner from '../../benchmark/benchmarkrunner';
+import BenchmarkRunner from '../benchmark/benchmarkrunner';
 
 function getArg(name: string) {
   const argi = Math.max(process.argv.indexOf(`--${name}`), process.argv.indexOf(`-${name[0]}`));

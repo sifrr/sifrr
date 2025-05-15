@@ -29,7 +29,7 @@ export function makeChildrenEqual<T>(
     parent.insertBefore(reference, lastChild);
   }
 
-  const returnValues = flattenOperation<SifrrNode<T>, SifrrProps<T>>(
+  const returnValues = flattenOperation<T>(
     oldChildren,
     newChildren,
     makeEqual,
@@ -49,8 +49,8 @@ export function makeEqual<T>(
 ): SifrrNode<T> {
   if (oldNode === newNode) return oldNode;
 
-  if (!newNode.nodeType) {
-    update(oldNode, <SifrrProps<T>>newNode);
+  if (!(newNode instanceof Node)) {
+    update(oldNode, newNode);
     return oldNode;
   }
 
@@ -64,6 +64,6 @@ export function makeEqual<T>(
     return oldNode;
   }
 
-  (<ChildNode>oldNode).replaceWith(<SifrrNode<T>>newNode);
-  return <SifrrNode<T>>newNode;
+  oldNode.replaceWith(newNode);
+  return newNode;
 }

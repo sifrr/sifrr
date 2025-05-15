@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 // @ts-nocheck
+import { REFERENCE_COMMENT } from '@/template/constants';
 import { makeEqual } from './makeequal';
 import {
   ChildNodeKeyed,
@@ -44,9 +45,8 @@ export function makeChildrenEqualKeyed<T>(
   returnNodes.reference = oldChildren.reference;
   // special case of no value return
   if (returnNodes.length < 1 && !returnNodes.reference) {
-    const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
-    returnNodes.reference = referenceComment;
-    parent.insertBefore(referenceComment, lastChild);
+    returnNodes.reference = REFERENCE_COMMENT;
+    parent.insertBefore(returnNodes.reference, lastChild);
   }
 
   if (oldL === 0) {
