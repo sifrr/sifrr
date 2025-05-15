@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
-import { html, css, update, memo, bindForKeyed, bindFor } from '@/index';
+import { html, css, update, bindForKeyed, bindFor } from '@/index';
 import currentStyle from './currentStyle.css?inline';
+import { rearrange, rearrange2 } from '@/stories/speedtest.arrangements';
 
 declare global {
-  interface HTMLElement {
-    $: typeof HTMLElement.prototype.querySelector;
-    $$: typeof HTMLElement.prototype.querySelectorAll;
+  interface Element {
+    $: typeof Element.prototype.querySelector;
+    $$: typeof Element.prototype.querySelectorAll;
   }
 
   interface Document {
@@ -57,6 +58,7 @@ export const Primary: Story = {
     }>`
       <tr
         class=${({ id }) => (selected == id ? 'danger' : null)}
+        :key=${({ id }) => (useKey ? id : null)}
         :data-id=${useAsync ? async ({ id }) => id : ({ id }) => id}
       >
         <td class="col-md-2 id">${useAsync ? async ({ id }) => id : ({ id }) => id}</td>
@@ -143,6 +145,40 @@ export const Primary: Story = {
                     id="swaprows"
                   >
                     Swap Rows
+                  </button>
+                </div>
+                <div class="col-sm-6 smallpad">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-block"
+                    ::onclick=${() => {
+                      rearrange(
+                        {
+                          data: div.data
+                        },
+                        setData
+                      );
+                    }}
+                    id="swaprows"
+                  >
+                    Rearrange 50%
+                  </button>
+                </div>
+                <div class="col-sm-6 smallpad">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-block"
+                    ::onclick=${() => {
+                      rearrange2(
+                        {
+                          data: div.data
+                        },
+                        setData
+                      );
+                    }}
+                    id="swaprows"
+                  >
+                    Rearrange 100%
                   </button>
                 </div>
               </div>

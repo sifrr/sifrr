@@ -1,12 +1,12 @@
 declare global {
-  interface Document {
-    $: (selector: string) => Element;
-    $$: (selector: string) => NodeList;
+  interface Element {
+    $: typeof Element.prototype.querySelector;
+    $$: typeof Element.prototype.querySelectorAll;
   }
 
-  interface HTMLElement {
-    $(selector: string, sr?: boolean): Element;
-    $$(selector: string, sr?: boolean): NodeList;
+  interface Document {
+    $: typeof Document.prototype.querySelector;
+    $$: typeof Document.prototype.querySelectorAll;
   }
 }
 
@@ -28,7 +28,7 @@ export interface SifrrEventListener {
   __dom?: HTMLElement;
 }
 
-export declare var SifrrElement: {
+export declare const SifrrElement: {
   new (): ISifrrElement;
   prototype: ISifrrElement;
   elementName: string;

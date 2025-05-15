@@ -179,7 +179,11 @@ export function makeChildrenEqualKeyed<T>(
     // Positions for reusing nodes from current DOM state
     oldKeys[i] = -1;
     // Index to resolve position from current to new
-    newKeys.set(newData[i].key, i);
+    if (!newData[i]?.key) {
+      console.log(newStart, newEnd, i);
+      console.log('newData', newData);
+    }
+    if (newData[i]?.key) newKeys.set(newData[i].key, i);
   }
 
   let reusingNodes = 0;
