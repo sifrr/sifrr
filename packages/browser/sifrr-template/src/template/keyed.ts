@@ -7,7 +7,8 @@ import {
   SifrrCreateFunction,
   SifrrNode,
   SifrrKeyedProps,
-  DomBindingReturnArrayValue
+  DomBindingReturnArrayValue,
+  SifrrNodesArrayKeyed
 } from './types';
 import { flatLastElement } from './utils';
 
@@ -22,19 +23,18 @@ import { flatLastElement } from './utils';
 // without maintaining nodes arrays, and manipulates dom only when required
 
 // only works with data nodes
-// TODO: cleanup
 export function makeChildrenEqualKeyed<T>(
-  oldChildren: ChildNodeKeyed[],
+  oldChildren: SifrrNodesArrayKeyed<T>,
   newData: SifrrKeyedProps<T>[],
   createFn: SifrrCreateFunction<T>
-) {
+): SifrrNodesArrayKeyed<T> {
   const newL = newData.length,
     oldL = oldChildren.length;
 
   const lastChild: Node = oldChildren.reference ?? flatLastElement(oldChildren);
   const nextSib = lastChild.nextSibling;
   const parent = lastChild.parentNode;
-  const returnNodes: DomBindingReturnArrayValue = new Array(newL);
+  const returnNodes: SifrrNodesArrayKeyed<T> = new Array(newL);
 
   if (!parent) {
     throw Error(
@@ -180,8 +180,7 @@ export function makeChildrenEqualKeyed<T>(
     oldKeys[i] = -1;
     // Index to resolve position from current to new
     if (!newData[i]?.key) {
-      console.log(newStart, newEnd, i);
-      console.log('newData', newData);
+      window.console.error(`Key is missing for index ${i},  props: `, newData[i]);
     }
     if (newData[i]?.key) newKeys.set(newData[i].key, i);
   }
@@ -248,7 +247,7 @@ export function makeChildrenEqualKeyed<T>(
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L368
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
-export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number) {
+export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number): number[] {
   const seq: number[] = [],
     is = [],
     pre = new Array(ns.length);
@@ -276,7 +275,7 @@ export function longestPositiveIncreasingSubsequence(ns: number[], newStart: num
   return seq;
 }
 
-function findGreatestIndexLEQ(seq: number[], n: number) {
+function findGreatestIndexLEQ(seq: number[], n: number): number {
   // invariant: lo is guaranteed to be index of a value <= n, hi to be >
   // therefore, they actually start out of range: (-1, last + 1)
   let lo = -1,

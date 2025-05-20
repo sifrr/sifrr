@@ -338,14 +338,14 @@ export const Primary: Story = {
       const target = e.composedPath()[0];
       const id = (getParent(target as Node) as any)?.dataId;
       if (!id) return;
-      const { data } = div;
+
       if (target.matches('.remove, .remove *')) {
-        const todel = data.findIndex((d: any) => d.id === id);
-        data.splice(todel, 1);
+        const todel = data.value.findIndex((d: any) => d.id === id);
+        data.value.splice(todel, 1);
         setData(data);
       } else if (target.matches('.lbl, .lbl *')) {
         selected = id;
-        inner.update?.(div);
+        inner.update?.({ data });
       }
     });
 

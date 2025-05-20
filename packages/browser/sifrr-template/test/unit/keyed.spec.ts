@@ -1,39 +1,33 @@
-const {
-  makeChildrenEqualKeyed,
-  longestPositiveIncreasingSubsequence
-} = require('../../src/template/keyed');
-const {
-  buildData,
-  dataToChildNode,
-  dataToChildNodes,
-  parent
-  // moveEl,
-  // findIndex
-} = require('../helpers/keyed');
+/**
+ * @jest-environment jsdom
+ */
+
+import { makeChildrenEqualKeyed, longestPositiveIncreasingSubsequence } from '@/template/keyed';
+import { buildData, dataToChildNode, dataToChildNodes, parent } from '../helpers/keyed';
 
 function expectSameState(nodes, states) {
-  const nodeLabels = nodes.map(n => n.val.data);
-  const stateLabels = states.map(n => n.label);
-  expect(nodeLabels).to.deep.equal(stateLabels);
+  const nodeLabels = nodes.map((n) => n.val.data);
+  const stateLabels = states.map((n) => n.label);
+  expect(nodeLabels).toEqual(stateLabels);
 }
 
 describe('Keyed', () => {
   describe('longestPositiveIncreasingSubsequence', () => {
     it('tests', async () => {
       let res = longestPositiveIncreasingSubsequence([0, 1, 2, 4, 3, 5], 0);
-      expect(res).to.deep.equal([0, 1, 2, 4, 5]);
+      expect(res).toEqual([0, 1, 2, 4, 5]);
 
       res = longestPositiveIncreasingSubsequence([0, 1, 2, 4], 0);
-      expect(res).to.deep.equal([0, 1, 2, 3]);
+      expect(res).toEqual([0, 1, 2, 3]);
 
       res = longestPositiveIncreasingSubsequence([3, 1, 2, 0], 0);
-      expect(res).to.deep.equal([1, 2]);
+      expect(res).toEqual([1, 2]);
 
       res = longestPositiveIncreasingSubsequence([-1, -1, 2, 0], 0);
-      expect(res).to.deep.equal([3]);
+      expect(res).toEqual([3]);
 
       res = longestPositiveIncreasingSubsequence([4, 3, 2, 1, 0], 0);
-      expect(res).to.deep.equal([4]);
+      expect(res).toEqual([4]);
     });
   });
 

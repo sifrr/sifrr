@@ -1,10 +1,10 @@
-import { TEXT_NODE } from '../../src/template/constants';
+import { TEXT_NODE } from '@/template/constants';
 
-function _random(max) {
+function _random(max: number): number {
   return Math.round(Math.random() * 1000) % max;
 }
 
-function buildData(count = 10, from = 1) {
+function buildData(count = 10, from = 1): { id: number; key: number; label: string }[] {
   const adjectives = [
     'pretty',
     'large',
@@ -76,29 +76,29 @@ function buildData(count = 10, from = 1) {
   return data;
 }
 
-function dataToChildNodes(data) {
-  const ret = data.map(d => {
+function dataToChildNodes(data: any): any {
+  const ret = data.map((d) => {
     const currVal = { data: d.label, nodeType: TEXT_NODE };
     const node = {
       key: d.key,
       val: currVal,
       __sifrrRefs: [
         {
-          bindMap: [{ type: 1, value: ({ label }) => label }],
+          bindMap: [{ type: 1, value: ({ label }: { label: string }): string => label }],
           currentValues: [currVal]
         }
       ]
     };
     return node;
   });
-  ret.forEach(n => {
+  ret.forEach((n) => {
     Object.defineProperty(n, 'nextSibling', {
       get: () => ret[findIndex(ret, n) + 1]
     });
     Object.defineProperty(n, 'previousSibling', {
       get: () => ret[findIndex(ret, n) - 1]
     });
-    n.replaceWith = function(x) {
+    n.replaceWith = function (x: number): void {
       const idx = findIndex(ret, n);
       ret[idx] = x;
     };
@@ -106,21 +106,21 @@ function dataToChildNodes(data) {
   return ret;
 }
 
-function dataToChildNode(d) {
+function dataToChildNode(d): any {
   return dataToChildNodes([d]);
 }
 
-function findIndex(childNodes, a) {
+function findIndex(childNodes, a): number {
   if (typeof a === 'number') {
-    return childNodes.findIndex(n => n.key === a);
+    return childNodes.findIndex((n) => n.key === a);
   } else {
-    return childNodes.findIndex(n => n.key === a.key);
+    return childNodes.findIndex((n) => n.key === a.key);
   }
 }
 
 function parent(childNodes) {
   const parent = {
-    insertBefore: function(a, b) {
+    insertBefore: function (a, b) {
       const childNodes = this.childNodes;
       const indexOld = findIndex(childNodes, a);
       if (indexOld > -1) childNodes.splice(indexOld, 1);
@@ -129,19 +129,19 @@ function parent(childNodes) {
         childNodes.splice(indexNew, 0, a);
       } else this.appendChild(a);
     },
-    removeChild: function(a) {
+    removeChild: function (a) {
       const indexOld = findIndex(childNodes, a);
       this.childNodes.splice(indexOld, 1);
     },
-    appendChild: function(a) {
+    appendChild: function (a) {
       this.childNodes.push(a);
     }
   };
   for (const name in parent) {
-    sinon.spy(parent, name);
+    jest.spyOn(parent, name);
   }
   parent.childNodes = childNodes;
-  childNodes.forEach(cn => (cn.parentNode = parent));
+  childNodes.forEach((cn) => (cn.parentNode = parent));
   Object.defineProperty(parent, 'firstChild', {
     get: () => parent.childNodes[0]
   });
@@ -161,11 +161,4 @@ function moveEl(arr, oldPosition, newPosition) {
   return arr.splice(newPosition, 0, arr.splice(oldPosition, 1)[0]);
 }
 
-module.exports = {
-  buildData,
-  dataToChildNode,
-  dataToChildNodes,
-  parent,
-  moveEl,
-  findIndex
-};
+export { buildData, dataToChildNode, dataToChildNodes, parent, moveEl, findIndex };

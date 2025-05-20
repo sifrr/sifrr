@@ -9,7 +9,7 @@ const emptyObj = Object.freeze(Object.create(null));
 export default function update<T>(
   tempElement: SifrrNodesArray<T> | SifrrNode<T>,
   props: SifrrProps<T>
-) {
+): void {
   if (Array.isArray(tempElement)) {
     const l = tempElement.length;
     for (let i = 0; i < l; i++) {
@@ -34,13 +34,15 @@ export default function update<T>(
         if (!bindingSet[j]) {
           bindingSet[j] = true;
           if (binding.name === 'style') {
-            const newValue = binding.value || emptyObj;
-            const keys = Object.keys(newValue) as (keyof CSSStyleDeclaration)[],
+            const newValue = binding.value ?? emptyObj;
+            const keys = Object.keys(newValue),
               len = keys.length;
+
             for (let i = 0; i < len; i++) {
               const key = keys[i]!;
-              (<HTMLElement>node).style[key as any] = `${newValue[key]}`; // remove undefined with empty string
+              newValue[key] = `${newValue[key] ?? ''}`; // remove undefined with empty string
             }
+            Object.assign((node as unknown as HTMLElement).style, newValue);
           } else node[binding.name] = binding.value;
           node.onPropChange?.(binding.name, undefined, binding.value);
         }
@@ -61,7 +63,11 @@ export default function update<T>(
         currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
-    promise ? Promise.all(currentValues).then(() => node.update?.()) : node.update?.();
+    if (promise) {
+      Promise.all(currentValues).then(() => node.update?.());
+    } else {
+      node.update?.();
+    }
   }
 }
 

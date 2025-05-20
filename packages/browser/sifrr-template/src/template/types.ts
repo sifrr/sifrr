@@ -4,9 +4,9 @@ export interface SifrrNode<T> extends Node {
   __sifrrRefs?: SifrrRefCollection<T>[];
   __tempNum?: number;
   key?: string | number;
-  onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
+  onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
   update?: () => void;
-  [x: string]: any;
+  [x: string]: unknown;
 }
 
 export type SifrrProps<T> = T;
@@ -19,7 +19,7 @@ export type ChildNodeKeyed = ChildNode & {
   key: string | number;
 };
 
-type _RTValue = null | undefined | string | number | Node | _RTValue[];
+type _RTValue = null | undefined | string | number | Node | DomBindingReturnArrayValue;
 export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
   isRendered?: boolean;
   reference?: Node;
@@ -27,6 +27,12 @@ export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
 export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
 
 export type SifrrNodesArray<T> = SifrrNode<T>[] & {
+  reference?: Node;
+  isRendered?: boolean;
+  update?: (p: SifrrProps<T>) => void;
+};
+
+export type SifrrNodesArrayKeyed<T> = (SifrrNode<T> & { key: string | number })[] & {
   reference?: Node;
   isRendered?: boolean;
   update?: (p: SifrrProps<T>) => void;
@@ -95,5 +101,7 @@ export type SifrrBindCreatorFxn<T> = (
   el: Node,
   functionMap: SifrrFunctionMap<T>
 ) => SifrrBindMap<T>[] | 0;
+
+export type CssProperties = Partial<Omit<CSSStyleDeclaration, 'length' | 'parentRule'>>;
 
 export default {};
