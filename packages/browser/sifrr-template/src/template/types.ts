@@ -1,13 +1,17 @@
 import { Ref } from '@/template/ref-state';
 
-export interface SifrrNode<T> extends ChildNode {
-  __sifrrRefs?: SifrrRefCollection<T>[];
-  __tempNum?: number;
-  key?: string | number;
-  onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
-  update?: () => void;
-  [x: string]: unknown;
-}
+export type SifrrNode<T> =
+  | (ChildNode & {
+      __sifrrRefs?: SifrrRefCollection<T>[];
+      __tempNum?: number;
+      key?: string | number;
+      onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
+      update?: () => void;
+      [x: string]: unknown;
+    })
+  | (Text & {
+      __tempNum?: number;
+    });
 
 export type SifrrProps<T> = T;
 

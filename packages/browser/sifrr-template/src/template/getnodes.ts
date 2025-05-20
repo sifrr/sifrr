@@ -17,7 +17,7 @@ export default function getNodesFromBindingValue<T>(
   } else if (value instanceof HTMLTemplateElement) {
     return Array.prototype.slice.call(value.content.childNodes);
   } else if (value instanceof Node) {
-    return [value];
+    return [value as SifrrNode<T>];
   } else if (value instanceof NodeList) {
     return Array.prototype.slice.call(value);
   } else {

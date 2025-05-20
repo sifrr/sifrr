@@ -3,6 +3,7 @@ import updateAttribute from './updateattribute';
 import { COMMENT_NODE, REFERENCE_COMMENT, TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap, SifrrNodesArray } from './types';
 import getNodesFromBindingValue from './getnodes';
+import { isText } from '@/template/utils';
 
 const emptyObj = Object.freeze(Object.create(null));
 
@@ -17,6 +18,8 @@ export default function update<T>(
     }
     return;
   }
+
+  if (isText(tempElement)) return;
 
   const { __sifrrRefs: refs } = tempElement;
   if (!props || !refs) return;
@@ -123,7 +126,7 @@ function updateOne<T>(
     newValue = makeChildrenEqual(oldValue, nodes);
   } else if (binding.type === SifrrBindType.Attribute) {
     updateAttribute(node as unknown as HTMLElement, binding.name, newValue);
-  } else if (binding.type === SifrrBindType.Prop) {
+  } else if (binding.type === SifrrBindType.Prop && !isText(node)) {
     // special case for style prop
     if (binding.name === 'style') {
       newValue = newValue ?? emptyObj;

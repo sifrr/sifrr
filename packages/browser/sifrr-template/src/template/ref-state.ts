@@ -1,22 +1,20 @@
 export interface Ref<T> {
   value: T;
-  __sifrrState?: boolean;
-  __sifrrOnChange?: ((newValue: T) => void)[];
+  __sifrrWatchers?: ((newValue: T) => void)[];
 }
 
 export const ref = <T>(value: T) => {
   const refObj: Ref<T> = new Proxy(
-    { value, __sifrrState: true, __sifrrOnChange: [] },
+    { value, __sifrrWatchers: [] },
     {
       set: (target, prop, newValue) => {
-        if (prop === '__sifrrState' || prop === '__sifrrOnChange') {
-          target[prop] = newValue;
+        if (prop === '__sifrrWatchers') {
           return true;
         }
         if (prop === 'value') {
           target.value = newValue;
-          if (refObj.__sifrrOnChange) {
-            refObj.__sifrrOnChange.forEach((cb) => cb(newValue));
+          if (refObj.__sifrrWatchers) {
+            refObj.__sifrrWatchers.forEach((cb) => cb(newValue));
           }
           return true;
         }

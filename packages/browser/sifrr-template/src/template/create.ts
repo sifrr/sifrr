@@ -1,4 +1,4 @@
-import { createTemplateFromString, functionMapCreator, isSameSifrrNode } from './utils';
+import { createTemplateFromString, functionMapCreator, isSameSifrrNode, isText } from './utils';
 import { create, collect, cleanEmptyNodes } from './ref';
 import {
   SifrrProps,
@@ -45,12 +45,13 @@ const createTemplate = <T>(
     const newNodes: SifrrNode<T>[] = new Array(nodeLength);
 
     for (let i = 0; i < nodeLength; i++) {
-      newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>;
-      newNodes[i]!.__tempNum = tempNums[i];
+      const n = (newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>);
 
-      if (refMaps[i]!.length < 1) continue;
+      n.__tempNum = tempNums[i];
 
-      newNodes[i]!.__sifrrRefs = collect(newNodes[i]!, refMaps[i]!);
+      if (refMaps[i]!.length < 1 || isText(n)) continue;
+
+      n.__sifrrRefs = collect(newNodes[i]!, refMaps[i]!);
       update(newNodes[i]!, props);
     }
     return newNodes;
@@ -85,7 +86,7 @@ const createTemplate = <T>(
     }
     const retValue = clone(props);
     refs?.forEach((ref) => {
-      ref.__sifrrOnChange?.push(() => update(retValue, props));
+      ref.__sifrrWatchers?.push(() => update(retValue, props));
     });
 
     retValue.update = (p: SifrrProps<T>) => {

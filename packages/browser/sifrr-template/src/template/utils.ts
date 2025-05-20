@@ -167,3 +167,7 @@ export function flatLastElement<T>(vs: any[]): T {
   }
   return <T>last;
 }
+
+export const isText = (node?: Node): node is Text => {
+  return node?.nodeType === Node.TEXT_NODE;
+};
