@@ -15,16 +15,6 @@ function attrToProp(attrName: string) {
   return attrName.substring(1).replace(/-([a-z])/g, (g) => g[1]!.toUpperCase());
 }
 
-function getAllMatches(regex: RegExp, str: string) {
-  const result = [];
-  let match;
-  while ((match = regex.exec(str)) !== null) {
-    result.push(match[0]);
-    if (!regex.global) break; // Avoid infinite loop if global flag is missing
-  }
-  return result;
-}
-
 const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
@@ -89,30 +79,47 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
           attribute.value.replace(REF_REG_GLOBAL, '${__bindingFunction__}')
         );
         console.error(
-          `Binding in between text is not supported in Attribute or Prop. Error in attribute '${attribute.name}' of element:`
+          `Binding in between text is not supported in Attribute or Prop. Error in attribute '${attribute.name}' of element:`,
+          el
         );
-        console.log(el);
 
         continue;
       }
+      const value = functionMap.get(middleMatch[1]);
 
       if (attribute.name[0] === ':' && attribute.name[1] === ':') {
         bm.push({
           type: SifrrBindType.DirectProp,
           name: attrToProp(attribute.name).substring(1),
-          value: functionMap.get(middleMatch[1])
+          value
+        });
+      } else if (attribute.name[0] === '@') {
+        bm.push({
+          type: SifrrBindType.Event,
+          name: attribute.name.substring(1),
+          value
+        });
+      } else if (attribute.name === ':show') {
+        bm.unshift({
+          type: SifrrBindType.Show,
+          value
+        });
+      } else if (attribute.name === ':if') {
+        bm.unshift({
+          type: SifrrBindType.If,
+          value
         });
       } else if (attribute.name[0] === ':') {
         bm.push({
           type: SifrrBindType.Prop,
           name: attrToProp(attribute.name),
-          value: functionMap.get(middleMatch[1])
+          value
         });
       } else {
         bm.push({
           type: SifrrBindType.Attribute,
           name: attribute.name,
-          value: functionMap.get(middleMatch[1])
+          value
         });
       }
 

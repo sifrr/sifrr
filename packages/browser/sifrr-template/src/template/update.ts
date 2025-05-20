@@ -1,6 +1,6 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
-import { TEXT_NODE } from './constants';
+import { COMMENT_NODE, REFERENCE_COMMENT, TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap, SifrrNodesArray } from './types';
 import getNodesFromBindingValue from './getnodes';
 
@@ -44,30 +44,55 @@ export default function update<T>(
             }
             Object.assign((node as unknown as HTMLElement).style, newValue);
           } else node[binding.name] = binding.value;
-          node.onPropChange?.(binding.name, undefined, binding.value);
+          if (typeof node.onPropChange === 'function')
+            node.onPropChange?.(binding.name, undefined, binding.value);
         }
         continue;
       }
-
       const oldValue = currentValues[j];
-
       const newValue = binding.value(props, oldValue);
+
+      // if v-show
+      if (binding.type === SifrrBindType.Show) {
+        const newValue = binding.value(props, oldValue);
+        if (newValue !== currentValues[j]) {
+          currentValues[j] = newValue;
+          node.style.display = newValue ? '' : 'none';
+        }
+      }
+
+      // v-if
+      if (binding.type === SifrrBindType.If) {
+        if (newValue !== currentValues[j]) {
+          if (!newValue) {
+            const comment = REFERENCE_COMMENT();
+            currentValues[j] = comment;
+            node.replaceWith(comment);
+            break;
+          } else {
+            const comment = currentValues[j];
+            if (comment && comment.nodeType === COMMENT_NODE) {
+              comment.replaceWith(node);
+              currentValues[j] = node;
+            }
+          }
+        }
+      }
 
       if (newValue instanceof Promise) {
         promise = true;
         newValue.then((nv) => {
-          currentValues[j] = nv;
-          updateOne(node, binding, oldValue, nv);
+          currentValues[j] = updateOne(node, binding, oldValue, nv);
         });
       } else {
         currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
     if (promise) {
-      Promise.all(currentValues).then(() => node.update?.());
-    } else {
-      node.update?.();
-    }
+      Promise.all(currentValues).then(() =>
+        typeof node.update === 'function' ? node.update?.() : ''
+      );
+    } else if (typeof node.update === 'function') node.update?.();
   }
 }
 
@@ -97,11 +122,11 @@ function updateOne<T>(
     const nodes = getNodesFromBindingValue<T>(newValue);
     newValue = makeChildrenEqual(oldValue, nodes);
   } else if (binding.type === SifrrBindType.Attribute) {
-    updateAttribute(node as HTMLElement, binding.name, newValue);
+    updateAttribute(node as unknown as HTMLElement, binding.name, newValue);
   } else if (binding.type === SifrrBindType.Prop) {
     // special case for style prop
     if (binding.name === 'style') {
-      newValue = newValue || emptyObj;
+      newValue = newValue ?? emptyObj;
       const newKeys = Object.keys(newValue),
         oldKeys = Object.keys(oldValue),
         newl = newKeys.length,
@@ -109,14 +134,14 @@ function updateOne<T>(
       for (let i = 0; i < oldl; i++) {
         const oKey = oldKeys[i]!;
         if (!newValue[oKey]) {
-          node.style[oKey as any] = ''; // remove if newValue doesn't have that property
+          (node.style as any)[oKey as any] = ''; // remove if newValue doesn't have that property
         }
       }
       // add new properties
       for (let i = 0; i < newl; i++) {
         const nKey = newKeys[i]!;
         if (oldValue[nKey] !== newValue[nKey]) {
-          node.style[nKey as any] = `${newValue[nKey]}`;
+          (node.style as any)[nKey as any] = `${newValue[nKey]}`;
         }
       }
     } else {

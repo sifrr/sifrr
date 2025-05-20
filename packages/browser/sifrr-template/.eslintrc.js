@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   root: true,
   extends: [
     '@sifrr/eslint-config/base.js',
@@ -8,5 +8,8 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname
+  },
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'warn'
   }
 };

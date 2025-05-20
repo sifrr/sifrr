@@ -1,6 +1,6 @@
 import { Ref } from '@/template/ref-state';
 
-export interface SifrrNode<T> extends Node {
+export interface SifrrNode<T> extends ChildNode {
   __sifrrRefs?: SifrrRefCollection<T>[];
   __tempNum?: number;
   key?: string | number;
@@ -19,7 +19,7 @@ export type ChildNodeKeyed = ChildNode & {
   key: string | number;
 };
 
-type _RTValue = null | undefined | string | number | Node | DomBindingReturnArrayValue;
+type _RTValue = null | undefined | string | number | boolean | Node | DomBindingReturnArrayValue;
 export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
   isRendered?: boolean;
   reference?: Node;
@@ -51,7 +51,10 @@ export enum SifrrBindType {
   Text = 1,
   Prop = 2,
   DirectProp = 3,
-  Attribute = 4
+  Attribute = 4,
+  If = 5,
+  Show = 6,
+  Event = 7
 }
 
 export type SifrrBindMap<T> = // T = props type of parent
@@ -71,6 +74,15 @@ export type SifrrBindMap<T> = // T = props type of parent
         value: BindingFxn<T, any, any>;
       }
     | {
+        type: SifrrBindType.Event;
+        name: string;
+        value: BindingFxn<T, (e: Event) => void, (e: Event) => void>;
+      }
+    | {
+        type: SifrrBindType.If | SifrrBindType.Show;
+        value: BindingFxn<T, boolean, boolean>;
+      }
+    | {
         type: SifrrBindType.DirectProp;
         name: string;
         value: any;
@@ -86,7 +98,9 @@ export type SifrrRef<T> = {
 // collection of ref for each sifrr template element
 export type SifrrRefCollection<T> = {
   // T = props type of parent
-  node: SifrrNode<unknown>;
+  node: HTMLElement & {
+    [x: string]: unknown;
+  };
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
   bindingSet: any[];
@@ -102,6 +116,18 @@ export type SifrrBindCreatorFxn<T> = (
   functionMap: SifrrFunctionMap<T>
 ) => SifrrBindMap<T>[] | 0;
 
-export type CssProperties = Partial<Omit<CSSStyleDeclaration, 'length' | 'parentRule'>>;
+export type CssProperties = Partial<
+  Omit<
+    CSSStyleDeclaration,
+    | 'length'
+    | 'parentRule'
+    | 'getPropertyPriority'
+    | 'getPropertyValue'
+    | 'item'
+    | 'removeProperty'
+    | 'setProperty'
+    | number
+  >
+>;
 
 export default {};

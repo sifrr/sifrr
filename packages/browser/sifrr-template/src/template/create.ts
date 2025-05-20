@@ -45,7 +45,7 @@ const createTemplate = <T>(
     const newNodes: SifrrNode<T>[] = new Array(nodeLength);
 
     for (let i = 0; i < nodeLength; i++) {
-      newNodes[i] = childNodes[i]!.cloneNode(true);
+      newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>;
       newNodes[i]!.__tempNum = tempNums[i];
 
       if (refMaps[i]!.length < 1) continue;
