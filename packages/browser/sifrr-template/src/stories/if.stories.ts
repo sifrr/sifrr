@@ -19,9 +19,8 @@ export const Primary: Story = {
           return 'banger' + i++;
         }}
       </div>
-      <button ::onclick=${() => (ifref.value = !ifref.value)}>Toggle if</button>`({}, undefined, [
-      ifref
-    ]);
+      <button ::onclick=${() => (ifref.value = !ifref.value)}>Toggle if</button>`({}, undefined);
+    temp1.addRef(ifref);
     const div = document.createElement('div');
     div.append(...temp1);
 

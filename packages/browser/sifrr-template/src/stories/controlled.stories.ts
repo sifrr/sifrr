@@ -46,7 +46,8 @@ export const Primary: Story = {
       </div>
       <p id="values">${() => text.value}</p>
       <p id="count">${() => i++}</p>
-    `({}, undefined, [value]);
+    `({}, undefined);
+    a.addRef(value);
 
     const div = document.createElement('div');
     div.append(...a);

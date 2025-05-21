@@ -1,4 +1,5 @@
 import { Ref } from '@/template/ref';
+import update from '@/template/update';
 
 export type SifrrNode<T> =
   | (ChildNode & {
@@ -11,10 +12,14 @@ export type SifrrNode<T> =
       __tempNum?: number;
     });
 
+type WatchTuple<X, T> = [(p: SifrrProps<T>) => X, (newValue: X, oldValue: X) => void];
+
 export type SifrrProps<T> = T & {
   onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
   onUpdate?: () => void;
   onSetup?: () => void;
+  watchers?: WatchTuple<unknown, T>[];
+  __sifrrWatcherOldValues?: unknown[];
 };
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
@@ -32,11 +37,20 @@ export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
 };
 export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
 
-export type SifrrNodesArray<T> = SifrrNode<T>[] & {
-  reference?: Node;
-  isRendered?: boolean;
-  update?: (p: SifrrProps<T>) => void;
-};
+export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
+  isRendered = false;
+  props?: SifrrProps<T> = undefined;
+
+  update(p: SifrrProps<T>) {
+    this.props = p;
+    update(this, p);
+    this.isRendered = true;
+  }
+
+  addRef(ref: Ref<any>) {
+    ref.__sifrrWatchers?.add(() => this.props && this.update(this.props));
+  }
+}
 
 export type SifrrNodesArrayKeyed<T> = (SifrrNode<T> & { key: string | number })[] & {
   reference?: Node;
@@ -49,8 +63,7 @@ export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Pro
 // clone/update a template element
 export type SifrrCreateFunction<T> = (
   parent: SifrrProps<T>,
-  oldValue?: SifrrNode<T>[],
-  refs?: Ref<any>[]
+  oldValue?: SifrrNodesArray<T>
 ) => SifrrNodesArray<T>;
 
 export enum SifrrBindType {

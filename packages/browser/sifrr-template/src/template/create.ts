@@ -10,7 +10,6 @@ import {
 import creator from './creator';
 import update from './update';
 import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
-import { Ref } from '@/template/ref';
 
 let tempNum = 1;
 
@@ -42,7 +41,7 @@ const createTemplate = <T>(
 
   const clone = (props: SifrrProps<T>): SifrrNodesArray<T> => {
     // https://jsbench.me/6qk4zc0s9x/1
-    const newNodes: SifrrNode<T>[] = new Array(nodeLength);
+    const newNodes = new SifrrNodesArray<T>(nodeLength);
 
     for (let i = 0; i < nodeLength; i++) {
       const n = (newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>);
@@ -53,17 +52,13 @@ const createTemplate = <T>(
 
       n.__sifrrBindings = collect(newNodes[i]!, refMaps[i]!);
     }
-    update(newNodes, props);
+    newNodes.update(props);
     props.onSetup?.();
     return newNodes;
   };
 
   // cloning this template, can be used as binding function in another template
-  const createFxn = function (
-    props: SifrrProps<T>,
-    oldValue?: SifrrNodesArray<T>,
-    refs?: Ref<unknown>[]
-  ) {
+  const createFxn = function (props: SifrrProps<T>, oldValue?: SifrrNodesArray<T>) {
     if (oldValue) {
       if (isSameSifrrNode(oldValue, tempNums)) {
         update(oldValue, props);
@@ -85,16 +80,7 @@ const createTemplate = <T>(
         );
       }
     }
-    const retValue = clone(props);
-    refs?.forEach((ref) => {
-      ref.__sifrrWatchers?.add(() => update(retValue, props));
-    });
-
-    retValue.update = (p: SifrrProps<T>) => {
-      update(retValue, p);
-      retValue.isRendered = true;
-    };
-    return retValue;
+    return clone(props);
   };
 
   return createFxn;

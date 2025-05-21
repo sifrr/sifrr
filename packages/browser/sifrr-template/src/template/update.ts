@@ -92,6 +92,24 @@ export default function update<T>(
         currentValues[j] = updateOne(node, binding, oldValue, newValue, props);
       }
     }
+    if (props.watchers && props.watchers?.length > 0) {
+      for (let i = 0; i < props.watchers.length; i++) {
+        const oldV = props.__sifrrWatcherOldValues?.[i];
+        const newV = props.watchers[i]![0]?.(props);
+
+        if (newV instanceof Promise) {
+          newV.then((nv) => {
+            if (oldV !== nv) {
+              props.__sifrrWatcherOldValues![i] = nv;
+              props.watchers?.[i]![1]?.(nv, oldV);
+            }
+          });
+        } else if (oldV !== newV) {
+          props.__sifrrWatcherOldValues![i] = newV;
+          props.watchers?.[i]![1]?.(newV, oldV);
+        }
+      }
+    }
     if (promise) {
       Promise.all(currentValues).then(() => props.onUpdate?.());
     } else {
