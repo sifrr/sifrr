@@ -1,8 +1,8 @@
-import { Ref } from '@/template/ref-state';
+import { Ref } from '@/template/ref';
 
 export type SifrrNode<T> =
   | (ChildNode & {
-      __sifrrRefs?: SifrrRefCollection<T>[];
+      __sifrrBindingss?: SifrrBindingCollection<T>[];
       __tempNum?: number;
       key?: string | number;
       onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
@@ -57,8 +57,7 @@ export enum SifrrBindType {
   DirectProp = 3,
   Attribute = 4,
   If = 5,
-  Show = 6,
-  Event = 7
+  Event = 6
 }
 
 export type SifrrBindMap<T> = // T = props type of parent
@@ -83,7 +82,7 @@ export type SifrrBindMap<T> = // T = props type of parent
         value: BindingFxn<T, (e: Event) => void, (e: Event) => void>;
       }
     | {
-        type: SifrrBindType.If | SifrrBindType.Show;
+        type: SifrrBindType.If;
         value: BindingFxn<T, boolean, boolean>;
       }
     | {
@@ -93,14 +92,14 @@ export type SifrrBindMap<T> = // T = props type of parent
       };
 
 // ref map for each base template element
-export type SifrrRef<T> = {
+export type SifrrBinding<T> = {
   // T = props type of parent
   idx: number;
   map: SifrrBindMap<T>[];
 };
 
 // collection of ref for each sifrr template element
-export type SifrrRefCollection<T> = {
+export type SifrrBindingCollection<T> = {
   // T = props type of parent
   node: HTMLElement & {
     [x: string]: unknown;

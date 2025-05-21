@@ -32,24 +32,27 @@
     "storage"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
-    "build": "yarn rollup -c",
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "ts-jest",
+    "test:playwright": "playwright test",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch"
   },
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
-    "axios": "^0.21.1",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
+    "@playwright/test": "^1.52.0",
+    "@sifrr/eslint-config": "*",
+    "@sifrr/release-it-config": "*",
+    "@sifrr/typescript-config": "*",
+    "@sifrr/vite-config": "*",
+    "@types/jest": "^29.3.3",
+    "jest": "^29.3.3",
+    "storybook": "^8.6.12",
+    "ts-jest": "^29.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "files": [
     "bin",

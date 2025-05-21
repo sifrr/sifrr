@@ -1,5 +1,5 @@
 import { createTemplateFromString, functionMapCreator, isSameSifrrNode, isText } from './utils';
-import { create, collect, cleanEmptyNodes } from './ref';
+import { createBindings, collect, cleanEmptyNodes } from './binding';
 import {
   SifrrProps,
   SifrrCreateFunction,
@@ -10,7 +10,7 @@ import {
 import creator from './creator';
 import update from './update';
 import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
-import { Ref } from '@/template/ref-state';
+import { Ref } from '@/template/ref';
 
 let tempNum = 1;
 
@@ -35,7 +35,7 @@ const createTemplate = <T>(
       newFragment.appendChild(cn);
       childNodes[i] = newFragment;
     }
-    const refs = create<T>(childNodes[i]!, creator, functionMap);
+    const refs = createBindings<T>(childNodes[i]!, creator, functionMap);
     return refs;
   });
   const tempNums = childNodes.map(() => tempNum++);
@@ -51,7 +51,7 @@ const createTemplate = <T>(
 
       if (refMaps[i]!.length < 1 || isText(n)) continue;
 
-      n.__sifrrRefs = collect(newNodes[i]!, refMaps[i]!);
+      n.__sifrrBindingss = collect(newNodes[i]!, refMaps[i]!);
       update(newNodes[i]!, props);
     }
     return newNodes;
@@ -61,7 +61,7 @@ const createTemplate = <T>(
   const createFxn = function (
     props: SifrrProps<T>,
     oldValue?: SifrrNodesArray<T>,
-    refs?: Ref<any>[]
+    refs?: Ref<unknown>[]
   ) {
     if (oldValue) {
       if (isSameSifrrNode(oldValue, tempNums)) {
@@ -86,7 +86,7 @@ const createTemplate = <T>(
     }
     const retValue = clone(props);
     refs?.forEach((ref) => {
-      ref.__sifrrWatchers?.push(() => update(retValue, props));
+      ref.__sifrrWatchers?.add(() => update(retValue, props));
     });
 
     retValue.update = (p: SifrrProps<T>) => {

@@ -1,10 +1,10 @@
 import Storage from './storage';
 import { StorageOptions } from './types';
 
-class JsonStorage extends Storage {
+class MemoryStorage extends Storage {
   constructor(options: StorageOptions) {
     super(options);
-    return (<typeof JsonStorage>this.constructor)._matchingInstance(this);
+    return (<typeof MemoryStorage>this.constructor)._matchingInstance(this);
   }
 
   protected hasStore() {
@@ -12,8 +12,8 @@ class JsonStorage extends Storage {
   }
 
   static get type() {
-    return 'jsonstorage';
+    return 'memory';
   }
 }
 
-export default JsonStorage;
+export default MemoryStorage;

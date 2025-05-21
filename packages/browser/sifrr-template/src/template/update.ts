@@ -21,16 +21,41 @@ export default function update<T>(
 
   if (isText(tempElement)) return;
 
-  const { __sifrrRefs: refs } = tempElement;
+  const { __sifrrBindingss: refs } = tempElement;
   if (!props || !refs) return;
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
     const { node, bindMap, currentValues, bindingSet } = refs[i]!;
 
+    // if
+    if (bindMap[0]!.type === SifrrBindType.If) {
+      const j = 0;
+      const newValue = bindMap[0]!.value(props, currentValues[j]);
+      if (newValue !== currentValues[j]) {
+        if (!newValue) {
+          const comment = REFERENCE_COMMENT();
+          currentValues[j] = comment;
+          node.replaceWith(comment);
+          continue;
+        } else {
+          const comment = currentValues[j];
+          if (comment && comment.nodeType === COMMENT_NODE) {
+            comment.replaceWith(node);
+            currentValues[j] = node;
+          }
+        }
+      }
+    }
+
     let promise = false;
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j]!;
+
+      // v-if
+      if (binding.type === SifrrBindType.If) {
+        continue;
+      }
 
       // special direct props (events/style)
       if (binding.type === SifrrBindType.DirectProp) {
@@ -54,33 +79,6 @@ export default function update<T>(
       }
       const oldValue = currentValues[j];
       const newValue = binding.value(props, oldValue);
-
-      // if v-show
-      if (binding.type === SifrrBindType.Show) {
-        const newValue = binding.value(props, oldValue);
-        if (newValue !== currentValues[j]) {
-          currentValues[j] = newValue;
-          node.style.display = newValue ? '' : 'none';
-        }
-      }
-
-      // v-if
-      if (binding.type === SifrrBindType.If) {
-        if (newValue !== currentValues[j]) {
-          if (!newValue) {
-            const comment = REFERENCE_COMMENT();
-            currentValues[j] = comment;
-            node.replaceWith(comment);
-            break;
-          } else {
-            const comment = currentValues[j];
-            if (comment && comment.nodeType === COMMENT_NODE) {
-              comment.replaceWith(node);
-              currentValues[j] = node;
-            }
-          }
-        }
-      }
 
       if (newValue instanceof Promise) {
         promise = true;

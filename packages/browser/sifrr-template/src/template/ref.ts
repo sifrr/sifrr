@@ -1,95 +1,72 @@
-// based on https://github.com/Freak613/stage0/blob/master/index.js
-import { TEXT_NODE, TREE_WALKER } from './constants';
-import {
-  SifrrRef,
-  SifrrBindCreatorFxn,
-  SifrrBindMap,
-  SifrrRefCollection,
-  SifrrBindType
-} from './types';
-const TW_SHARED = TREE_WALKER(document);
+export interface Ref<T> {
+  value: T;
+  __sifrrWatchers?: Set<(this: Ref<T>, newValue: T) => void>;
+}
 
-function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
-  const oldValues = new Array(bindMap.length);
-  for (let j = bindMap.length - 1; j > -1; --j) {
-    const binding = bindMap[j]!;
+function deepProxy<T, X>(obj: X, handler: () => void) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
 
-    if (binding.type === SifrrBindType.Text) {
-      oldValues[j] = [element];
-    } else if (binding.type === SifrrBindType.Attribute) {
-      oldValues[j] = null;
-    } else if (binding.type === SifrrBindType.Prop) {
-      if (binding.name === 'style') {
-        oldValues[j] = Object.create(null);
-      } else {
-        oldValues[j] = null;
+  const p = new Proxy(obj, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      return deepProxy(value, handler);
+    },
+    set(target, prop, value, receiver) {
+      const ret = Reflect.set(target, prop, value, receiver);
+      handler();
+      return ret;
+    },
+    deleteProperty(target, prop) {
+      const ret = Reflect.deleteProperty(target, prop);
+      handler();
+      return ret;
+    }
+  });
+
+  return p;
+}
+
+export const ref = <T>(value: T, deep = true) => {
+  const __sifrrWatchers: Ref<T>['__sifrrWatchers'] = new Set();
+  const handler = () => {
+    if (__sifrrWatchers.size <= 0) return;
+    __sifrrWatchers.forEach((cb) => cb.call(refObj, value));
+  };
+
+  const refObj: Ref<T> = new Proxy(
+    { value: deep ? deepProxy(value, handler) : value, __sifrrWatchers },
+    {
+      set: (target, prop, newValue) => {
+        if (prop === 'value') {
+          target.value = deep ? deepProxy(newValue, handler) : newValue;
+          handler();
+          return true;
+        }
+        return false;
       }
     }
-  }
-  return oldValues;
-}
+  );
 
-export function collect<T>(
-  element: Node | DocumentFragment,
-  refMap: SifrrRef<T>[]
-): SifrrRefCollection<T>[] {
-  const l = refMap.length,
-    refs: SifrrRefCollection<T>[] = new Array(l);
-  TW_SHARED.currentNode = element;
-  for (let i = 0, n: number; i < l; i++) {
-    n = refMap[i]!.idx;
-    while (--n) {
-      TW_SHARED.nextNode();
-    }
-    refs[i] = {
-      node: TW_SHARED.currentNode,
-      currentValues: collectValues(TW_SHARED.currentNode, refMap[i]!.map),
-      bindMap: refMap[i]!.map,
-      bindingSet: new Array(l)
-    };
-  }
-  return refs;
-}
+  return refObj;
+};
 
-export function create<T>(
-  mainNode: Node,
-  fxn: SifrrBindCreatorFxn<T>,
-  passedValue: any
-): SifrrRef<T>[] {
-  const TW = TREE_WALKER(mainNode);
-  const indices: SifrrRef<T>[] = [];
-  let map: SifrrBindMap<T>[] | 0,
-    idx = 0,
-    ntr: ChildNode,
-    node: Node | null = mainNode;
-  while (node) {
-    if (node !== mainNode && node.nodeType === TEXT_NODE && (node as Text).data.trim() === '') {
-      ntr = <ChildNode>node;
-      node = TW.nextNode();
-      ntr.remove?.();
-    } else {
-      if ((map = fxn(node, passedValue))) {
-        indices.push({ idx: idx + 1, map });
-        idx = 1;
-      } else {
-        idx++;
+export const computed = <T>(fxn: (this: Ref<T>) => T) => {
+  const refObj: Ref<T> = new Proxy(
+    { value: undefined as T },
+    {
+      set: (_, prop) => {
+        return false;
+      },
+      get: (_, prop) => {
+        if (prop === 'value') {
+          return fxn.call(refObj);
+        }
+        return undefined;
       }
-      node = TW.nextNode();
     }
-  }
-  return indices;
-}
+  );
 
-export function cleanEmptyNodes(node: DocumentFragment | ChildNode) {
-  const TW = TREE_WALKER(node);
-  let ntr: ChildNode;
-  while (node) {
-    if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {
-      ntr = <ChildNode>node;
-      node = <ChildNode>TW.nextNode();
-      ntr.remove && ntr.remove();
-    } else {
-      node = <HTMLElement>TW.nextNode();
-    }
-  }
-}
+  return refObj;
+};

@@ -29,12 +29,12 @@ class LocalStorage extends Storage {
   }
 
   protected delete(keys: string[]) {
-    keys.map((k: string) => this.getLocalStorage().removeItem(this.tableName + '/' + k));
+    keys.forEach((k: string) => this.getLocalStorage().removeItem(this.tableName + '/' + k));
     return true;
   }
 
   protected deleteAll() {
-    Object.keys(this.getLocalStorage()).forEach(k => {
+    Object.keys(this.getLocalStorage()).forEach((k) => {
       if (k.indexOf(this.tableName) === 0) this.getLocalStorage().removeItem(k);
     });
     return true;
@@ -43,10 +43,10 @@ class LocalStorage extends Storage {
   protected getStore() {
     return this.select(
       Object.keys(this.getLocalStorage())
-        .map(k => {
+        .map((k) => {
           if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
         })
-        .filter(k => typeof k !== 'undefined')
+        .filter((k) => typeof k !== 'undefined')
     );
   }
 

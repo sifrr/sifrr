@@ -99,11 +99,6 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
           name: attribute.name.substring(1),
           value
         });
-      } else if (attribute.name === ':show') {
-        bm.unshift({
-          type: SifrrBindType.Show,
-          value
-        });
       } else if (attribute.name === ':if') {
         bm.unshift({
           type: SifrrBindType.If,

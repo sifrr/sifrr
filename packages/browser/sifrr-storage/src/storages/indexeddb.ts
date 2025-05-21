@@ -1,8 +1,8 @@
 import Storage from './storage';
-import { StorageOptions } from './types';
+import { SavedDataObject, StorageOptions } from './types';
 
 class IndexedDB extends Storage {
-  private store: any;
+  private store?: Promise<IDBDatabase>;
 
   constructor(options: StorageOptions) {
     super(options);
@@ -10,53 +10,56 @@ class IndexedDB extends Storage {
   }
 
   protected select(keys: string[]) {
-    const ans = {};
-    const promises = [];
+    const ans: SavedDataObject = {};
+    const promises: Promise<void>[] = [];
     keys.forEach((key: string | number) =>
       promises.push(this._tx('readonly', 'get', key, undefined).then((r: any) => (ans[key] = r)))
     );
     return Promise.all(promises).then(() => ans);
   }
 
-  protected upsert(data: object) {
+  protected upsert(data: Record<string, unknown>) {
     const promises = [];
     for (let key in data) promises.push(this._tx('readwrite', 'put', data[key], key));
     return Promise.all(promises).then(() => true);
   }
 
   protected delete(keys: string[]) {
-    const promises = [];
-    keys.forEach((key: any) => promises.push(this._tx('readwrite', 'delete', key, undefined)));
+    const promises: Promise<unknown>[] = [];
+    keys.forEach((key: any) => promises.push(this._tx('readwrite', 'delete', key)));
     return Promise.all(promises).then(() => true);
   }
 
-  protected deleteAll() {
-    return this._tx('readwrite', 'clear', undefined, undefined);
+  protected async deleteAll() {
+    await this._tx('readwrite', 'clear', undefined);
+    return true;
   }
 
-  private _tx(scope: string, fn: string, param1: any, param2: string) {
+  private _tx(
+    scope: IDBTransactionMode,
+    fn: 'put' | 'delete' | 'getAllKeys' | 'get' | 'clear',
+    param1: any,
+    param2?: string
+  ) {
     const me = this;
-    this.store = this.store || this.createStore(me.tableName);
-    return this.store.then(
-      (db: {
-        transaction: (arg0: string, arg1: any) => { objectStore: (arg0: string) => void };
-      }) => {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
-          const request = tx[fn].call(tx, param1, param2);
-          request.onsuccess = (event: { target: { result: unknown } }) =>
-            resolve(event.target.result);
-          request.onerror = (event: { error: any }) => reject(event.error);
-        });
-      }
-    );
+    this.store = this.store ?? this.createStore(me.tableName);
+    return this.store.then((db) => {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
+        const request = fn === 'put' ? tx.put(param1, param2) : tx[fn](param1);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (event) => reject((event.target as any)?.error);
+      });
+    });
   }
 
   protected getStore() {
-    return this._tx('readonly', 'getAllKeys', undefined, undefined).then(this.select.bind(this));
+    return this._tx('readonly', 'getAllKeys', undefined).then((keys) =>
+      this.select(keys as string[])
+    );
   }
 
-  private createStore(table: string) {
+  private createStore(table: string): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = window.indexedDB.open(table, 1);
       request.onupgradeneeded = () => {

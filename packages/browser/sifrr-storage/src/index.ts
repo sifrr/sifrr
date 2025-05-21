@@ -1,8 +1,7 @@
 import IndexedDB from './storages/indexeddb';
-import WebSQL from './storages/websql';
 import LocalStorage from './storages/localstorage';
 import Cookies from './storages/cookies';
-import JsonStorage from './storages/jsonstorage';
+import MemoryStorage from './storages/memory';
 import { StorageOptions } from './storages/types';
 import Storage from './storages/storage';
 
@@ -12,10 +11,9 @@ type StorageConstructor = {
 
 const storages: { [x: string]: StorageConstructor } = {
   [IndexedDB.type]: IndexedDB,
-  [WebSQL.type]: WebSQL,
   [LocalStorage.type]: LocalStorage,
   [Cookies.type]: Cookies,
-  [JsonStorage.type]: JsonStorage
+  [MemoryStorage.type]: MemoryStorage
 };
 
 type MainOptions = StorageOptions & {
@@ -26,15 +24,9 @@ function getSupportedStoreFromPriority(
   priority: string[] = [],
   options: StorageOptions = {}
 ): Storage {
-  priority = priority.concat([
-    IndexedDB.type,
-    WebSQL.type,
-    LocalStorage.type,
-    Cookies.type,
-    JsonStorage.type
-  ]);
-  for (let i = 0; i < priority.length; i++) {
-    let store = storages[priority[i]];
+  priority = priority.concat([IndexedDB.type, LocalStorage.type, Cookies.type, MemoryStorage.type]);
+  for (const element of priority) {
+    let store = storages[element];
     if (store) {
       const storage = new store(options);
       if (storage.isSupported()) return storage;
@@ -54,10 +46,9 @@ function getStorage(options: string | MainOptions): Storage {
 
 export {
   IndexedDB,
-  WebSQL,
   LocalStorage,
   Cookies,
-  JsonStorage,
+  MemoryStorage as JsonStorage,
   getStorage,
   storages as availableStores
 };

@@ -6,25 +6,25 @@ export const parseGetData = (
   onExpire: (k: string) => Promise<boolean> | undefined
 ): object => {
   const now = Date.now();
-  Object.keys(original).forEach(k => {
+  Object.keys(original).forEach((k) => {
     if (typeof original[k] === 'undefined') return;
 
     const { createdAt, ttl } = original[k];
-    original[k] = original[k] && original[k].value;
+    original[k] = original[k]?.value;
 
     if (ttl === 0) return;
 
     if (now - createdAt > ttl) {
       delete original[k];
-      onExpire && onExpire(k);
+      onExpire?.(k);
     }
   });
   return original;
 };
 
-export const parseSetValue = (value: any, defaultTtl: number): SavedData => {
-  if (value && value.value) {
-    value.ttl = value.ttl || defaultTtl;
+export const parseSetValue = (value: any, defaultTtl: number = 0): SavedData => {
+  if (value?.value) {
+    value.ttl = value.ttl ?? defaultTtl;
     value.createdAt = Date.now();
     return value;
   } else {
@@ -37,15 +37,15 @@ export const parseSetValue = (value: any, defaultTtl: number): SavedData => {
 };
 
 export const parseSetData = (
-  key: string | object,
-  value: any | undefined,
+  key: string | Record<string, unknown>,
+  value: unknown | undefined,
   defaultTtl: number | undefined
 ): SavedDataObject => {
   if (typeof key === 'string') {
     return { [key]: parseSetValue(value, defaultTtl) };
   } else {
-    const data = {};
-    Object.keys(key).forEach(k => (data[k] = parseSetValue(key[k], defaultTtl)));
+    const data: SavedDataObject = {};
+    Object.keys(key).forEach((k) => (data[k] = parseSetValue(key[k], defaultTtl)));
     return data;
   }
 };

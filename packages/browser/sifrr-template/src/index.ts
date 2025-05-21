@@ -8,7 +8,7 @@ import { default as memo } from './template/memo';
 import { default as styled } from './template/styled';
 import { createTemplateFromString } from './template/utils';
 import { makeChildrenEqual, makeEqual } from './template/makeequal';
-import { ref } from './template/ref-state';
+import { ref, computed } from './template/ref';
 import * as types from './template/types';
 
 export { default as createUniqueString } from './ustring';
@@ -21,7 +21,7 @@ export { default as memo } from './template/memo';
 export { default as styled } from './template/styled';
 export { createTemplateFromString } from './template/utils';
 export { makeChildrenEqual as makeEqualArray, makeEqual } from './template/makeequal';
-export { ref } from './template/ref-state';
+export { ref, computed } from './template/ref';
 export * from './template/types';
 
 export default {
@@ -38,5 +38,6 @@ export default {
   makeEqual,
   styled,
   ref,
+  computed,
   ...types
 };

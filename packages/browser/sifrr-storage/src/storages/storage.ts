@@ -11,7 +11,7 @@ const defaultOptions: StorageOptions = {
 };
 
 abstract class Storage {
-  static type: string;
+  static readonly type: string;
 
   type: string = (<typeof Storage>this.constructor).type;
 
@@ -33,7 +33,7 @@ abstract class Storage {
   protected select(keys: string[]): SavedDataObject | Promise<SavedDataObject> {
     const table = this.getStore();
     const ans = {};
-    keys.forEach(key => (ans[key] = table[key]));
+    keys.forEach((key) => (ans[key] = table[key]));
     return ans;
   }
 
@@ -48,7 +48,7 @@ abstract class Storage {
 
   protected delete(keys: string[]): boolean | Promise<boolean> {
     const table = this.getStore();
-    keys.forEach(key => delete table[key]);
+    keys.forEach((key) => delete table[key]);
     this.setStore(table);
     return true;
   }
@@ -67,28 +67,28 @@ abstract class Storage {
   }
 
   keys() {
-    return Promise.resolve(this.getStore()).then(d => Object.keys(d));
+    return Promise.resolve(this.getStore()).then((d) => Object.keys(d));
   }
 
   all() {
-    return Promise.resolve(this.getStore()).then(d => parseGetData(d, this.del.bind(this)));
+    return Promise.resolve(this.getStore()).then((d) => parseGetData(d, this.del.bind(this)));
   }
 
-  get(key: string) {
-    return Promise.resolve(this.select(parseKey(key))).then(d =>
+  get(key: string): Promise<SavedDataObject> {
+    return Promise.resolve(this.select(parseKey(key))).then((d) =>
       parseGetData(d, this.del.bind(this))
     );
   }
 
-  set(key: string | object, value: any) {
+  set(key: string | object, value: any): Promise<boolean> {
     return Promise.resolve(this.upsert(parseSetData(key, value, this.ttl)));
   }
 
-  del(key: string | string[]) {
+  del(key: string | string[]): Promise<boolean> {
     return Promise.resolve(this.delete(parseKey(key)));
   }
 
-  clear() {
+  clear(): Promise<boolean> {
     return Promise.resolve(this.deleteAll());
   }
 
@@ -98,12 +98,12 @@ abstract class Storage {
   ) {
     return (...args: any) => {
       const key = keyFunc(...args);
-      return this.get(key).then(data => {
+      return this.get(key).then((data) => {
         if (data[key] === undefined || data[key] === null) {
           const resultPromise = func(...args);
           if (!(resultPromise instanceof Promise))
             throw Error('Only promise returning functions can be memoized');
-          return resultPromise.then(v => {
+          return resultPromise.then((v) => {
             return this.set(key, v).then(() => v);
           });
         } else {

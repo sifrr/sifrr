@@ -1,4 +1,5 @@
 import { html, ref } from '@/index';
+import { computed } from '@/template/ref';
 import type { Meta, StoryObj } from '@storybook/html';
 
 const meta: Meta<{}> = {
@@ -10,34 +11,34 @@ type Story = StoryObj<{}>;
 
 export const Primary: Story = {
   render: () => {
-    const value = ref('input');
-    const tavalue = ref('textarea');
-    const cevalue = ref('');
+    const value = ref({ input: 'input', text: 'textarea', contenteditable: '' }, true);
+    const text = computed(
+      () => value.value.input + '---' + value.value.text + '---' + value.value.contenteditable
+    );
+    (window as any).value = value;
     const a = html<{}>`
       <input
-        :value=${() => value.value}
+        :value=${() => value.value.input}
         ::oninput=${(e: InputEvent) => {
-          value.value = (e.target as HTMLInputElement)?.value;
+          value.value.input = (e.target as HTMLInputElement)?.value;
         }}
       />
       <textarea
-        :value=${() => tavalue.value}
+        :value=${() => value.value.text}
         ::oninput=${(e: InputEvent) => {
-          tavalue.value = (e.target as HTMLTextAreaElement).value;
+          value.value.text = (e.target as HTMLInputElement)?.value;
         }}
       ></textarea>
       <div
-        contenteditable
         ::oninput=${(e: InputEvent) => {
-          cevalue.value = (e.target as HTMLDivElement).textContent ?? '';
+          value.value.contenteditable = (e.target as HTMLDivElement).textContent ?? '';
         }}
+        contenteditable
       >
-        ${() => cevalue.value}
+        ${() => value.value.contenteditable}
       </div>
-      <p>${() => value.value}</p>
-      <p>${() => tavalue.value}</p>
-      <p>${() => cevalue.value}</p>
-    `({}, undefined, [value, tavalue, cevalue]);
+      <p>${() => text.value}</p>
+    `({}, undefined, [value]);
 
     const div = document.createElement('div');
     div.append(...a);
