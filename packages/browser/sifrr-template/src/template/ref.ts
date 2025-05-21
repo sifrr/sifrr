@@ -18,8 +18,7 @@ function deepProxy<X>(obj: X, handler: () => void): X {
     },
     set(target, prop, value, receiver) {
       const oldValue = Reflect.get(target, prop, receiver);
-      const newValue = deepProxy(value, handler);
-      const ret = Reflect.set(target, prop, newValue, receiver);
+      const ret = Reflect.set(target, prop, value, receiver);
       if (oldValue !== value) handler();
       return ret;
     },
