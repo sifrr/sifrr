@@ -1,5 +1,8 @@
-export interface Ref<T> {
+export interface ComputedRef<T> {
   value: T;
+}
+
+export interface Ref<T> extends ComputedRef<T> {
   __sifrrWatchers?: Set<(this: Ref<T>, newValue: T) => void>;
 }
 
@@ -56,8 +59,8 @@ export const ref = <T>(value: T, deep = true) => {
   return refObj;
 };
 
-export const computed = <T>(fxn: (this: Ref<T>) => T) => {
-  const refObj: Ref<T> = new Proxy(
+export const computed = <T>(fxn: (this: ComputedRef<T>) => T) => {
+  const refObj: ComputedRef<T> = new Proxy(
     { value: undefined as T },
     {
       set: (_, prop) => {

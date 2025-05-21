@@ -14,6 +14,9 @@ export default function update<T>(
   if (Array.isArray(tempElement)) {
     const l = tempElement.length;
     for (let i = 0; i < l; i++) {
+      const t = tempElement[i];
+      if (isText(t)) return;
+      if (t?.__sifrrBindings && t?.__sifrrBindings.length === 0) return;
       update(tempElement[i]!, props);
     }
     return;
@@ -21,7 +24,7 @@ export default function update<T>(
 
   if (isText(tempElement)) return;
 
-  const { __sifrrBindingss: refs } = tempElement;
+  const { __sifrrBindings: refs } = tempElement;
   if (!props || !refs) return;
 
   // Update nodes
@@ -83,17 +86,17 @@ export default function update<T>(
       if (newValue instanceof Promise) {
         promise = true;
         newValue.then((nv) => {
-          currentValues[j] = updateOne(node, binding, oldValue, nv);
+          currentValues[j] = updateOne(node, binding, oldValue, nv, props);
         });
       } else {
-        currentValues[j] = updateOne(node, binding, oldValue, newValue);
+        currentValues[j] = updateOne(node, binding, oldValue, newValue, props);
       }
     }
     if (promise) {
-      Promise.all(currentValues).then(() =>
-        typeof node.update === 'function' ? node.update?.() : ''
-      );
-    } else if (typeof node.update === 'function') node.update?.();
+      Promise.all(currentValues).then(() => props.onUpdate?.());
+    } else {
+      props.onUpdate?.();
+    }
   }
 }
 
@@ -101,7 +104,8 @@ function updateOne<T>(
   node: SifrrNode<any>,
   binding: SifrrBindMap<T>,
   oldValue: any,
-  newValue: any
+  newValue: any,
+  props: SifrrProps<T>
 ) {
   // text
   if (binding.type === SifrrBindType.Text) {
@@ -149,7 +153,7 @@ function updateOne<T>(
       oldValue = node[binding.name];
       node[binding.name] = newValue;
     }
-    if (oldValue !== newValue) node.onPropChange?.(binding.name, oldValue, newValue);
+    if (oldValue !== newValue) props.onPropChange?.(binding.name, oldValue, newValue);
   }
   return newValue;
 }

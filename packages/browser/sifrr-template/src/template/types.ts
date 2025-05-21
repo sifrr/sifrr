@@ -2,18 +2,20 @@ import { Ref } from '@/template/ref';
 
 export type SifrrNode<T> =
   | (ChildNode & {
-      __sifrrBindingss?: SifrrBindingCollection<T>[];
+      __sifrrBindings?: SifrrBindingCollection<T>[];
       __tempNum?: number;
       key?: string | number;
-      onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
-      update?: () => void;
       [x: string]: unknown;
     })
   | (Text & {
       __tempNum?: number;
     });
 
-export type SifrrProps<T> = T;
+export type SifrrProps<T> = T & {
+  onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
+  onUpdate?: () => void;
+  onSetup?: () => void;
+};
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
   key: string | number;

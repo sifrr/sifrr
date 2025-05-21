@@ -51,9 +51,10 @@ const createTemplate = <T>(
 
       if (refMaps[i]!.length < 1 || isText(n)) continue;
 
-      n.__sifrrBindingss = collect(newNodes[i]!, refMaps[i]!);
-      update(newNodes[i]!, props);
+      n.__sifrrBindings = collect(newNodes[i]!, refMaps[i]!);
     }
+    update(newNodes, props);
+    props.onSetup?.();
     return newNodes;
   };
 
