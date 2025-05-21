@@ -3,7 +3,7 @@ export interface Ref<T> {
   __sifrrWatchers?: Set<(this: Ref<T>, newValue: T) => void>;
 }
 
-function deepProxy<T, X>(obj: X, handler: () => void) {
+function deepProxy<X>(obj: X, handler: () => void): X {
   if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
@@ -14,8 +14,10 @@ function deepProxy<T, X>(obj: X, handler: () => void) {
       return deepProxy(value, handler);
     },
     set(target, prop, value, receiver) {
-      const ret = Reflect.set(target, prop, value, receiver);
-      handler();
+      const oldValue = Reflect.get(target, prop, receiver);
+      const newValue = deepProxy(value, handler);
+      const ret = Reflect.set(target, prop, newValue, receiver);
+      if (oldValue !== value) handler();
       return ret;
     },
     deleteProperty(target, prop) {
@@ -38,11 +40,13 @@ export const ref = <T>(value: T, deep = true) => {
   const refObj: Ref<T> = new Proxy(
     { value: deep ? deepProxy(value, handler) : value, __sifrrWatchers },
     {
-      set: (target, prop, newValue) => {
+      set: (target, prop, value, receiver) => {
         if (prop === 'value') {
-          target.value = deep ? deepProxy(newValue, handler) : newValue;
-          handler();
-          return true;
+          const oldValue = Reflect.get(target, prop, receiver);
+          const newValue = deepProxy(value, handler);
+          const ret = Reflect.set(target, prop, newValue, receiver);
+          if (oldValue !== value) handler();
+          return ret;
         }
         return false;
       }

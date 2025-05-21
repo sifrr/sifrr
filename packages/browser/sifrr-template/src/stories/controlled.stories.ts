@@ -12,6 +12,7 @@ type Story = StoryObj<{}>;
 export const Primary: Story = {
   render: () => {
     const value = ref({ input: 'input', text: 'textarea', contenteditable: '' }, true);
+    let i = 0;
     const text = computed(
       () => value.value.input + '---' + value.value.text + '---' + value.value.contenteditable
     );
@@ -38,6 +39,7 @@ export const Primary: Story = {
         ${() => value.value.contenteditable}
       </div>
       <p>${() => text.value}</p>
+      <p>${() => i++}</p>
     `({}, undefined, [value]);
 
     const div = document.createElement('div');
