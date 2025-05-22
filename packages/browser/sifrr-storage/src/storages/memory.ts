@@ -1,19 +1,27 @@
-import Storage from './storage';
-import { StorageOptions } from './types';
+import { SavedData, SavedDataObject, SifrrStore } from './types';
 
-class MemoryStorage extends Storage {
-  constructor(options: StorageOptions) {
-    super(options);
-    return (<typeof MemoryStorage>this.constructor)._matchingInstance(this);
+class MemoryStore extends Map<string, SavedData> implements SifrrStore {
+  public static readonly isSupported: boolean = true;
+  prefix: string;
+
+  constructor(prefix: string) {
+    super();
+    this.prefix = prefix;
   }
 
-  protected hasStore() {
-    return true;
+  clear() {
+    this.forEach((_, key) => {
+      if (key.startsWith(this.prefix)) this.delete(key);
+    });
   }
 
-  static get type() {
-    return 'memory';
+  all() {
+    const data: SavedDataObject = {};
+    this.forEach((value, key) => {
+      if (key.startsWith(this.prefix)) data[key] = value;
+    });
+    return data;
   }
 }
 
-export default MemoryStorage;
+export default MemoryStore;

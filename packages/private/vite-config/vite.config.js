@@ -3,6 +3,7 @@ import { resolve, relative } from 'path';
 import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import { globSync } from 'glob';
+import { readFileSync } from 'fs';
 
 export default (baseDir, external = []) => {
   const entries = Object.fromEntries(
@@ -27,12 +28,8 @@ export default (baseDir, external = []) => {
       libInjectCss(),
       dts({
         tsconfigPath: './tsconfig.json',
-        exclude: [
-          'src/**/*.stories.ts',
-          'src/**/*.spec.ts',
-          'src/**/*.e2e-spec.ts',
-          '.storybook/**'
-        ]
+        include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.jsx', 'src/**/*.tsx'],
+        exclude: ['src/**/*.stories.ts', '**/*.spec.ts', '**/*.e2e-spec.ts']
       })
     ],
     build: {
@@ -44,7 +41,7 @@ export default (baseDir, external = []) => {
           ...entries,
           index: resolve(baseDir, 'src/index.ts')
         },
-        name: '@paypay/hikari'
+        name: readFileSync(baseDir + '/package.json', 'utf-8').name
       },
       rollupOptions: {
         external,

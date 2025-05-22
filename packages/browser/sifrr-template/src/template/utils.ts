@@ -131,8 +131,14 @@ export function flattenOperation<P, T = SifrrNode<P>, X = SifrrProps<P>>(
         createFn
       )[0];
     } else if (!Array.isArray(ov) && Array.isArray(nv)) {
-      returnValues[i] = <T[]>(
-        flattenOperation([ov], nv, equaliser, removeFxn, addFxn, shouldCreate, createFn)
+      returnValues[i] = flattenOperation(
+        [ov],
+        nv,
+        equaliser,
+        removeFxn,
+        addFxn,
+        shouldCreate,
+        createFn
       );
     }
     i++;

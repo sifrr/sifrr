@@ -37,11 +37,11 @@ function register(
   } else {
     let before: Promise<any>;
     if (Array.isArray(dependsOn)) {
-      before = Promise.all(dependsOn.map(en => load(en)));
+      before = Promise.all(dependsOn.map((en) => load(en)));
     } else if (typeof dependsOn === 'string') {
       before = load(dependsOn);
     } else if (typeof before === 'object' && before !== null) {
-      before = Promise.all(Object.keys(dependsOn).map(k => load(k, dependsOn[k])));
+      before = Promise.all(Object.keys(dependsOn).map((k) => load(k, dependsOn[k])));
     } else before = Promise.resolve(true);
     const registeringPromise = before.then(() =>
       window.customElements.define(name, Element, options)
@@ -52,7 +52,7 @@ function register(
         elements[name] = Element;
         delete registering[name];
       })
-      .catch(error => {
+      .catch((error) => {
         throw Error(`Error creating Custom Element: ${name} - ${error.message}`);
       });
   }
@@ -65,7 +65,7 @@ function setup(newConfig?: typeof config) {
   document.$ = document.querySelector;
   document.$$ = document.querySelectorAll;
   Object.assign(config, newConfig);
-  config.events.forEach(e => Event.add(e));
+  config.events.forEach((e) => Event.add(e));
 }
 
 // Load Element HTML/JS and execute script in it
@@ -101,18 +101,3 @@ const loading = () => {
 
 export { Element, Loader, Event, register, setup, load, loading, config, elements, createElement };
 export * from './dom/types';
-
-import * as types from './dom/types';
-export default {
-  Element,
-  Loader,
-  Event,
-  register,
-  setup,
-  load,
-  loading,
-  config,
-  elements,
-  createElement,
-  ...types
-};

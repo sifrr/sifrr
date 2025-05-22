@@ -12,10 +12,9 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 ## Types of storages available (in default priority order)
 
 - IndexedDB (Persisted - on page refresh or open/close)
-- WebSQL (Persisted - on page refresh or open/close)
 - LocalStorage (Persisted - on page refresh or open/close)
 - Cookies (Persisted - on page refresh or open/close), Sent to server with every request
-- JsonStorage (In memory - deleted on page refresh or open/close)
+- Memory (In memory - deleted on page refresh or open/close)
 
 ## How to use
 

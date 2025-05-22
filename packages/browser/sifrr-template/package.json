@@ -3,6 +3,7 @@
   "version": "0.0.9",
   "description": "HTML in JS templating engine",
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sifrr/sifrr.git"
@@ -12,10 +13,8 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "dist/sifrr.template.cjs.js",
-  "module": "dist/sifrr.template.module.js",
-  "browser": "dist/sifrr.template.min.js",
-  "types": "dist/types/sifrr.template.d.ts",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",

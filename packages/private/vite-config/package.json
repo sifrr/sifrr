@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Vite build config - internal only",
   "main": "vite.config.js",
+  "module": "vite.config.js",
   "repository": "https://github.com/sifrr/sifrr",
   "license": "UNLICENSED",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@types/glob": "^8.1.0"
   },

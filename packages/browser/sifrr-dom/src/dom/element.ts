@@ -29,7 +29,6 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     private __content: SifrrNode<SifrrElement>[] = [];
-    public connected: boolean = false;
     public state: object;
 
     constructor() {
@@ -48,7 +47,6 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     connectedCallback() {
-      this.connected = true;
       if (!this.shadowRoot && this.__content.length > 0) {
         if (this.childNodes.length !== 0) this.textContent = '';
         this.append(...this.__content);
@@ -60,7 +58,6 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     onConnect() {}
 
     disconnectedCallback() {
-      this.connected = false;
       this.onDisconnect();
     }
 
@@ -73,10 +70,8 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
 
     setProps(props: SifrrProps<any>) {
-      Object.keys(props).forEach(prop => {
-        this[prop] = props[prop];
-      });
-      this.connected && this.update();
+      Object.assign(this, props);
+      this.isConnected && this.update();
     }
 
     onPropChange(prop: string, oldVal: any, newVal: any): void {}
@@ -90,7 +85,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     onStateChange() {}
 
     update() {
-      if (!this.connected) return;
+      if (!this.isConnected) return;
       this.beforeUpdate();
       update(this.__content, this);
       trigger(this, 'update', { detail: { state: this.state } });

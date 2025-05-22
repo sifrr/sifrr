@@ -1,165 +1,73 @@
-import { stringify, parse } from '../utils/json';
-import { parseGetData, parseKey, parseSetData } from '../utils/dataparser';
-import { StorageOptions, SavedDataObject } from './types';
+import { stringify } from '../utils/json';
+import { parseGetData, parseSetValue } from '../utils/dataparser';
+import { StorageOptions, SifrrStore } from './types';
+import LocalStorageStore from '@/storages/localstorage';
+import IndexedDBStore from '@/storages/indexeddb';
+import MemoryStore from '@/storages/memory';
 
-const defaultOptions: StorageOptions = {
-  name: 'SifrrStorage',
-  version: 1,
-  description: 'Sifrr Storage',
-  size: 5 * 1024 * 1024,
-  ttl: 0
-};
+const defaultOptions = {
+  prefix: '',
+  stores: [LocalStorageStore, IndexedDBStore, MemoryStore]
+} as const;
 
-abstract class Storage {
-  static readonly type: string;
+export default class Storage {
+  private readonly store: SifrrStore;
 
-  type: string = (<typeof Storage>this.constructor).type;
-
-  name: string;
-  version: string | number;
-  ttl: number;
-  description: string;
-  size: number;
-
-  tableName: string;
-  private table = {};
-
-  constructor(options: StorageOptions = defaultOptions) {
-    Object.assign(this, defaultOptions, options);
-    this.tableName = this.name + this.version;
-  }
-
-  // overwrited methods
-  protected select(keys: string[]): SavedDataObject | Promise<SavedDataObject> {
-    const table = this.getStore();
-    const ans = {};
-    keys.forEach((key) => (ans[key] = table[key]));
-    return ans;
-  }
-
-  protected upsert(data: { [x: string]: any }): boolean | Promise<boolean> {
-    const table = this.getStore();
-    for (let key in data) {
-      table[key] = data[key];
-    }
-    this.setStore(table);
-    return true;
-  }
-
-  protected delete(keys: string[]): boolean | Promise<boolean> {
-    const table = this.getStore();
-    keys.forEach((key) => delete table[key]);
-    this.setStore(table);
-    return true;
-  }
-
-  protected deleteAll(): boolean | Promise<boolean> {
-    this.setStore({});
-    return true;
-  }
-
-  protected getStore(): SavedDataObject | Promise<SavedDataObject> {
-    return this.table;
-  }
-
-  protected setStore(v: {}) {
-    this.table = v;
-  }
-
-  keys() {
-    return Promise.resolve(this.getStore()).then((d) => Object.keys(d));
-  }
-
-  all() {
-    return Promise.resolve(this.getStore()).then((d) => parseGetData(d, this.del.bind(this)));
-  }
-
-  get(key: string): Promise<SavedDataObject> {
-    return Promise.resolve(this.select(parseKey(key))).then((d) =>
-      parseGetData(d, this.del.bind(this))
+  constructor(options?: StorageOptions) {
+    const stores = options?.stores ?? defaultOptions.stores;
+    const prefix = options?.prefix ?? defaultOptions.prefix;
+    const StoreToUse = (Array.isArray(stores) ? stores : [stores]).find(
+      (store) => store.isSupported
     );
+    if (!StoreToUse) {
+      throw new Error('No supported store found');
+    }
+    this.store = new StoreToUse(prefix);
   }
 
-  set(key: string | object, value: any): Promise<boolean> {
-    return Promise.resolve(this.upsert(parseSetData(key, value, this.ttl)));
+  async get(key: string) {
+    const v = await this.store.get(key);
+    return parseGetData(v, this.delete.bind(this, key));
   }
-
-  del(key: string | string[]): Promise<boolean> {
-    return Promise.resolve(this.delete(parseKey(key)));
+  async set(key: string, value: any, ttl?: number) {
+    return this.store.set(key, parseSetValue(value, ttl));
   }
-
-  clear(): Promise<boolean> {
-    return Promise.resolve(this.deleteAll());
+  async has(key: string) {
+    return this.store.has(key);
   }
-
-  memoize(
-    func: (...arg: any[]) => Promise<any>,
-    keyFunc = (...arg: any[]) => (typeof arg[0] === 'string' ? arg[0] : stringify(arg[0]))
+  async all() {
+    const data = await this.store.all();
+    for (const key in data) {
+      const v = await this.get(key);
+      if (v !== undefined) {
+        data[key] = v;
+      } else {
+        delete data[key];
+      }
+    }
+    return data;
+  }
+  async delete(key: string) {
+    return this.store.delete(key);
+  }
+  async clear() {
+    return this.store.clear();
+  }
+  memoize<X>(
+    func: (...arg: unknown[]) => Promise<X> | X,
+    keyFunc = (...arg: Parameters<typeof func>) =>
+      typeof arg[0] === 'string' ? arg[0] : stringify(arg[0])
   ) {
-    return (...args: any) => {
+    return async (...args: Parameters<typeof func>) => {
       const key = keyFunc(...args);
-      return this.get(key).then((data) => {
-        if (data[key] === undefined || data[key] === null) {
-          const resultPromise = func(...args);
-          if (!(resultPromise instanceof Promise))
-            throw Error('Only promise returning functions can be memoized');
-          return resultPromise.then((v) => {
-            return this.set(key, v).then(() => v);
-          });
-        } else {
-          return data[key];
-        }
-      });
+      const data = await this.get(key);
+      if (data === undefined || data === null) {
+        const result = await func(...args);
+        await this.set(key, result);
+        return result;
+      } else {
+        return data;
+      }
     };
   }
-
-  isSupported(force = true) {
-    if (force && (typeof window === 'undefined' || typeof document === 'undefined')) {
-      return true;
-    } else if (window && this.hasStore()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  protected hasStore() {
-    return true;
-  }
-
-  protected isEqual(other: { tableName: string; type: string }) {
-    if (this.tableName == other.tableName && this.type == other.type) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  // aliases
-  protected static stringify(data: any) {
-    return stringify(data);
-  }
-
-  protected static parse(data: string) {
-    return parse(data);
-  }
-
-  // one instance per store
-  protected static _all: Array<Storage>;
-  protected static _add(instance: Storage) {
-    this._all = this._all || [];
-    this._all.push(instance);
-  }
-
-  protected static _matchingInstance<T extends Storage>(otherInstance: Storage): T {
-    const all = this._all || [],
-      length = all.length;
-    for (let i = 0; i < length; i++) {
-      if (all[i].isEqual(otherInstance)) return <T>all[i];
-    }
-    this._add(otherInstance);
-    return <T>otherInstance;
-  }
 }
-
-export default Storage;

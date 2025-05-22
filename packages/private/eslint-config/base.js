@@ -2,21 +2,15 @@
 module.exports = {
   env: {
     node: true,
-    es6: true,
+    es6: true
   },
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: 'module'
   },
   plugins: ['import-x'],
   extends: ['eslint:recommended', 'plugin:import-x/recommended', 'prettier'],
-  ignorePatterns: [
-    'node_modules/',
-    'submodules/',
-    'tests/**/*.js',
-    'babel.config.js',
-    'dist/',
-  ],
+  ignorePatterns: ['node_modules/', 'submodules/', 'tests/**/*.js', 'babel.config.js', 'dist/'],
   rules: {
     'no-console': 'error',
     'no-debugger': 'error',
@@ -28,13 +22,13 @@ module.exports = {
     'no-lonely-if': 'error',
     'no-unneeded-ternary': 'error',
     'no-restricted-imports': ['error', { patterns: ['../../*'] }],
-    'import-x/no-named-export': 'off',
+    'import-x/no-named-export': 'off'
   },
   settings: {
     'import-x/resolver': {
       node: {
-        extensions: ['.js'],
-      },
-    },
-  },
-}
+        extensions: ['.js']
+      }
+    }
+  }
+};

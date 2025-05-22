@@ -1,82 +1,88 @@
-import Storage from './storage';
-import { SavedDataObject, StorageOptions } from './types';
+import { parse } from '@/utils/json';
+import { SavedData, SavedDataObject, SifrrStore } from './types';
 
-class IndexedDB extends Storage {
-  private store?: Promise<IDBDatabase>;
+class IndexedDBStore implements SifrrStore {
+  public static readonly isSupported: boolean =
+    typeof window !== 'undefined' && !!window.localStorage;
+  prefix: string;
+  private _store?: Promise<IDBDatabase>;
 
-  constructor(options: StorageOptions) {
-    super(options);
-    return (<typeof IndexedDB>this.constructor)._matchingInstance<IndexedDB>(this);
+  constructor(prefix: string) {
+    this.prefix = prefix;
   }
 
-  protected select(keys: string[]) {
-    const ans: SavedDataObject = {};
-    const promises: Promise<void>[] = [];
-    keys.forEach((key: string | number) =>
-      promises.push(this._tx('readonly', 'get', key, undefined).then((r: any) => (ans[key] = r)))
-    );
-    return Promise.all(promises).then(() => ans);
+  get store(): Promise<IDBDatabase> {
+    this._store =
+      this._store ||
+      new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(this.prefix, 1);
+        request.onupgradeneeded = () => {
+          request.result.createObjectStore(this.prefix);
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => {
+          this._store = undefined;
+          reject(request.error);
+        };
+      });
+    return this._store;
   }
 
-  protected upsert(data: Record<string, unknown>) {
-    const promises = [];
-    for (let key in data) promises.push(this._tx('readwrite', 'put', data[key], key));
-    return Promise.all(promises).then(() => true);
-  }
-
-  protected delete(keys: string[]) {
-    const promises: Promise<unknown>[] = [];
-    keys.forEach((key: any) => promises.push(this._tx('readwrite', 'delete', key)));
-    return Promise.all(promises).then(() => true);
-  }
-
-  protected async deleteAll() {
-    await this._tx('readwrite', 'clear', undefined);
-    return true;
-  }
-
-  private _tx(
+  private txn(
     scope: IDBTransactionMode,
     fn: 'put' | 'delete' | 'getAllKeys' | 'get' | 'clear',
     param1: any,
     param2?: string
   ) {
-    const me = this;
-    this.store = this.store ?? this.createStore(me.tableName);
     return this.store.then((db) => {
       return new Promise((resolve, reject) => {
-        const tx = db.transaction(me.tableName, scope).objectStore(me.tableName);
+        const tx = db.transaction(this.prefix, scope).objectStore(this.prefix);
         const request = fn === 'put' ? tx.put(param1, param2) : tx[fn](param1);
         request.onsuccess = () => resolve(request.result);
-        request.onerror = (event) => reject((event.target as any)?.error);
+        request.onerror = (event) => reject(request.error);
       });
     });
   }
 
-  protected getStore() {
-    return this._tx('readonly', 'getAllKeys', undefined).then((keys) =>
-      this.select(keys as string[])
-    );
+  get(key: string) {
+    return this.txn('readonly', 'get', key)
+      .then((ret) => parse(ret as string) as SavedData)
+      .catch(() => undefined);
   }
-
-  private createStore(table: string): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      const request = window.indexedDB.open(table, 1);
-      request.onupgradeneeded = () => {
-        request.result.createObjectStore(table);
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+  set(key: string, value: any) {
+    return this.txn('readwrite', 'put', value, key)
+      .then(() => this)
+      .catch(() => this);
+  }
+  delete(key: string) {
+    return this.txn('readwrite', 'delete', key)
+      .then(() => true)
+      .catch(() => false);
+  }
+  async clear() {
+    return this.txn('readwrite', 'clear', undefined)
+      .then(() => {})
+      .catch(() => {});
+  }
+  has(key: string) {
+    return this.get(key) !== undefined;
+  }
+  all() {
+    const data: SavedDataObject = {};
+    const promises: Promise<unknown>[] = [];
+    this.txn('readonly', 'getAllKeys', undefined).then((keys) => {
+      (keys as string[]).forEach((key: string) => {
+        promises.push(
+          this.get(key).then((r) => {
+            if (r !== undefined) {
+              data[key] = r;
+            }
+          })
+        );
+      });
     });
-  }
-
-  protected hasStore() {
-    return !!window.indexedDB;
-  }
-
-  static get type() {
-    return 'indexeddb';
+    return Promise.all(promises).then(() => data);
   }
 }
 
-export default IndexedDB;
+export default IndexedDBStore;
