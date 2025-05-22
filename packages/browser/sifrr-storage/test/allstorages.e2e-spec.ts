@@ -7,7 +7,7 @@ for (const key in availableStores) {
     });
 
     it(`Setting priority to ${key} give ${key} instance`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage = Sifrr.Storage.getStorage({ priority: [key] });
           return storage.type;
@@ -19,7 +19,7 @@ for (const key in availableStores) {
     });
 
     it(`Giving options to ${key} give ${key} instance`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage = Sifrr.Storage.getStorage(key);
           return storage.type;
@@ -31,7 +31,7 @@ for (const key in availableStores) {
     });
 
     it(`Same table name for ${key} give same instance`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage1 = Sifrr.Storage.getStorage(key);
           const storage2 = Sifrr.Storage.getStorage(key);
@@ -44,7 +44,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.all gives all data`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           new Function(`save_${key}();`)();
           const storage = Sifrr.Storage.getStorage(key);
@@ -57,7 +57,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.get selects value`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage = Sifrr.Storage.getStorage(key);
           await storage.set('w', 'x');
@@ -76,7 +76,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.set updates or sets value`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage = Sifrr.Storage.getStorage(key);
           await storage.set('w', 'abc');
@@ -95,7 +95,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.del deletes value`, async () => {
-      const result = await page.evaluate(key => {
+      const result = await page.evaluate((key) => {
         try {
           const storage = Sifrr.Storage.getStorage(key);
           storage.set('w', 'x');
@@ -114,7 +114,7 @@ for (const key in availableStores) {
     });
 
     it('can handle multiple tables', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const st1 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 1 });
           const st2 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 2 });
@@ -133,7 +133,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.set works with json`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         try {
           const storage = Sifrr.Storage.getStorage(key);
           await storage.set('aadi', { name: { first: 'aaditya' } });
@@ -146,7 +146,7 @@ for (const key in availableStores) {
     });
 
     it(`${key}.clear clears the storage`, async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key),
           ans = {};
         await storage.set('a', 'b');
@@ -167,7 +167,7 @@ for (const key in availableStores) {
     });
 
     it('gives all keys', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key);
         await storage.set('a', 1);
         await storage.set('b', 2);
@@ -178,7 +178,7 @@ for (const key in availableStores) {
     });
 
     it('saves value when it is falsy', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key);
         await storage.set('a', 0);
         await storage.set('f', false);
@@ -193,7 +193,7 @@ for (const key in availableStores) {
     });
 
     it('works with ttl', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key);
         await storage.set('ttl', { value: 1, ttl: 100 });
         const before = await storage.get('ttl');
@@ -210,7 +210,7 @@ for (const key in availableStores) {
     });
 
     it('memoizes with first argument', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key);
         let i = 0;
         const func = async () => i;
@@ -234,7 +234,7 @@ for (const key in availableStores) {
     });
 
     it('memoizes with key function', async () => {
-      const result = await page.evaluate(async key => {
+      const result = await page.evaluate(async (key) => {
         const storage = Sifrr.Storage.getStorage(key);
         let i = 0;
         const func = async () => i;
@@ -272,13 +272,13 @@ for (const key in availableStores) {
         'Uint8ClampedArray',
         'String'
       ];
-      types.forEach(type => {
+      types.forEach((type) => {
         it(`works with ${type}`, async () => {
           await page.evaluate(
             async (key, type) => {
               const s = Sifrr.Storage.getStorage(key);
               await s.set(type, window.AllDataTypes[type]);
-              await new Promise(res => setTimeout(res, 50));
+              await new Promise((res) => setTimeout(res, 50));
             },
             key,
             type
@@ -312,10 +312,10 @@ for (const key in availableStores) {
     });
 
     describe('speedtest', () => {
-      it(key, async function() {
+      it(key, async function () {
         this.timeout(0);
 
-        const result = await page.evaluate(async key => {
+        const result = await page.evaluate(async (key) => {
           return {
             ss: await bulkInsert(key, 'a', 0, 50),
             lf: window.LF[key]

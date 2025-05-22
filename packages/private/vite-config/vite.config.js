@@ -14,6 +14,13 @@ export default (baseDir, external = []) => {
       resolve(baseDir, file)
     ])
   );
+  const name = JSON.parse(readFileSync(resolve(baseDir, 'package.json'), 'utf-8'))
+    .name.replace(/@([a-z])/, (match, letter) => {
+      return letter.toUpperCase();
+    })
+    .replace(/\/([a-z])/, (match, letter) => {
+      return '.' + letter.toUpperCase();
+    });
 
   return defineConfig({
     resolve: {
@@ -36,22 +43,23 @@ export default (baseDir, external = []) => {
       cssCodeSplit: true,
       sourcemap: true,
       lib: {
-        formats: ['es'],
+        formats: ['es', 'umd', 'iife'],
         entry: {
           ...entries,
           index: resolve(baseDir, 'src/index.ts')
         },
-        name: readFileSync(baseDir + '/package.json', 'utf-8').name
+        name
       },
       rollupOptions: {
         external,
         output: {
+          name,
           preserveModules: false,
           // Put chunk files at <output>/chunks
           chunkFileNames: 'chunks/[name].[hash].js',
           // Put chunk styles at <output>/assets
           assetFileNames: 'assets/[name][extname]',
-          entryFileNames: '[name].js'
+          entryFileNames: '[name].[format].js'
         }
       }
     }
