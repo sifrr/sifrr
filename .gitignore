@@ -31,3 +31,5 @@ dist
 .turbo
 
 *storybook.log
+playwright-report/
+test-results/

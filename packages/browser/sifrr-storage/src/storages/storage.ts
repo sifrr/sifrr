@@ -17,7 +17,7 @@ export default class Storage {
     const stores = options?.stores ?? defaultOptions.stores;
     const prefix = options?.prefix ?? defaultOptions.prefix;
     const StoreToUse = (Array.isArray(stores) ? stores : [stores]).find(
-      (store) => store.isSupported
+      (store) => store?.isSupported
     );
     if (!StoreToUse) {
       throw new Error('No supported store found');
@@ -25,7 +25,7 @@ export default class Storage {
     this.store = new StoreToUse(prefix);
   }
 
-  async get(key: string) {
+  async get<T = any>(key: string): Promise<T | undefined> {
     const v = await this.store.get(key);
     return parseGetData(v, this.delete.bind(this, key));
   }
@@ -35,17 +35,17 @@ export default class Storage {
   async has(key: string) {
     return this.store.has(key);
   }
-  async all() {
+  async all<T = any>(): Promise<{ [key: string]: T }> {
     const data = await this.store.all();
     for (const key in data) {
-      const v = await this.get(key);
+      const v = parseGetData(data[key], this.delete.bind(this, key));
       if (v !== undefined) {
         data[key] = v;
       } else {
         delete data[key];
       }
     }
-    return data;
+    return data as { [key: string]: any };
   }
   async delete(key: string) {
     return this.store.delete(key);
@@ -53,8 +53,8 @@ export default class Storage {
   async clear() {
     return this.store.clear();
   }
-  memoize<X>(
-    func: (...arg: unknown[]) => Promise<X> | X,
+  memoize<T extends any[], X>(
+    func: (...arg: T) => Promise<X> | X,
     keyFunc = (...arg: Parameters<typeof func>) =>
       typeof arg[0] === 'string' ? arg[0] : stringify(arg[0])
   ) {

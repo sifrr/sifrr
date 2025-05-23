@@ -4,6 +4,7 @@ import CookieStore from './storages/cookies';
 import MemoryStore from './storages/memory';
 import { StorageOptions } from './storages/types';
 import Storage from './storages/storage';
+import { stringify, parse } from './utils/json';
 
 export {
   IndexedDBStore,
@@ -11,5 +12,7 @@ export {
   CookieStore,
   MemoryStore,
   Storage,
-  type StorageOptions
+  type StorageOptions,
+  stringify,
+  parse
 };

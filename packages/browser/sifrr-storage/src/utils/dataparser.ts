@@ -2,10 +2,10 @@ import { SavedData } from '../storages/types';
 
 function parseGetData(
   original: SavedData | undefined,
-  onExpire: () => unknown
+  onExpire?: () => unknown
 ): SavedData['value'] | undefined;
-function parseGetData(original: undefined, onExpire: () => unknown): undefined;
-function parseGetData(original: SavedData | undefined, onExpire: () => unknown) {
+function parseGetData(original: undefined, onExpire?: () => unknown): undefined;
+function parseGetData(original: SavedData | undefined, onExpire?: () => unknown) {
   if (!original) return undefined;
 
   const { createdAt, ttl } = original;

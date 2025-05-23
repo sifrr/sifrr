@@ -1,154 +1,136 @@
-const { availableStores } = require('../../src/sifrr.storage');
+import { CookieStore, IndexedDBStore, LocalStorageStore, MemoryStore } from '@/index';
+import * as SifrrStorage from '@/index';
+import { expect, test } from '@playwright/test';
 
-for (const key in availableStores) {
-  describe(`${key} in browser`, () => {
-    before(async () => {
-      await page.goto(`${PATH}/index.html`);
+const stores = ['LocalStorageStore', 'CookieStore', 'IndexedDBStore', 'MemoryStore'] as const;
+
+declare global {
+  interface Window {
+    Sifrr: {
+      Storage: typeof SifrrStorage;
+    };
+  }
+}
+
+for (const key of stores) {
+  test.describe(`${key} in browser`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`index.html`);
     });
 
-    it(`Setting priority to ${key} give ${key} instance`, async () => {
+    test(`Setting priority to ${key} give ${key} instance`, async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage({ priority: [key] });
-          return storage.type;
-        } catch (e) {
-          return e.message;
-        }
+        const storage = new window.Sifrr.Storage.Storage({ stores: [window.Sifrr.Storage[key]] });
+        return !!storage;
       }, key);
-      assert.equal(result, key);
+      expect(result).toEqual(true);
     });
 
-    it(`Giving options to ${key} give ${key} instance`, async () => {
-      const result = await page.evaluate(async (key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage(key);
-          return storage.type;
-        } catch (e) {
-          return e.message;
-        }
-      }, key);
-      assert.equal(result, key);
-    });
-
-    it(`Same table name for ${key} give same instance`, async () => {
-      const result = await page.evaluate(async (key) => {
-        try {
-          const storage1 = Sifrr.Storage.getStorage(key);
-          const storage2 = Sifrr.Storage.getStorage(key);
-          return storage1 === storage2;
-        } catch (e) {
-          return e.message;
-        }
-      }, key);
-      assert.equal(result, true);
-    });
-
-    it(`${key}.all gives all data`, async () => {
-      const result = await page.evaluate(async (key) => {
-        try {
+    if (key !== 'MemoryStore') {
+      test(`${key}.all gives all data`, async ({ page }) => {
+        const result = await page.evaluate(async (key) => {
           new Function(`save_${key}();`)();
-          const storage = Sifrr.Storage.getStorage(key);
+          const storage = new window.Sifrr.Storage.Storage({
+            stores: [window.Sifrr.Storage[key]],
+            prefix: 'ss/'
+          });
           return await storage.all();
-        } catch (e) {
-          return e.message;
-        }
-      }, key);
-      assert.equal(result.a, 'b');
-    });
+        }, key);
+        expect(result).toEqual({ a: 'b' });
+      });
+    }
 
-    it(`${key}.get selects value`, async () => {
+    test(`${key}.get selects value`, async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage(key);
-          await storage.set('w', 'x');
-          await storage.set('y', 'z');
-          return {
-            y: await storage.get('y'),
-            all: await storage.get(['w', 'y'])
-          };
-        } catch (e) {
-          return e.message;
-        }
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
+        await storage.set('w', 'x');
+        await storage.set('y', 'z');
+        return {
+          y: await storage.get('y'),
+          w: await storage.get('w')
+        };
       }, key);
-      assert.equal(result.all.w, 'x');
-      assert.equal(result.all.y, 'z');
-      assert.equal(result.y.y, 'z');
+      expect(result.w).toEqual('x');
+      expect(result.y).toEqual('z');
     });
 
-    it(`${key}.set updates or sets value`, async () => {
+    test(`${key}.set updates or sets value`, async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage(key);
-          await storage.set('w', 'abc');
-          await storage.set('y', 'abc');
-          await storage.set('z', 'abc');
-          await storage.set({ w: 'x' });
-          await storage.set({ y: 'z' });
-          return storage.all();
-        } catch (e) {
-          return e.message;
-        }
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
+        await storage.set('w', 'abc');
+        await storage.set('y', 'abc');
+        await storage.set('z', 'abc');
+        await storage.set('w', 'xxx');
+        await storage.set('y', 'zzz');
+        return storage.all();
       }, key);
-      assert.equal(result['w'], 'x');
-      assert.equal(result['y'], 'z');
-      assert.equal(result['z'], 'abc');
+      expect(result.w).toEqual('xxx');
+      expect(result.y).toEqual('zzz');
+      expect(result.z).toEqual('abc');
     });
 
-    it(`${key}.del deletes value`, async () => {
+    test(`${key}.delete deletes value`, async ({ page }) => {
       const result = await page.evaluate((key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage(key);
-          storage.set('w', 'x');
-          storage.set('y', 'z');
-          storage.set('a', 'b');
-          storage.del('w');
-          storage.del(['y', 'a']);
-          return storage.all();
-        } catch (e) {
-          return e.message;
-        }
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
+        storage.set('w', 'x');
+        storage.set('y', 'z');
+        storage.set('a', 'b');
+        storage.delete('w');
+        storage.delete('y');
+        storage.delete('a');
+        return storage.all();
       }, key);
-      expect(result['w']).to.be.an('undefined');
-      expect(result['y']).to.be.an('undefined');
-      expect(result['a']).to.be.an('undefined');
+      expect(result['w']).toEqual(undefined);
+      expect(result['y']).toEqual(undefined);
+      expect(result['a']).toEqual(undefined);
     });
 
-    it('can handle multiple tables', async () => {
+    test('can handle multiple tables', async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        try {
-          const st1 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 1 });
-          const st2 = Sifrr.Storage.getStorage({ priority: [key], name: 'first', version: 2 });
-          const st3 = Sifrr.Storage.getStorage({ priority: [key], name: 'third', version: 1 });
-          await st1.set('m', 'a');
-          await st2.set('m', 'b');
-          await st3.set('m', 'c');
-          return [await st1.get('m'), await st2.get('m'), await st3.get('m')];
-        } catch (e) {
-          return e.message;
-        }
+        const st1 = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]],
+          prefix: 'st1/'
+        });
+        const st2 = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]],
+          prefix: 'st2/'
+        });
+        const st3 = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]],
+          prefix: 'st2/'
+        });
+        await st1.set('m', 'a');
+        await st2.set('m', 'b');
+        return [await st1.get('m'), await st2.get('m'), await st3.get('m')];
       }, key);
-      assert.equal(result[0].m, 'a');
-      assert.equal(result[1].m, 'b');
-      assert.equal(result[2].m, 'c');
+      expect(result[0]).toEqual('a');
+      expect(result[1]).toEqual('b');
+      expect(result[2]).toEqual('b');
     });
 
-    it(`${key}.set works with json`, async () => {
+    test(`${key}.set works with json`, async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        try {
-          const storage = Sifrr.Storage.getStorage(key);
-          await storage.set('aadi', { name: { first: 'aaditya' } });
-          return storage.all();
-        } catch (e) {
-          return e.message;
-        }
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
+        await storage.set('aadi', { name: { first: 'aaditya' } });
+        return storage.all();
       }, key);
-      assert.equal(result.aadi.name.first, 'aaditya');
+      expect(result.aadi?.name?.first).toEqual('aaditya');
     });
 
-    it(`${key}.clear clears the storage`, async () => {
+    test(`${key}.clear clears the storage`, async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key),
-          ans = {};
+        const storage = new window.Sifrr.Storage.Storage({
+            stores: [window.Sifrr.Storage[key]]
+          }),
+          ans: Record<string, any> = {};
         await storage.set('a', 'b');
         ans.before = await storage.get('a');
         await storage.clear();
@@ -160,65 +142,63 @@ for (const key in availableStores) {
         ans.after2 = await storage.get('a');
         return ans;
       }, key);
-      assert.equal(result.before.a, 'b');
-      assert.equal(result.before2.a, 'b');
-      assert.deepEqual(result.after, {});
-      assert.deepEqual(result.after2, {});
+      expect(result).toEqual({
+        before: 'b',
+        after: undefined,
+        before2: 'b',
+        after2: undefined
+      });
     });
 
-    it('gives all keys', async () => {
+    test('saves value when it is falsy', async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key);
-        await storage.set('a', 1);
-        await storage.set('b', 2);
-        return await storage.keys();
-      }, key);
-
-      expect(result).to.deep.equal(['a', 'b']);
-    });
-
-    it('saves value when it is falsy', async () => {
-      const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key);
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
         await storage.set('a', 0);
         await storage.set('f', false);
         return {
-          0: (await storage.get('a')).a,
-          false: (await storage.get('f')).f
+          zero: await storage.get('a'),
+          false: await storage.get('f')
         };
       }, key);
-
-      expect(result['0']).to.equal(0);
-      expect(result['false']).to.equal(false);
+      expect(result).toEqual({
+        zero: 0,
+        false: false
+      });
     });
 
-    it('works with ttl', async () => {
+    test('works with ttl', async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key);
-        await storage.set('ttl', { value: 1, ttl: 100 });
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
+        await storage.set('ttl', 1, 100);
         const before = await storage.get('ttl');
-        await delay(110);
+        await new Promise((res) => setTimeout(res, 110));
         const after = await storage.get('ttl');
         return {
-          before: before.ttl,
-          after: after.ttl
+          before: before,
+          after: after
         };
       }, key);
 
-      expect(result.before).to.equal(1);
-      expect(result.after).to.equal(undefined);
+      expect(result.before).toEqual(1);
+      expect(result.after).toEqual(undefined);
     });
 
-    it('memoizes with first argument', async () => {
+    test('memoizes with first argument', async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key);
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
         let i = 0;
-        const func = async () => i;
+        const func = async (a: any) => a.k + i;
         const memoized = storage.memoize(func);
-        const first = await memoized('some');
+        const first = await memoized({ k: 'some' });
         i++;
-        const second = await memoized('some', 'lol');
-        const nonMemoized = await memoized('someNot');
+        const second = await memoized({ k: 'some' });
+        const nonMemoized = await memoized({ k: 'someNot' });
         return {
           first,
           second,
@@ -226,35 +206,41 @@ for (const key in availableStores) {
         };
       }, key);
 
-      expect(result).to.deep.equal({
-        first: 0,
-        second: 0,
-        nonMemoized: 1
+      expect(result).toEqual({
+        first: 'some0',
+        second: 'some0',
+        nonMemoized: 'someNot1'
       });
     });
 
-    it('memoizes with key function', async () => {
+    test('memoizes with key function', async ({ page }) => {
       const result = await page.evaluate(async (key) => {
-        const storage = Sifrr.Storage.getStorage(key);
+        const storage = new window.Sifrr.Storage.Storage({
+          stores: [window.Sifrr.Storage[key]]
+        });
         let i = 0;
-        const func = async () => i;
+        const func = async (a: string, b: string) => i;
         const memoized = storage.memoize(func, (a, b) => a + b);
-        const first = await memoized('some');
+        const first = await memoized('some', 'ok');
         i++;
         const second = await memoized('some', 'lol');
+        i++;
+        const third = await memoized('some', 'lol');
         return {
           first,
-          second
+          second,
+          third
         };
       }, key);
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         first: 0,
-        second: 1
+        second: 1,
+        third: 1
       });
     });
 
-    describe('works with all types of data', async () => {
+    test.describe('works with all types of data', async () => {
       const types = [
         'Array',
         'ArrayBuffer',
@@ -273,57 +259,57 @@ for (const key in availableStores) {
         'String'
       ];
       types.forEach((type) => {
-        it(`works with ${type}`, async () => {
+        test(`works with ${type}`, async ({ page }) => {
           await page.evaluate(
-            async (key, type) => {
-              const s = Sifrr.Storage.getStorage(key);
-              await s.set(type, window.AllDataTypes[type]);
+            async ({ key, type }) => {
+              const s = new window.Sifrr.Storage.Storage({
+                stores: [window.Sifrr.Storage[key]]
+              });
+              await s.set(type, (window as any).AllDataTypes[type]);
               await new Promise((res) => setTimeout(res, 50));
             },
-            key,
-            type
+            { key, type }
           );
 
-          await page.goto(`${PATH}/index.html`);
+          await page.goto(`index.html`);
           const result = await page.evaluate(
-            async (key, type) => {
-              const s = Sifrr.Storage.getStorage(key);
-              const value = (await s.get(type))[type];
+            async ({ key, type }) => {
+              const s = new window.Sifrr.Storage.Storage({
+                stores: [window.Sifrr.Storage[key]]
+              });
+              const value = await s.get(type);
               return {
-                sameInstance: value instanceof window[type],
-                arrayEqual: arrayEqual(value, window.AllDataTypes[type]),
-                exact: value === window.AllDataTypes[type],
+                sameInstance: value instanceof (window as any)[type],
+                arrayEqual: (window as any).arrayEqual(value, (window as any).AllDataTypes[type]),
+                exact: value === (window as any).AllDataTypes[type],
                 value,
-                correctValue: window.AllDataTypes[type]
+                correctValue: (window as any).AllDataTypes[type]
               };
             },
-            key,
-            type
+            { key, type }
           );
 
-          if (key !== 'jsonstorage') {
-            assert(
+          if (key !== 'MemoryStore') {
+            expect(
               result.exact || (result.sameInstance && result.arrayEqual),
               `${JSON.stringify(result)} was not as expected`
-            );
+            ).toEqual(true);
           }
         });
       });
     });
 
-    describe('speedtest', () => {
-      it(key, async function () {
-        this.timeout(0);
-
+    test.describe('speedtest', () => {
+      test(key, async function ({ page }) {
         const result = await page.evaluate(async (key) => {
           return {
-            ss: await bulkInsert(key, 'a', 0, 50),
-            lf: window.LF[key]
-              ? await bulkInsert(window.LF[key], 'a', 0, 50, 'setItem')
+            ss: await (window as any).bulkInsert(key, 'a', 0, 100),
+            lf: (window as any).LF[key]
+              ? await (window as any).bulkInsert((window as any).LF[key], 'a', 0, 50, 'setItem')
               : 'not available',
-            ssUpdate: await bulkInsert(key, 'a', 0, 50),
-            lfUpdate: window.LF[key]
-              ? await bulkInsert(window.LF[key], 'a', 0, 50, 'setItem')
+            ssUpdate: await (window as any).bulkInsert(key, 'a', 0, 100),
+            lfUpdate: (window as any).LF[key]
+              ? await (window as any).bulkInsert((window as any).LF[key], 'a', 0, 50, 'setItem')
               : 'not available'
           };
         }, key);

@@ -1,5 +1,7 @@
 import { SavedData, SavedDataObject, SifrrStore } from './types';
 
+const caches = new Map<string, MemoryStore>();
+
 class MemoryStore extends Map<string, SavedData> implements SifrrStore {
   public static readonly isSupported: boolean = true;
   prefix: string;
@@ -7,6 +9,11 @@ class MemoryStore extends Map<string, SavedData> implements SifrrStore {
   constructor(prefix: string) {
     super();
     this.prefix = prefix;
+    if (caches.has(prefix)) {
+      return caches.get(prefix) as MemoryStore;
+    } else {
+      caches.set(prefix, this);
+    }
   }
 
   clear() {

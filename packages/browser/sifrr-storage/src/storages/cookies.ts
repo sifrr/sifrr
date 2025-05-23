@@ -12,7 +12,7 @@ const all = (prefix: string) => {
     if (k?.indexOf(prefix) === 0) {
       const parsed = parse(v?.replace(equalRegex, '='));
       if (typeof parsed === 'undefined') return;
-      ans[k.slice(prefix.length)] = parsed;
+      ans[k.substring(prefix.length)] = parsed;
     }
   });
   return ans;

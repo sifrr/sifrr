@@ -46,7 +46,7 @@ class IndexedDBStore implements SifrrStore {
 
   get(key: string) {
     return this.txn('readonly', 'get', key)
-      .then((ret) => parse(ret as string) as SavedData)
+      .then((ret) => ret as SavedData)
       .catch(() => undefined);
   }
   set(key: string, value: any) {
@@ -67,10 +67,10 @@ class IndexedDBStore implements SifrrStore {
   has(key: string) {
     return this.get(key) !== undefined;
   }
-  all() {
+  async all() {
     const data: SavedDataObject = {};
     const promises: Promise<unknown>[] = [];
-    this.txn('readonly', 'getAllKeys', undefined).then((keys) => {
+    await this.txn('readonly', 'getAllKeys', undefined).then((keys) => {
       (keys as string[]).forEach((key: string) => {
         promises.push(
           this.get(key).then((r) => {

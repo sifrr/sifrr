@@ -1,35 +1,22 @@
-function save_localstorage() {
-  window.localStorage.setItem('SifrrStorage1/a', '{"value":"b"}');
+function save_LocalStorageStore() {
+  window.localStorage.setItem('ss/a', '{"value":"b"}');
 }
 
-function save_cookies() {
-  document.cookie = 'SifrrStorage1/a={"value":"b"}';
+function save_CookieStore() {
+  document.cookie = 'ss/a={"value":"b"}';
 }
 
-function save_websql() {
-  let webSQL = window.openDatabase('ss', 1, 'whatever', 1 * 1024 * 1024);
-  webSQL.transaction(function(tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS SifrrStorage1 (key unique, value)');
-    tx.executeSql('INSERT INTO SifrrStorage1(key, value) VALUES ("a", \'{"value":"b"}\')');
-  });
-}
-
-function save_indexeddb() {
-  indexedDB.deleteDatabase('SifrrStorage1');
-  let request = indexedDB.open('SifrrStorage1', 1);
-  request.onupgradeneeded = function(event) {
+function save_IndexedDBStore() {
+  indexedDB.deleteDatabase('ss/');
+  let request = indexedDB.open('ss/', 1);
+  request.onupgradeneeded = function (event) {
     let db = event.target.result;
-    let table = db.createObjectStore('SifrrStorage1');
-    table.transaction.oncomplete = async function() {
-      let store = db.transaction('SifrrStorage1', 'readwrite').objectStore('SifrrStorage1');
+    let table = db.createObjectStore('ss/');
+    table.transaction.oncomplete = async function () {
+      let store = db.transaction('ss/', 'readwrite').objectStore('ss/');
       store.add({ value: 'b' }, 'a');
     };
   };
-}
-
-function save_jsonstorage() {
-  let storage = Sifrr.Storage.getStorage('jsonstorage');
-  storage.table = { a: { value: 'b' } };
 }
 
 function arrayEqual(buf1, buf2) {
@@ -52,7 +39,7 @@ function arrayEqual(buf1, buf2) {
   return true;
 }
 
-const ab = new ArrayBuffer(16);
+const ab = new Int8Array([1, 2, 3, 4, 5, 6, 7, 8]).buffer;
 window.AllDataTypes = {
   Array: [1, 2, 3, 'a', 'b', '1234'],
   ArrayBuffer: ab,
@@ -73,9 +60,8 @@ window.AllDataTypes = {
 };
 
 window.LF = {
-  websql: window.localforage.createInstance({ driver: window.localforage.WEBSQL }),
-  indexeddb: window.localforage.createInstance({ driver: window.localforage.INDEXEDDB }),
-  localstorage: window.localforage.createInstance({ driver: window.localforage.LOCALSTORAGE })
+  IndexedDBStore: window.localforage.createInstance({ driver: window.localforage.INDEXEDDB }),
+  LocalStorageStore: window.localforage.createInstance({ driver: window.localforage.LOCALSTORAGE })
 };
 
-window.delay = time => new Promise(res => setTimeout(res, time));
+window.delay = (time) => new Promise((res) => setTimeout(res, time));

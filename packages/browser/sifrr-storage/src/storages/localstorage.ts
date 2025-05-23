@@ -11,16 +11,16 @@ class LocalStorageStore implements SifrrStore {
   }
 
   get(key: string) {
-    const ret = window.localStorage.getItem(key);
+    const ret = window.localStorage.getItem(this.prefix + key);
     if (ret === null) return undefined;
     return parse(ret);
   }
   set(key: string, value: any) {
-    window.localStorage.setItem(key, stringify(value));
+    window.localStorage.setItem(this.prefix + key, stringify(value));
     return this;
   }
   delete(key: string) {
-    window.localStorage.removeItem(key);
+    window.localStorage.removeItem(this.prefix + key);
     return true;
   }
   clear() {
@@ -36,9 +36,9 @@ class LocalStorageStore implements SifrrStore {
     Object.keys(window.localStorage)
       .filter((k) => k.startsWith(this.prefix))
       .forEach((k) => {
-        const val = this.get(k);
+        const val = this.get(k.substring(this.prefix.length));
         if (typeof val === 'undefined') return;
-        data[k] = val;
+        data[k.substring(this.prefix.length)] = val;
       });
     return data;
   }
