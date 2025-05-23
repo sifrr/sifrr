@@ -33,3 +33,4 @@ dist
 *storybook.log
 playwright-report/
 test-results/
+storybook-static/

@@ -27,9 +27,10 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:playwright && yarn test:storybook",
+    "test": "yarn test:jest && yarn test:playwright && yarn test:storybook:ci",
     "test:jest": "jest",
     "test:storybook": "test-storybook",
+    "test:storybook:ci": "npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"yarn storybook:dev\" \"wait-on tcp:6006 && npm run test:storybook\"",
     "test:playwright": "playwright test",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
