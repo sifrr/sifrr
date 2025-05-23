@@ -1,5 +1,4 @@
-const path = require('path');
-const runClickBenchmark = require('./runclickbenchmark');
+import runClickBenchmark from './runclickbenchmark';
 
 class BenchmarkRunner {
   constructor(benchmarks = [], { port = 1111, runs = 5, url, warmups = runs, page } = {}) {
@@ -35,4 +34,4 @@ class BenchmarkRunner {
   }
 }
 
-module.exports = BenchmarkRunner;
+export default BenchmarkRunner;

@@ -1,4 +1,4 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class OnekDelete extends Benchmark {
   beforeAll() {
@@ -18,4 +18,4 @@ class OnekDelete extends Benchmark {
   }
 }
 
-module.exports = OnekDelete;
+export default OnekDelete;

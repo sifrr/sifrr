@@ -64,4 +64,4 @@ class Benchmark {
   }
 }
 
-module.exports = Benchmark;
+export default Benchmark;

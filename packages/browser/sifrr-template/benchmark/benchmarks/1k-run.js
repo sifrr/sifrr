@@ -1,4 +1,4 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class OnekRun extends Benchmark {
   before() {
@@ -20,4 +20,4 @@ class OnekRun extends Benchmark {
   }
 }
 
-module.exports = OnekRun;
+export default OnekRun;

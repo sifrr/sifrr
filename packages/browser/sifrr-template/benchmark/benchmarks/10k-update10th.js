@@ -1,4 +1,4 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class TenkUpdate10th extends Benchmark {
   beforeAll() {
@@ -20,4 +20,4 @@ class TenkUpdate10th extends Benchmark {
   }
 }
 
-module.exports = TenkUpdate10th;
+export default TenkUpdate10th;

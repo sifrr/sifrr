@@ -1,4 +1,4 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class OnekClear extends Benchmark {
   before() {
@@ -18,4 +18,4 @@ class OnekClear extends Benchmark {
   }
 }
 
-module.exports = OnekClear;
+export default OnekClear;

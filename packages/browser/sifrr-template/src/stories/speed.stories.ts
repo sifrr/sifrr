@@ -89,7 +89,7 @@ export const Primary: Story = {
       </tr>
     `;
 
-    const template = html<{ data: { value: any[] } }>`
+    const template = html<{}>`
       <style>
         ${currentStyle} .remove,
         .lbl {
@@ -226,7 +226,7 @@ export const Primary: Story = {
         </div>
         <table class="table table-hover table-striped test-data">
           <tbody>
-            <!--${({ data = [] }, oldValue) => {
+            <!--${(_, oldValue) => {
               if (useKey) {
                 return bindForKeyed(row, data.value, oldValue);
               } else if (useClean) {
@@ -241,7 +241,7 @@ export const Primary: Story = {
     `;
 
     let from = 1;
-    const data = ref<any[]>([]);
+    const data = ref<any[]>([], false);
 
     function _random(max: number) {
       return Math.round(Math.random() * 1000) % max;
@@ -322,7 +322,8 @@ export const Primary: Story = {
 
     const div: any = document.createElement('div');
     div.id = 'main-element';
-    const inner = template({ data }, undefined, [data]);
+    const inner = template({}, undefined);
+    inner.addRef(data);
     div.append(...inner);
 
     function getParent(elem: Node | null) {
@@ -332,6 +333,7 @@ export const Primary: Story = {
 
     const setData = (newData: any) => {
       data.value = newData;
+      inner.update?.({});
     };
 
     div.addEventListener('click', (e: any) => {
@@ -342,10 +344,10 @@ export const Primary: Story = {
       if (target.matches('.remove, .remove *')) {
         const todel = data.value.findIndex((d: any) => d.id === id);
         data.value.splice(todel, 1);
-        setData(data);
+        setData(data.value);
       } else if (target.matches('.lbl, .lbl *')) {
         selected = id;
-        inner.update?.({ data });
+        inner.update?.({});
       }
     });
 

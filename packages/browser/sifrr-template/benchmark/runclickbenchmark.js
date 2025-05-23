@@ -1,6 +1,6 @@
 const verbose = Math.max(process.argv.indexOf(`--verbose`), process.argv.indexOf(`-v`)) > 0;
 
-module.exports = async function (
+export default async function (
   benchmark,
   port,
   runs = 5,
@@ -15,7 +15,7 @@ module.exports = async function (
   ],
   page
 ) {
-  const BM = require(`./benchmarks/${benchmark}`);
+  const BM = (await import(`./benchmarks/${benchmark}`)).default;
 
   const totals = {};
   if (verbose)
@@ -86,4 +86,4 @@ module.exports = async function (
 
   // Save metrics
   return totals;
-};
+}
