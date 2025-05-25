@@ -3,13 +3,19 @@ const GRAPHQL_STOP = 'stop';
 
 class Socket {
   id = 1;
-  _requests = {};
+  _requests: Record<
+    number,
+    {
+      res: (value: unknown) => void;
+      original: unknown;
+    }
+  > = {};
 
   url: string;
   protocol: string;
-  ws: WebSocket;
+  ws: WebSocket | null = null;
   fallback: (message: string) => void;
-  private _fallback: boolean;
+  private readonly _fallback: boolean;
 
   constructor(
     url: string,
@@ -55,19 +61,20 @@ class Socket {
     return this._openSocket()
       .then((ws: { send: (arg0: any) => void }) => {
         ws.send(message);
-        return new Promise(res => {
+        return new Promise((res) => {
           if (isCallback) res(id);
-          this._requests[id] = {
-            res: (v: unknown) => {
-              if (isCallback) {
-                callback(v);
-              } else {
-                delete this._requests[id];
-                res(v);
-              }
-            },
-            original
-          };
+          if (id)
+            this._requests[id] = {
+              res: (v: unknown) => {
+                if (isCallback) {
+                  callback(v);
+                } else {
+                  delete this._requests[id];
+                  res(v);
+                }
+              },
+              original
+            };
         });
       })
       .catch((e: any) => {
@@ -76,7 +83,7 @@ class Socket {
       });
   }
 
-  _openSocket() {
+  _openSocket(): Promise<WebSocket> {
     if (!this.ws) {
       this.ws = new WebSocket(this.url, this.protocol);
       this.ws.onopen = this.onopen.bind(this);
@@ -89,17 +96,16 @@ class Socket {
       this.ws = null;
       return this._openSocket();
     }
-    const me = this;
     return new Promise((res, rej) => {
-      function waiting() {
-        if (me.ws.readyState === me.ws.CONNECTING) {
+      const waiting = () => {
+        if (this.ws?.readyState === this.ws?.CONNECTING) {
           setTimeout(waiting, 100);
-        } else if (me.ws.readyState !== me.ws.OPEN) {
-          rej(Error(`Failed to open socket on ${me.url}`));
+        } else if (this.ws?.readyState !== this.ws?.OPEN) {
+          rej(Error(`Failed to open socket on ${this.url}`));
         } else {
-          res(me.ws);
+          res(this.ws!);
         }
-      }
+      };
       waiting();
     });
   }
@@ -111,13 +117,13 @@ class Socket {
   onclose() {}
 
   close() {
-    this.ws.close();
+    this.ws?.close();
   }
 
   _onmessage(event: { data: string }) {
     const data = JSON.parse(event.data);
     if (data.id && this._requests[data.id]) {
-      this._requests[data.id].res(data.payload);
+      this._requests[data.id]?.res(data.payload);
     }
     this.onmessage(event);
   }
