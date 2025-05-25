@@ -51,13 +51,13 @@ class ServiceWorker {
     // remove old version caches
     caches
       .keys()
-      .then(cacheNames => {
+      .then((cacheNames) => {
         // [FIX] -v1 won't delete -v10
-        return cacheNames.filter(cacheName => cacheName.indexOf(version) < 0);
+        return cacheNames.filter((cacheName) => cacheName.indexOf(version) < 0);
       })
-      .then(cachesToDelete => {
+      .then((cachesToDelete) => {
         return Promise.all(
-          cachesToDelete.map(cacheToDelete => {
+          cachesToDelete.map((cacheToDelete) => {
             return caches.delete(cacheToDelete);
           })
         );
@@ -72,7 +72,7 @@ class ServiceWorker {
     if (request.method === 'GET') {
       event.respondWith(
         this.respondWithPolicy(request)
-          .then((response: { ok: any; status: string | number }) => {
+          .then((response) => {
             if (
               !response.ok &&
               response.status > 0 &&
@@ -108,7 +108,7 @@ class ServiceWorker {
   precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
     const me = this;
     const promises = [];
-    urls.forEach(u => {
+    urls.forEach((u) => {
       const req = me.createRequest(u);
       return promises.push(
         me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName)
@@ -165,8 +165,8 @@ class ServiceWorker {
   }
 
   responseFromNetwork(request: Request, cache: string, putInCache = true) {
-    return caches.open(cache + '-v' + this.options.version).then(cache =>
-      fetch(request).then(response => {
+    return caches.open(cache + '-v' + this.options.version).then((cache) =>
+      fetch(request).then((response) => {
         if (putInCache) cache.put(request, response.clone());
         return response;
       })
@@ -176,8 +176,8 @@ class ServiceWorker {
   responseFromCache(request: Request, cache: string) {
     return caches
       .open(cache + '-v' + this.options.version)
-      .then(cache => cache.match(request))
-      .then(resp => {
+      .then((cache) => cache.match(request))
+      .then((resp) => {
         if (resp) return resp;
         else throw 'Cache not found for ' + request.url;
       });

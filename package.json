@@ -47,10 +47,8 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@sifrr/eslint-config": "*",
     "@sifrr/typescript-config": "*",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
     "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "turbo": "^2.5.3"

@@ -28,25 +28,27 @@
     "ajax"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-fetch",
-    "build": "yarn rollup -c",
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright && yarn test:storybook:ci",
+    "test:jest": "jest",
+    "test:storybook": "test-storybook",
+    "test:storybook:ci": "npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"yarn storybook:dev\" \"wait-on tcp:6006 && npm run test:storybook\"",
+    "test:playwright": "playwright test",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "npx tsx test/server"
   },
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
+    "@sifrr/eslint-config": "*",
+    "@sifrr/release-it-config": "*",
+    "@sifrr/test-suite": "*",
+    "@sifrr/typescript-config": "*",
+    "@sifrr/vite-config": "*",
     "axios": "^0.21.1",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
+    "typescript": "^5.8.3"
   },
   "files": [
     "bin",

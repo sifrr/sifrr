@@ -36,21 +36,9 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@sifrr/dom": "0.0.6"
+    "@sifrr/dom": "*"
   },
-  "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
-    "axios": "^0.21.1",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
-  },
+  "devDependencies": {},
   "files": [
     "bin",
     "dist",

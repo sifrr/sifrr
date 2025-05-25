@@ -31,6 +31,6 @@ dist
 .turbo
 
 *storybook.log
-playwright-report/
-test-results/
-storybook-static/
+playwright-report
+test-results
+storybook-static
