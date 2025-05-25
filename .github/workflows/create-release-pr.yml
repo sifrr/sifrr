@@ -11,7 +11,7 @@ concurrency:
 jobs:
   create:
     if: ${{ !startsWith(github.event.head_commit.message, 'release') }}
-    runs-on: default-runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

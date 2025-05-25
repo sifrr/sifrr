@@ -12,7 +12,7 @@ concurrency:
 jobs:
   release:
     if: ${{ startsWith(github.event.head_commit.message, 'release') || github.event_name == 'workflow_dispatch' }}
-    runs-on: default-runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

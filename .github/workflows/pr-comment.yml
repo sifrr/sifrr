@@ -11,7 +11,7 @@ concurrency:
 jobs:
   tag-release:
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') }}
-    runs-on: default-runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -134,7 +134,7 @@ jobs:
 
   update-visual-snapshots:
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/update-visual-snapshots') }}
-    runs-on: default-runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

@@ -2,6 +2,7 @@
 
 LIST=`git diff-index --name-only HEAD | grep .ts;`; 
 if [ $LIST ]; 
+   
 then 
   yarn prettier --write $LIST; 
   git add $LIST; 
