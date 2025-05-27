@@ -1,17 +1,14 @@
-const Request = require('../../src/request').default;
+import Request from '@/request';
 
 describe('Request', () => {
   it('options', () => {
-    const req = new Request('ok', {
+    const req = new Request('http://ok', {
       body: 'ok',
-      headers: { accept: '*' },
-      defaultOptions: {
-        headers: { content: 'json' },
-        timeout: 5000
-      }
+      headers: { accept: '*', content: 'json' },
+      timeout: 5000
     });
 
-    expect(req.options).to.deep.equal({
+    expect(req.options).toEqual({
       body: 'ok',
       headers: { accept: '*', content: 'json' },
       timeout: 5000,
@@ -21,12 +18,12 @@ describe('Request', () => {
 
   it('url', () => {
     const req = new Request('/ok', {
-      host: 'ok',
+      baseUrl: 'http://ok.com',
       params: {
         param: 'value'
       }
     });
 
-    expect(req.url).to.equal('ok/ok?param=value');
+    expect(req.url).toEqual('http://ok.com/ok?param=value');
   });
 });

@@ -79,7 +79,10 @@ class Request<T, E> {
    */
   constructor(url: string | URL, options: SifrrFetchOptions) {
     this._options = options;
-    this._url = new URL(options.baseUrl ?? '' + (typeof url === 'string' ? url : url.href));
+    this._url = new URL(
+      (options.baseUrl ?? '') + (typeof url === 'string' ? url : url.href),
+      typeof window !== 'undefined' ? window.location.origin : undefined
+    );
   }
 
   async response(): Promise<SifrrFetchResponse<T, E>> {

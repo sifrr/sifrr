@@ -1,13 +1,14 @@
 import { isObject } from '@/util';
 
 const WebSocketKlass =
-  WebSocket ??
-  class WS {
-    constructor() {
-      throw new Error('WebSocket is not supported in this environment.');
-    }
-    readyState = 3;
-  };
+  typeof WebSocket !== 'undefined'
+    ? WebSocket
+    : class WS {
+        constructor() {
+          throw new Error('WebSocket is not supported in this environment.');
+        }
+        readyState = 3;
+      };
 
 class Socket implements EventTarget {
   private id = 1;
@@ -42,7 +43,7 @@ class Socket implements EventTarget {
       defaultFetchTimeout?: number;
     } = {}
   ) {
-    this.ws = new WebSocketKlass(url, protocol);
+    this.ws = new WebSocketKlass(url, protocol) as WebSocket;
     this.id = 1;
     this.url = url;
     this.protocol = protocol;
@@ -121,7 +122,7 @@ class Socket implements EventTarget {
     if (this.ws.readyState === this.ws.OPEN) {
       return this.ws;
     } else if (this.ws.readyState !== this.ws.CONNECTING) {
-      this.ws = new WebSocketKlass(this.url, this.protocol);
+      this.ws = new WebSocketKlass(this.url, this.protocol) as WebSocket;
       return this.ws;
     }
     return new Promise((res, rej) => {

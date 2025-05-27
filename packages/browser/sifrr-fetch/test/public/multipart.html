@@ -20,9 +20,7 @@
       form.onsubmit = (e) => {
         e.preventDefault();
         const data = new FormData(form);
-        Sifrr.Fetch.post('http://localhost:3333/what', {
-          body: data
-        }).then(resp => {
+        Sifrr.Fetch.sFetch.post('http://localhost:6006/form', data).then(resp => {
           document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
         });
       };
