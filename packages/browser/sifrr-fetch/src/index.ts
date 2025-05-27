@@ -48,8 +48,7 @@ class SifrrFetch {
 
     if (typeof o.after === 'function')
       promise.then((x) => {
-        o.after?.(x as SifrrFetchResponse<T, E>);
-        return x;
+        return o.after?.(x as SifrrFetchResponse<T, E>);
       });
     return promise as Promise<SifrrFetchResponse<T, E>>;
   }
@@ -108,4 +107,4 @@ httpMethodsWithBody.forEach((m) => {
 
 const defaultFetch = new SifrrFetch();
 
-export { defaultFetch as sFetch, SifrrFetch, Socket };
+export { defaultFetch as sFetch, SifrrFetch as Fetch, Socket };

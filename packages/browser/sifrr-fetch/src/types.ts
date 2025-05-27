@@ -25,7 +25,7 @@ export type SifrrFetchOptions = {
   // hooks
   before?: (opts: BeforeOpts) => MaybePromise<BeforeOpts | void>;
   use?: (opts: BeforeOpts) => MaybePromise<any>;
-  after?: (response: SifrrFetchResponse) => void;
+  after?: (response: SifrrFetchResponse) => SifrrFetchResponse;
   onProgress?: (progress: {
     loaded?: number;
     total?: number;
