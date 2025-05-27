@@ -59,22 +59,21 @@ class SifrrFetch {
     this.defaultOptions = defaultOptions;
   }
 
-  protected _tOptions(options: SifrrFetchOptions, body?: any) {
+  protected _tOptions(options?: SifrrFetchOptions, body?: any) {
     const retOptions = { ...this.defaultOptions, ...options, body };
-
-    retOptions.headers = Object.assign(options.headers ?? {}, this.defaultOptions.headers);
+    retOptions.headers = Object.assign(retOptions.headers ?? {}, this.defaultOptions.headers);
     return retOptions;
   }
 }
 
 type SifrrFetchWithBody = <T = any, E = any>(
   url: string,
-  body: any,
-  options: SifrrFetchOptions
+  body?: any,
+  options?: Omit<SifrrFetchOptions, 'body'>
 ) => Promise<SifrrFetchResponse<T, E>>;
 type SifrrFetchWithoutBody = <T = any, E = any>(
   url: string,
-  options: SifrrFetchOptions
+  options?: SifrrFetchOptions
 ) => Promise<SifrrFetchResponse<T, E>>;
 
 interface SifrrFetch {
@@ -89,18 +88,14 @@ interface SifrrFetch {
 
 httpMethodsWithoutBody.forEach((m) => {
   const ml = m.toLowerCase() as Lowercase<typeof m>;
-  SifrrFetch.prototype[ml] = function (url: string, options: Omit<SifrrFetchOptions, 'body'>) {
+  SifrrFetch.prototype[ml] = function (url, options) {
     return SifrrFetch.request(url, this._tOptions(options), m);
   };
 });
 
 httpMethodsWithBody.forEach((m) => {
   const ml = m.toLowerCase() as Lowercase<typeof m>;
-  SifrrFetch.prototype[ml] = function (
-    url: string,
-    body: SifrrFetchOptions['body'],
-    options: Omit<SifrrFetchOptions, 'body'>
-  ) {
+  SifrrFetch.prototype[ml] = function (url, body, options) {
     return SifrrFetch.request(url, this._tOptions(options, body), m);
   };
 });

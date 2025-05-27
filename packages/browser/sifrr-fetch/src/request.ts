@@ -132,6 +132,8 @@ class Request<T, E> {
       ...this._options
     };
     if (isObject(options.body)) {
+      options.headers = options.headers ?? {};
+      options.headers['content-type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
     return options;

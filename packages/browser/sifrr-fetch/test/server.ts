@@ -9,12 +9,18 @@ const app = express();
 const port = 6006;
 
 // Serve static files from multiple directories
+app.use(express.json());
 app.use('/', express.static(path.join(__dirname, '../dist')));
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-// Define a route for the home page
-app.get('/', (_, res) => {
-  res.send('Static file server is running!');
+app.get('/get', (req, res) => {
+  res.send('ok');
+});
+
+app.post('/post', (req, res) => {
+  res.set('content-type', 'application/json');
+  console.log(req.body);
+  res.send(req.body);
 });
 
 // Start the server
