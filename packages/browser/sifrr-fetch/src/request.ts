@@ -1,4 +1,5 @@
-import { SifrrFetchOptions } from './types';
+import { isObject } from '@/util';
+import { SifrrFetchOptions, SifrrFetchResponse } from './types';
 
 const objConst = {}.constructor;
 
@@ -21,7 +22,7 @@ function responseProgress(
   resp: Response,
   onProgress: Exclude<SifrrFetchOptions['onProgress'], undefined>
 ) {
-  const total = Number(resp.headers.get('content-length') ?? 1);
+  const total = Number(resp.headers.get('content-length') ?? 0);
   if (!total || !resp.body || !ReadableStream) {
     onProgress({
       total: 0,
@@ -35,24 +36,29 @@ function responseProgress(
       new ReadableStream({
         start(controller) {
           const start = performance.now();
-          function read(): Promise<void> {
-            return reader.read().then(({ done, value }) => {
-              if (done) {
-                controller.close();
-              } else {
-                loaded += value.byteLength;
+          async function read(): Promise<void> {
+            const { done, value } = await reader.read();
+            if (done) {
+              onProgress({
+                loaded: total,
+                total: total,
+                percent: 100,
+                speed: loaded / (performance.now() - start)
+              });
+              controller.close();
+              return;
+            }
+            loaded += value.byteLength;
 
-                onProgress({
-                  loaded,
-                  total: total,
-                  percent: total ? (loaded / total) * 100 : 50,
-                  speed: loaded / (performance.now() - start),
-                  value
-                });
-                controller.enqueue(value);
-                return read();
-              }
+            onProgress({
+              loaded,
+              total: total || undefined,
+              percent: total ? (loaded / total) * 100 : 50,
+              speed: loaded / (performance.now() - start),
+              value
             });
+            controller.enqueue(value);
+            return read();
           }
           return read();
         }
@@ -64,7 +70,7 @@ function responseProgress(
 /**
  * @class Request
  */
-class Request<T> {
+class Request<T, E> {
   private readonly _options: SifrrFetchOptions;
   private readonly _url: URL;
   /**
@@ -76,24 +82,26 @@ class Request<T> {
     this._url = new URL(options.baseUrl ?? '' + (typeof url === 'string' ? url : url.href));
   }
 
-  /**
-   * @returns Promise<any> response of the request
-   */
-  response(): Promise<T> {
+  async response(): Promise<SifrrFetchResponse<T, E>> {
     const { onProgress } = this._options;
-    return fetch(this.url, this.options).then((resp) => {
-      const showProgress = typeof onProgress === 'function';
-      if (resp.ok) {
-        resp = showProgress ? responseProgress(resp, onProgress) : resp;
-      } else {
-        if (showProgress) onProgress({ percent: 100 });
-        const error = Error(resp.statusText);
-        error.response = resp;
-        throw error;
-      }
-      const contentType = resp.headers.get('content-type');
-      return contentType?.includes('application/json') ? resp.json() : resp;
-    });
+    let resp = await fetch(this.url, this.options);
+    const showProgress = typeof onProgress === 'function';
+    resp = showProgress ? responseProgress(resp, onProgress) : resp;
+    const contentType = resp.headers.get('content-type');
+    const data = contentType?.includes('application/json') ? await resp.json() : undefined;
+    return resp.ok
+      ? {
+          data: data as T,
+          response: resp,
+          status: resp.status,
+          ok: true
+        }
+      : {
+          errorData: data as E,
+          response: resp,
+          status: resp.status,
+          ok: false
+        };
   }
 
   /**
@@ -120,7 +128,7 @@ class Request<T> {
       redirect: 'follow' as const,
       ...this._options
     };
-    if (options.body && (options.body.constructor === objConst || Array.isArray(options.body))) {
+    if (isObject(options.body)) {
       options.body = JSON.stringify(options.body);
     }
     return options;

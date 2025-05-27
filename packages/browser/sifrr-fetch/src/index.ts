@@ -1,21 +1,21 @@
 import Request from './request';
 import Socket from './socket';
-import { SifrrFetchOptions, BeforeOpts } from './types';
+import { SifrrFetchOptions, BeforeOpts, SifrrFetchResponse } from './types';
 
-const httpMethods = ['GET', 'POST', 'PUT', 'OPTIONS', 'PATCH', 'HEAD', 'DELETE'] as const;
+const httpMethodsWithoutBody = ['GET', 'OPTIONS', 'HEAD', 'DELETE'] as const;
+const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'] as const;
+
 const isAbort = !!AbortController;
 const TimeoutError = new Error('Request timed out');
 
 class SifrrFetch {
-  static readonly Socket = Socket;
-
-  static socket(url: string, protocols: string, fallback: () => Promise<never>) {
-    return new Socket(url, protocols, fallback);
-  }
-
-  static async request<T>(u: string, o: SifrrFetchOptions<T> = {}, m = 'GET'): Promise<T> {
+  static async request<T = any, E = any>(
+    u: string,
+    o: SifrrFetchOptions = {},
+    m = 'GET'
+  ): Promise<SifrrFetchResponse<T, E>> {
     o.method = o.method ?? m;
-    let opts: BeforeOpts<T> = { url: u, options: o };
+    let opts: BeforeOpts = { url: u, options: o };
     if (typeof o.before === 'function') {
       opts = (await o.before(opts)) ?? opts;
       delete o.before;
@@ -25,7 +25,7 @@ class SifrrFetch {
       try {
         const r = o.use?.(opts);
         delete o.use;
-        return r;
+        return { data: await r, ok: true, response: undefined, status: 200 };
       } catch (e) {
         window.console.error(e);
       }
@@ -33,7 +33,7 @@ class SifrrFetch {
 
     const controller: AbortController | undefined = isAbort ? new AbortController() : undefined;
     opts.options.signal = controller?.signal;
-    const response = new Request<T>(opts.url, opts.options).response();
+    const response = new Request<T, E>(opts.url, opts.options).response();
     const promise = Promise.race([
       response,
       opts.options.timeout
@@ -44,14 +44,14 @@ class SifrrFetch {
             throw e;
           })
         : response
-    ]) as Promise<T>;
+    ]);
 
     if (typeof o.after === 'function')
-      promise.then((x: T) => {
-        o.after?.(x);
+      promise.then((x) => {
+        o.after?.(x as SifrrFetchResponse<T, E>);
         return x;
       });
-    return promise;
+    return promise as Promise<SifrrFetchResponse<T, E>>;
   }
 
   defaultOptions: SifrrFetchOptions;
@@ -60,29 +60,52 @@ class SifrrFetch {
     this.defaultOptions = defaultOptions;
   }
 
-  protected _tOptions(options: SifrrFetchOptions) {
-    const retOptions = { ...this.defaultOptions, ...options };
+  protected _tOptions(options: SifrrFetchOptions, body?: any) {
+    const retOptions = { ...this.defaultOptions, ...options, body };
 
     retOptions.headers = Object.assign(options.headers ?? {}, this.defaultOptions.headers);
     return retOptions;
   }
 }
 
+type SifrrFetchWithBody = <T = any, E = any>(
+  url: string,
+  body: any,
+  options: SifrrFetchOptions
+) => Promise<SifrrFetchResponse<T, E>>;
+type SifrrFetchWithoutBody = <T = any, E = any>(
+  url: string,
+  options: SifrrFetchOptions
+) => Promise<SifrrFetchResponse<T, E>>;
+
 interface SifrrFetch {
-  get: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  post: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  put: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  patch: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  options: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  head: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
-  delete: <T = any>(url: string, options: SifrrFetchOptions<T>) => Promise<T>;
+  get: SifrrFetchWithoutBody;
+  post: SifrrFetchWithBody;
+  put: SifrrFetchWithBody;
+  patch: SifrrFetchWithBody;
+  options: SifrrFetchWithoutBody;
+  head: SifrrFetchWithoutBody;
+  delete: SifrrFetchWithoutBody;
 }
 
-httpMethods.forEach((m) => {
+httpMethodsWithoutBody.forEach((m) => {
   const ml = m.toLowerCase() as Lowercase<typeof m>;
-  SifrrFetch.prototype[ml] = function (url: string, options: SifrrFetchOptions) {
+  SifrrFetch.prototype[ml] = function (url: string, options: Omit<SifrrFetchOptions, 'body'>) {
     return SifrrFetch.request(url, this._tOptions(options), m);
   };
 });
 
-export default SifrrFetch;
+httpMethodsWithBody.forEach((m) => {
+  const ml = m.toLowerCase() as Lowercase<typeof m>;
+  SifrrFetch.prototype[ml] = function (
+    url: string,
+    body: SifrrFetchOptions['body'],
+    options: Omit<SifrrFetchOptions, 'body'>
+  ) {
+    return SifrrFetch.request(url, this._tOptions(options, body), m);
+  };
+});
+
+const defaultFetch = new SifrrFetch();
+
+export { defaultFetch as sFetch, SifrrFetch, Socket };

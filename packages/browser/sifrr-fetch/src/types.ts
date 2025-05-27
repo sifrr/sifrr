@@ -8,19 +8,24 @@ declare global {
   }
 }
 
-export type BeforeOpts<T> = { url: string; options: SifrrFetchOptions<T> };
+export type BeforeOpts = { url: string; options: SifrrFetchOptions };
 
-export type SifrrFetchOptions<T = any> = {
+export type SifrrFetchResponse<T = any, E = any> = { response?: Response; status: number } & (
+  | { data?: T; ok: true }
+  | { ok: false; errorData: E }
+);
+
+export type SifrrFetchOptions = {
   // normal
   baseUrl?: string;
   headers?: { [name: string]: string };
   params?: { [name: string]: string | boolean | number | (string | boolean | number)[] };
   timeout?: number;
-  body?: any;
+  body?: RequestInit['body'] | object;
   // hooks
-  before?: (opts: BeforeOpts<T>) => MaybePromise<BeforeOpts<T> | void>;
-  use?: (opts: BeforeOpts<T>) => MaybePromise<T>;
-  after?: (response: T) => void;
+  before?: (opts: BeforeOpts) => MaybePromise<BeforeOpts | void>;
+  use?: (opts: BeforeOpts) => MaybePromise<any>;
+  after?: (response: SifrrFetchResponse) => void;
   onProgress?: (progress: {
     loaded?: number;
     total?: number;
