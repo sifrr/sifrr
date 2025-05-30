@@ -11,11 +11,7 @@ declare global {
 }
 
 export interface ISifrrElement extends HTMLElement {
-  sifrrClone: (state: object) => ISifrrElement;
-  state?: object;
-  defaultState?: object;
   update: () => void;
-  setState(state: any): void;
   setProps(props: object): void;
 }
 
@@ -28,10 +24,10 @@ export interface SifrrEventListener {
   __dom?: HTMLElement;
 }
 
-export declare const SifrrElement: {
+export interface SifrrElementKlass {
   new (): ISifrrElement;
   prototype: ISifrrElement;
   elementName: string;
-};
+}
 
 export default {};

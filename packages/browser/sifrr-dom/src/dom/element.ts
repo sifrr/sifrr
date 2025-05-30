@@ -1,14 +1,12 @@
-import { ISifrrElement } from './types';
+import { ISifrrElement, SifrrElementKlass } from './types';
 import { SifrrCreateFunction, SifrrNode, update, SifrrProps } from '@sifrr/template';
 import { trigger } from './event';
 
-function elementClassFactory(baseClass: typeof HTMLElement) {
+function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
   return class SifrrElement extends baseClass implements ISifrrElement {
-    private static _ctemp: SifrrCreateFunction<SifrrElement>;
     private static _elName: string;
-    static useShadowRoot: boolean = true;
-    static template: SifrrCreateFunction<SifrrElement> = null;
-    static defaultState: object = null;
+    static readonly template: SifrrCreateFunction<SifrrElement> = null;
+    static readonly components: SifrrElementKlass[];
 
     static extends(htmlElementClass: typeof HTMLElement) {
       return elementClassFactory(htmlElementClass);
@@ -21,37 +19,29 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       );
     }
 
-    static ctemp() {
-      if (this._ctemp) return this._ctemp;
-
-      this._ctemp = this.template;
-      return this._ctemp;
-    }
-
     private __content: SifrrNode<SifrrElement>[] = [];
     public state: object;
 
-    constructor() {
+    constructor(useShadowRoot = true, shadowRootMode: ShadowRootMode = 'open') {
       super();
-      const constructor = <typeof SifrrElement>this.constructor;
-      const temp = constructor.ctemp();
-      if (temp) {
-        this.__content = temp(null);
-        if (constructor.useShadowRoot) {
-          this.attachShadow({
-            mode: 'open'
-          });
-          this.shadowRoot.append(...this.__content);
-        }
+      if (useShadowRoot) {
+        this.attachShadow({
+          mode: shadowRootMode
+        });
       }
     }
 
     connectedCallback() {
-      if (!this.shadowRoot && this.__content.length > 0) {
-        if (this.childNodes.length !== 0) this.textContent = '';
-        this.append(...this.__content);
+      const constructor = <typeof SifrrElement>this.constructor;
+      const temp = constructor.template;
+      this.__content = this.__content || temp(this);
+      const parent = this.shadowRoot ?? this;
+      if (this.__content.length > 0) {
+        if (this.childNodes.length !== 0) {
+          parent.textContent = '';
+        }
+        parent.append(...this.__content);
       }
-      this.update();
       this.onConnect();
     }
 
@@ -71,18 +61,10 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
 
     setProps(props: SifrrProps<any>) {
       Object.assign(this, props);
-      this.isConnected && this.update();
+      this.update();
     }
 
     onPropChange(prop: string, oldVal: any, newVal: any): void {}
-
-    setState(v: any) {
-      if (this.state !== v) this.state = Object.assign({}, this.state, v);
-      this.update();
-      this.onStateChange();
-    }
-
-    onStateChange() {}
 
     update() {
       if (!this.isConnected) return;
@@ -100,24 +82,18 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       else return true;
     }
 
-    sifrrClone(state: object) {
-      const clone = <SifrrElement>this.cloneNode(false);
-      clone.state = state;
-      return clone;
-    }
-
     clearState() {
       this.state = {};
       this.update();
     }
 
-    $(args: string, sr = true) {
-      if (this.shadowRoot && sr) return this.shadowRoot.querySelector(args);
+    $(args: string) {
+      if (this.shadowRoot) return this.shadowRoot.querySelector(args);
       else return this.querySelector(args);
     }
 
-    $$(args: string, sr = true) {
-      if (this.shadowRoot && sr) return this.shadowRoot.querySelectorAll(args);
+    $$(args: string) {
+      if (this.shadowRoot) return this.shadowRoot.querySelectorAll(args);
       else return this.querySelectorAll(args);
     }
   };

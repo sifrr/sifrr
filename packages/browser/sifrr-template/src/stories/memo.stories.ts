@@ -1,6 +1,6 @@
 import { html, memo } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
-import { expect, userEvent } from '@storybook/test';
+import { expect } from '@storybook/test';
 
 const meta: Meta<{}> = {
   title: 'Sifrr/Template/Memo'

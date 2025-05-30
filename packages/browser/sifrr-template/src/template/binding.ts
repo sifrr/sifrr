@@ -46,8 +46,7 @@ export function collect<T>(
         [x: string]: unknown;
       },
       currentValues: collectValues(TW_SHARED.currentNode, refMap[i]!.map),
-      bindMap: refMap[i]!.map,
-      bindingSet: new Array(l)
+      bindMap: refMap[i]!.map
     };
   }
   return refs;

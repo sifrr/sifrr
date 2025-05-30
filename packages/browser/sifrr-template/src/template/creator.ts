@@ -10,6 +10,7 @@ import {
 import updateAttribute from './updateattribute';
 
 import { SifrrBindType, SifrrBindMap, SifrrFunctionMap } from './types';
+import { add } from '@/template/event';
 
 function attrToProp(attrName: string) {
   return attrName.substring(1).replace(/-([a-z])/g, (g) => g[1]!.toUpperCase());
@@ -62,17 +63,15 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     const eln = <HTMLElement>el;
     const bm: SifrrBindMap<T>[] = [];
     // attributes
-    const attrs = Array.prototype.slice.call(eln.attributes),
+    const attrs: Attr[] = Array.prototype.slice.call(eln.attributes),
       l = attrs.length;
 
     for (let i = 0; i < l; i++) {
-      const attribute = attrs[i];
-      const exactMatch = attribute.value.match(REF_REG_EXACT);
-      const middleMatch = attribute.value.match(REF_REG);
+      const attribute = attrs[i]!;
+      const exactMatch = REF_REG_EXACT.exec(attribute.value);
+      const middleMatch = REF_REG.exec(attribute.value);
 
-      if (!exactMatch && !middleMatch) continue;
-
-      if (!exactMatch && middleMatch) {
+      if (middleMatch && !exactMatch) {
         updateAttribute(
           eln,
           attribute.name,
@@ -85,18 +84,20 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
 
         continue;
       }
-      const value = functionMap.get(middleMatch[1]);
+      if (!exactMatch) continue;
 
-      if (attribute.name[0] === ':' && attribute.name[1] === ':') {
+      const value = functionMap.get(exactMatch[1]!);
+
+      if (attribute.name[0] === ':' && (attribute.name[1] === ':' || attribute.name[1] === '@')) {
+        if (attribute.name[1] === '@') {
+          add(attribute.name.substring(2));
+        }
         bm.push({
           type: SifrrBindType.DirectProp,
-          name: attrToProp(attribute.name).substring(1),
-          value
-        });
-      } else if (attribute.name[0] === '@') {
-        bm.push({
-          type: SifrrBindType.Event,
-          name: attribute.name.substring(1),
+          name:
+            attribute.name[1] === '@'
+              ? attribute.name.substring(1).toLowerCase()
+              : attrToProp(attribute.name).substring(1),
           value
         });
       } else if (attribute.name === ':if') {
@@ -104,10 +105,14 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
           type: SifrrBindType.If,
           value
         });
-      } else if (attribute.name[0] === ':') {
+      } else if (attribute.name[0] === ':' || attribute.name[0] === '@') {
+        if (attribute.name[0] === '@') {
+          add(attribute.name.substring(1));
+        }
         bm.push({
           type: SifrrBindType.Prop,
-          name: attrToProp(attribute.name),
+          name:
+            attribute.name[0] === '@' ? attribute.name.toLowerCase() : attrToProp(attribute.name),
           value
         });
       } else {
@@ -118,7 +123,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         });
       }
 
-      updateAttribute(eln, attribute.name, '');
+      eln.removeAttribute(attribute.name);
     }
     if (bm.length > 0) return bm;
   }

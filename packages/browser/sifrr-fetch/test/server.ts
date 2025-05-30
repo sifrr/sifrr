@@ -17,10 +17,26 @@ app.get('/get', (req, res) => {
   res.send('ok');
 });
 
+app.get('/get-json', (req, res) => {
+  res.json({ ok: 'ok' });
+});
+
 app.post('/post', (req, res) => {
-  res.set('content-type', 'application/json');
-  console.log(req.body);
+  if (req.body) res.set('content-type', 'application/json');
   res.send(req.body);
+});
+
+app.put('/put', (req, res) => {
+  if (req.body) res.set('content-type', 'application/json');
+  res.send(req.body);
+});
+
+app.delete('/delete/:id', (req, res) => {
+  if (req.params.id === '1') {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
 });
 
 // Start the server

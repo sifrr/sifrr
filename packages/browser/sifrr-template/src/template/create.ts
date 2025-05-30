@@ -13,7 +13,7 @@ import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
 
 let tempNum = 1;
 
-const createTemplate = <T>(
+const createTemplate = <T = any>(
   str: TemplateStringsArray,
   ...substitutions: ((
     p: any,

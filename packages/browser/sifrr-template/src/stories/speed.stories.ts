@@ -109,7 +109,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       setData(buildData(1000));
                     }}
                     id="run"
@@ -121,7 +121,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       setData(buildData(10000));
                     }}
                     id="runlots"
@@ -133,7 +133,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       setData(data.value.concat(buildData(1000)));
                     }}
                     id="add"
@@ -145,7 +145,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       const l = data.value.length;
                       for (let i = 0; i < l; i += 10) {
                         data.value[i].label = data.value[i].label + ' !!!';
@@ -161,7 +161,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       setData([]);
                     }}
                     id="clear"
@@ -173,7 +173,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       if (data.value.length > 998) {
                         const a = data.value[1];
                         data.value[1] = data.value[998];
@@ -190,7 +190,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       rearrange(
                         {
                           data: data.value
@@ -207,7 +207,7 @@ export const Primary: Story = {
                   <button
                     type="button"
                     class="btn btn-primary btn-block"
-                    ::onclick=${() => {
+                    :@click=${() => {
                       rearrange2(
                         {
                           data: data.value

@@ -49,6 +49,7 @@
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",
     "axios": "^0.21.1",
+    "node-fetch": "^3.3.2",
     "typescript": "^5.8.3"
   },
   "files": [

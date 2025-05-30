@@ -1,12 +1,12 @@
 import { BindingFxn, SifrrProps } from './types';
 
-type PropKeyFunction<T> = (props: SifrrProps<T>) => string;
+type PropKeyFunction<T> = (props: SifrrProps<T>) => any;
 
 const startRet = Symbol('startRet');
 
 export default function memo<T, O, N>(
   fxn: BindingFxn<T, O, N>,
-  deps: string[] | PropKeyFunction<T> = []
+  deps: (keyof SifrrProps<T>)[] | PropKeyFunction<T> = []
 ): BindingFxn<T, O, N> {
   const isFunc = typeof deps === 'function';
   const depsL = !isFunc ? deps.length : 0;
@@ -16,9 +16,7 @@ export default function memo<T, O, N>(
     if (isFunc) {
       return [deps(props)];
     }
-    return deps.map((k) =>
-      props && typeof props === 'object' ? (k in props ? (props as { [k]: any })[k] : '') : ''
-    );
+    return deps.map((k) => (props && typeof props === 'object' ? props[k] : ''));
   };
   let prevMemo: any[] = [];
 

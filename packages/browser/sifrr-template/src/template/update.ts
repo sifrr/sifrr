@@ -15,8 +15,8 @@ export default function update<T>(
     const l = tempElement.length;
     for (let i = 0; i < l; i++) {
       const t = tempElement[i];
-      if (isText(t)) return;
-      if (t?.__sifrrBindings && t?.__sifrrBindings.length === 0) return;
+      if (isText(t)) continue;
+      if (t?.__sifrrBindings && t?.__sifrrBindings.length === 0) continue;
       update(tempElement[i]!, props);
     }
     return;
@@ -29,7 +29,7 @@ export default function update<T>(
 
   // Update nodes
   for (let i = refs.length - 1; i > -1; --i) {
-    const { node, bindMap, currentValues, bindingSet } = refs[i]!;
+    const { node, bindMap, currentValues } = refs[i]!;
 
     // if
     if (bindMap[0]!.type === SifrrBindType.If) {
@@ -62,8 +62,7 @@ export default function update<T>(
 
       // special direct props (events/style)
       if (binding.type === SifrrBindType.DirectProp) {
-        if (!bindingSet[j]) {
-          bindingSet[j] = true;
+        if (!currentValues[j]) {
           if (binding.name === 'style') {
             const newValue = binding.value ?? emptyObj;
             const keys = Object.keys(newValue),
@@ -71,10 +70,11 @@ export default function update<T>(
 
             for (let i = 0; i < len; i++) {
               const key = keys[i]!;
-              newValue[key] = `${newValue[key] ?? ''}`; // remove undefined with empty string
+              newValue[key] = `${newValue[key] ?? ''}`; // remove undefined/null with empty string
             }
             Object.assign((node as unknown as HTMLElement).style, newValue);
           } else node[binding.name] = binding.value;
+          currentValues[j] = binding.value;
           if (typeof node.onPropChange === 'function')
             node.onPropChange?.(binding.name, undefined, binding.value);
         }
@@ -84,10 +84,7 @@ export default function update<T>(
       const newValue = binding.value(props, oldValue);
 
       if (newValue instanceof Promise) {
-        promise = true;
-        newValue.then((nv) => {
-          currentValues[j] = updateOne(node, binding, oldValue, nv, props);
-        });
+        currentValues[j] = newValue.then((nv) => updateOne(node, binding, oldValue, nv, props));
       } else {
         currentValues[j] = updateOne(node, binding, oldValue, newValue, props);
       }

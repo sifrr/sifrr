@@ -1,10 +1,10 @@
 import { DomBindingReturnValue, SifrrNodesArray, SifrrNode } from './types';
 
-const emptyArray: SifrrNodesArray<any> = [];
+const emptyArray: SifrrNode<any>[] = [];
 
 export default function getNodesFromBindingValue<T>(
   value: DomBindingReturnValue | SifrrNodesArray<T> | SifrrNode<T>
-): SifrrNodesArray<T> {
+): SifrrNode<T>[] {
   if (value === null || value === undefined) {
     return emptyArray;
   } else if (typeof value === 'string') {

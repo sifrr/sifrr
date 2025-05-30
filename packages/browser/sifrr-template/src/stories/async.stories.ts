@@ -58,12 +58,19 @@ export const Primary: Story = {
 
     return element;
   },
-  play: ({ canvasElement, canvas }) => {
+  play: async ({ canvasElement, canvas }) => {
     expect(canvasElement.innerHTML).toEqual(`<div>
       Comp2 <br><sifrr-fragment></sifrr-fragment><br>
       Comp1 <br><sifrr-fragment>
       Name:
        Id:
       </sifrr-fragment></div>`);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    expect(canvasElement.innerHTML).toEqual(`<div>
+      Comp2 <br><sifrr-fragment>Aaditya Taparia</sifrr-fragment><br>
+      Comp1 <br><sifrr-fragment>
+      Name:
+      Sifrr At Id:
+      2</sifrr-fragment></div>`);
   }
 };

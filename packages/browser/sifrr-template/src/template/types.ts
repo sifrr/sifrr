@@ -72,8 +72,7 @@ export enum SifrrBindType {
   Prop = 2,
   DirectProp = 3,
   Attribute = 4,
-  If = 5,
-  Event = 6
+  If = 5
 }
 
 export type SifrrBindMap<T> = // T = props type of parent
@@ -91,11 +90,6 @@ export type SifrrBindMap<T> = // T = props type of parent
         type: SifrrBindType.Prop;
         name: string;
         value: BindingFxn<T, any, any>;
-      }
-    | {
-        type: SifrrBindType.Event;
-        name: string;
-        value: BindingFxn<T, (e: Event) => void, (e: Event) => void>;
       }
     | {
         type: SifrrBindType.If;
@@ -122,7 +116,6 @@ export type SifrrBindingCollection<T> = {
   };
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
-  bindingSet: any[];
 };
 
 // uid -> fxn

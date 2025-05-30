@@ -4,11 +4,9 @@ export default (element: HTMLElement, name: string, newValue: string | false | n
     element.hasAttribute(name) && element.removeAttribute(name);
   else if (name === 'class') element.className = newValue;
   else if (name === 'id' && element[name] !== newValue) element[name] = newValue;
-  else if (
-    name === 'value' &&
-    'name' in element &&
-    (element as HTMLInputElement)[name] !== newValue
-  )
-    (element as HTMLInputElement)[name] = newValue;
-  else if (element.getAttribute(name) !== newValue) element.setAttribute(name, newValue);
+  else if (name === 'value' && name in element && element[name] !== newValue)
+    element[name] = newValue;
+  else if (element.getAttribute(name) !== newValue) {
+    element.setAttribute(name, newValue);
+  }
 };

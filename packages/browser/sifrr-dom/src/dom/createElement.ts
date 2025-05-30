@@ -1,8 +1,8 @@
 import { SifrrProps } from '@sifrr/template';
-import { ISifrrElement, SifrrElement } from './types';
+import { ISifrrElement, SifrrElementKlass } from './types';
 
 export default function createElement<T>(
-  elementClass: typeof SifrrElement | string,
+  elementClass: SifrrElementKlass | string,
   props: SifrrProps<T>,
   oldElement: ISifrrElement
 ) {

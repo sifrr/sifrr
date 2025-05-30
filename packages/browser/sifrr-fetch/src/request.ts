@@ -97,9 +97,11 @@ class Request<T, E> {
           data: data as T,
           response: resp,
           status: resp.status,
-          ok: true
+          ok: true,
+          errorData: undefined
         }
       : {
+          data: undefined,
           errorData: data as E,
           response: resp,
           status: resp.status,
