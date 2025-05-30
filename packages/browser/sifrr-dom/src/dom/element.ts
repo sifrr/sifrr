@@ -87,6 +87,16 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
       this.update();
     }
 
+    emit(type: string, data: any, options: EventInit) {
+      this.dispatchEvent(
+        new CustomEvent(type, {
+          detail: data,
+          composed: true,
+          ...options
+        })
+      );
+    }
+
     $(args: string) {
       if (this.shadowRoot) return this.shadowRoot.querySelector(args);
       else return this.querySelector(args);
