@@ -23,7 +23,7 @@ export const Primary: Story = {
         Click
       </div>
       <br />
-      <div :@touchstart=${args.touchstart}>Touch start</div>
+      <div :@touchstart=${args.touchstart} :@mousedown=${args.touchstart}>Touch start</div>
       <br />
       <div :@mouseenter=${args.mouseenter} :@mouseleave=${args.mouseleave}>Mouse enter</div>
       <br />

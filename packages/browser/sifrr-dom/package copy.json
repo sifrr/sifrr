@@ -1,7 +1,7 @@
 {
-  "name": "@sifrr/dom",
+  "name": "@sifrr/fetch",
   "version": "0.0.9",
-  "description": "Sifrr's DOM library for creating user interfaces for websites.",
+  "description": "Fetch based http requests library for browsers.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,11 +25,8 @@
   ],
   "keywords": [
     "sifrr",
-    "dom",
-    "custom elements",
-    "shadow dom",
-    "ui",
-    "frontend"
+    "fetch",
+    "ajax"
   ],
   "scripts": {
     "lint": "eslint src/.",
@@ -43,9 +40,7 @@
     "dev": "vite build --watch",
     "test:server": "npx tsx test/server"
   },
-  "dependencies": {
-    "@sifrr/template": "*"
-  },
+  "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
     "@sifrr/eslint-config": "*",

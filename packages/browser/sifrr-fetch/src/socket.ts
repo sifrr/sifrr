@@ -34,15 +34,7 @@ class Socket implements EventTarget {
   protocol: string;
   onretry?: (attempt: number, interval: number) => void;
 
-  constructor(
-    url: string | URL,
-    protocol: string,
-    options: {
-      reconnect?: boolean;
-      reconnectInterval?: number | ((attempt: number) => number);
-      defaultFetchTimeout?: number;
-    } = {}
-  ) {
+  constructor(url: string | URL, protocol: string, options: typeof this.options = {}) {
     this.ws = new WebSocketKlass(url, protocol) as WebSocket;
     this.id = 1;
     this.url = url;

@@ -53,7 +53,7 @@ const createTemplate = <T = any>(
       n.__sifrrBindings = collect(newNodes[i]!, refMaps[i]!);
     }
     newNodes.update(props);
-    props.onSetup?.();
+    props.onCreate?.();
     return newNodes;
   };
 

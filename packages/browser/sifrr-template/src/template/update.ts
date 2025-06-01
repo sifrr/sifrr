@@ -107,10 +107,11 @@ export default function update<T>(
         }
       }
     }
+    // for sifrr-dom
     if (promise) {
-      Promise.all(currentValues).then(() => props.onUpdate?.());
+      Promise.all(currentValues).then(() => props.update?.());
     } else {
-      props.onUpdate?.();
+      props.update?.();
     }
   }
 }

@@ -1,4 +1,5 @@
 const SYNTHETIC_EVENTS = new Set();
+(window as any).sEvents = SYNTHETIC_EVENTS;
 
 export const getEventListener = (name: string): EventListener => {
   return (e: Event) => {

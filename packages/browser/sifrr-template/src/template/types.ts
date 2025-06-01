@@ -16,8 +16,8 @@ type WatchTuple<X, T> = [(p: SifrrProps<T>) => X, (newValue: X, oldValue: X) => 
 
 export type SifrrProps<T> = T & {
   onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
-  onUpdate?: () => void;
-  onSetup?: () => void;
+  update?: () => void;
+  onCreate?: () => void;
   watchers?: WatchTuple<unknown, T>[];
   __sifrrWatcherOldValues?: unknown[];
 };

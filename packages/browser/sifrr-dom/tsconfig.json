@@ -1,18 +1,12 @@
 {
+  "extends": "@sifrr/typescript-config/base.json",
+  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts"],
   "compilerOptions": {
-    "declaration": true,
-    "sourceMap": true,
-    "declarationDir": "./dist/types",
-    "module": "es6",
-    "noImplicitAny": false,
-    "target": "es2015",
-    "lib": ["es5", "es2015", "dom"],
-    "strictBindCallApply": true,
-    "baseUrl": "../../../",
+    "lib": ["esnext", "es2019", "dom"],
+    "baseUrl": ".",
+    "removeComments": false,
     "paths": {
-      "@sifrr/template": ["./packages/browser/sifrr-template/src/sifrr.template"]
+      "@/*": ["src/*"]
     }
-  },
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+  }
 }
