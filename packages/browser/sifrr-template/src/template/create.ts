@@ -18,7 +18,7 @@ const createTemplate = <T = any>(
   ...substitutions: ((
     p: any,
     oldValue?: any
-  ) => DomBindingReturnValue | Promise<DomBindingReturnValue> | void)[]
+  ) => DomBindingReturnValue | Promise<DomBindingReturnValue> | void | EventListener)[]
 ): SifrrCreateFunction<T> => {
   const { functionMap, mergedString } = functionMapCreator<T>(str, substitutions);
   const template = createTemplateFromString(mergedString);

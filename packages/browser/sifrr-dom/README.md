@@ -13,11 +13,10 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 
 ## Tradeoffs
 
-- :+1: Uses @sifrr/template and adds custom elements, prop/state management on top of it
+- :+1: Uses @sifrr/template and adds custom elements, prop management on top of it
 - :+1: Use latest web API standards (custom elements v1)
 - :+1: CSS scoping with shadow root
 - :-1: hence will not work in older browsers without [polyfills](#browser-api-support-needed-for)
-- :+1: In-built Synthetic event listeners and custom events
 
 ## Performance Comparison
 
@@ -45,7 +44,7 @@ Add script tag in your website.
 | Promises API                                         | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise>      |
 | Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
 | ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
-| Fetch API (if you use `Sifrr.Dom.load`)              | <https://caniuse.com/#feat=fetch>             | <https://github.com/github/fetch>                  |
+
 
 If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
@@ -59,42 +58,22 @@ Put in your frontend js module (compatible with webpack/rollup/etc).
 
 ```js
 // node require
-const { setup } = require('@sifrr/dom');
+const SifrrDom = require('@sifrr/dom');
 
 // es6 module - supports both named and default export
-import { setup } from '@sifrr/dom';
 import SifrrDom from '@sifrr/dom';
-const { setup } = SifrrDom;
 
 // if using script tag
-const { setup } = Sifrr.Dom;
+Sifrr.Dom;
 ```
 
 ## Basic API usage
-
-### Setting Up
-
-```js
-// index.js
-
-// Default Setup Config for Sifrr Dom
-const config = {
-  events: ['input', 'change', 'update'], // synthetic event listerners to add, read more in Synthetic Events section
-  // config below will be used by `load` to figure out url of the element name given
-  urls: {
-    'element-name': '/element/name.js' // key-value pairs or element name and urls
-  },
-  url: null // function to get url of an element
-};
-// Set up Sifrr-Dom
-Sifrr.Dom.setup(config);
-```
 
 ### Sifrr element
 
 ```js
 import { html } from '@sifrr/template';
-import { Element } from '@sifrr/template';
+import { Element } from '@sifrr/dom';
 
 class CustomTag extends Element {
   static get template() {
@@ -105,14 +84,29 @@ class CustomTag extends Element {
         }
       </style>
       <p>${el => el.data()}</p>
+      <button @click=${el => () => el.context.count++}>Click to increase${el => el.context.count}</button>
     `; // el is the element instance
   }
   // other methods for the custom element
   data() {
     return this.getAttribute('data');
   }
+  // can setup anything to be run before component is created
+  // and return value will be used as context, context is a reactive object so element is re-rendered whenever it changes
+  setup() {
+    const count = 0
+    const deep = {
+      a: 'reactive'
+    }
+
+    // value returned is set as this.context
+    return {
+      count,
+      deep
+    }
+  }
 }
-Sifrr.Dom.register(CustomTag); // you should register in file itself to keep this file independently usable/downloadable
+Sifrr.Dom.register(CustomTag); // you should register in file itself to keep this file independently usable
 module.exports = CustomTag;
 ```
 
@@ -123,56 +117,38 @@ Bindings work as it does in `Sifrr.Template`, difference being instead of props,
 
 #### Loading element
 
-**Note**: `Sifrr.Dom.load` requires Fetch API to work.
-
-1.  Sifrr.Dom.load() - downloads element file (recommended for async loading)
+1.  As ES6 module import
 
 ```js
-// 3 ways to declare download url for an element with load
+// use in any other component
+import { html } from '@sifrr/template';
+import { Element } from '@sifrr/dom';
+import CustomTag from './elements/custom-tag'
 
-// key-value map
-const config = {
-  urls: {
-    'custom-tag': '/custom-tag.js'
+class CustomParent extends Element {
+  static components = [CustomTag]
+
+  static get template() {
+    return html`
+      <custom-tag :prop=${el => el.data()}></custom-tab>
+    `; // el is the element instance
   }
-};
-Sifrr.Dom.load('custom-tag'); // downloads `/custom-tag.js`
-// returns a promise resolved after loading the file
 
-// url function
-const config = {
-  url: name => `/elements/${name}.js`
-};
-Sifrr.Dom.load('custom-tag'); // downloads `/elements/custom-tag.js`
+  data() {
+    return this.getAttribute('data');
+  }
+}
+Sifrr.Dom.register(CustomParent); // you should register in file itself to keep this file independently usable
+module.exports = CustomParent;
 
-// url in load
-Sifrr.Dom.load('custom-tag', 'https://www.elements.com/custom-tag.js'); // download `https://www.elements.com/custom-tag.js`
-```
-
-Priority Order: `url` in load function call, url from `urls` in config, then url from `url` function.
-
-```js
-// controlling order of loading elements
-class DependantElement extends Sifrr.Dom.Element {}
-
-// `DependantElement` will be registered after `some-element` is loaded
-Sifrr.Dom.load('some-element').then(() => {
-  Sifrr.Dom.register(DependantElement);
-});
-```
-
-2.  As module
-
-```js
 // index.html
-
 <script type="module">
   import '/elements/custom-tag';
 </script>
 <script src="/elements/custom-tag" type="module">
 ```
 
-3.  Normal script tag (recommended for best browser support)
+3.  Normal script tag
 
 ```js
 // index.html
@@ -253,33 +229,7 @@ will render to
 </html>
 ```
 
-#### Changing state of element
-
-```js
-const customtag = window.querySelector('custom-tag');
-customtag.setState({ number: 2, attribute: 'xyz' });
-// Note: state is functionally immutable, hence doing `customtag.state.id = 2` won't work
-// You need to set state to new value every time you need to change state, but don't
-// worry. Only new values provided are updated, other values remain same as they were.
-```
-
-This will change custom-tag to
-
-```html
-<custom-tag>
-  #shadow-root
-  <style media="screen">
-    p {
-      color: blue;
-    }
-  </style>
-  <p attr="xyz">2</p>
-</custom-tag>
-```
-
-Changing state automatically triggers `element.update()` which updates the bindings.
-
-#### Force update element bindings
+#### Force re-render element
 
 ```js
 customtag.update();
@@ -297,12 +247,12 @@ customtag.update();
 </template>
 <script type="text/javascript">
   class CustomTag {
-    static get useShadowRoot {
-      return false;
+    constructor() {
+      super({
+        useShadowRoot: false
+      })
     }
   }
-  // or
-  CustomTag.useShadowRoot = false;
 </script>
 ```
 
@@ -346,8 +296,8 @@ class CustomTag extends Sifrr.Dom.Element {
     // called when an attribute in observedAttrs array is changed
   }
 
-  onStateChange(newState) {
-    // called when element's state is changed
+  onPropChange(name, oldValue, newValue) {
+    // called when element's prop is changed
   }
 
   beforeUpdate() {
@@ -360,53 +310,19 @@ class CustomTag extends Sifrr.Dom.Element {
 }
 ```
 
-#### Clearing state of element (use only if you know what you are doing)
-
-```js
-customtag.clearState(); // Not recommended to avoid blank/undefined bindings
-```
-
 #### Query selectors for custom element content
 
 ```js
 // querySelector
-customtag.$(selector /* shadowRoot = default: true if element uses shadow root else false */);
+customtag.$s(selector /* searches in shadowroot if element uses shadow root else normally */);
 // querySelectorAll
-customtag.$$(selector /* shadowRoot = default: true if element uses shadow root else false */);
-// If shadowRoot is true, it selects elements inside element shadowRoot else it will select elements inside it
+customtag.$$s(selector /* searches in shadowroot if element uses shadow root else normally */);
+// if you do not want to select in shadow root, you can use normal methods
+customtag.$(selector);
+customtag.$$(selector);
 ```
 
 Sifrr adds $ and $\$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
-
-### Synthetic events
-
-```js
-// example for adding 'click' event listeners, can be replaced with any type of event (even custom events)
-
-// Add synthetic event listerner (only need to be called once for one type of event)
-// Can be given in options in Sifrr.Dom.Setup
-Sifrr.Dom.Event.add('click');
-
-// Adding event callback on an element (any html element), works inside shadowRoots also (for bubbling events)
-// or `:_click` prop binding in Template
-el._click = fxn;
-// fxn will be called with two arguments `fxn(event, target)` and `this` inside function will be it's parent custom element if available, else window.
-
-// Add _click attribute to html directly
-// <a _click="console.log(this, event, target)"></a>
-
-// Adding a generic event callback
-Sifrr.Dom.Event.addListener('click', selector, fxn);
-// or
-Sifrr.Dom.Event.addListener('click', element, fxn);
-// fxn will be called with same two arguments as before if event target matches the selector provided
-
-// Triggering custom events
-Sifrr.Dom.Event.trigger(target, 'custom:event', options);
-// options are same as options for new window.Event(target, 'custom:event', options);
-```
-
-**Note**: Synthetic event listeners are always passive, hence, `event.preventDefault()` can not be called inside the function. Use html event listener properties (eg. `onclick`) if you need `event.preventDefault()`.
 
 ### More complex apis
 
@@ -416,11 +332,11 @@ Sifrr.Dom.Event.trigger(target, 'custom:event', options);
 import { memo } from '@sifrr/template'
 
 <!-- inside template -->
-<input :value="${el => el.state.input}" :_input=${memo(el => value => el.setState({ input: value }))} />
-<select :value="${el => el.state.select}" :_input=${memo(el => value => el.setState({ select: value }))}>
+<input :value="${el => el.state.input}" @input=${memo(el => value => el.setState({ input: value }))} />
+<select :value="${el => el.state.select}" @input=${memo(el => value => el.setState({ select: value }))}>
   <!-- options -->
 </select>
-<textarea :_input=${memo(el => value => el.setState({ textarea: value }))} :value=${el => el.state.textarea}></textarea>
+<textarea @input=${memo(el => value => el.setState({ textarea: value }))} :value=${el => el.state.textarea}></textarea>
 <div contenteditable :_input=${memo(el => value => el.setState({ elements: value }))}>
   ${el => el.state.elements}
 </div>
@@ -430,26 +346,6 @@ import { memo } from '@sifrr/template'
 
 <!-- One Way bindings from value, updates state when value/content is changed (on input/change event) -->
 <!-- Use only :_input prop without setting :value -->
-```
-
-#### Controlled State
-
-```html
-<!-- inside template -->
-<!-- One Way bindings to `some-element`'s state, updates state of `some-element` when parent's state is changed -->
-<some-element :state="${el => el.state.someElementState}"></some-element>
-
-<!-- One Way bindings from `some-element`'s state, updates parent's state when state of `some-element` is changed -->
-<some-element
-  :_update="${Sifrr.Template.memo(el => newState => el.setState({ someElementState: newState }))}"
-></some-element>
-
-<!-- Both together -->
-<!-- This automatically syncs parent's state.someElementState and `some-element`'s state' -->
-<some-element
-  :state="${el => el.state.someElementState}"
-  :_update="${Sifrr.Template.memo(el => newState => el.setState({ someElementState: newState }))}"
-></some-element>
 ```
 
 #### Creating another sifrr element programmatically
@@ -483,11 +379,11 @@ then you can use custom-tag as button in html like:
 #### Global Stores
 
 ```js
-import { html, Store } from '@sifrr/template';
+import { html, ref } from '@sifrr/template';
 import { Element } from '@sifrr/template';
 
 // create a new store
-const someStore = new Sifrr.Template.Store({ a: 'b' });
+const someStore = new Sifrr.Template.ref({ a: 'b' });
 
 class CustomTag extends Element {
   static get template() {
@@ -503,29 +399,19 @@ class CustomTag extends Element {
 
   constructor() {
     super();
-    someStore.addListener(() => {
-      this.update(); // update this element whenevr stpre is updated
-    });
+    this.watch(someStore)
   }
 }
-Sifrr.Dom.register(CustomTag); // you should register in file itself to keep this file independently usable/downloadable
+Sifrr.Dom.register(CustomTag);
 module.exports = CustomTag;
 
 // update value, now this will re-render all instances of CustomTag
 someStore.set({ a: 'c' });
 ```
 
-#### Execute JS File 
-
-Execute a JS file
-
-```js
-Sifrr.Dom.Loader.executeJS(url);
-```
-
 #### slots
 
-- Slots work same as it would in web components, but note that bindings in slot elements won't work
+- Slots work same as it would in web components, but note that bindings in slot will be from element where slots are defined
 
 ## Example elements
 

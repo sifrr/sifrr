@@ -1,3 +1,5 @@
+import { Ref, SifrrCreateFunction } from '@sifrr/template';
+
 declare global {
   interface Element {
     $: typeof Element.prototype.querySelector;
@@ -13,6 +15,7 @@ declare global {
 export interface ISifrrElement extends HTMLElement {
   update: () => void;
   setProps(props: object): void;
+  ref<T>(v: T, deep?: boolean): Ref<T>;
 }
 
 export interface EventListener {
@@ -24,10 +27,11 @@ export interface SifrrEventListener {
   __dom?: HTMLElement;
 }
 
-export interface SifrrElementKlass {
-  new (): ISifrrElement;
-  prototype: ISifrrElement;
+export interface SifrrElementKlass<K extends ISifrrElement> {
+  new (): K;
+  prototype: K;
   elementName: string;
+  template: SifrrCreateFunction<K>;
 }
 
 export default {};

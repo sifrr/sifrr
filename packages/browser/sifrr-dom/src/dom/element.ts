@@ -1,11 +1,21 @@
 import { ISifrrElement, SifrrElementKlass } from './types';
-import { SifrrCreateFunction, update, SifrrProps, SifrrNodesArray } from '@sifrr/template';
+import {
+  SifrrCreateFunction,
+  update,
+  SifrrProps,
+  SifrrNodesArray,
+  Ref,
+  ref
+} from '@sifrr/template';
 
-function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
+const elName = Symbol('elName');
+const content = Symbol('content');
+
+function elementClassFactory<T>(baseClass: typeof HTMLElement) {
   class SifrrElement extends baseClass implements ISifrrElement {
-    private static _elName: string;
+    private static [elName]: string;
     static readonly template: SifrrCreateFunction<SifrrElement> | null = null;
-    static readonly components: SifrrElementKlass[];
+    static readonly components: SifrrElementKlass<any>[];
 
     static extends(htmlElementClass: typeof HTMLElement) {
       return elementClassFactory(htmlElementClass);
@@ -13,8 +23,8 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
 
     static get elementName() {
       return (
-        this._elName ||
-        ((this._elName = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()), this._elName)
+        this[elName] ||
+        ((this[elName] = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()), this[elName])
       );
     }
 
@@ -22,18 +32,25 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
       return this.elementName;
     }
 
-    private readonly __content: SifrrNodesArray<SifrrElement>;
+    readonly [content]: SifrrNodesArray<SifrrElement>;
     context: Record<string, any>;
 
-    constructor(useShadowRoot = true, shadowRootMode: ShadowRootMode = 'open') {
+    constructor({
+      useShadowRoot = true,
+      shadowRootMode = 'open'
+    }: {
+      useShadowRoot?: boolean;
+      shadowRootMode?: ShadowRootMode;
+    } = {}) {
       super();
       const constructor = <typeof SifrrElement>this.constructor;
       const temp = constructor.template;
       if (!temp) {
         throw Error(`No template provided for Element = ${constructor.n}`);
       }
-      this.context = this.setup();
-      this.__content = temp(this);
+      this.context = this.ref(this.setup(), true).value;
+      this[content] = temp(this);
+      this[content].forEach((e) => console.log(e.__tempNum));
       if (useShadowRoot) {
         this.attachShadow({
           mode: shadowRootMode
@@ -45,13 +62,30 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
       return {};
     }
 
+    watch(ref: Ref<any>) {
+      ref.__sifrrWatchers?.add(() => {
+        this.update();
+      });
+    }
+
+    ref<T>(v: T, deep?: boolean) {
+      const r = ref(v, deep);
+      this.watch(r);
+      return r;
+    }
+
+    reactive<T extends object>(v: T, deep?: boolean) {
+      const r = this.ref(v, deep);
+      return r.value;
+    }
+
     connectedCallback() {
       const parent = this.shadowRoot ?? this;
-      if (this.__content.length > 0) {
+      if (this[content].length > 0) {
         if (parent.childNodes.length !== 0) {
           parent.textContent = '';
         }
-        parent.append(...this.__content);
+        parent.append(...this[content]);
       }
       this.onConnect();
     }
@@ -75,12 +109,14 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
       this.update();
     }
 
-    onPropChange(prop: string, oldVal: any, newVal: any): void {}
+    onPropChange(prop: string, oldVal: any, newVal: any): void {
+      this.update();
+    }
 
     update() {
       if (!this.isConnected) return;
       this.beforeUpdate();
-      update(this.__content, this);
+      update(this[content], this);
       this.dispatchEvent(new CustomEvent('update'));
       this.onUpdate();
     }
@@ -116,7 +152,7 @@ function elementClassFactory(baseClass: typeof HTMLElement): SifrrElementKlass {
     // setup helpers
   }
 
-  return SifrrElement;
+  return SifrrElement as SifrrElementKlass<SifrrElement>;
 }
 
 export default elementClassFactory(window.HTMLElement);

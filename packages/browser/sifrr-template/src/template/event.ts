@@ -8,7 +8,7 @@ export const getEventListener = (name: string): EventListener => {
     while (dom) {
       const eventHandler = (dom as any)[`@${name}`];
       if (typeof eventHandler === 'function') {
-        eventHandler.call(window, e, target);
+        eventHandler.call(target, e);
         return;
       }
       if (e.bubbles) {

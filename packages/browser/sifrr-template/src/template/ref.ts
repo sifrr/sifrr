@@ -1,5 +1,8 @@
+const isRef = Symbol('isRef');
+
 export interface ComputedRef<T> {
   value: T;
+  [isRef]: true;
 }
 
 export interface Ref<T> extends ComputedRef<T> {
@@ -7,12 +10,13 @@ export interface Ref<T> extends ComputedRef<T> {
 }
 
 function deepProxy<X>(obj: X, handler: () => void): X {
-  if (typeof obj !== 'object' || obj === null) {
+  if (typeof obj !== 'object' || obj === null || (obj as any)[isRef]) {
     return obj;
   }
 
   const p = new Proxy(obj, {
     get(target, prop, receiver) {
+      if (prop === isRef) return true;
       const value = Reflect.get(target, prop, receiver);
       return deepProxy(value, handler);
     },
@@ -40,7 +44,7 @@ export const ref = <T>(value: T, deep = true) => {
   };
 
   const refObj: Ref<T> = new Proxy(
-    { value: deep ? deepProxy(value, handler) : value, __sifrrWatchers },
+    { value: deep ? deepProxy(value, handler) : value, __sifrrWatchers, [isRef]: true },
     {
       set: (target, prop, value, receiver) => {
         if (prop === 'value') {
@@ -59,7 +63,7 @@ export const ref = <T>(value: T, deep = true) => {
 
 export const computed = <T>(fxn: (this: ComputedRef<T>) => T) => {
   const refObj: ComputedRef<T> = new Proxy(
-    { value: undefined as T },
+    { value: undefined as T, [isRef]: true },
     {
       set: (_, prop) => {
         return false;

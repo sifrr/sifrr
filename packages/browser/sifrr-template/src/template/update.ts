@@ -84,9 +84,9 @@ export default function update<T>(
       const newValue = binding.value(props, oldValue);
 
       if (newValue instanceof Promise) {
-        currentValues[j] = newValue.then((nv) => updateOne(node, binding, oldValue, nv, props));
+        currentValues[j] = newValue.then((nv) => updateOne(node, binding, oldValue, nv));
       } else {
-        currentValues[j] = updateOne(node, binding, oldValue, newValue, props);
+        currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
     if (props.watchers && props.watchers?.length > 0) {
@@ -107,12 +107,6 @@ export default function update<T>(
         }
       }
     }
-    // for sifrr-dom
-    if (promise) {
-      Promise.all(currentValues).then(() => props.update?.());
-    } else {
-      props.update?.();
-    }
   }
 }
 
@@ -120,8 +114,7 @@ function updateOne<T>(
   node: SifrrNode<any>,
   binding: SifrrBindMap<T>,
   oldValue: any,
-  newValue: any,
-  props: SifrrProps<T>
+  newValue: any
 ) {
   // text
   if (binding.type === SifrrBindType.Text) {
@@ -169,7 +162,10 @@ function updateOne<T>(
       oldValue = node[binding.name];
       node[binding.name] = newValue;
     }
-    if (oldValue !== newValue) props.onPropChange?.(binding.name, oldValue, newValue);
+    if (oldValue !== newValue) {
+      if (typeof node.onPropChange === 'function')
+        node.onPropChange?.(binding.name, oldValue, newValue);
+    }
   }
   return newValue;
 }
