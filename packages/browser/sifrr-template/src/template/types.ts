@@ -17,9 +17,6 @@ type WatchTuple<X, T> = [(p: SifrrProps<T>) => X, (newValue: X, oldValue: X) => 
 export type SifrrProps<T> = T & {
   onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
   update?: () => void;
-  onCreate?: () => void;
-  watchers?: WatchTuple<unknown, T>[];
-  __sifrrWatcherOldValues?: unknown[];
 };
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
@@ -93,7 +90,7 @@ export type SifrrBindMap<T> = // T = props type of parent
       }
     | {
         type: SifrrBindType.If;
-        value: BindingFxn<T, boolean, boolean>;
+        value: BindingFxn<T, Node, boolean>;
       }
     | {
         type: SifrrBindType.DirectProp;
@@ -112,6 +109,8 @@ export type SifrrBinding<T> = {
 export type SifrrBindingCollection<T> = {
   // T = props type of parent
   node: HTMLElement & {
+    ifComment?: Comment;
+    update?: () => void;
     [x: string]: unknown;
   };
   bindMap: SifrrBindMap<T>[];
@@ -141,5 +140,7 @@ export type CssProperties = Partial<
     | number
   >
 >;
+
+export type MaybePromise<T> = T | Promise<T>;
 
 export default {};

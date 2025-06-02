@@ -79,3 +79,18 @@ export const computed = <T>(fxn: (this: ComputedRef<T>) => T) => {
 
   return refObj;
 };
+
+export const watch = <T>(
+  refOrFxn: Ref<T> | (() => T),
+  callback: (newValue: T, oldValue: T) => void
+) => {
+  const isFunc = typeof refOrFxn === 'function';
+  let oldValue = isFunc ? refOrFxn() : refOrFxn.value;
+  return () => {
+    const newVal = isFunc ? refOrFxn() : refOrFxn.value;
+    if (newVal !== oldValue) {
+      callback(newVal, oldValue);
+      oldValue = newVal;
+    }
+  };
+};

@@ -5,17 +5,21 @@ import {
   SifrrProps,
   SifrrNodesArray,
   Ref,
-  ref
+  ref,
+  watch
 } from '@sifrr/template';
 
 const elName = Symbol('elName');
+const tmp = Symbol('template');
 const content = Symbol('content');
+const watchers = Symbol('watchers');
 
-function elementClassFactory<T>(baseClass: typeof HTMLElement) {
+function elementClassFactory(baseClass: typeof HTMLElement) {
   class SifrrElement extends baseClass implements ISifrrElement {
     private static [elName]: string;
-    static readonly template: SifrrCreateFunction<SifrrElement> | null = null;
-    static readonly components: SifrrElementKlass<any>[];
+    private static [tmp]: SifrrCreateFunction<any>;
+    static readonly template: SifrrCreateFunction<any>;
+    static readonly components?: SifrrElementKlass<any>[];
 
     static extends(htmlElementClass: typeof HTMLElement) {
       return elementClassFactory(htmlElementClass);
@@ -23,8 +27,7 @@ function elementClassFactory<T>(baseClass: typeof HTMLElement) {
 
     static get elementName() {
       return (
-        this[elName] ||
-        ((this[elName] = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()), this[elName])
+        this[elName] ?? (this[elName] = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
       );
     }
 
@@ -33,7 +36,8 @@ function elementClassFactory<T>(baseClass: typeof HTMLElement) {
     }
 
     readonly [content]: SifrrNodesArray<SifrrElement>;
-    context: Record<string, any>;
+    readonly [watchers]: (() => void)[] = [];
+    context: ReturnType<this['setup']>;
 
     constructor({
       useShadowRoot = true,
@@ -44,13 +48,12 @@ function elementClassFactory<T>(baseClass: typeof HTMLElement) {
     } = {}) {
       super();
       const constructor = <typeof SifrrElement>this.constructor;
-      const temp = constructor.template;
+      const temp = (constructor[tmp] = constructor[tmp] ?? constructor.template);
       if (!temp) {
         throw Error(`No template provided for Element = ${constructor.n}`);
       }
-      this.context = this.ref(this.setup(), true).value;
+      this.context = this.ref(this.setup(), true).value as ReturnType<this['setup']>;
       this[content] = temp(this);
-      this[content].forEach((e) => console.log(e.__tempNum));
       if (useShadowRoot) {
         this.attachShadow({
           mode: shadowRootMode
@@ -62,15 +65,15 @@ function elementClassFactory<T>(baseClass: typeof HTMLElement) {
       return {};
     }
 
-    watch(ref: Ref<any>) {
-      ref.__sifrrWatchers?.add(() => {
-        this.update();
-      });
+    watch<T>(ref: Ref<T> | (() => T), callback: (newV: T, oldV: T) => void) {
+      this[watchers].push(watch(ref, callback));
     }
 
     ref<T>(v: T, deep?: boolean) {
       const r = ref(v, deep);
-      this.watch(r);
+      r.__sifrrWatchers?.add(() => {
+        this.update();
+      });
       return r;
     }
 
@@ -109,16 +112,15 @@ function elementClassFactory<T>(baseClass: typeof HTMLElement) {
       this.update();
     }
 
-    onPropChange(prop: string, oldVal: any, newVal: any): void {
-      this.update();
-    }
+    onPropChange(prop: string, oldVal: any, newVal: any): void {}
 
     update() {
       if (!this.isConnected) return;
       this.beforeUpdate();
       update(this[content], this);
-      this.dispatchEvent(new CustomEvent('update'));
       this.onUpdate();
+      this[watchers].forEach((w) => w());
+      this.dispatchEvent(new CustomEvent('update'));
     }
 
     beforeUpdate() {}

@@ -1,6 +1,6 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
-import { COMMENT_NODE, REFERENCE_COMMENT, TEXT_NODE } from './constants';
+import { REFERENCE_COMMENT, TEXT_NODE } from './constants';
 import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap, SifrrNodesArray } from './types';
 import getNodesFromBindingValue from './getnodes';
 import { isText } from '@/template/utils';
@@ -33,29 +33,22 @@ export default function update<T>(
 
     // if
     if (bindMap[0]!.type === SifrrBindType.If) {
-      const j = 0;
-      const newValue = bindMap[0]!.value(props, currentValues[j]);
-      if (newValue !== currentValues[j]) {
-        if (!newValue) {
-          const comment = REFERENCE_COMMENT();
-          currentValues[j] = comment;
-          node.replaceWith(comment);
+      node.ifComment = node.ifComment ?? REFERENCE_COMMENT();
+      const ifValue = bindMap[0]!.value(props, currentValues[0]);
+      const newValue = ifValue ? node : node.ifComment;
+      if (newValue !== currentValues[0]) {
+        currentValues[0].replaceWith(newValue);
+        currentValues[0] = newValue;
+        if (!ifValue) {
           continue;
-        } else {
-          const comment = currentValues[j];
-          if (comment && comment.nodeType === COMMENT_NODE) {
-            comment.replaceWith(node);
-            currentValues[j] = node;
-          }
         }
       }
     }
 
-    let promise = false;
     for (let j = bindMap.length - 1; j > -1; --j) {
       const binding = bindMap[j]!;
 
-      // v-if
+      // skip if handling
       if (binding.type === SifrrBindType.If) {
         continue;
       }
@@ -89,24 +82,8 @@ export default function update<T>(
         currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
-    if (props.watchers && props.watchers?.length > 0) {
-      for (let i = 0; i < props.watchers.length; i++) {
-        const oldV = props.__sifrrWatcherOldValues?.[i];
-        const newV = props.watchers[i]![0]?.(props);
 
-        if (newV instanceof Promise) {
-          newV.then((nv) => {
-            if (oldV !== nv) {
-              props.__sifrrWatcherOldValues![i] = nv;
-              props.watchers?.[i]![1]?.(nv, oldV);
-            }
-          });
-        } else if (oldV !== newV) {
-          props.__sifrrWatcherOldValues![i] = newV;
-          props.watchers?.[i]![1]?.(newV, oldV);
-        }
-      }
-    }
+    node.update?.();
   }
 }
 
@@ -158,13 +135,12 @@ function updateOne<T>(
           (node.style as any)[nKey as any] = `${newValue[nKey]}`;
         }
       }
-    } else {
-      oldValue = node[binding.name];
+    } else if (node[binding.name] !== newValue) {
       node[binding.name] = newValue;
     }
     if (oldValue !== newValue) {
       if (typeof node.onPropChange === 'function')
-        node.onPropChange?.(binding.name, oldValue, newValue);
+        node.onPropChange(binding.name, oldValue, newValue);
     }
   }
   return newValue;

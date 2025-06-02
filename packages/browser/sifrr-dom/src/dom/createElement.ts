@@ -19,6 +19,7 @@ export function register(Element: SifrrElementKlass<any>, silent = false) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`);
   } else {
     window.customElements.define(name, Element);
+    Element.components?.forEach((c) => register(c));
     elements[name] = Element;
     return true;
   }
@@ -31,11 +32,11 @@ export function createElement<T, K extends ISifrrElement>(
 ) {
   if (typeof elementClass === 'string') {
     if (oldElement?.tagName.toLowerCase() === elementClass) {
-      oldElement.setProps(props);
+      oldElement.setProps?.(props);
       return oldElement;
     } else {
       const element = <ISifrrElement>document.createElement(elementClass);
-      element.setProps(props);
+      element.setProps?.(props);
       return element;
     }
   }
@@ -46,7 +47,7 @@ export function createElement<T, K extends ISifrrElement>(
     return oldElement;
   } else {
     const element = <ISifrrElement>document.createElement(elementClass.elementName);
-    element.setProps(props);
+    element.setProps?.(props);
     return element;
   }
 }

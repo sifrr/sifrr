@@ -4,7 +4,7 @@ type PropKeyFunction<T> = (props: SifrrProps<T>) => any;
 
 const startRet = Symbol('startRet');
 
-export default function memo<T, O, N>(
+export default function memo<T, O, N = O>(
   fxn: BindingFxn<T, O, N>,
   deps: (keyof SifrrProps<T>)[] | PropKeyFunction<T> = []
 ): BindingFxn<T, O, N> {

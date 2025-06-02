@@ -1,9 +1,9 @@
 import { createElement } from '@/index';
-import { ExampleElement } from '@/stories/elements';
+import { ControlledInputs } from '@/stories/elements';
 import type { Meta, StoryObj } from '@storybook/html';
 
 const meta: Meta<{}> = {
-  title: 'Sifrr/Dom/Element'
+  title: 'Sifrr/Dom/Controlled Inputs'
 };
 
 export default meta;
@@ -11,7 +11,7 @@ type Story = StoryObj<{}>;
 
 export const Primary: Story = {
   render: () => {
-    return createElement(ExampleElement, {});
+    return createElement(ControlledInputs, {});
   },
   play: async ({ canvasElement, canvas }) => {}
 };

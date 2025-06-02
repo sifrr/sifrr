@@ -7,9 +7,8 @@ import {
   REF_REG_GLOBAL,
   REF_LENGTH
 } from './constants';
-import updateAttribute from './updateattribute';
 
-import { SifrrBindType, SifrrBindMap, SifrrFunctionMap } from './types';
+import { SifrrBindType, SifrrBindMap, SifrrFunctionMap, BindingFxn } from './types';
 import { add } from '@/template/event';
 
 function attrToProp(attrName: string) {
@@ -69,24 +68,25 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i]!;
       const exactMatch = REF_REG_EXACT.exec(attribute.value);
-      const middleMatch = REF_REG.exec(attribute.value);
+      const middleMatch = [...attribute.value.matchAll(REF_REG_GLOBAL)];
 
-      if (middleMatch && !exactMatch) {
-        updateAttribute(
-          eln,
-          attribute.name,
-          attribute.value.replace(REF_REG_GLOBAL, '${__bindingFunction__}')
-        );
-        console.error(
-          `Binding in between text is not supported in Attribute or Prop. Error in attribute '${attribute.name}' of element:`,
-          el
-        );
+      if (!middleMatch && !exactMatch) continue;
 
-        continue;
+      let value: BindingFxn<T, any, any>;
+      if (exactMatch) {
+        value = functionMap.get(exactMatch[1]!);
+      } else {
+        const text: (string | BindingFxn<T, any, any>)[] = [];
+        const fxns = [];
+        let prev = 0;
+        for (const m of middleMatch) {
+          text.push(attribute.value.substring(prev, m.index));
+          text.push(functionMap.get(m[1]!));
+          prev = m.index + REF_LENGTH;
+        }
+        text.push(attribute.value.substring(prev));
+        value = (p, o) => text.map((t) => (typeof t === 'function' ? t(p, o) : t)).join('');
       }
-      if (!exactMatch) continue;
-
-      const value = functionMap.get(exactMatch[1]!);
 
       if (attribute.name[0] === ':' && (attribute.name[1] === ':' || attribute.name[1] === '@')) {
         if (attribute.name[1] === '@') {

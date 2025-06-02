@@ -8,7 +8,7 @@ export { default as memo } from './template/memo';
 export { default as styled } from './template/styled';
 export { createTemplateFromString } from './template/utils';
 export { makeChildrenEqual as makeEqualArray, makeEqual } from './template/makeequal';
-export { ref, computed, type Ref, type ComputedRef } from './template/ref';
+export { ref, computed, watch, type Ref, type ComputedRef } from './template/ref';
 export { default as bindFor } from './binders/bindfor';
 export { default as bindForKeyed } from './binders/bindforkeyed';
 export * from './template/types';

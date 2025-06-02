@@ -128,17 +128,15 @@ import CustomTag from './elements/custom-tag'
 class CustomParent extends Element {
   static components = [CustomTag]
 
-  static get template() {
-    return html`
+  static template = html`
       <custom-tag :prop=${el => el.data()}></custom-tab>
     `; // el is the element instance
-  }
 
   data() {
     return this.getAttribute('data');
   }
 }
-Sifrr.Dom.register(CustomParent); // you should register in file itself to keep this file independently usable
+Sifrr.Dom.register(CustomParent); // you can register in file itself to keep this file independently usable
 module.exports = CustomParent;
 
 // index.html
@@ -262,7 +260,7 @@ customtag.update();
 - first argument in props binding function is parent sifrr element
 - `:` or `::` prop bindings don't work when the element has no parent sifrr element
 - props are case insensitive
-- props in hyphen-case will be conveted to camel-case property name, i.e. `some-thing` => `someThing`
+- props in hyphen-case will be converted to camel-case property name, i.e. `some-thing` => `someThing`
 
 ```html
 <custom-tag :prop="${parentElement => parentElement.data}"></custom-tag>
@@ -289,7 +287,7 @@ class CustomTag extends Sifrr.Dom.Element {
   }
 
   onDisconnect() {
-    // called when element is disconnected to dom
+    // called when element is disconnected from dom
   }
 
   onAttributeChange(attrName, oldVal, newVal) {
@@ -322,30 +320,36 @@ customtag.$(selector);
 customtag.$$(selector);
 ```
 
-Sifrr adds $ and $\$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
+`Sifrr.Dom.setup()` adds $ and $\$ as alias for querySelector and querySelectorAll to all HTMLElements and document. eg. `document.$('div').$$('p')`
 
 ### More complex apis
 
 #### Controlled inputs
 
-```html
+```js
 import { memo } from '@sifrr/template'
+import { Element } from '@sifrr/dom'
 
-<!-- inside template -->
-<input :value="${el => el.state.input}" @input=${memo(el => value => el.setState({ input: value }))} />
-<select :value="${el => el.state.select}" @input=${memo(el => value => el.setState({ select: value }))}>
-  <!-- options -->
-</select>
-<textarea @input=${memo(el => value => el.setState({ textarea: value }))} :value=${el => el.state.textarea}></textarea>
-<div contenteditable :_input=${memo(el => value => el.setState({ elements: value }))}>
-  ${el => el.state.elements}
-</div>
+class ControlledInputs extends Element {
+  static template = html`
+    <input :value="${el => el.context.input}" @input=${memo(el => evt => el.context.input = evt.target.value)} />
+    <select :value="${el => el.context.select}" @change=${memo(el => evt => el.context.select = evt.target.value)}>
+      <!-- options -->
+    </select>
+    <textarea @input=${memo(el => evt => el.context.textarea = evt.target.value)} :value=${el => el.context.textarea}></textarea>
+    <div contenteditable @input=${memo(el => evt => el.context.elements = evt.target.textContent)}>
+      ${el => el.context.elements}
+    </div>`
 
-<!-- One Way bindings to value, updates value/content when state is changed -->
-<!-- Use only :value prop without setting :_input_ -->
-
-<!-- One Way bindings from value, updates state when value/content is changed (on input/change event) -->
-<!-- Use only :_input prop without setting :value -->
+  setup() {
+    return {
+      input: 'input',
+      select: 'a',
+      textarea: `text\narea`,
+      elements: '<p>paragraph</p>'
+    }
+  }
+}
 ```
 
 #### Creating another sifrr element programmatically

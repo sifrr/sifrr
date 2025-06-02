@@ -23,7 +23,7 @@ export const Primary: Story = {
         value.value.deep.contenteditable
     );
     (window as any).value = value;
-    const a = html<{}>`
+    const a = html<Record<string, never>>`
       <input
         :value=${() => value.value.deep.input}
         ::oninput=${(e: InputEvent) => {

@@ -24,6 +24,8 @@ function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
       } else {
         oldValues[j] = null;
       }
+    } else if (binding.type === SifrrBindType.If) {
+      oldValues[j] = element;
     }
   }
   return oldValues;

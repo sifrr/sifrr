@@ -5,7 +5,9 @@ import {
   SifrrCreateFunction,
   SifrrNode,
   DomBindingReturnValue,
-  SifrrNodesArray
+  SifrrNodesArray,
+  MaybePromise,
+  BindingFxn
 } from './types';
 import creator from './creator';
 import update from './update';
@@ -15,10 +17,10 @@ let tempNum = 1;
 
 const createTemplate = <T = any>(
   str: TemplateStringsArray,
-  ...substitutions: ((
-    p: any,
-    oldValue?: any
-  ) => DomBindingReturnValue | Promise<DomBindingReturnValue> | void | EventListener)[]
+  ...substitutions: (
+    | MaybePromise<DomBindingReturnValue | void | ((evt: any, target: any) => void)>
+    | BindingFxn<T, any, DomBindingReturnValue | void | ((evt: any, target: any) => void)>
+  )[]
 ): SifrrCreateFunction<T> => {
   const { functionMap, mergedString } = functionMapCreator<T>(str, substitutions);
   const template = createTemplateFromString(mergedString);
@@ -53,7 +55,6 @@ const createTemplate = <T = any>(
       n.__sifrrBindings = collect(newNodes[i]!, refMaps[i]!);
     }
     newNodes.update(props);
-    props.onCreate?.();
     return newNodes;
   };
 
