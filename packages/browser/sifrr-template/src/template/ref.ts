@@ -1,11 +1,12 @@
-const isRef = Symbol('isRef');
+export const isRef = Symbol('isRef');
 
 export interface ComputedRef<T> {
-  value: T;
+  get value(): T;
   [isRef]: true;
 }
 
 export interface Ref<T> extends ComputedRef<T> {
+  set value(v: T);
   __sifrrWatchers?: Set<(this: Ref<T>, newValue: T) => void>;
 }
 
@@ -61,23 +62,13 @@ export const ref = <T>(value: T, deep = true) => {
   return refObj;
 };
 
-export const computed = <T>(fxn: (this: ComputedRef<T>) => T) => {
-  const refObj: ComputedRef<T> = new Proxy(
-    { value: undefined as T, [isRef]: true },
-    {
-      set: (_, prop) => {
-        return false;
-      },
-      get: (_, prop) => {
-        if (prop === 'value') {
-          return fxn.call(refObj);
-        }
-        return undefined;
-      }
+export const computed = <T>(fxn: (this: ComputedRef<T>) => T): ComputedRef<T> => {
+  return {
+    [isRef]: true,
+    get value() {
+      return fxn.call(this);
     }
-  );
-
-  return refObj;
+  };
 };
 
 export const watch = <T>(

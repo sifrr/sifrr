@@ -63,22 +63,15 @@ export function createBindings<T>(
   const indices: SifrrBinding<T>[] = [];
   let map: SifrrBindMap<T>[] | 0,
     idx = 0,
-    ntr: ChildNode,
     node: Node | null = mainNode;
   while (node) {
-    if (node !== mainNode && node.nodeType === TEXT_NODE && (node as Text).data.trim() === '') {
-      ntr = <ChildNode>node;
-      node = TW.nextNode();
-      ntr.remove?.();
+    if ((map = fxn(node, passedValue))) {
+      indices.push({ idx: idx + 1, map });
+      idx = 1;
     } else {
-      if ((map = fxn(node, passedValue))) {
-        indices.push({ idx: idx + 1, map });
-        idx = 1;
-      } else {
-        idx++;
-      }
-      node = TW.nextNode();
+      idx++;
     }
+    node = TW.nextNode() ?? TW.nextSibling();
   }
   return indices;
 }

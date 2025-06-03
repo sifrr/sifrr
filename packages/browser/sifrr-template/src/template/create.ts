@@ -7,10 +7,12 @@ import {
   DomBindingReturnValue,
   SifrrNodesArray,
   MaybePromise,
-  BindingFxn
+  BindingFxn,
+  tempNumSymbol,
+  bindingSymbol
 } from './types';
 import creator from './creator';
-import update from './update';
+import { update } from './update';
 import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
 
 let tempNum = 1;
@@ -48,13 +50,13 @@ const createTemplate = <T = any>(
     for (let i = 0; i < nodeLength; i++) {
       const n = (newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>);
 
-      n.__tempNum = tempNums[i];
+      n[tempNumSymbol] = tempNums[i];
 
       if (refMaps[i]!.length < 1 || isText(n)) continue;
 
-      n.__sifrrBindings = collect(newNodes[i]!, refMaps[i]!);
+      n[bindingSymbol] = collect(newNodes[i]!, refMaps[i]!);
     }
-    newNodes.update(props);
+    newNodes.update?.(props);
     return newNodes;
   };
 
@@ -69,7 +71,7 @@ const createTemplate = <T = any>(
         console.warn(`oldValue given to Component function was not an Array.
         template: \`${String.raw(str, ...substitutions)}\``);
       } else if (oldValue.length == 1 && oldValue[0]!.nodeType === TEXT_NODE) {
-        // do nothing
+        // do nothing when old value is text binding node
       } else if (oldValue.length > 0) {
         console.warn(
           `oldValue given to Component function was not created by this Component. 

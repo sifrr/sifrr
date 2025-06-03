@@ -3,13 +3,13 @@ import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
 
 const meta: Meta<{}> = {
-  title: 'Sifrr/Template/Classes and style'
+  title: 'Sifrr/Template/Attributes'
 };
 
 export default meta;
 type Story = StoryObj<{}>;
 
-export const Primary: Story = {
+export const ClassAndStyle: Story = {
   render: () => {
     const ifref = ref(true);
     const padding = ref(16);
@@ -91,5 +91,29 @@ export const Primary: Story = {
       </div><button class="toggle-class">
         Toggle class
       </button><button class="increase">Increase padding</button>`);
+  }
+};
+
+export const Attribute: Story = {
+  render: () => {
+    const temp1 = html` <div
+      class="attr"
+      attr="abcd-${() => 'some value'} efg"
+      attr1=${() => 'okay value'}
+    >
+      classes
+    </div>`({}, undefined);
+    const div = document.createElement('div');
+    div.className = 'div';
+    div.append(...temp1);
+
+    return div;
+  },
+  play: async ({ canvasElement, canvas }) => {
+    const div = canvasElement.querySelector('.div') as HTMLDivElement;
+
+    expect(div.innerHTML).toEqual(`<div class="attr" attr1="okay value" attr="abcd-some value efg">
+      classes
+    </div>`);
   }
 };

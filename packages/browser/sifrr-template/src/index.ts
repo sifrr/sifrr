@@ -1,7 +1,6 @@
 export { default as createUniqueString } from './ustring';
 export { default as html } from './template/create';
-export { default as css } from './template/css';
-export { default as update } from './template/update';
+export { update } from './template/update';
 export { default as for } from './binders/bindfor';
 export { default as forKeyed } from './binders/bindforkeyed';
 export { default as memo } from './template/memo';

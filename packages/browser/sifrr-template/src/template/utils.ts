@@ -1,6 +1,6 @@
 import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
 import createUniqueString from '../ustring';
-import { SifrrFunctionMap, SifrrNode, SifrrNodesArray, SifrrProps } from './types';
+import { SifrrFunctionMap, SifrrNode, SifrrNodesArray, SifrrProps, tempNumSymbol } from './types';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();
@@ -33,7 +33,7 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
 }
 
 export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): node is SifrrNode<any> {
-  return !!node.__tempNum;
+  return !!node[tempNumSymbol];
 }
 
 export function isSameSifrrNode<T>(nodes: SifrrNodesArray<T>, tempNums: number[]) {
@@ -42,7 +42,7 @@ export function isSameSifrrNode<T>(nodes: SifrrNodesArray<T>, tempNums: number[]
 
   if (ln !== tl) return false;
   for (let i = 0; i < ln; i++) {
-    if (nodes[i]?.__tempNum !== tempNums[i]) return false;
+    if (nodes[i]?.[tempNumSymbol] !== tempNums[i]) return false;
   }
   return true;
 }

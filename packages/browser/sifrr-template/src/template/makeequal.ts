@@ -1,4 +1,4 @@
-import update from './update';
+import { update } from './update';
 import { TEXT_NODE, COMMENT_NODE, REFERENCE_COMMENT } from './constants';
 import { SifrrCreateFunction, SifrrProps, SifrrNode, SifrrNodesArray } from './types';
 import { flatLastElement, flattenOperation, isSifrrNode } from './utils';
@@ -59,8 +59,7 @@ export function makeEqual<T>(
     (oldNode.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) ||
     (oldNode.nodeType === COMMENT_NODE && newNode.nodeType === COMMENT_NODE)
   ) {
-    if ((<Text>(<unknown>oldNode)).data !== (<Text>(<unknown>newNode)).data)
-      (<Text>(<unknown>oldNode)).data = (<Text>(<unknown>newNode)).data;
+    if ((<Text>oldNode).data !== (<Text>newNode).data) (<Text>oldNode).data = (<Text>newNode).data;
     return oldNode;
   }
 

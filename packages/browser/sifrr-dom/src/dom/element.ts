@@ -93,26 +93,18 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       this.onConnect();
     }
 
-    onConnect() {}
-
     disconnectedCallback() {
       this.onDisconnect();
     }
-
-    onDisconnect() {}
 
     attributeChangedCallback(attrName: string, oldVal: any, newVal: any) {
       this.onAttributeChange(attrName, oldVal, newVal);
     }
 
-    onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
-
     setProps(props: SifrrProps<any>) {
       Object.assign(this, props);
       this.update();
     }
-
-    onPropChange(prop: string, oldVal: any, newVal: any): void {}
 
     update() {
       if (!this.isConnected) return;
@@ -120,11 +112,12 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       update(this[content], this);
       this.onUpdate();
       this[watchers].forEach((w) => w());
-      this.dispatchEvent(new CustomEvent('update'));
+      this.dispatchEvent(
+        new CustomEvent('update', {
+          bubbles: false
+        })
+      );
     }
-
-    beforeUpdate() {}
-    onUpdate() {}
 
     isSifrr(name = null) {
       if (name) return name === (<typeof SifrrElement>this.constructor).elementName;
@@ -151,7 +144,13 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       else return this.querySelectorAll(args);
     }
 
-    // setup helpers
+    // callbacks
+    onConnect() {}
+    onDisconnect() {}
+    onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
+    onPropChange(prop: string, oldVal: any, newVal: any): void {}
+    beforeUpdate() {}
+    onUpdate() {}
   }
 
   return SifrrElement as SifrrElementKlass<SifrrElement>;

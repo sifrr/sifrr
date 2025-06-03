@@ -9,11 +9,14 @@ export default function getNodesFromBindingValue<T>(
     return emptyArray;
   } else if (typeof value === 'string') {
     return [document.createTextNode(value)];
+  } else if (value instanceof SifrrNodesArray) {
+    return value;
   } else if (Array.isArray(value)) {
-    for (let i = 0; i < value.length; i++) {
-      value[i] = getNodesFromBindingValue<T>(value[i]);
+    const newValue = [];
+    for (const element of value) {
+      newValue.push(...getNodesFromBindingValue<T>(element));
     }
-    return value as SifrrNodesArray<T>;
+    return newValue as SifrrNode<T>[];
   } else if (value instanceof HTMLTemplateElement) {
     return Array.prototype.slice.call(value.content.childNodes);
   } else if (value instanceof Node) {

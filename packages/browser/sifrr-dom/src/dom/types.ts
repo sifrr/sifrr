@@ -30,6 +30,7 @@ export interface SifrrElementKlass<K extends ISifrrElement> {
   new (): K;
   prototype: K;
   elementName: string;
+  n: string;
   template: SifrrCreateFunction<any>;
   dependencies?: SifrrElementKlass<any>[];
 }

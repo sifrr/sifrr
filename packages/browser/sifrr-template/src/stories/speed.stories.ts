@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
-import { html, css, ref, bindForKeyed, bindFor } from '@/index';
+import { html, ref, bindForKeyed, bindFor, SifrrNodesArrayKeyed, SifrrNodesArray } from '@/index';
 import currentStyle from './utils/currentStyle.css?inline';
 import { rearrange, rearrange2 } from './utils/speedtest.arrangements';
 
@@ -54,7 +54,7 @@ export const Primary: Story = {
     const useAsync = window.location.href.indexOf('useAsync') >= 0 || args.useAsync;
 
     const incss = useAnimation
-      ? css`
+      ? `
           tr {
             animation: fade-in 0.4s ease;
           }
@@ -67,7 +67,7 @@ export const Primary: Story = {
             }
           }
         `
-      : () => '';
+      : '';
 
     let selected: number | null = null;
     const row = html<{
@@ -75,13 +75,23 @@ export const Primary: Story = {
       label: string;
     }>`
       <tr
-        class=${({ id }) => (selected == id ? 'danger' : null)}
-        :key=${({ id }) => (useKey ? id : null)}
-        :data-id=${useAsync ? async ({ id }) => id : ({ id }) => id}
+        class=${({ id }: { id: number; label: string }) => (selected == id ? 'danger' : null)}
+        :key=${({ id }: { id: number; label: string }) => (useKey ? id : null)}
+        :data-id=${useAsync
+          ? async ({ id }: { id: number; label: string }) => id
+          : ({ id }: { id: number; label: string }) => id}
       >
-        <td class="col-md-2 id">${useAsync ? async ({ id }) => id : ({ id }) => id}</td>
+        <td class="col-md-2 id">
+          ${useAsync
+            ? async ({ id }: { id: number; label: string }) => id
+            : ({ id }: { id: number; label: string }) => id}
+        </td>
         <td class="col-md-8">
-          <a class="lbl">${useAsync ? async ({ label }) => label : ({ label }) => label}</a>
+          <a class="lbl"
+            >${useAsync
+              ? async ({ label }: { id: number; label: string }) => label
+              : ({ label }: { id: number; label: string }) => label}</a
+          >
         </td>
         <td class="col-md-2">
           <a class="remove">X</a>
@@ -95,8 +105,8 @@ export const Primary: Story = {
         .lbl {
           cursor: pointer;
         }
+        ${incss}
       </style>
-      ${() => incss({})}
       <div class="container" id="main">
         <div class="jumbotron">
           <div class="row">
@@ -148,7 +158,7 @@ export const Primary: Story = {
                     :@click=${() => {
                       const l = data.value.length;
                       for (let i = 0; i < l; i += 10) {
-                        data.value[i].label = data.value[i].label + ' !!!';
+                        data.value[i]!.label = data.value[i]!.label + ' !!!';
                       }
                       setData(data.value);
                     }}
@@ -176,8 +186,8 @@ export const Primary: Story = {
                     :@click=${() => {
                       if (data.value.length > 998) {
                         const a = data.value[1];
-                        data.value[1] = data.value[998];
-                        data.value[998] = a;
+                        data.value[1] = data.value[998]!;
+                        data.value[998] = a!;
                         setData(data.value);
                       }
                     }}
@@ -198,7 +208,7 @@ export const Primary: Story = {
                         setData
                       );
                     }}
-                    id="swaprows"
+                    id="rearrange50"
                   >
                     Rearrange 50%
                   </button>
@@ -215,7 +225,7 @@ export const Primary: Story = {
                         setData
                       );
                     }}
-                    id="swaprows"
+                    id="rearrange100"
                   >
                     Rearrange 100%
                   </button>
@@ -226,13 +236,13 @@ export const Primary: Story = {
         </div>
         <table class="table table-hover table-striped test-data">
           <tbody>
-            <!--${(_, oldValue) => {
+            <!--${(_: {}, oldValue: SifrrNodesArrayKeyed<any>) => {
               if (useKey) {
                 return bindForKeyed(row, data.value, oldValue);
               } else if (useClean) {
-                return data.value.map((d: any, i: number) => row(d, oldValue[i]));
+                return data.value.map((d: any, i: number) => row(d));
               } else {
-                return bindFor(row, data.value, oldValue);
+                return bindFor(row, data.value, oldValue as SifrrNodesArray<any>);
               }
             }}-->
           </tbody>
@@ -241,7 +251,13 @@ export const Primary: Story = {
     `;
 
     let from = 1;
-    const data = ref<any[]>([], false);
+    const data = ref<
+      {
+        id: number;
+        key: number;
+        label: string;
+      }[]
+    >([], false);
 
     function _random(max: number) {
       return Math.round(Math.random() * 1000) % max;
@@ -353,7 +369,7 @@ export const Primary: Story = {
 
     return div;
   },
-  play: async ({ canvasElement, canvas }) => {
+  play: async ({ canvasElement, canvas, args }) => {
     if (window.location.href.indexOf('speedtest') >= 0) return;
 
     const table = canvasElement.querySelector('table');
@@ -362,6 +378,8 @@ export const Primary: Story = {
     const add = canvasElement.querySelector('#add')!;
     const clear = canvasElement.querySelector('#clear')!;
     const swaprows = canvasElement.querySelector('#swaprows')!;
+    const rearrange50 = canvasElement.querySelector('#rearrange50')!;
+    const rearrange100 = canvasElement.querySelector('#rearrange100')!;
 
     await userEvent.click(run);
     expect(table?.$$('tr').length).toEqual(1000);
@@ -385,6 +403,39 @@ export const Primary: Story = {
     await userEvent.click(swaprows);
     expect((table?.$$('tr')[1] as any)?.dataId).toEqual(12002);
     expect((table?.$$('tr')[998] as any)?.dataId).toEqual(12999);
+
+    // uses same key elements when keyed
+    if (args.type === 'keyed') {
+      const all = () =>
+        [...(table?.$$('tr') ?? [])].sort((a, b) => (a as any).key - (b as any).key);
+      const prev = all();
+      await userEvent.click(rearrange50);
+      expect(all()).toEqual(prev);
+      await userEvent.click(rearrange100);
+      expect(all()).toEqual(prev);
+
+      expect([...(table?.$$('tr') ?? [])]).not.toEqual(all());
+    }
+
+    // uses same elements in place when not keyed
+    if (args.type === 'normal') {
+      const all = () => [...(table?.$$('tr') ?? [])];
+      const prev = all();
+      await userEvent.click(rearrange50);
+      expect(all()).toEqual(prev);
+      await userEvent.click(rearrange100);
+      expect(all()).toEqual(prev);
+    }
+
+    // uses new elements when clean
+    if (args.type === 'clean') {
+      const all = () => [...(table?.$$('tr') ?? [])];
+      const prev = all();
+      await userEvent.click(rearrange50);
+      expect(all()).not.toEqual(prev);
+      await userEvent.click(rearrange100);
+      expect(all()).not.toEqual(prev);
+    }
 
     await userEvent.click(clear);
   },

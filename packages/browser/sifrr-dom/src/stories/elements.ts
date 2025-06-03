@@ -1,5 +1,5 @@
 import { Element } from '@/index';
-import { computed, html, memo, SifrrCreateFunction } from '@sifrr/template';
+import { computed, html, memo, SifrrCreateFunction, styled } from '@sifrr/template';
 
 const randomColor = () => '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
 
@@ -21,19 +21,26 @@ export class FlexElement extends Element {
   `;
 }
 
+const flex = styled<ExampleElement>`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: ${(el: ExampleElement) => {
+    console.log(el.context);
+    return el.context.color;
+  }};
+`;
+
+console.log(flex.css({ context: {} } as any));
+
 export class ExampleElement extends Element {
   static get template() {
     return html<ExampleElement>`
       <style>
-        .flex {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          color: ${(el: ExampleElement) => el.context.color};
-        }
+        .${ExampleElement.n}${flex.css}
       </style>
       <div
-        class="flex"
+        class="${ExampleElement.n} ${flex.className}"
         style="position: static"
         :style=${(el: ExampleElement) => el.context.style.value}
       >

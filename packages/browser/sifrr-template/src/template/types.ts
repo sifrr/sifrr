@@ -1,18 +1,19 @@
 import { Ref } from '@/template/ref';
-import update from '@/template/update';
+import { update } from '@/template/update';
+
+export const tempNumSymbol = Symbol('tempNum');
+export const bindingSymbol = Symbol('bindings');
 
 export type SifrrNode<T> =
   | (ChildNode & {
-      __sifrrBindings?: SifrrBindingCollection<T>[];
-      __tempNum?: number;
+      [bindingSymbol]?: SifrrBindingCollection<T>[];
+      [tempNumSymbol]?: number;
       key?: string | number;
       [x: string]: unknown;
     })
   | (Text & {
-      __tempNum?: number;
+      [tempNumSymbol]?: number;
     });
-
-type WatchTuple<X, T> = [(p: SifrrProps<T>) => X, (newValue: X, oldValue: X) => void];
 
 export type SifrrProps<T> = T & {
   onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
@@ -42,7 +43,6 @@ export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
   update(p: SifrrProps<T>) {
     this.props = p;
     update(this, p);
-    this.isRendered = true;
   }
 
   addRef(ref: Ref<any>) {
