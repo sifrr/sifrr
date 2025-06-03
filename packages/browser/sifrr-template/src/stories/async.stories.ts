@@ -46,11 +46,12 @@ export const Primary: Story = {
       comp2Id: string;
     }>`
       Comp2 <br />
-      ${({ comp2Id }) => Component2({ id: comp2Id })} <br />
+      ${({ comp2Id }: { id: string; comp2Id: string }) => Component2({ id: comp2Id })} <br />
       Comp1 <br />
       Name:
-      ${({ id }) => fetchData().then((data) => data[id]?.firstname + ' ' + data[id]?.lastname)} Id:
-      ${({ id }) => fetchData().then((data) => data[id]?.id)}
+      ${({ id }: { id: string; comp2Id: string }) =>
+        fetchData().then((data) => data[id]?.firstname + ' ' + data[id]?.lastname)}
+      Id: ${({ id }: { id: string; comp2Id: string }) => fetchData().then((data) => data[id]?.id)}
     `;
 
     const element = document.createElement('div');
@@ -63,14 +64,14 @@ export const Primary: Story = {
       Comp2 <br><sifrr-fragment></sifrr-fragment><br>
       Comp1 <br><sifrr-fragment>
       Name:
-       Id:
-      </sifrr-fragment></div>`);
+      
+      Id: </sifrr-fragment></div>`);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(canvasElement.innerHTML).toEqual(`<div>
       Comp2 <br><sifrr-fragment>Aaditya Taparia</sifrr-fragment><br>
       Comp1 <br><sifrr-fragment>
       Name:
-      Sifrr At Id:
-      2</sifrr-fragment></div>`);
+      Sifrr At
+      Id: 2</sifrr-fragment></div>`);
   }
 };

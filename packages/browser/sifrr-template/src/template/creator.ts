@@ -68,21 +68,20 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i]!;
       const exactMatch = REF_REG_EXACT.exec(attribute.value);
-      const middleMatch = [...attribute.value.matchAll(REF_REG_GLOBAL)];
-
-      if (!middleMatch && !exactMatch) continue;
-
       let value: BindingFxn<T, any, any>;
       if (exactMatch) {
         value = functionMap.get(exactMatch[1]!);
       } else {
+        let middleMatch = REF_REG_GLOBAL.exec(attribute.value);
+        if (!middleMatch) continue;
+
         const text: (string | BindingFxn<T, any, any>)[] = [];
-        const fxns = [];
         let prev = 0;
-        for (const m of middleMatch) {
-          text.push(attribute.value.substring(prev, m.index));
-          text.push(functionMap.get(m[1]!));
-          prev = m.index + REF_LENGTH;
+        while (middleMatch) {
+          text.push(attribute.value.substring(prev, middleMatch.index));
+          text.push(functionMap.get(middleMatch[1]!));
+          prev = middleMatch.index + REF_LENGTH;
+          middleMatch = REF_REG_GLOBAL.exec(attribute.value);
         }
         text.push(attribute.value.substring(prev));
         value = (p, o) => text.map((t) => (typeof t === 'function' ? t(p, o) : t)).join('');

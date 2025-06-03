@@ -138,6 +138,7 @@ export type CssProperties = Partial<
     | 'removeProperty'
     | 'setProperty'
     | number
+    | typeof Symbol.iterator
   >
 >;
 

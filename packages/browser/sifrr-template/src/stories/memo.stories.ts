@@ -15,7 +15,7 @@ export const Primary: Story = {
       j = 0,
       k = 0,
       l = 0;
-    const El = html`
+    const El = html<any>`
       <div
         id="memo0"
         ::onclick=${() => {

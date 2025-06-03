@@ -1,9 +1,8 @@
 const SYNTHETIC_EVENTS = new Set();
-(window as any).sEvents = SYNTHETIC_EVENTS;
 
 export const getEventListener = (name: string): EventListener => {
   return (e: Event) => {
-    const target = <HTMLElement>(e.composedPath ? e.composedPath()[0] : e.target);
+    const target = <HTMLElement>(e.composedPath?.()[0] ?? e.target);
     let dom: HTMLElement | null = target;
     while (dom) {
       const eventHandler = (dom as any)[`@${name}`];

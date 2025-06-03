@@ -1,7 +1,25 @@
 import { Element } from '@/index';
-import { computed, html, memo } from '@sifrr/template';
+import { computed, html, memo, SifrrCreateFunction } from '@sifrr/template';
 
 const randomColor = () => '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
+
+export class FlexElement extends Element {
+  flexDirection?: 'column' | 'row';
+  gap?: 0;
+
+  static readonly template: SifrrCreateFunction<FlexElement> = html`
+    <style>
+      .flex {
+        display: flex;
+        flex-direction: ${(el: FlexElement) => el.flexDirection ?? 'column'};
+        gap: ${(el: FlexElement) => (el.gap ?? 0) + 'px'};
+      }
+    </style>
+    <div class="flex">
+      <slot />
+    </div>
+  `;
+}
 
 export class ExampleElement extends Element {
   static get template() {
@@ -14,7 +32,11 @@ export class ExampleElement extends Element {
           color: ${(el: ExampleElement) => el.context.color};
         }
       </style>
-      <div class="flex">
+      <div
+        class="flex"
+        style="position: static"
+        :style=${(el: ExampleElement) => el.context.style.value}
+      >
         <button @click=${(el: ExampleElement) => () => el.context.d++}>
           Click to increase ${(el: ExampleElement) => el.context.d}
         </button>
@@ -34,19 +56,35 @@ export class ExampleElement extends Element {
           ${(el: ExampleElement) => el.context.hide}
         </p>
         <button @click=${(el: ExampleElement) => () => el.changeColor()}>Change color</button>
+        <button @click=${(el: ExampleElement) => () => el.context.gap.value++}>Increase gap</button>
       </div>
     `;
   }
 
+  constructor() {
+    super();
+  }
+
   setup() {
-    console.log('setup');
     const d = 0;
     const deep = {
       count: 0
     };
     const dd = computed(() => deep.count * 2);
+    const gap = this.ref(12);
 
-    return { d, dd, deep, hide: true, color: randomColor() };
+    return {
+      d,
+      dd,
+      deep,
+      hide: true,
+      color: randomColor(),
+      gap,
+      style: computed(() => ({
+        display: 'flex',
+        gap: gap.value + 'px'
+      }))
+    };
   }
 
   changeColor() {
@@ -59,6 +97,10 @@ export class ExampleElement extends Element {
 
   onUpdate(): void {
     console.log('update');
+  }
+
+  onDisconnect(): void {
+    console.log('disconnect');
   }
 }
 
@@ -83,7 +125,7 @@ class ChildElement extends Element {
 }
 
 export class ParentElement extends Element {
-  static readonly components = [ChildElement];
+  static readonly dependencies = [ChildElement];
 
   static readonly template = html<ParentElement>`<button
       @click=${memo((el) => () => el.context.prop++)}
@@ -119,7 +161,10 @@ export class ParentElement extends Element {
 }
 
 export class ControlledInputs extends Element {
-  static readonly template = html` <input
+  static readonly dependencies = [FlexElement];
+
+  static readonly template = html` <flex-element :gap="12">
+    <input
       :value="${(el: ControlledInputs) => el.context.input}"
       @input=${memo(
         (el: ControlledInputs) => (evt: InputEvent, tgt: HTMLInputElement) =>
@@ -140,7 +185,7 @@ export class ControlledInputs extends Element {
     </select>
     <textarea
       title="some ---${(el: ControlledInputs) => el.context.textarea}---${(el: ControlledInputs) =>
-        el.context.textarea}-- now this is cool"
+        el.context.textarea}--- where"
       @input=${memo(
         (el) => (evt: InputEvent, tgt: HTMLTextAreaElement) => (el.context.textarea = tgt.value)
       )}
@@ -153,7 +198,9 @@ export class ControlledInputs extends Element {
       })}
     >
       ${(el: ControlledInputs) => el.context.elements}
-    </div>`;
+    </div>
+    <p>${(el: ControlledInputs) => JSON.stringify(el.context, null, 2)}</p>
+  </flex-element>`;
 
   setup() {
     return {

@@ -1,11 +1,35 @@
 import { makeChildrenEqual } from './makeequal';
 import updateAttribute from './updateattribute';
 import { REFERENCE_COMMENT, TEXT_NODE } from './constants';
-import { SifrrBindType, SifrrNode, SifrrProps, SifrrBindMap, SifrrNodesArray } from './types';
+import {
+  SifrrBindType,
+  SifrrNode,
+  SifrrProps,
+  SifrrBindMap,
+  SifrrNodesArray,
+  CssProperties
+} from './types';
 import getNodesFromBindingValue from './getnodes';
 import { isText } from '@/template/utils';
 
 const emptyObj = Object.freeze(Object.create(null));
+
+const getClasses = (
+  classList: string | (string | Record<string, boolean>)[] | Record<string, boolean>
+): Set<string> => {
+  if (typeof classList === 'string') return new Set(classList.split(' '));
+  const classes: Set<string> = new Set();
+  if (Array.isArray(classList)) {
+    classList.forEach((c) => {
+      getClasses(c).forEach((l) => classes.add(l));
+    });
+  } else {
+    Object.keys(classList).forEach((c) => {
+      classList[c] && classes.add(c);
+    });
+  }
+  return classes;
+};
 
 export default function update<T>(
   tempElement: SifrrNodesArray<T> | SifrrNode<T>,
@@ -57,15 +81,21 @@ export default function update<T>(
       if (binding.type === SifrrBindType.DirectProp) {
         if (!currentValues[j]) {
           if (binding.name === 'style') {
-            const newValue = binding.value ?? emptyObj;
-            const keys = Object.keys(newValue),
+            const newValue: CssProperties = binding.value ?? emptyObj;
+            const keys = Object.keys(newValue) as (keyof CssProperties)[],
               len = keys.length;
 
             for (let i = 0; i < len; i++) {
               const key = keys[i]!;
-              newValue[key] = `${newValue[key] ?? ''}`; // remove undefined/null with empty string
+
+              newValue[key] =
+                typeof newValue[key] === 'number' ? newValue[key] + 'px' : `${newValue[key] ?? ''}`; // remove undefined/null with empty string
             }
             Object.assign((node as unknown as HTMLElement).style, newValue);
+          } else if (binding.name === 'className') {
+            getClasses(binding.value).forEach((c) =>
+              (node as unknown as HTMLElement).classList.add(c)
+            );
           } else node[binding.name] = binding.value;
           currentValues[j] = binding.value;
           if (typeof node.onPropChange === 'function')
@@ -82,7 +112,6 @@ export default function update<T>(
         currentValues[j] = updateOne(node, binding, oldValue, newValue);
       }
     }
-
     node.update?.();
   }
 }
@@ -116,25 +145,37 @@ function updateOne<T>(
     updateAttribute(node as unknown as HTMLElement, binding.name, newValue);
   } else if (binding.type === SifrrBindType.Prop && !isText(node)) {
     // special case for style prop
-    if (binding.name === 'style') {
-      newValue = newValue ?? emptyObj;
-      const newKeys = Object.keys(newValue),
-        oldKeys = Object.keys(oldValue),
+    if (binding.name === 'style' && oldValue !== newValue) {
+      newValue = (newValue ?? emptyObj) as CssProperties;
+      const newKeys = Object.keys(newValue) as (keyof CssProperties)[],
+        oldKeys = Object.keys(oldValue) as (keyof CssProperties)[],
         newl = newKeys.length,
         oldl = oldKeys.length;
       for (let i = 0; i < oldl; i++) {
         const oKey = oldKeys[i]!;
         if (!newValue[oKey]) {
-          (node.style as any)[oKey as any] = ''; // remove if newValue doesn't have that property
+          (node.style as CSSStyleDeclaration).removeProperty(oKey);
         }
       }
       // add new properties
       for (let i = 0; i < newl; i++) {
         const nKey = newKeys[i]!;
         if (oldValue[nKey] !== newValue[nKey]) {
-          (node.style as any)[nKey as any] = `${newValue[nKey]}`;
+          (node.style as CSSStyleDeclaration).setProperty(
+            nKey,
+            typeof newValue[nKey] === 'number' ? newValue[nKey] + 'px' : `${newValue[nKey] ?? ''}`
+          );
         }
       }
+    } else if (binding.name === 'className') {
+      newValue = getClasses(newValue);
+      (oldValue as Set<string>)?.forEach((c) => {
+        if (!(newValue as Set<string>).has(c)) (node as unknown as HTMLElement).classList.remove(c);
+      });
+      (newValue as Set<string>).forEach((c) => {
+        if (!(node as unknown as HTMLElement).classList.contains(c))
+          (node as unknown as HTMLElement).classList.add(c);
+      });
     } else if (node[binding.name] !== newValue) {
       node[binding.name] = newValue;
     }
