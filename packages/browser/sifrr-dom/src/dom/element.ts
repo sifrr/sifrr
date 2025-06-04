@@ -65,10 +65,14 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
 
     ref<T>(v: T, deep?: boolean) {
       const r = ref(v, deep);
-      r.__sifrrWatchers?.add(() => {
+      return this.useStore(r);
+    }
+
+    useStore<T>(ref: Ref<T>): Ref<T> {
+      ref.__sifrrWatchers?.add(() => {
         this.update();
       });
-      return r;
+      return ref;
     }
 
     reactive<T extends object>(v: T, deep?: boolean) {
