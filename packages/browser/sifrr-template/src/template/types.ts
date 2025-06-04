@@ -56,7 +56,7 @@ export type SifrrNodesArrayKeyed<T> = (SifrrNode<T> & { key: string | number })[
   update?: (p: SifrrProps<T>) => void;
 };
 
-export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
+export type BindingFxn<T, O = any, N = any> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
 
 // clone/update a template element
 export type SifrrCreateFunction<T> = (

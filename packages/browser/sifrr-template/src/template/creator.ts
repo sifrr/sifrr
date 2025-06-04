@@ -15,6 +15,8 @@ function attrToProp(attrName: string) {
   return attrName.substring(1).replace(/-([a-z])/g, (g) => g[1]!.toUpperCase());
 }
 
+const emptyFxn = () => null;
+
 const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
@@ -68,36 +70,41 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     for (let i = 0; i < l; i++) {
       const attribute = attrs[i]!;
       const exactMatch = REF_REG_EXACT.exec(attribute.value);
-      let value: BindingFxn<T, any, any>;
+      let value: BindingFxn<T, any, any>,
+        direct = false;
       if (exactMatch) {
         value = functionMap.get(exactMatch[1]!);
       } else {
         let middleMatch = REF_REG_GLOBAL.exec(attribute.value);
-        if (!middleMatch) continue;
-
-        const text: (string | BindingFxn<T, any, any>)[] = [];
-        let prev = 0;
-        while (middleMatch) {
-          text.push(attribute.value.substring(prev, middleMatch.index));
-          text.push(functionMap.get(middleMatch[1]!));
-          prev = middleMatch.index + REF_LENGTH;
-          middleMatch = REF_REG_GLOBAL.exec(attribute.value);
+        if (!middleMatch) {
+          value = emptyFxn;
+          direct = true;
+        } else {
+          const text: (string | BindingFxn<T, any, any>)[] = [];
+          let prev = 0;
+          while (middleMatch) {
+            text.push(attribute.value.substring(prev, middleMatch.index));
+            text.push(functionMap.get(middleMatch[1]!));
+            prev = middleMatch.index + REF_LENGTH;
+            middleMatch = REF_REG_GLOBAL.exec(attribute.value);
+          }
+          text.push(attribute.value.substring(prev));
+          value = (p, o) => text.map((t) => (typeof t === 'function' ? t(p, o) : t)).join('');
         }
-        text.push(attribute.value.substring(prev));
-        value = (p, o) => text.map((t) => (typeof t === 'function' ? t(p, o) : t)).join('');
       }
 
       if (attribute.name[0] === ':' && (attribute.name[1] === ':' || attribute.name[1] === '@')) {
         if (attribute.name[1] === '@') {
           add(attribute.name.substring(2));
         }
+        const name =
+          attribute.name[1] === '@'
+            ? attribute.name.substring(1).toLowerCase()
+            : attrToProp(attribute.name).substring(1);
         bm.push({
           type: SifrrBindType.DirectProp,
-          name:
-            attribute.name[1] === '@'
-              ? attribute.name.substring(1).toLowerCase()
-              : attrToProp(attribute.name).substring(1),
-          value
+          name,
+          value: direct ? attribute.value : value
         });
       } else if (attribute.name === ':if') {
         bm.unshift({
@@ -108,12 +115,21 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         if (attribute.name[0] === '@') {
           add(attribute.name.substring(1));
         }
-        bm.push({
-          type: SifrrBindType.Prop,
-          name:
-            attribute.name[0] === '@' ? attribute.name.toLowerCase() : attrToProp(attribute.name),
-          value
-        });
+        const name =
+          attribute.name[0] === '@' ? attribute.name.toLowerCase() : attrToProp(attribute.name);
+        bm.push(
+          direct
+            ? {
+                type: SifrrBindType.DirectProp,
+                name,
+                value: attribute.value
+              }
+            : {
+                type: SifrrBindType.Prop,
+                name,
+                value
+              }
+        );
       } else {
         bm.push({
           type: SifrrBindType.Attribute,
