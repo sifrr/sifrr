@@ -33,7 +33,7 @@ export class ExampleElement extends Element {
           flex-direction: column;
           gap: 16px;
           color: ${(el: ExampleElement) => {
-            return el.context.color;
+            return el.context.color.value;
           }};
         }
       </style>
@@ -42,8 +42,12 @@ export class ExampleElement extends Element {
         style="position: static"
         :style=${(el: ExampleElement) => el.context.style.value}
       >
-        <button @click=${(el: ExampleElement) => () => el.context.d++}>
-          Click to increase ${(el: ExampleElement) => el.context.d}
+        <button
+          @click=${(el: ExampleElement) => () => {
+            return el.context.d.value++;
+          }}
+        >
+          Click to increase ${(el: ExampleElement) => el.context.d.value}
         </button>
         <button
           @click=${(el: ExampleElement) => () => {
@@ -53,12 +57,14 @@ export class ExampleElement extends Element {
           Click to increase ${(el: ExampleElement) => el.context.deep.count},
           ${(el: ExampleElement) => el.context.dd.value}
         </button>
-        <button @click=${(el: ExampleElement) => () => (el.context.hide = !el.context.hide)}>
-          ${(el: ExampleElement) => (el.context.hide ? 'Show' : 'Hide')}
+        <button
+          @click=${(el: ExampleElement) => () => (el.context.hide.value = !el.context.hide.value)}
+        >
+          ${(el: ExampleElement) => (el.context.hide.value ? 'Show' : 'Hide')}
         </button>
-        <p :if=${(el: ExampleElement) => !el.context.hide}>
+        <p :if=${(el: ExampleElement) => !el.context.hide.value}>
           Content only shown when toggle is on, currently:
-          ${(el: ExampleElement) => el.context.hide}
+          ${(el: ExampleElement) => el.context.hide.value}
         </p>
         <button @click=${(el: ExampleElement) => () => el.changeColor()}>Change color</button>
         <button @click=${(el: ExampleElement) => () => el.context.gap.value++}>Increase gap</button>
@@ -71,10 +77,10 @@ export class ExampleElement extends Element {
   }
 
   setup() {
-    const d = 0;
-    const deep = {
+    const d = this.ref(0);
+    const deep = this.reactive({
       count: 0
-    };
+    });
     const dd = computed(() => deep.count * 2);
     const gap = this.ref(12);
 
@@ -82,8 +88,8 @@ export class ExampleElement extends Element {
       d,
       dd,
       deep,
-      hide: true,
-      color: randomColor(),
+      hide: this.ref(true),
+      color: this.ref(randomColor()),
       gap,
       style: computed(() => ({
         display: 'flex',
@@ -93,7 +99,7 @@ export class ExampleElement extends Element {
   }
 
   changeColor() {
-    this.context.color = randomColor();
+    this.context.color.value = randomColor();
   }
 
   onConnect(): void {
@@ -108,6 +114,7 @@ export class ExampleElement extends Element {
     console.log('disconnect');
   }
 }
+
 @Component({
   tag: 'child-element'
 })
@@ -172,10 +179,10 @@ export class ParentElement extends Element {
     /> `;
 
   setup() {
-    return {
+    return this.reactive({
       prop: 1,
       hide: false
-    };
+    });
   }
 
   onConnect(): void {
@@ -226,12 +233,12 @@ export class ControlledInputs extends Element {
   </flex-element>`;
 
   setup() {
-    return {
+    return this.reactive({
       input: 'input',
       select: 'a',
       textarea: `text\narea`,
       elements: '<p>paragraph</p>'
-    };
+    });
   }
 
   onUpdate(): void {

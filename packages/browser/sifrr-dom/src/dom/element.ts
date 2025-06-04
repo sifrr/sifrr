@@ -42,7 +42,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       if (!temp) {
         throw Error(`No template provided for Element: ${constructor.n}`);
       }
-      this.context = this.ref(this.setup(), true).value as ReturnType<this['setup']>;
+      this.context = this.setup() as ReturnType<this['setup']>;
       this[content] = temp(this);
       if (useShadowRoot) {
         this.attachShadow({
