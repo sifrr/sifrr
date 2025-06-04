@@ -19,7 +19,11 @@ export const Primary: Story = {
     const Component = html<{
       click: () => void;
     }>`
-      <div @click=${({ click }) => click} :@customevent=${console.log} :@dblclick=${console.log}>
+      <div
+        @click=${({ click }: { click: () => void }) => click}
+        :@customevent=${console.log}
+        :@dblclick=${console.log}
+      >
         Click
       </div>
       <br />

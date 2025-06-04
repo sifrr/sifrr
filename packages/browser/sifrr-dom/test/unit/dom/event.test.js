@@ -3,7 +3,7 @@ const { getEventListener } = require('../../../src/dom/event');
 describe('Event', () => {
   it('takes composedPath if exists', async () => {
     const target = {
-      _click: sinon.spy()
+      click: sinon.spy()
     };
     const event = {
       composedPath: () => [target]

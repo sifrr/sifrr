@@ -89,7 +89,7 @@ export function updateOne<T>(
 ) {
   // Direct Prop
   if (binding.type === SifrrBindType.DirectProp) {
-    if (!oldValue) {
+    if (oldValue === null) {
       if (binding.name === 'style') {
         const newValue: CssProperties = binding.value ?? emptyObj;
         const keys = Object.keys(newValue) as (keyof CssProperties)[],

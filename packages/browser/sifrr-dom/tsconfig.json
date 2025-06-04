@@ -7,6 +7,7 @@
     "removeComments": false,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "experimentalDecorators": true
   }
 }

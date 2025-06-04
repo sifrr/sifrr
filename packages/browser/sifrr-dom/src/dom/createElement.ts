@@ -18,8 +18,8 @@ export function register(Element: SifrrElementKlass<any>, silent = false) {
   } else if (name.indexOf('-') < 1) {
     throw Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`);
   } else {
-    window.customElements.define(name, Element);
     Element.dependencies?.forEach((c) => register(c));
+    window.customElements.define(name, Element);
     elements[name] = Element;
     return true;
   }

@@ -1,4 +1,5 @@
-import { Ref, SifrrCreateFunction } from '@sifrr/template';
+import { elName, props } from '@/dom/symbols';
+import { SifrrCreateFunction } from '@sifrr/template';
 
 declare global {
   interface Element {
@@ -27,6 +28,8 @@ export interface SifrrEventListener {
 }
 
 export interface SifrrElementKlass<K extends ISifrrElement> {
+  [elName]?: string;
+  [props]?: Set<string>;
   new (): K;
   prototype: K;
   elementName: string;

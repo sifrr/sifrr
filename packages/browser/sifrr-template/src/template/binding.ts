@@ -18,7 +18,7 @@ function collectValues<T>(element: Node, bindMap: SifrrBindMap<T>[]): any[] {
       oldValues[j] = [element];
     } else if (binding.type === SifrrBindType.Attribute) {
       oldValues[j] = null;
-    } else if (binding.type === SifrrBindType.Prop) {
+    } else if (binding.type === SifrrBindType.Prop || binding.type === SifrrBindType.DirectProp) {
       if (binding.name === 'style') {
         oldValues[j] = Object.create(null);
       } else {

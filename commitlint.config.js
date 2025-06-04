@@ -4,7 +4,12 @@ const getPackages = () => {
   const folders = fs
     .readdirSync('./packages', { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
-    .map((dir) => dir.name);
+    .flatMap((dir) =>
+      fs
+        .readdirSync('./packages/' + dir.name, { withFileTypes: true })
+        .filter((dir) => dir.isDirectory())
+        .map((dir) => dir.name)
+    );
 
   return folders;
 };

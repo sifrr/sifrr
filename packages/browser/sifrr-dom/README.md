@@ -92,7 +92,7 @@ class CustomTag extends Element {
     return this.getAttribute('data');
   }
   // can setup anything to be run before component is created
-  // and return value will be used as context, context is a reactive object so element is re-rendered whenever it changes
+  // and return value will be used as context, context is a reactive object so element is re-rendered whenever any of it's properties changes
   setup() {
     const count = 0
     const deep = {
@@ -186,7 +186,7 @@ class CustomTag extends Element {
           color: blue; // Only applies to p inside this element
         }
       </style>
-      <p>${el => el.state.}</p>
+      <p>${el => el.state.number}</p>
       <p attr=${el => el.state.attribute}>${el => el.state.number}</p>
     `; // el is the element instance
   }
@@ -235,38 +235,62 @@ customtag.update();
 
 ### Components Without shadow root
 
-```html
-<!-- ${baseUrl}/elements/custom/tag.html -->
-<template>
-  <style media="screen">
-    // Style here will be global
-  </style>
-  <!-- content -->
-</template>
-<script type="text/javascript">
-  class CustomTag {
-    constructor() {
-      super({
-        useShadowRoot: false
-      })
-    }
+```js
+class CustomTag {
+  constructor() {
+    super({
+      useShadowRoot: false
+    })
   }
-</script>
+}
 ```
 
 ### props
 
-- props do not trigger re-renders, unless set by `:` or `::` prop bindings of `Sifrr.Template`
+You can define props for an element like this:
+
+```ts
+class CustomCount extends Element {
+  // Note prop decorator is needed if you need to access property on first render, 
+  // else browser removes props when element is connected
+  @Prop() 
+  count!: number
+
+  static get template() {
+    return html`
+      <p>${el => el.count}</p>
+    `; // el is the element instance
+  }
+
+  constructor() {
+    super();
+  }
+}
+```
+
+and then in some other element
+
+```js
+class ParentElement extends Element {
+  static get template() {
+    return html`
+      <custom-count :count=${() => 5} /p>
+    `; // el is the element instance
+    // this will render
+    // <custom-count><p>5</p></custom-count>
+  }
+
+  constructor() {
+    super();
+  }
+}
+```
+
+- props do not trigger re-renders, unless set by `:` or `::` prop bindings of `Sifrr.Template`, call `element.setProps(props)` to re-render programatically
 - first argument in props binding function is parent sifrr element
-- `:` or `::` prop bindings don't work when the element has no parent sifrr element
+- `:` or `::` prop bindings only works inside sifrr elements
 - props are case insensitive
 - props in hyphen-case will be converted to camel-case property name, i.e. `some-thing` => `someThing`
-
-```html
-<custom-tag :prop="${parentElement => parentElement.data}"></custom-tag>
-
-<!-- then you can access property in customTag with `this.prop` -->
-```
 
 ### Sifrr Element (Sifrr.Dom.Element) Methods
 
@@ -299,11 +323,11 @@ class CustomTag extends Sifrr.Dom.Element {
   }
 
   beforeUpdate() {
-    // called before updates are rendered
+    // called before element is re-rendered (note it's not called on first render, use setup to do stuff before first render and constructor to do stuff after first render)
   }
 
   onUpdate() {
-    // called when element is updated
+    // called after element is re-rendered (note it's not called on first render, use setup to do stuff before first render and constructor to do stuff after first render)
   }
 }
 ```

@@ -1,22 +1,11 @@
+import { content, elName, props, tmp, watchers } from '@/dom/symbols';
 import { ISifrrElement, SifrrElementKlass } from './types';
-import {
-  SifrrCreateFunction,
-  update,
-  SifrrProps,
-  SifrrNodesArray,
-  Ref,
-  ref,
-  watch
-} from '@sifrr/template';
-
-const elName = Symbol('elName');
-const tmp = Symbol('template');
-const content = Symbol('content');
-const watchers = Symbol('watchers');
+import { SifrrCreateFunction, SifrrProps, SifrrNodesArray, Ref, ref, watch } from '@sifrr/template';
 
 function elementClassFactory(baseClass: typeof HTMLElement) {
   class SifrrElement extends baseClass implements ISifrrElement {
-    private static [elName]: string;
+    static [elName]: string;
+    static [props]?: Set<string>;
     private static [tmp]: SifrrCreateFunction<any>;
     static readonly template: SifrrCreateFunction<any>;
     static readonly components?: SifrrElementKlass<any>[];
@@ -35,8 +24,9 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       return this.elementName;
     }
 
-    readonly [content]: SifrrNodesArray<SifrrElement>;
+    [content]: SifrrNodesArray<SifrrElement>;
     readonly [watchers]: (() => void)[] = [];
+    #tempProps: Record<string, unknown> = {};
     context: ReturnType<this['setup']>;
 
     constructor({
@@ -50,7 +40,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       const constructor = <typeof SifrrElement>this.constructor;
       const temp = (constructor[tmp] = constructor[tmp] ?? constructor.template);
       if (!temp) {
-        throw Error(`No template provided for Element = ${constructor.n}`);
+        throw Error(`No template provided for Element: ${constructor.n}`);
       }
       this.context = this.ref(this.setup(), true).value as ReturnType<this['setup']>;
       this[content] = temp(this);
@@ -59,6 +49,10 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
           mode: shadowRootMode
         });
       }
+      const propKeys = (this.constructor as SifrrElementKlass<any>)[props];
+      propKeys?.forEach((k) => {
+        this.#tempProps[k] = (this as any)[k];
+      });
     }
 
     setup() {
@@ -87,6 +81,9 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       if (this[content].length > 0) {
         if (parent.childNodes.length !== 0) {
           parent.textContent = '';
+        } else {
+          Object.assign(this, this.#tempProps);
+          this.#tempProps = {};
         }
         parent.append(...this[content]);
       }
@@ -109,7 +106,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     update() {
       if (!this.isConnected) return;
       this.beforeUpdate();
-      update(this[content], this);
+      this[content].update(this);
       this.onUpdate();
       this[watchers].forEach((w) => w());
       this.dispatchEvent(
@@ -124,7 +121,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       else return true;
     }
 
-    emit(type: string, data: any, options: EventInit) {
+    emit(type: string, data?: any, options?: EventInit) {
       this.dispatchEvent(
         new CustomEvent(type, {
           detail: data,
@@ -148,7 +145,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     onConnect() {}
     onDisconnect() {}
     onAttributeChange(_name: string, _oldVal: any, _newVal: any) {}
-    onPropChange(prop: string, oldVal: any, newVal: any): void {}
+    onPropChange(_prop: string, _oldVal: any, _newVal: any): void {}
     beforeUpdate() {}
     onUpdate() {}
   }

@@ -1,10 +1,10 @@
 export { default as createUniqueString } from './ustring';
+export { default as cls } from './ustring';
 export { default as html } from './template/create';
 export { update } from './template/update';
 export { default as for } from './binders/bindfor';
 export { default as forKeyed } from './binders/bindforkeyed';
 export { default as memo } from './template/memo';
-export { default as styled } from './template/styled';
 export { createTemplateFromString } from './template/utils';
 export { makeChildrenEqual as makeEqualArray, makeEqual } from './template/makeequal';
 export { ref, computed, watch, type Ref, type ComputedRef } from './template/ref';

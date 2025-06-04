@@ -11,3 +11,4 @@ function setup() {
 
 export { Element, register, setup, elements, createElement };
 export * from './dom/types';
+export * from './dom/symbols';

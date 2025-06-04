@@ -1,5 +1,6 @@
+import { Component, Prop } from '@/dom/decorator';
 import { Element } from '@/index';
-import { computed, html, memo, SifrrCreateFunction, styled } from '@sifrr/template';
+import { cls, computed, html, memo, SifrrCreateFunction } from '@sifrr/template';
 
 const randomColor = () => '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
 
@@ -21,26 +22,23 @@ export class FlexElement extends Element {
   `;
 }
 
-const flex = styled<ExampleElement>`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  color: ${(el: ExampleElement) => {
-    console.log(el.context);
-    return el.context.color;
-  }};
-`;
-
-console.log(flex.css({ context: {} } as any));
-
 export class ExampleElement extends Element {
+  static readonly flexCls = cls();
+
   static get template() {
     return html<ExampleElement>`
       <style>
-        .${ExampleElement.n}${flex.css}
+        .${ExampleElement.n}.${ExampleElement.flexCls} {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          color: ${(el: ExampleElement) => {
+            return el.context.color;
+          }};
+        }
       </style>
       <div
-        class="${ExampleElement.n} ${flex.className}"
+        class="${ExampleElement.n} ${ExampleElement.flexCls}"
         style="position: static"
         :style=${(el: ExampleElement) => el.context.style.value}
       >
@@ -110,15 +108,23 @@ export class ExampleElement extends Element {
     console.log('disconnect');
   }
 }
-
+@Component({
+  tag: 'child-element'
+})
 class ChildElement extends Element {
+  @Prop()
   prop!: number;
 
   static readonly template = html<ChildElement>`<p>${(el: ChildElement) => el.prop}</p>
-    <p>${(el: ChildElement) => el.context.double.value}</p>`;
+    <p>${(el: ChildElement) => el.context.double.value}</p>
+    <button
+      @click=${(el: ChildElement) => () =>
+        el.emit('finish', [el, el.prop, el.context.double.value])}
+    >
+      Finish
+    </button> `;
 
   setup() {
-    console.log('setup', this.prop);
     const double = computed(() => {
       return this.prop ? this.prop * 2 : 0;
     });
@@ -128,6 +134,10 @@ class ChildElement extends Element {
     return {
       double
     };
+  }
+
+  onConnect(): void {
+    console.log('connect child');
   }
 }
 
@@ -150,11 +160,13 @@ export class ParentElement extends Element {
       Toggle
     </button>
     <child-element
+      @finish=${() => (e: CustomEvent) => console.log(e.type, e.detail)}
       :prop="${(el: ParentElement) => {
         return el.context.prop;
       }}"
     ></child-element>
     <child-element
+      @finish=${() => (e: CustomEvent) => console.log(e.type, e.detail)}
       :if=${(el: ParentElement) => !el.context.hide}
       :prop=${(el: ParentElement) => el.context.prop * 2}
     /> `;
@@ -164,6 +176,10 @@ export class ParentElement extends Element {
       prop: 1,
       hide: false
     };
+  }
+
+  onConnect(): void {
+    console.log('connect parent');
   }
 }
 
