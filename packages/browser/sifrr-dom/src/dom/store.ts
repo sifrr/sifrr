@@ -14,5 +14,8 @@ export const store = <T>(name: string, value: T | (() => MaybePromise<T>), deep 
   }
 
   stores.set(name, st);
+  console.log(`Store: ${name} created`);
   return st;
 };
+
+export const getStore = <T>(name: string) => stores.get(name) as T;

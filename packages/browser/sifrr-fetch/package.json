@@ -48,7 +48,7 @@
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",
-    "axios": "^0.21.1",
+    "axios": "^1.9.0",
     "node-fetch": "^3.3.2",
     "typescript": "^5.8.3"
   },

@@ -26,7 +26,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
 
     [content]: SifrrNodesArray<SifrrElement>;
     readonly [watchers]: (() => void)[] = [];
-    #tempProps: Record<string, unknown> = {};
+    [props]: Record<string, unknown> = {};
     context: ReturnType<this['setup']>;
 
     constructor({
@@ -51,7 +51,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       }
       const propKeys = (this.constructor as SifrrElementKlass<any>)[props];
       propKeys?.forEach((k) => {
-        this.#tempProps[k] = (this as any)[k];
+        this[props][k] = (this as any)[k];
       });
     }
 
@@ -65,10 +65,10 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
 
     ref<T>(v: T, deep?: boolean) {
       const r = ref(v, deep);
-      return this.useStore(r);
+      return this.watchStore(r);
     }
 
-    useStore<T>(ref: Ref<T>): Ref<T> {
+    watchStore<T>(ref: Ref<T>): Ref<T> {
       ref.__sifrrWatchers?.add(() => {
         this.update();
       });
@@ -86,8 +86,8 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
         if (parent.childNodes.length !== 0) {
           parent.textContent = '';
         } else {
-          Object.assign(this, this.#tempProps);
-          this.#tempProps = {};
+          Object.assign(this, this[props]);
+          this[props] = {};
         }
         parent.append(...this[content]);
       }

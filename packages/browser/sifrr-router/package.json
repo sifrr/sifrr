@@ -1,7 +1,7 @@
 {
-  "name": "@sifrr/dom",
+  "name": "@sifrr/router",
   "version": "0.0.9",
-  "description": "Sifrr's DOM library for creating user interfaces for websites.",
+  "description": "History API based Routing library for sifrr in browser.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,11 +25,9 @@
   ],
   "keywords": [
     "sifrr",
-    "dom",
-    "custom elements",
-    "shadow dom",
-    "ui",
-    "frontend"
+    "route",
+    "router",
+    "sifrr element"
   ],
   "scripts": {
     "lint": "eslint src/.",
@@ -45,11 +43,12 @@
     "storybook:dev": "storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build"
   },
-  "dependencies": {
-    "@sifrr/template": "*"
+  "dependencies": {},
+  "peerDependencies": {
+    "@sifrr/dom": "*"
   },
-  "peerDependencies": {},
   "devDependencies": {
+    "@sifrr/dom": "*",
     "@sifrr/eslint-config": "*",
     "@sifrr/release-it-config": "*",
     "@sifrr/test-suite": "*",

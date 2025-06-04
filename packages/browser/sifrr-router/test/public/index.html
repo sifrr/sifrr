@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>route</title>
+    <style media="screen">
+      *:not(:defined) * {
+        display: none;
+      }
+
+      *:not(:defined)::before {
+        content: ' ';
+        display: block !important;
+        width: 24px;
+        height: 24px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        border-color: red transparent blue transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Animation */
+      sifrr-route.active {
+        opacity: 0;
+        animation: anim 0.3s ease forwards;
+      }
+
+      @keyframes anim {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1><a id="ok" href="/">OK</a></h1>
+
+    <a href="/">Home</a>
+    <a href="/test">/test</a>
+    <a href="/test?query=random">/test query</a>
+    <a href="/test?query=random&query=1">/test query multiple</a>
+    <a href="/test#hash_random">/test hash</a>
+    <a id="complexlink1" href="/route-data/mnop/sdf/klm">route data check 1</a>
+    <a id="complexlink2" href="/new/def/ghi/klm/mnop/sdf/klm">route data check 2</a>
+    <a id="complexlink1" href="/regex/mnop/sdf/klm">route data check regex</a>
+    <a id="nomatch" href="/asf/sfg/2344">No match</a>
+    <br />
+    <br />
+    <a href="/test?q=v#1234">
+      <div>
+        <button>Button test</button>
+      </div>
+    </a>
+    <br />
+    <a href="http://google.com" id="external">External</a>
+    <a href="/target" target="_blank">Outside</a>
+    <a href="/target" target="_parent">Parent</a>
+    <a href="/target" target="_top">Top</a>
+    <a href="/target" target="_self">Self</a>
+    <br />
+    <br />
+    <main-element></main-element>
+    <script src="/dom/index.iife.js" charset="utf-8"></script>
+    <script src="/index.iife.js" charset="utf-8"></script>
+    <script>
+      import('/main.mjs');
+    </script>
+  </body>
+</html>

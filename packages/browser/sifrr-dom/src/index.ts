@@ -1,5 +1,5 @@
 import Element from './dom/element';
-import { store } from './dom/store';
+import { store, getStore } from './dom/store';
 import { createElement, register, elements } from './dom/createElement';
 
 // Initialize SifrrDom
@@ -10,6 +10,8 @@ function setup() {
   document.$$ = document.querySelectorAll;
 }
 
-export { Element, register, setup, elements, createElement, store };
+export { Element, register, setup, elements, createElement, store, getStore };
 export * from './dom/types';
 export * from './dom/symbols';
+export * from './dom/decorator';
+export * from '@sifrr/template';

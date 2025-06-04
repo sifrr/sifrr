@@ -30,7 +30,7 @@ export interface SifrrEventListener {
 export interface SifrrElementKlass<K extends ISifrrElement> {
   [elName]?: string;
   [props]?: Set<string>;
-  new (): K;
+  new (options?: { useShadowRoot?: boolean; shadowRootMode?: ShadowRootMode }): K;
   prototype: K;
   elementName: string;
   n: string;

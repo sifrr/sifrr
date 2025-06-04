@@ -7,7 +7,7 @@ export { default as forKeyed } from './binders/bindforkeyed';
 export { default as memo } from './template/memo';
 export { createTemplateFromString } from './template/utils';
 export { makeChildrenEqual as makeEqualArray, makeEqual } from './template/makeequal';
-export { ref, computed, watch, type Ref, type ComputedRef } from './template/ref';
+export { ref, computed, watch, type Ref, type ComputedRef, isRef } from './template/ref';
 export { default as bindFor } from './binders/bindfor';
 export { default as bindForKeyed } from './binders/bindforkeyed';
 export * from './template/types';

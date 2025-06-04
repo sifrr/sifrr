@@ -5,6 +5,15 @@ import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import { globSync } from 'glob';
 import { readFileSync } from 'fs';
 
+const nameToGlobal = (name) =>
+  name
+    .replace(/@([a-z])/, (match, letter) => {
+      return letter.toUpperCase();
+    })
+    .replace(/\/([a-z])/, (match, letter) => {
+      return '.' + letter.toUpperCase();
+    });
+
 export default (baseDir, external = []) => {
   const entries = Object.fromEntries(
     globSync(resolve(baseDir, 'src') + '/**/index.ts').map((file) => [
@@ -14,13 +23,9 @@ export default (baseDir, external = []) => {
       resolve(baseDir, file)
     ])
   );
-  const name = JSON.parse(readFileSync(resolve(baseDir, 'package.json'), 'utf-8'))
-    .name.replace(/@([a-z])/, (match, letter) => {
-      return letter.toUpperCase();
-    })
-    .replace(/\/([a-z])/, (match, letter) => {
-      return '.' + letter.toUpperCase();
-    });
+  const name = nameToGlobal(
+    JSON.parse(readFileSync(resolve(baseDir, 'package.json'), 'utf-8')).name
+  );
 
   return defineConfig({
     resolve: {
@@ -59,7 +64,11 @@ export default (baseDir, external = []) => {
           chunkFileNames: 'chunks/[name].[hash].js',
           // Put chunk styles at <output>/assets
           assetFileNames: 'assets/[name][extname]',
-          entryFileNames: '[name].[format].js'
+          entryFileNames: '[name].[format].js',
+          globals: external.reduce((prev, cur) => {
+            prev[cur] = nameToGlobal(cur);
+            return prev;
+          }, {})
         }
       }
     }

@@ -1,4 +1,5 @@
-const getRegex = (path: string) => {
+const getRegex = (path: string | RegExp) => {
+  if (path instanceof RegExp) return path;
   return new RegExp(
     '^' +
       path
@@ -11,7 +12,7 @@ const getRegex = (path: string) => {
 };
 
 const getDataMap = (path: string) => {
-  const dataMap = [];
+  const dataMap: string[] = [];
   path.split('/').forEach((r: string) => {
     if (r.startsWith(':') || r === '*' || r === '**' || r.match(/\(.*\)/)) {
       dataMap.push(r);
@@ -24,39 +25,45 @@ class RegexPath extends RegExp {
   public options: {
     delimiter: string;
   };
-  private readonly path: string;
+  private readonly path: string | RegExp;
   private readonly dataMap: string[];
 
-  constructor(path: string, options = {}) {
+  constructor(path: string | RegExp, options = {}) {
     super(getRegex(path));
     this.options = { delimiter: '/', ...options };
     this.path = path;
-    this.dataMap = getDataMap(path);
+    this.dataMap = typeof path === 'string' ? getDataMap(path) : [];
   }
 
   testRoute(route: string) {
-    const data: {
+    let data: {
         regexGroups?: string[];
-        [k: string]: string | string[];
         '*'?: string[];
         '**'?: string[];
+        [k: string]: string | string[] | undefined;
       } = {},
       match = this.exec(route);
     if (match) {
-      this.dataMap.forEach((d, i) => {
+      match.forEach((m, i) => {
+        if (i === 0) return;
+        const d = this.dataMap[i - 1];
         if (d === '*') {
           data['*'] = data['*'] || [];
-          data['*'].push(match[i + 1]);
+          data['*'].push(m);
         } else if (d === '**') {
           data['**'] = data['**'] || [];
-          data['**'].push(match[i + 1]);
-        } else if (d.startsWith(':')) {
+          data['**'].push(m);
+        } else if (d?.startsWith(':')) {
           data[d.substring(1)] = match[i + 1];
         } else {
           data.regexGroups = data.regexGroups || [];
-          data.regexGroups.push(match[i + 1]);
+          data.regexGroups.push(m);
         }
       });
+      data = {
+        ...data,
+        ...match.groups
+      };
     }
     return {
       match: !!match,

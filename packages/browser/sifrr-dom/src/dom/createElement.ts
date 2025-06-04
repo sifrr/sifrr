@@ -5,17 +5,22 @@ import { ISifrrElement, SifrrElementKlass } from './types';
 export const elements = Object.create(null);
 
 // Register Custom Element Function
-export function register(Element: SifrrElementKlass<any>, silent = false) {
-  const name = Element.elementName;
+export function register(
+  Element: SifrrElementKlass<any>,
+  silent = false,
+  name = Element.elementName
+) {
   if (!name) {
     throw Error('Error creating Custom Element: No name given.');
   } else if (window.customElements.get(name)) {
     if (!silent)
       console.warn(
-        `Error creating Element: ${name} - Custom Element with this name is already defined.`
+        `Error creating Element: ${name} - Custom Element with this name is already defined.`,
+        Element
       );
     return false;
   } else if (name.indexOf('-') < 1) {
+    console.error(Element);
     throw Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`);
   } else {
     Element.dependencies?.forEach((c) => register(c));
@@ -41,7 +46,7 @@ export function createElement<T, K extends ISifrrElement>(
     }
   }
 
-  register(elementClass);
+  register(elementClass, true);
   if (oldElement instanceof elementClass) {
     oldElement.setProps(props);
     return oldElement;
