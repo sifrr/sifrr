@@ -112,9 +112,16 @@ export function updateOne<T>(
   // If
   else if (binding.type === SifrrBindType.If) {
     node.ifComment = node.ifComment ?? REFERENCE_COMMENT();
+    node.ifDisplay ??= node.style.display ?? '';
+    const display = newValue ? (node.ifDisplay as string) : 'none';
     newValue = newValue ? node : node.ifComment;
     if (newValue !== oldValue) {
-      oldValue.replaceWith(newValue);
+      if (oldValue?.isConnected) {
+        node.style.display = node.ifDisplay as string;
+        oldValue.replaceWith(newValue);
+      } else {
+        node.style.display = display;
+      }
     }
   }
   // Text
