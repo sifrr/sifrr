@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
-import { html, ref, bindForKeyed, bindFor, SifrrNodesArrayKeyed, SifrrNodesArray } from '@/index';
+import { html, ref, forKeyed, forNonKeyed, SifrrNodesArrayKeyed, SifrrNodesArray } from '@/index';
 import currentStyle from './utils/currentStyle.css?inline';
 import { rearrange, rearrange2 } from './utils/speedtest.arrangements';
 
@@ -238,11 +238,11 @@ export const Primary: Story = {
           <tbody>
             <!--${(_: {}, oldValue: SifrrNodesArrayKeyed<any>) => {
               if (useKey) {
-                return bindForKeyed(row, data.value, oldValue);
+                return forKeyed(row, data.value, oldValue);
               } else if (useClean) {
                 return data.value.map((d: any, i: number) => row(d));
               } else {
-                return bindFor(row, data.value, oldValue as SifrrNodesArray<any>);
+                return forNonKeyed(row, data.value, oldValue as SifrrNodesArray<any>);
               }
             }}-->
           </tbody>

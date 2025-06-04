@@ -18,7 +18,7 @@ export * from './dom/symbols';
 export {
   html,
   cls,
-  for as forNonKeyed,
+  forNonKeyed,
   forKeyed,
   memo,
   computed,

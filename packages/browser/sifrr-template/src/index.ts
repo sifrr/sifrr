@@ -2,7 +2,7 @@ export { default as createUniqueString } from './ustring';
 export { default as cls } from './ustring';
 export { default as html } from './template/create';
 export { update } from './template/update';
-export { default as for } from './binders/bindfor';
+export { default as forNonKeyed } from './binders/bindfor';
 export { default as forKeyed } from './binders/bindforkeyed';
 export { default as memo } from './template/memo';
 export { createTemplateFromString } from './template/utils';
