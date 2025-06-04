@@ -1,6 +1,13 @@
-import { Element as SifrrElement, register, createElement, getStore, html } from '@sifrr/dom';
+import {
+  Element as SifrrElement,
+  register,
+  createElement,
+  getStore,
+  html,
+  SifrrElementKlass
+} from '@sifrr/dom';
 import RegexPath from './regexpath';
-import { Router, STORE_NAME } from '@/router';
+import { Current, getCurrent, Router, STORE_NAME } from '@/router';
 import { useRouter } from '@/helpers';
 
 class SifrrRouter extends SifrrElement {
@@ -10,20 +17,23 @@ class SifrrRouter extends SifrrElement {
     });
   }
 
-  static readonly template = html`${async (el: SifrrRouter, oldVal: any) => {
-    const router: Router = (el.context as any).router;
-    const current = router.value.current;
-    if (!current) return null;
+  static readonly template = html`<sifrr-fragment>
+    ${async (el: SifrrRouter, oldVal: any) => {
+      const router: Router = (el.context as any).router;
+      const current = router.value.current;
+      const comp = current?.matchedRoute.component;
 
-    const comp = current.matchedRoute.component;
-    const component = 'template' in comp ? comp : await comp();
+      if (!comp) return null;
 
-    return createElement(
-      component,
-      current.matchedRoute.getProps?.(current.data) as any,
-      oldVal?.[0]
-    );
-  }}`;
+      const component = typeof comp === 'string' || 'template' in comp ? comp : await comp();
+
+      return createElement(
+        component,
+        current.matchedRoute.getProps?.(current.data) as any,
+        oldVal?.[0]
+      );
+    }}
+  </sifrr-fragment>`;
 
   setup() {
     const router = useRouter();
@@ -41,37 +51,72 @@ class SifrrRouter extends SifrrElement {
 register(SifrrRouter, false, 'sifrr-router');
 
 class SifrrRoute extends SifrrElement {
+  declare context: ReturnType<typeof this.setup>;
+  path?: string | RegExp;
+  component?:
+    | string
+    | SifrrElementKlass<any>
+    | (() => SifrrElementKlass<any> | Promise<SifrrElementKlass<any>>);
+  getProps?: (data?: Current['data']) => unknown;
+
   constructor() {
     super({
-      useShadowRoot: false
+      useShadowRoot: true
     });
   }
 
-  static readonly template = html`${async (el: SifrrRoute, oldVal: any) => {
-    const router = (el.context as any).router;
-    const current = router.value.current;
-    if (!current) return null;
+  static readonly template = html`<sifrr-fragment :if=${(el: SifrrRoute) => el.context.match.value}>
+    ${async (el: SifrrRoute, oldVal: any) => {
+      const current = (el.context as any).data;
+      const comp = current?.matchedRoute.component;
 
-    const comp = current.matchedRoute.component;
-    const component = 'template' in comp ? comp : await comp();
+      if (!comp) return null;
 
-    return createElement(
-      component,
-      current.matchedRoute.getProps?.(current.data) as any,
-      oldVal?.[0]
-    );
-  }}`;
+      const component = typeof comp === 'string' || 'template' in comp ? comp : await comp();
+
+      return createElement(
+        component,
+        current.matchedRoute.getProps?.(current.data) as any,
+        oldVal?.[0]
+      );
+    }}
+    <slot />
+  </sifrr-fragment>`;
 
   setup() {
     const router = getStore<Router>(STORE_NAME);
     if (!router) {
       throw Error('No router was registered before creating sifrr-route element.');
     }
-    this.watchStore(router);
+    router.value.after(() => this.refresh());
 
     return {
-      router
+      regex: this.path ? new RegexPath(this.path) : undefined,
+      match: this.ref(false),
+      data: undefined as Current | undefined
     };
+  }
+
+  onConnect(): void {
+    this.refresh();
+  }
+
+  refresh() {
+    const data = this.checkMatch();
+    this.context.match.value = !!data;
+    this.context.data = data;
+  }
+
+  checkMatch() {
+    if (!this.context.regex) return undefined;
+    const current = getCurrent([
+      {
+        path: this.path!,
+        pathRegex: this.context.regex,
+        component: this.component
+      }
+    ]);
+    return current;
   }
 }
 

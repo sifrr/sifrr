@@ -3,17 +3,17 @@ const getRegex = (path: string | RegExp) => {
   return new RegExp(
     '^' +
       path
-        .replace(/\/:\w\?/g, '(/[^/]{0,})?')
+        .replace(/\/:\w+\?/g, '(/[^\\/]{0,})?')
         .replace(/\*\*/g, '(.{0,})')
-        .replace(/\*/g, '([^/]{0,})')
-        .replace(/:\w/g, '([^/]{0,})') +
+        .replace(/\*/g, '([^\\/]{0,})')
+        .replace(/:\w+/g, '([^\\/]{0,})') +
       '$'
   );
 };
 
-const getDataMap = (path: string) => {
+const getDataMap = (path: string, delimiter = '/') => {
   const dataMap: string[] = [];
-  path.split('/').forEach((r: string) => {
+  path.split(delimiter).forEach((r: string) => {
     if (r.startsWith(':') || r === '*' || r === '**' || r.match(/\(.*\)/)) {
       dataMap.push(r);
     }
@@ -23,16 +23,16 @@ const getDataMap = (path: string) => {
 
 class RegexPath extends RegExp {
   public options: {
-    delimiter: string;
+    delimiter?: string;
   };
   private readonly path: string | RegExp;
   private readonly dataMap: string[];
 
   constructor(path: string | RegExp, options = {}) {
     super(getRegex(path));
-    this.options = { delimiter: '/', ...options };
+    this.options = options;
     this.path = path;
-    this.dataMap = typeof path === 'string' ? getDataMap(path) : [];
+    this.dataMap = typeof path === 'string' ? getDataMap(path, this.options.delimiter) : [];
   }
 
   testRoute(route: string) {
@@ -54,7 +54,7 @@ class RegexPath extends RegExp {
           data['**'] = data['**'] || [];
           data['**'].push(m);
         } else if (d?.startsWith(':')) {
-          data[d.substring(1)] = match[i + 1];
+          data[d.substring(1)] = m;
         } else {
           data.regexGroups = data.regexGroups || [];
           data.regexGroups.push(m);

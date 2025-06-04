@@ -9,27 +9,30 @@ export type Current = {
   matchedRoute: Omit<Route, 'children'> & {
     pathRegex: RegexPath;
   };
+  title: string;
   path: string;
   data: ReturnType<typeof RegexPath.prototype.testRoute>['data'];
   query: Record<string, string | string[] | null>;
   hash: string;
+  meta?: Record<string, unknown>;
 };
 
 export type Route = {
   path: string | RegExp;
-  title: string;
-  component:
+  title?: string;
+  component?:
+    | string
     | SifrrElementKlass<any>
     | (() => SifrrElementKlass<any> | Promise<SifrrElementKlass<any>>);
-  meta: Record<string, unknown>;
+  meta?: Record<string, unknown>;
   getProps?: (data?: Current['data']) => unknown;
   children?: Route[];
 };
 
 export type Options = {
   routes: Route[];
-  before?: () => {};
-  after?: () => {};
+  before?: () => void;
+  after?: () => void;
 };
 
 export const getFlatRoutes = (routes: Route[], prefix = '') => {
@@ -49,7 +52,7 @@ export const getFlatRoutes = (routes: Route[], prefix = '') => {
   return newRoutes;
 };
 
-const getCurrent = (
+export const getCurrent = (
   routes: Current['matchedRoute'][],
   currentPath: SifrrPath = window.location
 ): Current | undefined => {
@@ -66,12 +69,17 @@ const getCurrent = (
     query[k] = v.length > 1 ? v : (v[0] ?? null);
   }
 
+  const title = matchedRoute.title ?? document.title;
+  window.document.title = title;
+
   return {
     matchedRoute,
+    title,
     path: currentPath.href,
     data: parsed,
     query,
-    hash: currentPath.hash
+    hash: currentPath.hash,
+    meta: matchedRoute.meta
   };
 };
 
@@ -109,24 +117,24 @@ export const createRouter = (options: Options) => {
     ...r,
     pathRegex: new RegexPath(r.path)
   }));
+  const befores = options.before ? [options.before] : [];
+  const afters = options.after ? [options.after] : [];
 
   const push = (currentPath: SifrrPath, replace = false) => {
-    options.before?.();
+    befores.forEach((c) => c());
     const prev = router.value.current?.path;
     if (prev === currentPath.href) return;
     router.value.refresh(currentPath);
-    const title = router.value.current?.matchedRoute.title ?? document.title;
     const state = {
       pathname: currentPath.pathname,
       href: currentPath.href,
-      title: title,
+      title: '',
       routerContext: router.value.current
         ? JSON.parse(JSON.stringify(router.value.current?.data))
         : null
     };
-    window.document.title = title;
-    window.history[replace ? 'replaceState' : 'pushState'](state, title, currentPath.href);
-    options.after?.();
+    window.history[replace ? 'replaceState' : 'pushState'](state, '', currentPath.href);
+    afters.forEach((c) => c());
   };
 
   const router = store(STORE_NAME, {
@@ -138,7 +146,9 @@ export const createRouter = (options: Options) => {
     push,
     replace: (currentPath: SifrrPath, replace = false) => {
       push(currentPath, true);
-    }
+    },
+    before: (c: () => void) => befores.push(c),
+    after: (c: () => void) => afters.push(c)
   });
 
   window.document.addEventListener('click', getClickEventListener(router));
