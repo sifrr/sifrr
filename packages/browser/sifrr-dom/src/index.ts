@@ -14,4 +14,14 @@ export { Element, register, setup, elements, createElement, store, getStore };
 export * from './dom/types';
 export * from './dom/symbols';
 export * from './dom/decorator';
-export * from '@sifrr/template';
+export * from './dom/symbols';
+export {
+  html,
+  cls,
+  for,
+  forKeyed,
+  memo,
+  computed,
+  type Ref,
+  type ComputedRef
+} from '@sifrr/template';
