@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "yargs": "^13.2.4"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {},
   "devDependencies": {
