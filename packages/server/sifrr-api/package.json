@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "graphql": "^14.5.3",
-    "graphql-tools": "^4.0.3",
+    "graphql-tools": "^9.0.18",
     "mkdirp": "^0.5.1"
   },
   "peerDependencies": {},
