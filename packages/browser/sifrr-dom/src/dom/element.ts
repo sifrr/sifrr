@@ -108,7 +108,6 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     update() {
-      if (!this.isConnected) return;
       this.beforeUpdate();
       this[content].update(this);
       this.onUpdate();

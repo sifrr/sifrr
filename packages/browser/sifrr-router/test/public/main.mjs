@@ -42,10 +42,13 @@ class MainElement extends Sifrr.Dom.Element {
     <sifrr-route id="abcd" title="abcd" ::path="/test">
       <p>/test</p>
     </sifrr-route>
-    <sifrr-route id="complex" ::path="/:x/*/**/mnop/*/:k">
+    <sifrr-route id="complex" :path="/:x/*/**/mnop/*/:k">
       Route state check
     </sifrr-route>
-    <sifrr-route ::path="/route/test" :component="test-element"></sifrr-route>
+    <sifrr-route :path="/route/test" :component="test-element" ::get-props=${(data) => {
+      return { query: data.query, hash: data.hash };
+    }}></sifrr-route>
+    <sifrr-route :path="/route/dynamic" ::component=${async () => (await import('./dynamic.mjs')).default}></sifrr-route>
     </sifrr-route>
   `;
 }

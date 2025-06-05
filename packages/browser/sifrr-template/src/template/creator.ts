@@ -93,6 +93,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
         }
       }
 
+      let remove = true;
       if (attribute.name[0] === ':' && (attribute.name[1] === ':' || attribute.name[1] === '@')) {
         if (attribute.name[1] === '@') {
           add(attribute.name.substring(2));
@@ -131,14 +132,10 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
               }
         );
       } else {
-        bm.push({
-          type: SifrrBindType.Attribute,
-          name: attribute.name,
-          value
-        });
+        remove = false;
       }
 
-      eln.removeAttribute(attribute.name);
+      if (remove) eln.removeAttribute(attribute.name);
     }
     if (bm.length > 0) return bm;
   }

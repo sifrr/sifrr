@@ -30,14 +30,14 @@ export function register(
   }
 }
 
-export function createElement<T, K extends ISifrrElement>(
-  elementClass: SifrrElementKlass<K> | string,
+export function createElement<T>(
+  elementClass: SifrrElementKlass<any> | string,
   props: SifrrProps<T>,
-  oldElement?: K
+  oldElement?: ISifrrElement | HTMLElement
 ) {
   if (typeof elementClass === 'string') {
-    if (oldElement?.tagName.toLowerCase() === elementClass) {
-      oldElement.setProps?.(props);
+    if (oldElement?.tagName?.toLowerCase() === elementClass) {
+      (oldElement as ISifrrElement).setProps?.(props);
       return oldElement;
     } else {
       const element = <ISifrrElement>document.createElement(elementClass);
@@ -48,7 +48,7 @@ export function createElement<T, K extends ISifrrElement>(
 
   register(elementClass, true);
   if (oldElement instanceof elementClass) {
-    oldElement.setProps(props);
+    (oldElement as ISifrrElement).setProps(props);
     return oldElement;
   } else {
     const element = <ISifrrElement>document.createElement(elementClass.elementName);

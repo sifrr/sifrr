@@ -37,7 +37,6 @@ export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
 
 export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
   isRendered = false;
-  reference?: Node;
   props?: SifrrProps<T> = undefined;
 
   update(p: SifrrProps<T>) {
@@ -51,7 +50,6 @@ export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
 }
 
 export type SifrrNodesArrayKeyed<T> = (SifrrNode<T> & { key: string | number })[] & {
-  reference?: Node;
   isRendered?: boolean;
   update?: (p: SifrrProps<T>) => void;
 };

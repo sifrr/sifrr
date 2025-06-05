@@ -41,7 +41,13 @@ export const ref = <T>(value: T, deep = true) => {
   const __sifrrWatchers: Ref<T>['__sifrrWatchers'] = new Set();
   const handler = () => {
     if (__sifrrWatchers.size <= 0) return;
-    __sifrrWatchers.forEach((cb) => cb.call(refObj, value));
+    __sifrrWatchers.forEach((cb) => {
+      try {
+        cb.call(refObj, value);
+      } catch (e) {
+        console.error(e);
+      }
+    });
   };
 
   const refObj: Ref<T> = new Proxy(

@@ -1,16 +1,22 @@
-import {
-  Element as SifrrElement,
-  register,
-  createElement,
-  getStore,
-  html,
-  SifrrElementKlass
-} from '@sifrr/dom';
+import { Element as SifrrElement, register, createElement, getStore, html } from '@sifrr/dom';
 import RegexPath from './regexpath';
-import { Current, getCurrent, Router, STORE_NAME } from '@/router';
+import { Current, getCurrent, Route, Router, STORE_NAME } from '@/router';
 import { useRouter } from '@/helpers';
 
+const createAsync = (current?: Current, oldElement?: any) => {
+  const comp = current?.matchedRoute.component;
+  if (!comp) return null;
+  if (typeof comp === 'string' || 'template' in comp) {
+    return createElement(comp, current.matchedRoute.getProps?.(current) as any, oldElement);
+  } else {
+    return Promise.resolve(comp()).then((component) =>
+      createElement(component, current.matchedRoute.getProps?.(current) as any, oldElement)
+    );
+  }
+};
+
 class SifrrRouter extends SifrrElement {
+  declare context: ReturnType<typeof this.setup>;
   constructor() {
     super({
       useShadowRoot: false
@@ -19,19 +25,9 @@ class SifrrRouter extends SifrrElement {
 
   static readonly template = html`<sifrr-fragment>
     ${async (el: SifrrRouter, oldVal: any) => {
-      const router: Router = (el.context as any).router;
+      const router: Router = el.context.router;
       const current = router.value.current;
-      const comp = current?.matchedRoute.component;
-
-      if (!comp) return null;
-
-      const component = typeof comp === 'string' || 'template' in comp ? comp : await comp();
-
-      return createElement(
-        component,
-        current.matchedRoute.getProps?.(current.data) as any,
-        oldVal?.[0]
-      );
+      return createAsync(current, oldVal?.[0]);
     }}
   </sifrr-fragment>`;
 
@@ -52,12 +48,9 @@ register(SifrrRouter, false, 'sifrr-router');
 
 class SifrrRoute extends SifrrElement {
   declare context: ReturnType<typeof this.setup>;
-  path?: string | RegExp;
-  component?:
-    | string
-    | SifrrElementKlass<any>
-    | (() => SifrrElementKlass<any> | Promise<SifrrElementKlass<any>>);
-  getProps?: (data?: Current['data']) => unknown;
+  path?: Route['path'];
+  component?: Route['component'];
+  getProps?: Route['getProps'];
 
   constructor() {
     super({
@@ -66,22 +59,12 @@ class SifrrRoute extends SifrrElement {
   }
 
   static readonly template = html`<sifrr-fragment :if=${(el: SifrrRoute) => el.context.match.value}>
-    ${async (el: SifrrRoute, oldVal: any) => {
-      const current = (el.context as any).data;
-      const comp = current?.matchedRoute.component;
-
-      if (!comp) return null;
-
-      const component = typeof comp === 'string' || 'template' in comp ? comp : await comp();
-
-      return createElement(
-        component,
-        current.matchedRoute.getProps?.(current.data) as any,
-        oldVal?.[0]
-      );
-    }}
-    <slot />
-  </sifrr-fragment>`;
+      ${(el: SifrrRoute, oldVal: any) => {
+        const current = el.context.data;
+        return createAsync(current, oldVal?.[0]);
+      }}
+    </sifrr-fragment>
+    <slot :if=${(el: SifrrRoute) => el.context.match.value} /> `;
 
   setup() {
     const router = getStore<Router>(STORE_NAME);
@@ -91,9 +74,11 @@ class SifrrRoute extends SifrrElement {
     router.value.after(() => this.refresh());
 
     return {
+      component: this.component,
       regex: this.path ? new RegexPath(this.path) : undefined,
       match: this.ref(false),
-      data: undefined as Current | undefined
+      data: undefined as Current | undefined,
+      getProps: this.getProps
     };
   }
 
@@ -103,8 +88,8 @@ class SifrrRoute extends SifrrElement {
 
   refresh() {
     const data = this.checkMatch();
-    this.context.match.value = !!data;
     this.context.data = data;
+    this.context.match.value = !!data;
   }
 
   checkMatch() {
@@ -113,7 +98,8 @@ class SifrrRoute extends SifrrElement {
       {
         path: this.path!,
         pathRegex: this.context.regex,
-        component: this.component
+        component: this.context.component,
+        getProps: this.context.getProps
       }
     ]);
     return current;

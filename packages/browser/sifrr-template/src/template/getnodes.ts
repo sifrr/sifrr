@@ -6,7 +6,7 @@ export default function getNodesFromBindingValue<T>(
   value: DomBindingReturnValue | SifrrNodesArray<T> | SifrrNode<T>
 ): SifrrNode<T>[] {
   if (value === null || value === undefined) {
-    return emptyArray;
+    return [];
   } else if (typeof value === 'string') {
     return [document.createTextNode(value)];
   } else if (value instanceof SifrrNodesArray) {

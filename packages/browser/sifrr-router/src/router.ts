@@ -25,7 +25,7 @@ export type Route = {
     | SifrrElementKlass<any>
     | (() => SifrrElementKlass<any> | Promise<SifrrElementKlass<any>>);
   meta?: Record<string, unknown>;
-  getProps?: (data?: Current['data']) => unknown;
+  getProps?: (data?: Current) => unknown;
   children?: Route[];
 };
 
@@ -120,8 +120,14 @@ export const createRouter = (options: Options) => {
   const befores = options.before ? [options.before] : [];
   const afters = options.after ? [options.after] : [];
 
-  const push = (currentPath: SifrrPath, replace = false) => {
-    befores.forEach((c) => c());
+  const push = (currentPath: SifrrPath = window.location, replace = false) => {
+    befores.forEach((c) => {
+      try {
+        c();
+      } catch (e) {
+        console.error(e);
+      }
+    });
     const prev = router.value.current?.path;
     if (prev === currentPath.href) return;
     router.value.refresh(currentPath);
@@ -134,17 +140,23 @@ export const createRouter = (options: Options) => {
         : null
     };
     window.history[replace ? 'replaceState' : 'pushState'](state, '', currentPath.href);
-    afters.forEach((c) => c());
+    afters.forEach((c) => {
+      try {
+        c();
+      } catch (e) {
+        console.error(e);
+      }
+    });
   };
 
   const router = store(STORE_NAME, {
     routes: flatRoutes,
-    current: getCurrent(flatRoutes),
-    refresh: (currentPath?: SifrrPath) => {
+    current: getCurrent(flatRoutes, window.location),
+    refresh: (currentPath: SifrrPath) => {
       router.value.current = getCurrent(flatRoutes, currentPath);
     },
     push,
-    replace: (currentPath: SifrrPath, replace = false) => {
+    replace: (currentPath?: SifrrPath) => {
       push(currentPath, true);
     },
     before: (c: () => void) => befores.push(c),
@@ -154,8 +166,7 @@ export const createRouter = (options: Options) => {
   window.document.addEventListener('click', getClickEventListener(router));
 
   window.addEventListener('popstate', (e: PopStateEvent) => {
-    if (e.state?.title) document.title = e.state.title;
-    router.value.refresh();
+    router.value.replace();
   });
 
   return router;

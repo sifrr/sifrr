@@ -31,7 +31,7 @@ export function makeChildrenEqualKeyed<T>(
   const newL = newData.length,
     oldL = oldChildren.length;
 
-  const lastChild: Node = oldChildren.reference ?? flatLastElement(oldChildren);
+  const lastChild: Node = oldChildren ?? flatLastElement(oldChildren);
   const nextSib = lastChild.nextSibling;
   const parent = lastChild.parentNode;
   const returnNodes: SifrrNodesArrayKeyed<T> = new Array(newL);
@@ -42,11 +42,11 @@ export function makeChildrenEqualKeyed<T>(
     );
   }
 
-  returnNodes.reference = oldChildren.reference;
   // special case of no value return
-  if (returnNodes.length < 1 && !returnNodes.reference) {
-    returnNodes.reference = REFERENCE_COMMENT();
-    parent.insertBefore(returnNodes.reference, lastChild);
+  if (newChildren.length < 1) {
+    if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
+      newChildren.push(REFERENCE_COMMENT());
+    else newChildren = oldChildren;
   }
 
   if (oldL === 0) {

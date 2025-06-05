@@ -2,9 +2,9 @@ class TestElement extends Sifrr.Dom.Element {
   static template = Sifrr.Dom.html`
     <p>test element</p>
     <p>${(el) => {
-      return JSON.stringify({ query: el.router.current.query }, null, 2);
+      return JSON.stringify({ query: el.context.router.current?.query ?? el.query }, null, 2);
     }}</p>
-    <p>${(el) => JSON.stringify({ hash: el.router.current.hash }, null, 2)}</p>
+    <p>${(el) => JSON.stringify({ hash: el.context.router.current?.hash ?? el.hash }, null, 2)}</p>
   `;
 
   onConnect() {
@@ -13,7 +13,9 @@ class TestElement extends Sifrr.Dom.Element {
 
   setup() {
     this.router = window.router.value;
-    return {};
+    return {
+      router: window.router.value
+    };
   }
 }
 

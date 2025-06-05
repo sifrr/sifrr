@@ -7,27 +7,27 @@ const removeFxn = (i?: ChildNode) => i?.remove();
 
 // oldChildren array should be continuous childnodes
 export function makeChildrenEqual<T>(
-  oldChildren: SifrrNodesArray<T>,
-  newChildren: SifrrNodesArray<T> | SifrrProps<T>[],
+  oldChildren: ChildNode[],
+  newChildren: (Node | SifrrProps<T>)[],
   createFn?: SifrrCreateFunction<T>,
   parent?: Node & ParentNode
 ): SifrrNodesArray<T> {
-  const lastChild: Node = oldChildren.reference || flatLastElement(oldChildren);
+  const lastChild: Node = flatLastElement(oldChildren);
   const nextSib = lastChild ? lastChild.nextSibling : null;
-  parent = parent ?? (lastChild.parentNode || undefined);
+  parent = lastChild.parentNode ?? parent;
 
   if (!parent) {
-    console.error(oldChildren);
+    console.error(oldChildren, lastChild);
     throw Error(
       '^ Parent should be present for old children given. Open an issue on sifrr if this is a bug.'
     );
   }
 
-  let reference = oldChildren.reference;
   // special case of no value return
-  if (newChildren.length < 1 && !reference) {
-    reference = REFERENCE_COMMENT();
-    parent.insertBefore(reference, lastChild);
+  if (newChildren.length < 1) {
+    if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
+      newChildren.push(REFERENCE_COMMENT());
+    else newChildren = oldChildren;
   }
 
   const returnValues = flattenOperation<T>(
@@ -35,11 +35,10 @@ export function makeChildrenEqual<T>(
     newChildren,
     makeEqual,
     removeFxn,
-    (i) => parent.insertBefore(i as SifrrNode<T>, reference || nextSib),
+    (i) => parent.insertBefore(i as SifrrNode<T>, nextSib),
     (i) => !!createFn && !isSifrrNode(i),
     createFn
   );
-  (returnValues as any).reference = reference;
 
   return returnValues;
 }
