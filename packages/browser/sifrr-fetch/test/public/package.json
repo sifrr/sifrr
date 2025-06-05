@@ -18,7 +18,7 @@
   "author": "@aadityataparia",
   "license": "MIT",
   "dependencies": {
-    "busboy": "^0.3.0",
+    "busboy": "^1.6.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v18.11.0"
   },
   "devDependencies": {
