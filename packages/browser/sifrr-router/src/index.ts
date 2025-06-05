@@ -99,7 +99,8 @@ class SifrrRoute extends SifrrElement {
         path: this.path!,
         pathRegex: this.context.regex,
         component: this.context.component,
-        getProps: this.context.getProps
+        getProps: this.context.getProps,
+        title: this.title
       }
     ]);
     return current;

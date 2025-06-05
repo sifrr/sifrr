@@ -69,7 +69,7 @@ export const getCurrent = (
     query[k] = v.length > 1 ? v : (v[0] ?? null);
   }
 
-  const title = matchedRoute.title ?? document.title;
+  const title = matchedRoute.title || document.title;
   window.document.title = title;
 
   return {
