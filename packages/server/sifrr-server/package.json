@@ -32,7 +32,7 @@
     "chokidar": "^3.0.1",
     "iterall": "^1.2.2",
     "mkdirp": "^0.5.1",
-    "query-string": "^6.8.1"
+    "query-string": "^9.2.0"
   },
   "peerDependencies": {
     "graphql": "^14.5.3",
