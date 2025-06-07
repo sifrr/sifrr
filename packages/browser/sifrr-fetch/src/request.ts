@@ -1,4 +1,4 @@
-import { isObject } from '@/util';
+import { isObject, isValidJson } from '@/util';
 import { SifrrFetchOptions, SifrrFetchResponse } from './types';
 
 const objConst = {}.constructor;
@@ -133,7 +133,7 @@ class Request<T, E> {
       redirect: 'follow' as const,
       ...this._options
     };
-    if (isObject(options.body)) {
+    if (isValidJson(options.body)) {
       options.headers = options.headers ?? {};
       options.headers['content-type'] = 'application/json';
       options.body = JSON.stringify(options.body);

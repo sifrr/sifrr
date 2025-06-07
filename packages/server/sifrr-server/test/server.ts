@@ -1,4 +1,5 @@
-import { SifrrServer } from '@/index';
+import { SifrrServer, UploadedFile } from '@/index';
+import { writeHeaders } from '@/server/utils';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,7 +10,7 @@ const app = new SifrrServer();
 const port = 6006;
 
 // Serve static files from multiple directories
-app.folder('/js', path.join(__dirname, '../dist'));
+app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
 app.folder('/', path.join(__dirname, 'public'));
 
 app.get('/get', (res, req) => {
@@ -36,6 +37,54 @@ app.delete('/delete/:id', (res, req) => {
     res.writeStatus('404').end();
   }
 });
+
+const headers = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': '*',
+  Connection: 'keep-alive'
+};
+
+app.folder('', path.join(__dirname, 'public/compress'), {
+  headers,
+  compress: true
+});
+
+app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
+  headers
+});
+
+app.options('/*', (res) => {
+  writeHeaders(res, headers);
+  writeHeaders(res, 'access-control-allow-headers', 'content-type');
+  res.end();
+});
+
+app.get('/empty', (res) => {
+  res.end();
+});
+
+app.post('/buffer', async (res) => {
+  writeHeaders(res, headers);
+  res.writeHeader('content-type', 'application/json');
+  res.json(await res.body);
+});
+
+app.post<{
+  file?: UploadedFile;
+  file2?: UploadedFile[];
+}>(
+  '/tmpdir',
+  async (res) => {
+    writeHeaders(res, headers);
+    res.writeHeader('content-type', 'application/json');
+    const body = await res.body;
+    delete (body.file as any).stream;
+    res.json(body);
+  },
+  {
+    localDir: path.join(__dirname, './tmp')
+  }
+);
 
 // Start the server
 app.listen(port, () => {

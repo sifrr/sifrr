@@ -16,13 +16,13 @@ export interface SifrrResponse<T = unknown> extends HttpResponse {
   /**
    * Get Body stream
    */
-  bodyStream: () => Readable;
+  bodyStream: Readable;
   /**
-   * Get Request body buffer, is not available if stream is used
+   * Get Request body buffer, is not available if stream or body is already used
    */
-  bodyBuffer: () => Promise<Buffer>;
+  bodyBuffer: Promise<Buffer>;
   /**
-   * Request body, is not available if stream is used
+   * Request body, is not available if stream or buffer is already used
    */
   body: Promise<T>;
   /**
@@ -32,7 +32,10 @@ export interface SifrrResponse<T = unknown> extends HttpResponse {
   json(obj: any): void;
 }
 
-export type RequestHandler = (res: SifrrResponse, req: SifrrRequest) => void | Promise<void>;
+export type RequestHandler<T = unknown> = (
+  res: SifrrResponse<T>,
+  req: SifrrRequest
+) => void | Promise<void>;
 export type RequestFxn = (
   pattern: string,
   handler: (res: SifrrResponse, req: SifrrRequest) => void | Promise<void>
@@ -121,7 +124,6 @@ export type UploadFileConfig = busboy.BusboyConfig & {
   abortOnLimit?: boolean;
   /** Path to local disk directory. it will store the uploaded files to local disk if directory is given */
   localDir?: string;
-  /** Does not convert */
 };
 
 export type ClusterConfig = {

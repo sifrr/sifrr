@@ -14,7 +14,7 @@ import {
   us_socket_local_port
 } from 'uWebSockets.js';
 import * as Graphql from 'graphql';
-import { buffer } from 'stream/consumers';
+import { buffer, json, text } from 'stream/consumers';
 
 import sendFile from './sendfile';
 import formData from './formdata';
@@ -37,29 +37,30 @@ const noOp = () => true;
 const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: UploadFileConfig) => {
   const contType = req.getHeader('content-type');
 
-  res.bodyStream = function () {
-    const stream = new Readable();
-    stream._read = noOp;
+  res.bodyStream = new Readable();
+  res.bodyStream._read = noOp;
 
-    this.onData((ab, isLast) => {
-      stream.push(Buffer.from(ab));
-      if (isLast) {
-        stream.push(null);
-      }
-    });
+  res.onData((ab, isLast) => {
+    res.bodyStream.push(Buffer.from(ab));
+    if (isLast) {
+      res.bodyStream.push(null);
+    }
+  });
 
-    return stream;
-  };
-  res.bodyBuffer = () => buffer(res.bodyStream());
+  Object.defineProperty(res, 'bodyBuffer', {
+    get() {
+      return buffer(res.bodyStream);
+    }
+  });
 
   Object.defineProperty(res, 'body', {
     async get(): Promise<T> {
       if (contType.indexOf('application/json') > -1) {
-        return JSON.parse((await res.bodyBuffer()).toString());
+        return json(res.bodyStream) as T;
       } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
         return formData.call(res, contType, uploadConfig) as T;
       } else {
-        return (await res.bodyBuffer()).toString() as T;
+        return text(res.bodyStream) as T;
       }
     }
   });
@@ -78,10 +79,10 @@ function handleRequest(
     });
     res._write = res.write;
     res.write = (body) => {
-      if (res.aborted) return true;
       let ret = true;
+      if (res.aborted) return ret;
       res.cork(() => {
-        return res.write(body);
+        ret = res.write(body);
       });
       return ret;
     };
@@ -164,16 +165,16 @@ export class SifrrServer implements ISifrrServer {
     this.app.options(pattern, handleRequest(handler));
     return this;
   }
-  post(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
-    this.app.post(pattern, handleRequest(handler, formDataConfig));
+  post<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+    this.app.post(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  put(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
-    this.app.put(pattern, handleRequest(handler, formDataConfig));
+  put<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+    this.app.put(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  patch(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
-    this.app.patch(pattern, handleRequest(handler, formDataConfig));
+  patch<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+    this.app.patch(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
   use(pattern: string, handler: RequestHandler) {

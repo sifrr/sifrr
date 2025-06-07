@@ -1,4 +1,4 @@
-import { createWriteStream, statSync } from 'fs';
+import { createWriteStream, statSync, writeFile, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import Busboy from 'busboy';
 import mkdirp from 'mkdirp';
@@ -6,6 +6,7 @@ import { SifrrResponse, UploadedFile, UploadFileConfig } from '@/server/types';
 import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
 import { buffer } from 'stream/consumers';
+import { Transform, pipeline } from 'stream';
 
 function formData(this: SifrrResponse, contType: string, options: UploadFileConfig = {}) {
   options.headers = {
@@ -17,7 +18,7 @@ function formData(this: SifrrResponse, contType: string, options: UploadFileConf
     const ret = {};
     const promises: Promise<any>[] = [Promise.resolve()];
 
-    this.bodyStream().pipe(busb);
+    this.bodyStream.pipe(busb);
 
     busb.on('limit', () => {
       if (options.abortOnLimit) {
@@ -26,33 +27,29 @@ function formData(this: SifrrResponse, contType: string, options: UploadFileConf
     });
 
     busb.on('file', function (fieldname, file, filename, encoding, mimetype) {
-      const value: Partial<UploadedFile> = {
+      const value: Partial<UploadedFile> & { size: number } = {
         fieldname,
-        stream: file,
         originalname: filename,
+        stream: file,
         encoding,
         mimetype,
+        size: 0,
         path: undefined
       };
 
-      if (typeof options.localDir === 'string') {
-        const ext = getExt(mimetype);
-        const fileToSave = join(options.localDir, uuid() + ext ? `.${ext}` : '');
-        mkdirp(dirname(fileToSave));
-
-        file.pipe(createWriteStream(fileToSave));
-        value.path = fileToSave;
-        try {
-          value.size = statSync(fileToSave).size;
-        } catch (_e) {}
-      } else {
-        promises.push(
-          buffer(file).then((bfr) => {
-            value.buffer = bfr;
-            value.size = bfr.byteLength;
-          })
-        );
-      }
+      promises.push(
+        buffer(file).then((bfr) => {
+          value.buffer = bfr;
+          value.size = bfr.byteLength;
+          if (typeof options.localDir === 'string') {
+            const ext = getExt(mimetype);
+            const fileToSave = join(options.localDir, uuid() + (ext ? `.${ext}` : ''));
+            mkdirp(dirname(fileToSave));
+            writeFileSync(fileToSave, bfr);
+            value.path = fileToSave;
+          }
+        })
+      );
 
       setRetValue(ret, fieldname, value);
     });
@@ -62,7 +59,9 @@ function formData(this: SifrrResponse, contType: string, options: UploadFileConf
     });
 
     busb.on('finish', function () {
-      Promise.all(promises).then(() => resolve(ret));
+      Promise.all(promises)
+        .then(() => resolve(ret))
+        .catch(reject);
     });
 
     busb.on('error', reject);
