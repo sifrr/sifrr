@@ -1,5 +1,5 @@
 const temp = document.createElement('template');
-const comment = document.createComment(' Sifrr Reference Comment. Do not delete. ');
+const comment = document.createComment('Sifrr');
 
 // binding string
 export const BIND_REF_LENGTH = 8;

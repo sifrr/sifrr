@@ -1,13 +1,14 @@
-import { swOptions } from './types';
+import { SwOptions } from './types';
 
-declare var self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope;
 
 class ServiceWorker {
-  options: swOptions;
-  defaultPushTitle: string;
-  defaultPushOptions: NotificationOptions;
+  protected options: Required<SwOptions>;
+  protected defaultPushTitle: string = '';
+  protected defaultPushOptions?: NotificationOptions;
+  protected defaultPolicy;
 
-  constructor(options: swOptions) {
+  constructor(options: SwOptions) {
     this.options = Object.assign(
       {
         version: 1,
@@ -19,10 +20,10 @@ class ServiceWorker {
       },
       options
     );
-    this.options.policies.default = Object.assign(this.options.policies.default || {}, {
+    this.defaultPolicy = {
       policy: 'NETWORK_FIRST',
       cacheName: this.options.defaultCacheName
-    });
+    };
   }
 
   setup() {
@@ -38,22 +39,20 @@ class ServiceWorker {
     self.addEventListener('notificationclick', this.onNotificationClick.bind(this));
   }
 
-  installEventListener(event) {
+  protected installEventListener(event: ServiceWorkerGlobalScopeEventMap['install']) {
     event.waitUntil(this.precache());
     this.onInstall(event);
   }
 
-  /* istanbul ignore next */
-  onInstall(_event: any) {}
+  onInstall(_event: ServiceWorkerGlobalScopeEventMap['install']) {}
 
-  activateEventListener() {
+  protected activateEventListener() {
     const version = '-v' + this.options.version;
     // remove old version caches
     caches
       .keys()
       .then((cacheNames) => {
-        // [FIX] -v1 won't delete -v10
-        return cacheNames.filter((cacheName) => cacheName.indexOf(version) < 0);
+        return cacheNames.filter((cacheName) => !cacheName.endsWith(version));
       })
       .then((cachesToDelete) => {
         return Promise.all(
@@ -65,20 +64,15 @@ class ServiceWorker {
       .then(() => self.clients.claim());
   }
 
-  fetchEventListener(event) {
+  protected fetchEventListener(event: ServiceWorkerGlobalScopeEventMap['fetch']) {
     const request = event.request;
     const otherReq = request.clone();
-    const oreq = request.clone();
     if (request.method === 'GET') {
       event.respondWith(
         this.respondWithPolicy(request)
           .then((response) => {
-            if (
-              !response.ok &&
-              response.status > 0 &&
-              this.findRegex(oreq.url, this.options.fallbacks)
-            ) {
-              throw Error('response status ' + response.status);
+            if (!response.ok && response.status > 0) {
+              throw Error('Response status ' + response.status);
             }
             return response;
           })
@@ -87,31 +81,32 @@ class ServiceWorker {
     }
   }
 
-  pushEventListener(event) {
+  protected pushEventListener(event: ServiceWorkerGlobalScopeEventMap['push']) {
     let data: {
       title?: string;
     } = {};
     if (event.data) {
-      if (typeof event.data.json === 'function') data = event.data.json();
-      else data = event.data || {};
+      data = event.data.json();
     }
 
-    const title = data.title || this.defaultPushTitle;
+    const title = data.title ?? this.defaultPushTitle;
     const options: NotificationOptions = Object.assign({}, this.defaultPushOptions, data);
 
     return self.registration.showNotification(title, options);
   }
 
-  /* istanbul ignore next */
   onNotificationClick() {}
 
   precache(urls = this.options.precacheUrls, fbs = this.options.fallbacks) {
-    const me = this;
     const promises = [];
     urls.forEach((u) => {
-      const req = me.createRequest(u);
+      const req = this.createRequest(u);
       return promises.push(
-        me.responseFromNetwork(req, me.findRegex(u, me.options.policies).cacheName)
+        this.responseFromNetwork(
+          req,
+          this.findRegex(u, this.options.policies, this.defaultPolicy).cacheName ??
+            this.defaultPolicy.cacheName
+        )
       );
     });
     for (const url of Object.values(fbs)) {
@@ -122,21 +117,19 @@ class ServiceWorker {
   }
 
   respondWithFallback(request: { url: any }, error: any) {
-    const fallback = this.createRequest(this.findRegex(request.url, this.options.fallbacks));
+    const fallback = this.findRegex(request.url, this.options.fallbacks);
     if (fallback !== undefined) {
-      return this.responseFromCache(fallback, this.options.fallbackCacheName);
+      return this.responseFromCache(this.createRequest(fallback), this.options.fallbackCacheName);
     } else {
-      /* istanbul ignore next */
       throw error;
     }
   }
 
   respondWithPolicy(request: Request) {
     const req1 = request.clone();
-    const req2 = request.clone();
-    const config = this.findRegex(request.url, this.options.policies);
+    const config = this.findRegex(request.url, this.options.policies, this.defaultPolicy);
     const policy = config.policy;
-    const cacheName = config.cacheName || this.options.defaultCacheName;
+    const cacheName = config.cacheName ?? this.options.defaultCacheName;
 
     let resp: Promise<Response>;
     switch (policy) {
@@ -150,10 +143,8 @@ class ServiceWorker {
         );
         break;
       case 'CACHE_AND_UPDATE':
-        resp = this.responseFromCache(req1, cacheName).catch(() =>
-          this.responseFromNetwork(request, cacheName)
-        );
-        this.responseFromNetwork(req2, cacheName);
+        resp = this.responseFromCache(req1, cacheName);
+        this.responseFromNetwork(request, cacheName);
         break;
       default:
         resp = this.responseFromNetwork(req1, cacheName).catch(() =>
@@ -164,37 +155,40 @@ class ServiceWorker {
     return resp;
   }
 
-  responseFromNetwork(request: Request, cache: string, putInCache = true) {
-    return caches.open(cache + '-v' + this.options.version).then((cache) =>
-      fetch(request).then((response) => {
-        if (putInCache) cache.put(request, response.clone());
-        return response;
-      })
-    );
+  async responseFromNetwork(request: Request, cache: string, putInCache = true) {
+    const cache1 = await caches.open(cache + '-v' + this.options.version);
+    const response = await fetch(request);
+    if (putInCache) {
+      const url = new URL(request.url);
+      if (url.protocol === 'http' || url.protocol === 'https') {
+        cache1.put(request, response.clone());
+      } else {
+        console.warn(`Can not put url ${url} in cache`);
+      }
+    }
+    return response;
   }
 
-  responseFromCache(request: Request, cache: string) {
-    return caches
-      .open(cache + '-v' + this.options.version)
-      .then((cache) => cache.match(request))
-      .then((resp) => {
-        if (resp) return resp;
-        else throw 'Cache not found for ' + request.url;
-      });
+  async responseFromCache(request: Request, cache: string) {
+    const cache1 = await caches.open(cache + '-v' + this.options.version);
+    const resp = await cache1.match(request);
+    if (resp) return resp;
+    else throw Error('Cache not found for ' + request.url);
   }
 
   createRequest(url: string | Request, data = { method: 'GET' }) {
     return new Request(url, data);
   }
 
-  findRegex(url: string, policies: { [s: string]: unknown } | ArrayLike<unknown>) {
-    for (const [key, value] of Object.entries(policies)) {
+  findRegex<T>(url: string, regexObject: { [k: string]: T }, elseObject: T): T;
+  findRegex<T>(url: string, regexObject: { [k: string]: T }): T | undefined;
+  findRegex<T>(url: string, regexObject: { [k: string]: T }, elseObject?: T): T | undefined {
+    for (const [key, value] of Object.entries(regexObject)) {
       const regex = new RegExp(key);
       if (regex.test(url)) return value;
     }
-    return policies['default'];
+    return elseObject;
   }
 }
 
-export { ServiceWorker };
 export default ServiceWorker;
