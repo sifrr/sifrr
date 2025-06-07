@@ -1,24 +1,26 @@
 import { stringify } from '../utils/json';
 import { parseGetData, parseSetValue } from '../utils/dataparser';
-import { StorageOptions, SifrrStore } from './types';
+import { StorageOptions, SifrrStore, SifrrStoreConstructor } from './types';
 import LocalStorageStore from '@/storages/localstorage';
 import IndexedDBStore from '@/storages/indexeddb';
 import MemoryStore from '@/storages/memory';
 
 const defaultOptions = {
   prefix: '',
-  stores: [LocalStorageStore, IndexedDBStore, MemoryStore]
-} as const;
+  stores:
+    typeof window !== 'undefined'
+      ? ([LocalStorageStore, IndexedDBStore, MemoryStore] as const)
+      : ([MemoryStore] as const)
+};
 
 export default class Storage {
   private readonly store: SifrrStore;
 
   constructor(options?: StorageOptions) {
     const stores = options?.stores ?? defaultOptions.stores;
+    const storesToUse: SifrrStoreConstructor[] = Array.isArray(stores) ? stores : [stores];
     const prefix = options?.prefix ?? defaultOptions.prefix;
-    const StoreToUse = (Array.isArray(stores) ? stores : [stores]).find(
-      (store) => store?.isSupported
-    );
+    const StoreToUse = storesToUse.find((store) => store?.isSupported);
     if (!StoreToUse) {
       throw new Error('No supported store found');
     }
