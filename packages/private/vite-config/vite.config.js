@@ -47,8 +47,9 @@ export default (baseDir, external = [], isBrowser = true) => {
     build: {
       cssCodeSplit: true,
       sourcemap: true,
+      target: isBrowser ? 'modules' : 'node16',
       lib: {
-        formats: ['es', 'umd', isBrowser && 'iife'].filter((x) => !!x),
+        formats: isBrowser ? ['es', 'umd', 'iife'] : ['es', 'cjs'],
         entry: {
           ...entries,
           index: resolve(baseDir, 'src/index.ts')
@@ -59,14 +60,14 @@ export default (baseDir, external = [], isBrowser = true) => {
         external,
         output: {
           name,
-          preserveModules: false,
+          preserveModules: !isBrowser,
           // Put chunk files at <output>/chunks
           chunkFileNames: 'chunks/[name].[hash].js',
           // Put chunk styles at <output>/assets
           assetFileNames: 'assets/[name][extname]',
           entryFileNames: '[name].[format].js',
           globals: external.reduce((prev, cur) => {
-            prev[cur] = nameToGlobal(cur);
+            if (cur.startsWith('@sifrr')) prev[cur] = nameToGlobal(cur);
             return prev;
           }, {})
         }

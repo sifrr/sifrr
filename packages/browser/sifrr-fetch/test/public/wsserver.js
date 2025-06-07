@@ -68,7 +68,6 @@ function webSocketServer(port) {
       res.end();
     })
     .post('/*', (res, req) => {
-      res.onAborted(() => true);
       const contType = req.getHeader('content-type');
       res.writeHeader('Access-Control-Allow-Origin', '*');
       res.writeHeader('Access-Control-Allow-Headers', 'content-type');
@@ -163,9 +162,6 @@ function readData(res, cb, err) {
       buffer = Buffer.concat([chunk]);
     }
   });
-
-  /* Register error cb */
-  res.onAborted(err);
 }
 
 if (port) {

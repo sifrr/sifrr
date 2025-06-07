@@ -18,21 +18,17 @@ app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
   headers
 });
 
-app.options('/*', res => {
+app.options('/*', (res) => {
   writeHeaders(res, headers);
   writeHeaders(res, 'access-control-allow-headers', 'content-type');
   res.end();
 });
 
-app.get('/empty', res => {
+app.get('/empty', (res) => {
   res.end();
 });
 
-app.post('/stream', res => {
-  res.onAborted(err => {
-    if (err) throw Error(err);
-  });
-
+app.post('/stream', (res) => {
   for (const h in headers) {
     writeHeaders(res, h, headers[h]);
   }
@@ -46,14 +42,14 @@ app.post('/stream', res => {
         },
         onField: () => {}
       })
-      .then(resp => {
+      .then((resp) => {
         res.end(JSON.stringify(resp));
       });
   }
 });
 
-app.post('/tmpdir', res => {
-  res.onAborted(err => {
+app.post('/tmpdir', (res) => {
+  res.onAborted((err) => {
     if (err) throw Error(err);
   });
 
@@ -65,9 +61,9 @@ app.post('/tmpdir', res => {
     res
       .formData({
         tmpDir: path.join(__dirname, './public/tmp'),
-        filename: f => (f.indexOf('all.js') > -1 ? 'some.js' : f)
+        filename: (f) => (f.indexOf('all.js') > -1 ? 'some.js' : f)
       })
-      .then(resp => {
+      .then((resp) => {
         res.end(JSON.stringify(resp));
       });
   }
@@ -89,7 +85,7 @@ app.file('/cache_compress', path.join(__dirname, 'public/cache.html'), {
 });
 
 app.folder('/', path.join(__dirname, '../'), {
-  filter: path => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
+  filter: (path) => path.indexOf('node_modules') < 0 && path.indexOf('benchmarks') < 0,
   watch: true,
   livereload: true
 });
@@ -128,7 +124,7 @@ const queryType = new graphql.GraphQLObjectType({
       args: {
         id: { type: graphql.GraphQLString }
       },
-      resolve: function(_, { id }) {
+      resolve: function (_, { id }) {
         pubsub.publish('ID', { user: fakeDatabase[id] });
         return fakeDatabase[id];
       }

@@ -2,13 +2,12 @@ const { App, writeHeaders } = require('@sifrr/server');
 
 const server = new App();
 
-server.get('/404', res => {
+server.get('/404', (res) => {
   res.writeStatus('404 Not Found');
   res.end();
 });
 
-server.post('/post', async res => {
-  res.onAborted(global.console.error);
+server.post('/post', async (res) => {
   const body = await res.body();
   writeHeaders(res, {
     'content-type': 'application/json'
@@ -16,9 +15,8 @@ server.post('/post', async res => {
   res.end(body);
 });
 
-server.get('timeout', async res => {
-  res.onAborted(global.console.error);
-  await new Promise(res => setTimeout(res, 1000));
+server.get('timeout', async (res) => {
+  await new Promise((res) => setTimeout(res, 1000));
   res.end('');
 });
 
@@ -65,7 +63,7 @@ const queryType = new graphql.GraphQLObjectType({
       args: {
         id: { type: graphql.GraphQLString }
       },
-      resolve: function(_, { id }) {
+      resolve: function (_, { id }) {
         pubsub.publish('ID', { user: fakeDatabase[id] });
         return fakeDatabase[id];
       }
@@ -78,7 +76,7 @@ const queryType = new graphql.GraphQLObjectType({
         userId: { type: graphql.GraphQLString },
         channel: { type: graphql.GraphQLString }
       },
-      resolve: function(_, { message, channel, userId }) {
+      resolve: function (_, { message, channel, userId }) {
         pubsub.publish(`${channel}_message`, {
           chat: { User: { id: userId, name: userId }, message, channel }
         });

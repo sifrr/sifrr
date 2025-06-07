@@ -1,30 +1,48 @@
 import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import { Readable } from 'stream';
-import { us_listen_socket_close, TemplatedApp, HttpResponse, HttpRequest } from 'uWebSockets.js';
-import { watch } from 'chokidar';
+import {
+  us_listen_socket_close,
+  TemplatedApp,
+  SSLApp,
+  App,
+  AppOptions,
+  us_listen_socket,
+  HttpResponse,
+  HttpRequest,
+  WebSocketBehavior,
+  us_socket_local_port
+} from 'uWebSockets.js';
+import * as Graphql from 'graphql';
+import { buffer } from 'stream/consumers';
 
-import { wsConfig } from './livereload';
 import sendFile from './sendfile';
 import formData from './formdata';
-import loadroutes from './loadroutes';
 import { graphqlPost, graphqlWs } from './graphql';
-import { stob } from './utils';
-import { SendFileOptions, Handler } from './types';
+import {
+  SendFileOptions,
+  SifrrServerOptions,
+  SifrrResponse,
+  SifrrRequest,
+  ISifrrServer,
+  RequestHandler,
+  UploadFileConfig
+} from './types';
+import { GraphQLArgs, GraphQLSchema } from 'graphql';
+import { parse, ParseOptions } from 'query-string';
 
-const contTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
+const formDataContentTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
 
-const handleBody = (res: HttpResponse, req: HttpRequest) => {
+const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: UploadFileConfig) => {
   const contType = req.getHeader('content-type');
 
-  res.bodyStream = function() {
+  res.bodyStream = function () {
     const stream = new Readable();
     stream._read = noOp;
 
     this.onData((ab, isLast) => {
-      // uint and then slicing is bit faster than slice and then uint
-      stream.push(new Uint8Array(ab.slice(ab.byteOffset, ab.byteLength)));
+      stream.push(Buffer.from(ab));
       if (isLast) {
         stream.push(null);
       }
@@ -32,48 +50,158 @@ const handleBody = (res: HttpResponse, req: HttpRequest) => {
 
     return stream;
   };
+  res.bodyBuffer = () => buffer(res.bodyStream());
 
-  res.body = () => stob(res.bodyStream());
-
-  if (contType.indexOf('application/json') > -1)
-    res.json = async () => JSON.parse(await res.body());
-  if (contTypes.map(t => contType.indexOf(t) > -1).indexOf(true) > -1)
-    res.formData = formData.bind(res, contType);
+  Object.defineProperty(req, 'body', {
+    async get(): Promise<T> {
+      if (contType.indexOf('application/json') > -1) {
+        return JSON.parse((await res.bodyBuffer()).toString());
+      } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
+        return formData.call(res, contType, uploadConfig) as T;
+      } else {
+        return (await res.bodyBuffer()).toString() as T;
+      }
+    }
+  });
 };
 
-class BaseApp {
-  _staticPaths = new Map();
-  _watched = new Map();
-  _sockets = new Map();
-  __livereloadenabled = false;
-  ws: TemplatedApp['ws'];
-  get: TemplatedApp['get'];
-  _post: TemplatedApp['post'];
-  _put: TemplatedApp['put'];
-  _patch: TemplatedApp['patch'];
-  _listen: TemplatedApp['listen'];
+function handleRequest(
+  handler: RequestHandler,
+  uploadConfig?: UploadFileConfig
+): (res: HttpResponse, req: HttpRequest) => void | Promise<void> {
+  return (res, req) => {
+    if (['post', 'put', 'patch'].includes(req.getMethod()))
+      handleBody(res as SifrrResponse, req as unknown as SifrrRequest, uploadConfig);
+
+    res.onAborted(() => {
+      res.aborted = true;
+    });
+    res._end = res.end;
+    res.end = (body, close) => {
+      if (res.aborted) return res;
+      return res._end(body, close);
+    };
+    res._tryEnd = res.tryEnd;
+    res.tryEnd = (body, size) => {
+      if (res.aborted) return res;
+      return res._tryEnd(body, size);
+    };
+    res.json = (obj: any) => {
+      res.writeHeader('content-type', 'application/json');
+      res.end(JSON.stringify(obj));
+    };
+    const orig = req.getQuery.bind(req);
+    (req as unknown as SifrrRequest).getQuery = (options?: ParseOptions) =>
+      parse(orig() as unknown as string, {
+        parseBooleans: true,
+        parseNumbers: true,
+        decode: true,
+        ...options
+      });
+
+    Object.defineProperty(req, 'query', {
+      get() {
+        return this.getQuery();
+      }
+    });
+
+    handler(res as SifrrResponse, req as unknown as SifrrRequest);
+  };
+}
+
+export class SifrrServer implements ISifrrServer {
+  private readonly _sockets = new Map<number, us_listen_socket>();
+  private readonly app: TemplatedApp;
+  private readonly config?: SifrrServerOptions;
+
+  constructor(options?: SifrrServerOptions) {
+    this.app = options?.ssl ? SSLApp(options ?? {}) : App(options ?? {});
+    this.config = options;
+  }
+
+  // just pass through
+  publish(topic: string, message: string, isBinary?: boolean, compress?: boolean): boolean {
+    return this.app.publish(topic, message, isBinary, compress);
+  }
+  numSubscribers(topic: string): number {
+    return this.app.numSubscribers(topic);
+  }
+  get(pattern: string, handler: RequestHandler) {
+    this.app.get(pattern, handleRequest(handler));
+    return this;
+  }
+  head(pattern: string, handler: RequestHandler) {
+    this.app.head(pattern, handleRequest(handler));
+    return this;
+  }
+  del(pattern: string, handler: RequestHandler) {
+    this.app.del(pattern, handleRequest(handler));
+    return this;
+  }
+  delete(pattern: string, handler: RequestHandler) {
+    this.app.del(pattern, handleRequest(handler));
+    return this;
+  }
+  options(pattern: string, handler: RequestHandler) {
+    this.app.options(pattern, handleRequest(handler));
+    return this;
+  }
+  post(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
+    this.app.post(pattern, handleRequest(handler, formDataConfig));
+    return this;
+  }
+  put(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
+    this.app.put(pattern, handleRequest(handler, formDataConfig));
+    return this;
+  }
+  patch(pattern: string, handler: RequestHandler, formDataConfig?: UploadFileConfig) {
+    this.app.patch(pattern, handleRequest(handler, formDataConfig));
+    return this;
+  }
+  use(pattern: string, handler: RequestHandler) {
+    this.app.any(pattern, handleRequest(handler));
+    return this;
+  }
+  any(pattern: string, handler: RequestHandler) {
+    this.app.any(pattern, handleRequest(handler));
+    return this;
+  }
+  connect(pattern: string, handler: RequestHandler) {
+    this.app.connect(pattern, handleRequest(handler));
+    return this;
+  }
+  trace(pattern: string, handler: RequestHandler) {
+    this.app.trace(pattern, handleRequest(handler));
+    return this;
+  }
+  ws<T>(pattern: string, behavior: WebSocketBehavior<T>) {
+    this.app.ws(pattern, behavior);
+    return this;
+  }
+
+  graphql(
+    route: string,
+    schema: GraphQLSchema,
+    graphqlOptions: Partial<GraphQLArgs> & {
+      graphiqlPath?: string;
+    },
+    uwsOptions: AppOptions,
+    graphql: typeof Graphql
+  ) {
+    const handler = graphqlPost(schema, graphqlOptions, graphql);
+    this.post(route, handler);
+    this.app.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
+    if (graphqlOptions && graphqlOptions.graphiqlPath)
+      this.file(graphqlOptions.graphiqlPath, join(__dirname, './graphiql.html'));
+    return this;
+  }
+
+  sendFile(filePath: string, options: SendFileOptions = {}): RequestHandler {
+    return sendFile.bind(this, filePath, options);
+  }
 
   file(pattern: string, filePath: string, options: SendFileOptions = {}) {
-    pattern=pattern.replace(/\\/g,'/');
-    if (this._staticPaths.has(pattern)) {
-      if (options.failOnDuplicateRoute)
-        throw Error(
-          `Error serving '${filePath}' for '${pattern}', already serving '${
-            this._staticPaths.get(pattern)[0]
-          }' file for this pattern.`
-        );
-      else if (!options.overwriteRoute) return this;
-    }
-
-    if (options.livereload && !this.__livereloadenabled) {
-      this.ws('/__sifrrLiveReload', wsConfig);
-      this.file('/livereload.js', join(__dirname, './livereloadjs.js'));
-      this.__livereloadenabled = true;
-    }
-
-    this._staticPaths.set(pattern, [filePath, options]);
-    this.get(pattern, this._serveStatic);
-    return this;
+    return this.get(pattern, sendFile.bind(this, filePath, options));
   }
 
   folder(prefix: string, folder: string, options: SendFileOptions, base: string = folder) {
@@ -83,12 +211,12 @@ class BaseApp {
     }
 
     // ensure slash in beginning and no trailing slash for prefix
-    if (prefix[0] !== '/') prefix = '/' + prefix;
-    if (prefix[prefix.length - 1] === '/') prefix = prefix.slice(0, -1);
+    if (!prefix.startsWith('/')) prefix = '/' + prefix;
+    if (prefix.endsWith('/')) prefix = prefix.slice(0, -1);
 
     // serve folder
     const filter = options ? options.filter || noOp : noOp;
-    readdirSync(folder).forEach(file => {
+    readdirSync(folder).forEach((file) => {
       // Absolute path
       const filePath = join(folder, file);
       // Return if filtered
@@ -102,116 +230,43 @@ class BaseApp {
       }
     });
 
-    if (options && options.watch) {
-      if (!this._watched.has(folder)) {
-        const w = watch(folder);
-
-        w.on('unlink', filePath => {
-          const url = '/' + relative(base, filePath);
-          this._staticPaths.delete(prefix + url);
-        });
-
-        w.on('add', filePath => {
-          const url = '/' + relative(base, filePath);
-          this.file(prefix + url, filePath, options);
-        });
-
-        this._watched.set(folder, w);
-      }
-    }
     return this;
   }
 
-  _serveStatic(res: HttpResponse, req: HttpRequest) {
-    res.onAborted(noOp);
-    const options = this._staticPaths.get(req.getUrl());
-    if (typeof options === 'undefined') {
-      res.writeStatus('404 Not Found');
-      res.end();
-    } else sendFile(res, req, options[0], options[1]);
-  }
-
-  post(pattern: string, handler: Handler) {
-    if (typeof handler !== 'function')
-      throw Error(`handler should be a function, given ${typeof handler}.`);
-    this._post(pattern, (res, req) => {
-      handleBody(res, req);
-      handler(res, req);
-    });
-    return this;
-  }
-
-  put(pattern: string, handler: Handler) {
-    if (typeof handler !== 'function')
-      throw Error(`handler should be a function, given ${typeof handler}.`);
-    this._put(pattern, (res, req) => {
-      handleBody(res, req);
-
-      handler(res, req);
-    });
-    return this;
-  }
-
-  patch(pattern: string, handler: Handler) {
-    if (typeof handler !== 'function')
-      throw Error(`handler should be a function, given ${typeof handler}.`);
-    this._patch(pattern, (res, req) => {
-      handleBody(res, req);
-
-      handler(res, req);
-    });
-    return this;
-  }
-
-  graphql(route: string, schema, graphqlOptions: any = {}, uwsOptions = {}, graphql) {
-    const handler = graphqlPost(schema, graphqlOptions, graphql);
-    this.post(route, handler);
-    this.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
-    // this.get(route, handler);
-    if (graphqlOptions && graphqlOptions.graphiqlPath)
-      this.file(graphqlOptions.graphiqlPath, join(__dirname, './graphiql.html'));
-    return this;
-  }
-
-  load(dir: string, options) {
-    loadroutes.call(this, dir, options);
-    return this;
-  }
-
-  listen(h: string | number, p: Function | number = noOp, cb?: Function) {
-    if (typeof p === 'number' && typeof h === 'string') {
-      this._listen(h, p, socket => {
-        this._sockets.set(p, socket);
-        cb(socket);
+  listen: ISifrrServer['listen'] = (hostOrPort, portOrCallback, callback) => {
+    if (typeof portOrCallback === 'number' && typeof hostOrPort === 'string') {
+      this.app.listen(hostOrPort, portOrCallback, (socket) => {
+        if (socket) this._sockets.set(portOrCallback, socket);
+        callback?.(socket && us_socket_local_port(socket));
       });
-    } else if (typeof h === 'number' && typeof p === 'function') {
-      this._listen(h, socket => {
-        this._sockets.set(h, socket);
-        p(socket);
+    } else if (typeof hostOrPort === 'number') {
+      this.app.listen(hostOrPort, (socket) => {
+        if (socket) this._sockets.set(hostOrPort, socket);
+        if (typeof portOrCallback === 'function')
+          portOrCallback?.(socket && us_socket_local_port(socket));
       });
     } else {
       throw Error(
-        'Argument types: (host: string, port: number, cb?: Function) | (port: number, cb?: Function)'
+        'Argument types should be: (host: string, port: number, cb?: Function) | (port: number, cb?: Function) for listen'
       );
     }
 
     return this;
-  }
+  };
 
-  close(port: null | number = null) {
-    this._watched.forEach(v => v.close());
-    this._watched.clear();
+  close(port?: number) {
     if (port) {
-      this._sockets.has(port) && us_listen_socket_close(this._sockets.get(port));
+      this._sockets.has(port) && us_listen_socket_close(this._sockets.get(port)!);
       this._sockets.delete(port);
     } else {
-      this._sockets.forEach(app => {
+      this._sockets.forEach((app) => {
         us_listen_socket_close(app);
       });
       this._sockets.clear();
     }
+    if (this._sockets.size === 0) {
+      this.app.close();
+    }
     return this;
   }
 }
-
-export default BaseApp;

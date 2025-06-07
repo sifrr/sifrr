@@ -11,15 +11,12 @@ module.exports = {
     '/': [path.join(__dirname, '../../public'), { headers }]
   },
   post: {
-    '/json': res => {
-      res.onAborted(err => {
-        if (err) throw Error(err);
-      });
+    '/json': (res) => {
       res.writeHeader('access-control-allow-origin', '*');
       res.writeHeader('content-type', 'application/json');
 
       if (typeof res.json === 'function') {
-        res.json().then(resp => res.end(JSON.stringify(resp)));
+        res.json().then((resp) => res.end(JSON.stringify(resp)));
       } else {
         res.end(JSON.stringify({ ok: false }));
       }

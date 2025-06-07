@@ -1,4 +1,4 @@
-const mimes = {
+const mimetypes = {
   '3gp': 'video/3gpp',
   a: 'application/octet-stream',
   ai: 'application/postscript',
@@ -168,9 +168,28 @@ const mimes = {
   default: 'text/html'
 };
 
-const getMime = (path: string): string => {
+const extensions = Object.keys(mimetypes).reduce(
+  (ret, ext) => {
+    ret[mimetypes[ext as keyof typeof mimetypes]] = ext as keyof typeof mimetypes;
+    return ret;
+  },
+  {} as Record<string, keyof typeof mimetypes>
+);
+
+const getMimetype = (path: string): string => {
   const i = path.lastIndexOf('.');
-  return mimes[path.substr(i + 1).toLowerCase()] || mimes['default'];
+  return (
+    mimetypes[path.substring(i + 1).toLowerCase() as keyof typeof mimetypes] ?? mimetypes['default']
+  );
 };
 
-export { getMime, mimes };
+const getExt = (mimetype: string): string | undefined => {
+  const first = extensions[mimetype.toLowerCase() as keyof typeof mimetypes];
+  if (first) return first;
+  for (const ext in mimetypes) {
+    if (mimetypes[ext as keyof typeof mimetypes].indexOf(mimetype) > -1) return ext;
+  }
+  return undefined;
+};
+
+export { getMimetype, mimetypes, getExt };

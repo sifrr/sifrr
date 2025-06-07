@@ -1,16 +1,7 @@
 {
+  "extends": "@sifrr/typescript-config/server.json",
+  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts"],
   "compilerOptions": {
-    "declaration": true,
-    "sourceMap": true,
-    "declarationDir": "./dist/types",
-    "module": "es6",
-    "noImplicitAny": false,
-    "target": "es2015",
-    "lib": ["esnext", "es2019", "dom"],
-    "strictBindCallApply": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+    "baseUrl": "."
+  }
 }

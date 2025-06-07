@@ -1,26 +1,18 @@
-import { watch, statSync, createReadStream } from 'fs';
+import { statSync, createReadStream, ReadStream } from 'fs';
 import { createBrotliCompress, createGzip, createDeflate } from 'zlib';
-const watchedPaths = new Set();
 
 const compressions = {
   br: createBrotliCompress,
   gzip: createGzip,
   deflate: createDeflate
 };
-import { writeHeaders } from './utils';
-import { getMime } from './mime';
+import { getMimetype } from './mime';
 const bytes = 'bytes=';
-import { stob } from './utils';
-import { sendSignal } from './livereload';
-import { SendFileOptions } from './types';
-import { HttpResponse, HttpRequest } from 'uWebSockets.js';
+import { SendFileOptions, SifrrRequest, SifrrResponse } from './types';
+import { writeHeaders } from '@/server/utils';
+import { Duplex } from 'stream';
 
-function sendFile(res: HttpResponse, req: HttpRequest, path: string, options: SendFileOptions) {
-  if (options && options.livereload && !watchedPaths.has(path)) {
-    watchedPaths.add(path);
-    watch(path, sendSignal);
-  }
-
+function sendFile(path: string, options: SendFileOptions, res: SifrrResponse, req: SifrrRequest) {
   sendFileToRes(
     res,
     {
@@ -34,7 +26,7 @@ function sendFile(res: HttpResponse, req: HttpRequest, path: string, options: Se
 }
 
 function sendFileToRes(
-  res: HttpResponse,
+  res: SifrrResponse,
   reqHeaders: { [name: string]: string },
   path: string,
   {
@@ -43,17 +35,15 @@ function sendFileToRes(
     compress = false,
     compressionOptions = {
       priority: ['gzip', 'br', 'deflate']
-    },
-    cache = false
-  }: { cache: any } & any = {}
+    }
+  }: SendFileOptions = {}
 ) {
   let { mtime, size } = statSync(path);
-  mtime.setMilliseconds(0);
-  const mtimeutc = mtime.toUTCString();
-
-  headers = Object.assign({}, headers);
+  headers = { ...headers };
   // handling last modified
   if (lastModified) {
+    mtime.setMilliseconds(0);
+    const mtimeutc = mtime.toUTCString();
     // Return 304 if last-modified
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
@@ -63,7 +53,7 @@ function sendFileToRes(
     }
     headers['last-modified'] = mtimeutc;
   }
-  headers['content-type'] = getMime(path);
+  headers['content-type'] = getMimetype(path);
 
   // write data
   let start = 0,
@@ -72,7 +62,7 @@ function sendFileToRes(
   if (reqHeaders.range) {
     compress = false;
     const parts = reqHeaders.range.replace(bytes, '').split('-');
-    start = parseInt(parts[0], 10);
+    start = parseInt(parts[0]!, 10);
     end = parts[1] ? parseInt(parts[1], 10) : end;
     headers['accept-ranges'] = 'bytes';
     headers['content-range'] = `bytes ${start}-${end}/${size}`;
@@ -83,19 +73,17 @@ function sendFileToRes(
   // for size = 0
   if (end < 0) end = 0;
 
-  let readStream = createReadStream(path, { start, end });
+  let readStream: ReadStream | Duplex = createReadStream(path, { start, end });
   // Compression;
   let compressed: boolean | string = false;
-  if (compress) {
-    const l = compressionOptions.priority.length;
-    for (let i = 0; i < l; i++) {
-      const type = compressionOptions.priority[i];
-      if (reqHeaders['accept-encoding'].indexOf(type) > -1) {
-        compressed = type;
+  if (compress && compressionOptions.priority?.length) {
+    for (const type of compressionOptions.priority) {
+      if (reqHeaders['accept-encoding'] && reqHeaders['accept-encoding']?.indexOf(type) > -1) {
+        compressed = type!;
         const compressor = compressions[type](compressionOptions);
         readStream.pipe(compressor);
         readStream = compressor;
-        headers['content-encoding'] = compressionOptions.priority[i];
+        headers['content-encoding'] = type;
         break;
       }
     }
@@ -103,36 +91,19 @@ function sendFileToRes(
 
   res.onAborted(() => readStream.destroy());
   writeHeaders(res, headers);
-  // check cache
-  if (cache) {
-    return cache.wrap(
-      `${path}_${mtimeutc}_${start}_${end}_${compressed}`,
-      cb => {
-        stob(readStream)
-          .then(b => cb(null, b))
-          .catch(cb);
-      },
-      { ttl: 0 },
-      (err, buffer) => {
-        if (err) {
-          res.writeStatus('500 Internal server error');
-          res.end();
-          throw err;
-        }
-        res.end(buffer);
-      }
-    );
-  } else if (compressed) {
-    readStream.on('data', buffer => {
-      res.write(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
+  if (compressed) {
+    readStream.on('data', (buffer: Buffer) => {
+      res.write(
+        buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer
+      );
     });
   } else {
-    readStream.on('data', buffer => {
+    readStream.on('data', (buffer: Buffer) => {
       const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
         lastOffset = res.getWriteOffset();
 
       // First try
-      const [ok, done] = res.tryEnd(chunk, size);
+      const [ok, done] = res.tryEnd(chunk as ArrayBuffer, size);
 
       if (done) {
         readStream.destroy();
@@ -145,7 +116,7 @@ function sendFileToRes(
         res.abOffset = lastOffset;
 
         // Register async handlers for drainage
-        res.onWritable(offset => {
+        res.onWritable((offset) => {
           const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
           if (done) {
             readStream.destroy();
@@ -158,11 +129,11 @@ function sendFileToRes(
     });
   }
   readStream
-    .on('error', e => {
+    .on('error', (e: Error) => {
       res.writeStatus('500 Internal server error');
-      res.end();
       readStream.destroy();
-      throw e;
+      console.error(e);
+      res.end();
     })
     .on('end', () => {
       res.end();

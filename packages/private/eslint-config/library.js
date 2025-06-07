@@ -2,22 +2,18 @@
 module.exports = {
   extends: ['./base', './typescript'],
   plugins: ['only-warn'],
-  globals: {
-    React: true,
-    JSX: true,
-  },
   env: {
-    node: true,
+    node: true
   },
   ignorePatterns: [
     // Ignore dotfiles
     '.*.js',
     'node_modules/',
-    'dist/',
+    'dist/'
   ],
   overrides: [
     {
-      files: ['*.js?(x)', '*.ts?(x)'],
-    },
-  ],
-}
+      files: ['*.js?(x)', '*.ts?(x)']
+    }
+  ]
+};

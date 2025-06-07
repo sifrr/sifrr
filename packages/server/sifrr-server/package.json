@@ -12,9 +12,13 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "dist/sifrr.server.cjs.js",
-  "module": "dist/sifrr.server.module.js",
-  "types": "dist/types/sifrr.server.d.ts",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">16.7.0"
+  },
   "keywords": [
     "sifrr",
     "seo",
@@ -22,33 +26,32 @@
     "server side rendering"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-server",
-    "build": "yarn rollup -c",
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright && yarn test:storybook:ci",
+    "test:jest": "jest",
+    "test:playwright": "playwright test",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "npx tsx test/server",
+    "test:cluster": "npx tsx test/server-cluster"
   },
   "dependencies": {
     "busboy": "^0.3.0",
-    "chokidar": "^3.0.1",
     "iterall": "^1.2.2",
     "mkdirp": "^0.5.1",
-    "query-string": "^6.8.1"
+    "query-string": "^6.8.1",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.52.0",
+    "uuid": "^11.1.0"
   },
   "peerDependencies": {
-    "graphql": "^14.5.3",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v17.1.0"
+    "graphql": "^14.5.3"
   },
   "devDependencies": {
     "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
+    "@types/node": "^22.15.30",
     "@types/yargs": "^15.0.12",
-    "axios": "^1.9.0",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
+    "graphql": "^16.11.0"
   },
   "files": [
     "bin",
