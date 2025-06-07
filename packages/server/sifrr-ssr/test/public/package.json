@@ -1,5 +1,5 @@
 {
-  "name": "sifrr-seo-example",
+  "name": "sifrr-ssr-example",
   "private": true,
   "version": "1.0.0",
   "description": "Sifrr-Api Example",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sifrr/sifrr-seo-example.git"
+    "url": "git+https://github.com/sifrr/sifrr-ssr-example.git"
   },
   "keywords": [
     "Sifrr",
@@ -18,9 +18,9 @@
   "author": "@aadityataparia",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sifrr/sifrr-seo-example/issues"
+    "url": "https://github.com/sifrr/sifrr-ssr-example/issues"
   },
-  "homepage": "https://github.com/sifrr/sifrr-seo-example#readme",
+  "homepage": "https://github.com/sifrr/sifrr-ssr-example#readme",
   "dependencies": {
     "@webcomponents/shadycss": "^1.9.1",
     "@webcomponents/shadydom": "^1.6.0",

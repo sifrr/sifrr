@@ -6,7 +6,7 @@ async function loadTime(page) {
 
 // With sr are because of setting onRender option
 
-describe('sifrr-seo', () => {
+describe('sifrr-ssr', () => {
   describe('js disabled', () => {
     before(async () => {
       await page.setJavaScriptEnabled(false);
@@ -32,7 +32,7 @@ describe('sifrr-seo', () => {
     // });
 
     it('renders sifrr-test on server (without sr)', async () => {
-      const html = await page.$eval('sifrr-nosr', el => el.innerHTML.trim());
+      const html = await page.$eval('sifrr-nosr', (el) => el.innerHTML.trim());
 
       expect(html).to.have.string('<p>No shadow root</p>');
       expect(html).to.have.string('<p>2</p>');
@@ -46,7 +46,7 @@ describe('sifrr-seo', () => {
     });
 
     it('renders sifrr-test again locally (with sr)', async () => {
-      const html = await page.$eval('sifrr-test', async el => {
+      const html = await page.$eval('sifrr-test', async (el) => {
         await customElements.whenDefined('sifrr-test');
         return el.shadowRoot.innerHTML;
       });
@@ -56,7 +56,7 @@ describe('sifrr-seo', () => {
     });
 
     it('renders sifrr-nosr again locally (without sr)', async () => {
-      const html = await page.$eval('sifrr-nosr', async el => {
+      const html = await page.$eval('sifrr-nosr', async (el) => {
         await customElements.whenDefined('sifrr-nosr');
         return el.innerHTML;
       });
@@ -93,23 +93,23 @@ describe('sifrr-seo', () => {
 
   it("doesn't render non html files", async () => {
     await page.goto(`${PATH}/nothtml`, { waitUntil: 'load' });
-    const html = await page.$eval('body', async el => {
+    const html = await page.$eval('body', async (el) => {
       return el.innerHTML;
     });
 
     expect(html).to.have.string('nothtml');
-    expect(html).to.not.have.string('@sifrr/seo');
+    expect(html).to.not.have.string('@sifrr/ssr');
   });
 
   it("doesn't render other requests than GET", async () => {
-    const html = await page.evaluate(path => {
+    const html = await page.evaluate((path) => {
       return fetch(`${path}/post`, {
         method: 'POST',
         referrer: 'no-referrer'
-      }).then(resp => resp.text());
+      }).then((resp) => resp.text());
     }, PATH);
 
     expect(html).to.have.string('post');
-    expect(html).to.not.have.string('@sifrr/seo');
+    expect(html).to.not.have.string('@sifrr/ssr');
   });
 });

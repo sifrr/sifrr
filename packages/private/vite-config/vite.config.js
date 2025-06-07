@@ -14,7 +14,7 @@ const nameToGlobal = (name) =>
       return '.' + letter.toUpperCase();
     });
 
-export default (baseDir, external = []) => {
+export default (baseDir, external = [], isBrowser = true) => {
   const entries = Object.fromEntries(
     globSync(resolve(baseDir, 'src') + '/**/index.ts').map((file) => [
       relative(resolve(baseDir, 'src'), file)
@@ -48,7 +48,7 @@ export default (baseDir, external = []) => {
       cssCodeSplit: true,
       sourcemap: true,
       lib: {
-        formats: ['es', 'umd', 'iife'],
+        formats: ['es', 'umd', isBrowser && 'iife'].filter((x) => !!x),
         entry: {
           ...entries,
           index: resolve(baseDir, 'src/index.ts')

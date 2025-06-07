@@ -17,5 +17,5 @@
     "strict": true,
     "target": "ESNext"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.vue"]
+  "include": ["**/*.ts"]
 }

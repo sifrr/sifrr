@@ -1,12 +1,12 @@
 {
   "extends": "@sifrr/typescript-config/base.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts"],
   "compilerOptions": {
-    "lib": ["esnext", "es2019", "dom", "webworker"],
+    "lib": ["esnext", "es2019"],
     "baseUrl": ".",
     "removeComments": false,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "experimentalDecorators": true
   }
 }

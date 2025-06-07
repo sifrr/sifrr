@@ -1,4 +1,4 @@
-# sifrr-seo · [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)
+# sifrr-ssr · [![npm version](https://img.shields.io/npm/v/@sifrr/ssr.svg)](https://www.npmjs.com/package/@sifrr/ssr) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-ssr/)
 
 Server Side Pre-Redering for any js based app using puppeteer (headless chrome) with caching. Mainly focused on serving rendered content to crawlers/bots.
 
@@ -10,7 +10,7 @@ Server Side Pre-Redering for any js based app using puppeteer (headless chrome) 
 
 ## How to use
 
-Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `package.json` file.
+Do `npm i @sifrr/ssr` or `yarn add @sifrr/ssr` or add the package to your `package.json` file.
 
 ## Api
 
@@ -19,7 +19,7 @@ Do `npm i @sifrr/seo` or `yarn add @sifrr/seo` or add the package to your `packa
 SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request to complete before returning rendered HTML. It doesn't load any media content on server.
 
 ```js
-const SifrrSeo = require('@sifrr/seo');
+const SifrrSeo = require('@sifrr/ssr');
 
 // options
 // `cacheStore`: same as store in [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) options, default: memory store with 100MB storage
@@ -83,7 +83,7 @@ sifrrSeo.render(
 
 ### Rendering logic
 
-sifrr-seo only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
+sifrr-ssr only renders a request if it has no `Referer` header (i.e. direct browser requests) and if `shouldRender` returns `true` and if content-type is `html`.
 
 #### Changing shouldRender()
 

@@ -1,5 +1,5 @@
 {
-  "name": "@sifrr/seo",
+  "name": "@sifrr/ssr",
   "version": "0.0.9",
   "description": "Server Side Redering for any js based app as a express middleware.",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "server side rendering"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-seo",
+    "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-ssr",
     "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
     "test-server": "yarn test -s"
@@ -31,18 +31,7 @@
     "puppeteer": "^2.0.0"
   },
   "peerDependencies": {},
-  "devDependencies": {
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
-    "axios": "^1.9.0",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
-  },
+  "devDependencies": {},
   "files": [
     "bin",
     "dist",

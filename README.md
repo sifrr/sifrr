@@ -43,11 +43,10 @@ Note that for 0.x releases of this library, the API is not considered stable yet
 | Package                                         | Description                                            | NPM                                                                                                           | Documentation                                                                                                                          |                   Tests                   |
 | :---------------------------------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------: |
 | [sifrr-api](./packages/server/sifrr-api/)       | Create normal/GraphQL APIs with same codebase          | [![npm version](https://img.shields.io/npm/v/@sifrr/api.svg)](https://www.npmjs.com/package/@sifrr/api)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-api/)    |  [OK](./packages/server/sifrr-api/test)   |
-| [sifrr-cli](./packages/server/sifrr-cli/)       | Sifrr cli for creating webapps using sifrr             | [![npm version](https://img.shields.io/npm/v/@sifrr/cli.svg)](https://www.npmjs.com/package/@sifrr/cli)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-cli/)    |                  \[WIP]                   |
-| [sifrr-seo](./packages/server/sifrr-seo/)       | Server side pre-rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/seo.svg)](https://www.npmjs.com/package/@sifrr/seo)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-seo/)    |  [OK](./packages/server/sifrr-seo/test)   |
+| [sifrr-ssr](./packages/server/sifrr-ssr/)       | Server side pre-rendering using puppeteer with caching | [![npm version](https://img.shields.io/npm/v/@sifrr/ssr.svg)](https://www.npmjs.com/package/@sifrr/ssr)       | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-ssr/)    |  [OK](./packages/server/sifrr-ssr/test)   |
 | [sifrr-server](./packages/server/sifrr-server/) | Fast HTTP + WebSockets server                          | [![npm version](https://img.shields.io/npm/v/@sifrr/server.svg)](https://www.npmjs.com/package/@sifrr/server) | [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-server/) | [OK](./packages/server/sifrr-server/test) |
 
-`sifrr-api`, `sifrr-seo`, `sifrr-server` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
+`sifrr-api`, `sifrr-ssr`, `sifrr-server` can be used independently. `sifrr-cli` has functionalities which can be used with sequelize projects, `sifrr-api` projects and `sifrr-dom` projects.
 
 ## Usage
 
@@ -101,7 +100,7 @@ Individual libraries may support older versions too with polyfills listed in doc
 
 Approximately amounts to ~90% of total worldwide browser usage.
 
-To support mini browsers (opera mini, uc browser etc.), You can use sifrr-seo to provide server side rendering.
+To support mini browsers (opera mini, uc browser etc.), You can use sifrr-ssr to provide server side rendering.
 
 ## Contributors
 

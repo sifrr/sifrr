@@ -8,4 +8,4 @@
 - [sifrr-api](/packages/server/sifrr-api/ 'sifrr-api Documentation')
 - [sifrr-server](/packages/server/sifrr-server/ 'sifrr-server Documentation')
 - [sifrr-cli](/packages/server/sifrr-cli/ 'sifrr-cli Documentation')
-- [sifrr-seo](/packages/server/sifrr-seo/ 'sifrr-seo Documentation')
+- [sifrr-ssr](/packages/server/sifrr-ssr/ 'sifrr-ssr Documentation')
