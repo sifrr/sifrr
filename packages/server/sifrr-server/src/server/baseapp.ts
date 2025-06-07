@@ -52,7 +52,7 @@ const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: Upl
   };
   res.bodyBuffer = () => buffer(res.bodyStream());
 
-  Object.defineProperty(req, 'body', {
+  Object.defineProperty(res, 'body', {
     async get(): Promise<T> {
       if (contType.indexOf('application/json') > -1) {
         return JSON.parse((await res.bodyBuffer()).toString());
@@ -76,19 +76,37 @@ function handleRequest(
     res.onAborted(() => {
       res.aborted = true;
     });
+    res._write = res.write;
+    res.write = (body) => {
+      if (res.aborted) return true;
+      let ret = true;
+      res.cork(() => {
+        return res.write(body);
+      });
+      return ret;
+    };
     res._end = res.end;
     res.end = (body, close) => {
       if (res.aborted) return res;
-      return res._end(body, close);
+      res.cork(() => {
+        return res._end(body, close);
+      });
+      return res;
     };
     res._tryEnd = res.tryEnd;
     res.tryEnd = (body, size) => {
-      if (res.aborted) return res;
-      return res._tryEnd(body, size);
+      let ret = [true, true] as [boolean, boolean];
+      if (res.aborted) return ret;
+      res.cork(() => {
+        ret = res._tryEnd(body, size);
+      });
+      return ret;
     };
     res.json = (obj: any) => {
-      res.writeHeader('content-type', 'application/json');
-      res.end(JSON.stringify(obj));
+      res.cork(() => {
+        res.writeHeader('content-type', 'application/json');
+        res.end(JSON.stringify(obj));
+      });
     };
     const orig = req.getQuery.bind(req);
     (req as unknown as SifrrRequest).getQuery = (options?: ParseOptions) =>
@@ -204,7 +222,7 @@ export class SifrrServer implements ISifrrServer {
     return this.get(pattern, sendFile.bind(this, filePath, options));
   }
 
-  folder(prefix: string, folder: string, options: SendFileOptions, base: string = folder) {
+  folder(prefix: string, folder: string, options: SendFileOptions = {}, base: string = folder) {
     // not a folder
     if (!statSync(folder).isDirectory()) {
       throw Error('Given path is not a directory: ' + folder);
