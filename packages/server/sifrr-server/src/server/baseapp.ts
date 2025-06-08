@@ -151,19 +151,18 @@ export class SifrrServer implements ISifrrServer {
     return this;
   }
 
-  graphql(
+  graphql<T>(
     route: string,
     schema: GraphQLSchema,
     graphqlOptions: Partial<GraphQLArgs> & {
       graphiqlPath?: string;
     },
-    uwsOptions: AppOptions,
+    uwsOptions: WebSocketBehavior<T>,
     graphql: typeof Graphql
   ) {
-    const handler = graphqlPost(schema, graphqlOptions, graphql);
-    this.post(route, handler);
-    this.app.ws(route, graphqlWs(schema, graphqlOptions, uwsOptions, graphql));
-    if (graphqlOptions && graphqlOptions.graphiqlPath)
+    this.post(route, graphqlPost(schema, graphqlOptions, graphql));
+    this.app.ws(route, graphqlWs<T>(schema, graphqlOptions, uwsOptions, graphql));
+    if (graphqlOptions?.graphiqlPath)
       this.file(graphqlOptions.graphiqlPath, join(__dirname, './graphiql.html'));
     return this;
   }

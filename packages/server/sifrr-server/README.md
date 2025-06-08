@@ -5,14 +5,13 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 ## Features
 
 - Extends [uWebSocket.js](https://github.com/uNetworking/uWebSockets.js)
-- Simple static file serving with conditional last-modified, compression, cache, live reload support
-- Simple post request data, json data and form data handling (file upload, multipart, url-encoded)
+- Static file serving with conditional last-modified, compression, cache support
+- Post request data, json data and form data handling (file upload, multipart, url-encoded)
 - easy graphql server
 
 ## How to use
 
 Do `npm i @sifrr/server` or `yarn add @sifrr/server` or add the package to your `package.json` file.
-And `npm i uNetworking/uWebSockets.js#v15.11.0` or `yarn add uNetworking/uWebSockets.js#v15.11.0` to install uWebSockets, which is a peerDependency needed.
 
 ## Api
 
@@ -21,59 +20,23 @@ And `npm i uNetworking/uWebSockets.js#v15.11.0` or `yarn add uNetworking/uWebSoc
 Sifrr Server extends 'uWebSockets.js' package. You can view more details [here](https://github.com/uNetworking/uWebSockets.js). So all the APIs from uWS works with sifrr server.
 
 ```js
-const { App, SSLApp } = require('@sifrr/server');
+import { SifrrServer } from '@sifrr/server';
 ```
-
-- `App` extends uWS.App
-- `SSLApp` extends uWS.SSLApp
 
 ## Extra APIs than uWS
 
 ### createCluster
 
-```js
-const { Cluster, App } = require('@sifrr/server');
-const app = new App();
+```ts
+import { launchCluster, SifrrServer } from '@sifrr/server';
+const app = new SifrrServer();
 // do something on app
-const app2 = new App();
-// do something on app2
-const cluster = new Cluster([
-  {
-    app: app,
-    port: 12345
-  },
-  {
-    app: app2,
-    ports: [12346, 12347]
-  }
-]);
 
-// listen on all ports
-cluster.listen((uwsSocket, port) => {
-  // this = app for port
-  console.log(this, `is listening on port ${port}`);
-});
-
-// close all ports
-cluster.close();
-
-// close specific port
-cluster.close(port);
-```
-
-### writeHeaders
-
-```js
-const { App, writeHeaders } = require('@sifrr/server');
-
-const app = new App();
-app.get('/', res => {
-  writeHeaders(res, name, value); // single header
-  writeHeaders(res, {
-    name1: value1,
-    name2: value2
-  }); // multiple headers
-});
+launchCluster(app, port, {
+  numberOfWorkers?: number;
+  restartOnError?: boolean;
+  onListen?: (port: number | false) => void;
+})
 ```
 
 ### sendFile
@@ -81,12 +44,8 @@ app.get('/', res => {
 respond with file from filepath. sets content-type based on [file name extensions](./src/server/mime.js), supports responding 304 based on if-modified-since headers, compression(gzip, brotli, deflate), range requests (videos, music etc.)
 
 ```js
-const { sendFile } = require('@sifrr/server');
-
 const app = new App();
-app.get(uWSRoutingPattern, (res, req) => {
-  sendFile(res, req, filepath, options);
-});
+app.get(uWSRoutingPattern, app.sendFile(filePath, options));
 ```
 
 - `options`:
@@ -96,18 +55,11 @@ app.get(uWSRoutingPattern, (res, req) => {
   - `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
   - `cache`: **default:** `false`, if given a [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) instance, it will cache the files in given cache. Generally it might not be needed at all, check for performance improvement before using it blindly.
 
-#### Add additional mime type:
-
-```js
-const { mimes } = require('@sifrr/server');
-mimes['extension'] = 'mime/type';
-```
-
 ### host static files
 
 - Single file (alias for sendFile example above)
 
-file from filepath will be server for given pattern
+file from filepath will be served for given pattern
 
 ```js
 app.file(uWSRoutingPattern, filepath, options); // options are sendFile options
@@ -126,44 +78,50 @@ app.folder('/example', folder, options);
 // will serve example.html if you go to `/example/example.html`
 ```
 
-**Extra options**
-`overwriteRoute`: if set to `true`, it will overwrite old pattern if same pattern is added.
-`failOnDuplicateRoute`: if set to `true`, it will throw error if you try add same pattern again.
-By default, it will serve the file you added first with a pattern.
-`watch`: if it is `true`, it will watch for new Files / deleted files and serve/unserve them as needed.
-`livereload`: default: `false`, [more details here](#live-reload-experimental)
-
 ### Post requests
 
 for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests), note that as stream can only be used once, only one of these function can be called for one request:
 
-- `res.body().then(body => /* do something */)`: gives post body as buffer
-- `res.bodyStream()`: Gives post body stream
-- `res.json().then(jsonBody => /* do something */)`: gives post body as json if content-type is `application/json` (this method is only set if post body content-type is `application/json`)
-- `res.formData(options).then(data => /* do something */)` (only set if content-type is `application/x-www-form-urlencoded` or `multipart/form-data`)
+- `res.body.then(body => /* do something */)`: gives post body as json (if content type is json or formdata) or text
+- `res.bodyStream`: Gives post body stream
+- `res.bodyBuffer.then(buffer => /* do something */)`: gives post body as buffer
 
-```js
-res.formData(options).then(data => {
-  // example data
-  // {
-  //   file: {
-  //     filename: 'name.ext',
-  //     encoding: '7bit',
-  //     mimetype: 'application/json',
-  //     filePath: 'tmpDir/name.ext' // only set if tmpDir is given
-  //   },
-  //   fieldname: value
-  // }
-});
+Options:
+
+```ts
+{
+  /**
+   * Path to local disk directory. it will store the uploaded files to local disk if directory is given
+   * Path where file is saved will be added to UploadedFile.path
+   */
+  destinationDir?: string;
+  /**
+   * Filter function for files, if it return false, files will be ignored.
+   */
+  filterFile?(fileInfo: UploadedFile): boolean;
+  /**
+   * Add custom handler for reading file streams, if it is provided buffer/path will not be available in uploaded file info
+   */
+  handleFileStream?(
+    fileInfo: Omit<UploadedFile, 'buffer' | 'destination' | 'path' | 'size'>
+  ): void | Promise<void>;
+  /**
+   * Config for file fields.
+   * If undefined, all files and fields are allowed.
+   */
+  fields?: Partial<
+    Record<
+      T,
+      {
+        /** Any files > maxCount for a field will be ignored */
+        maxCount?: number;
+      }
+    >
+  >;
+}
 ```
 
-options need to have atleast one of `onFile` function or `tmpDir` if body has files else request will timeout and formData() will never resolve.
-
-- if `onFile` is set, then it will be called with `fieldname, file, filename, encoding, mimetype` for every file uploaded, where file is file stream, you need to consume it or the request will never resolve
-- if `tmpDir` is given (folder name), files uploaded will be saved in tmpDir, and filePath will added in given data
-  if `filename` function is given, it will be called with original filename, and name returned will be used when saving in tmpDir.
-- `onField` (optional): will be called with `fieldname, value` if given
-- other [busboy options](https://github.com/mscdex/busboy#busboy-methods)
+and other busboy options
 
 Array fields/files:
 
@@ -184,7 +142,7 @@ function contextFxn(res, err) {
 
 const graphqlSchema = /* get graphql executable schema from somewhere (Javascript one, not graphql dsl) */;
 
-app.graphql('/graphql', graphqlSchema, contextFxn);
+app.graphql('/graphql', graphqlSchema, otherOptions);
 ```
 
 It supports:
@@ -229,73 +187,6 @@ It supports:
 
 can be implemented easily using sifrr-fetch
 
-### Live reload (experimental)
-
-Live reload, reloads browser page when static files are changed or a signal is sent.
-
-```js
-const { App } = require('@sifrr/server');
-
-const app = new App();
-app.folder('/live', folderPath, {
-  livereload: true // ideally true only in development
-  // other sendFile options
-});
-
-// then in your frontend js file
-import livereload from '@sifrr/server/src/livereloadjs';
-```
-
-```html
-<!-- or with script tag -->
-<script src="/livereload.js"></script>
-<!-- don't overwrite this path if you using it -->
-```
-
-### Load routes
-
-An example route file:
-
-```js
-const path = require('path');
-
-const headers = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': '*',
-  Connection: 'keep-alive'
-};
-
-module.exports = {
-  basePath: '/p', // this preffix will be added to all the routes in this file
-  folder: {
-    '': [path.join(__dirname, '../public'), { headers, lastModified: false }],
-  },
-  get: {
-    '/some': (res, req) => res.send('ABD');
-  }
-};
-```
-
-You can have multiple route files in a folder, and then you can call
-
-```js
-app.load(dirPath, { filter: filepath => true, basePath: '' });
-```
-
-And all the routes from the route files in this directory will be added to your app server.
-
-for example the above route file will add following routes:
-
-```js
-app.folder('/p', path.join(__dirname, '../public'), { headers, lastModified: false });
-app.get('/p/some', (res, req) => res.send('ABD'));
-```
-
-`Options`:
-
-- `filter` - this function will be called with all filepaths in directory, and if this returns `true` that route file will be added, else it will be not.
-- `basePath` - base path preffix to add for all the routes
-
 ## Static server Benchmarks
 
 From [this file](./test/browser/speed.test.js)
@@ -337,7 +228,3 @@ From [this file](./test/browser/speed.test.js)
 │ express │ 357 │      22       │      358      │      0      │ 1.0017989919999999 │
 └─────────┴─────┴───────────────┴───────────────┴─────────────┴────────────────────┘
 ```
-
-## Examples
-
-Are available in [test/public/benchmarks/sifrr.js](./test/public/benchmarks/sifrr.js)

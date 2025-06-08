@@ -82,7 +82,7 @@ function stopGqsSubscription(
 function graphqlWs<T>(
   schema: GraphQLSchema,
   graphqlOptions: Partial<Graphql.ExecutionArgs>,
-  uwsOptions: AppOptions,
+  uwsOptions: WebSocketBehavior<T>,
   graphql: typeof Graphql
 ) {
   const subscribe = graphql.subscribe || require('graphql').subscribe;
