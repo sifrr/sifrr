@@ -6,8 +6,8 @@ import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
 import fs from 'fs';
 import { buffer } from 'stream/consumers';
-import { stob } from '@/server/utils';
-import { Readable } from 'stream';
+import { defer, stob, stof } from '@/server/utils';
+import { Readable, Transform } from 'stream';
 
 function formData(
   this: SifrrResponse,
@@ -59,26 +59,31 @@ function formData(
           reject(Error('LIMIT_FILE_SIZE: ' + fieldname));
         });
 
-        promises.push(
-          stob(fileStream).then((b) => {
-            value.size = b.length;
-            if (typeof options.destinationDir === 'string') {
-              const ext = getExt(mimeType);
-              const finalPath = join(options.destinationDir, uuid() + (ext ? `.${ext}` : ''));
+        const { promise, resolve: res, reject: rej } = defer<void>();
 
-              value.path = finalPath;
-              value.destination = options.destinationDir;
+        promises.push(promise);
 
-              const outStream = fs.createWriteStream(finalPath);
-              outStream.on('error', reject);
+        if (typeof options.destinationDir === 'string') {
+          const ext = getExt(mimeType);
+          const finalPath = join(options.destinationDir, uuid() + (ext ? `.${ext}` : ''));
 
-              Readable.from(b).pipe(outStream);
-            } else {
+          value.path = finalPath;
+          value.destination = options.destinationDir;
+          stof(fileStream, finalPath)
+            .then((size) => {
+              value.size = size;
+              res();
+            })
+            .catch(rej);
+        } else {
+          stob(fileStream)
+            .then((b) => {
+              value.size = b.length;
               value.buffer = b;
-            }
-            return b;
-          })
-        );
+              res();
+            })
+            .catch(rej);
+        }
 
         setRetValue(ret, fieldname, value);
       }
