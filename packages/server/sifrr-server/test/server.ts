@@ -26,6 +26,7 @@ app.post('/post', async (res, req) => {
   const body = await res.body;
   try {
     await res.bodyBuffer;
+    res.json({ body });
   } catch (e) {
     res.json({ body, bodyBuffer: (e as Error).message });
   }
@@ -35,6 +36,7 @@ app.post('/post-stream', async (res, req) => {
   const stream = await buffer(res.bodyStream);
   try {
     await res.body;
+    res.json({ stream });
   } catch (e) {
     res.json({ stream, body: (e as Error).message });
   }
@@ -44,6 +46,7 @@ app.post('/post-buffer', async (res, req) => {
   const bodyBuffer = await res.bodyBuffer;
   try {
     await res.body;
+    res.json({ bodyBuffer });
   } catch (e) {
     res.json({ bodyBuffer, body: (e as Error).message });
   }
@@ -86,10 +89,14 @@ app.get('/empty', (res) => {
   res.end();
 });
 
-app.post('/buffer', async (res) => {
+app.post<{
+  file?: UploadedFile;
+  file2?: UploadedFile[];
+  buffer1?: Buffer;
+}>('/buffer', async (res) => {
   writeHeaders(res, headers);
-  res.writeHeader('content-type', 'application/json');
-  res.json(await res.body);
+  const body = await res.body;
+  res.json(body);
 });
 
 app.post<{
@@ -100,12 +107,10 @@ app.post<{
   async (res) => {
     writeHeaders(res, headers);
     res.writeHeader('content-type', 'application/json');
-    const body = await res.body;
-    delete (body.file as any).stream;
-    res.json(body);
+    res.json(await res.body);
   },
   {
-    localDir: path.join(__dirname, './tmp')
+    destinationDir: path.join(__dirname, './tmp')
   }
 );
 

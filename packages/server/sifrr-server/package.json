@@ -37,8 +37,9 @@
     "test:cluster": "npx tsx test/server-cluster"
   },
   "dependencies": {
-    "busboy": "^0.3.0",
-    "iterall": "^1.2.2",
+    "busboy": "^1.6.0",
+    "iterall": "^1.3.0",
+    "mime": "^4.0.7",
     "mkdirp": "^0.5.1",
     "query-string": "^6.8.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.52.0",
@@ -48,7 +49,7 @@
     "graphql": "^14.5.3"
   },
   "devDependencies": {
-    "@types/busboy": "^0.2.3",
+    "@types/busboy": "^1.5.4",
     "@types/node": "^22.15.30",
     "@types/yargs": "^15.0.12",
     "graphql": "^16.11.0"

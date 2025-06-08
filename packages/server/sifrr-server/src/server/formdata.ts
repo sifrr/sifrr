@@ -1,58 +1,88 @@
-import { createWriteStream, statSync, writeFile, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
-import Busboy from 'busboy';
+import { join } from 'path';
+import Busboy, { BusboyConfig } from 'busboy';
 import mkdirp from 'mkdirp';
 import { SifrrResponse, UploadedFile, UploadFileConfig } from '@/server/types';
 import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
+import fs from 'fs';
 import { buffer } from 'stream/consumers';
-import { Transform, pipeline } from 'stream';
+import { stob } from '@/server/utils';
+import { Readable } from 'stream';
 
-function formData(this: SifrrResponse, contType: string, options: UploadFileConfig = {}) {
-  options.headers = {
-    'content-type': contType
-  };
+function formData(
+  this: SifrrResponse,
+  headers: Record<string, string>,
+  options: UploadFileConfig = {}
+) {
+  (options as BusboyConfig).headers = headers;
+
+  if (typeof options.destinationDir === 'string') {
+    mkdirp.sync(options.destinationDir);
+  }
 
   return new Promise((resolve, reject) => {
-    const busb = new Busboy(options);
+    const busb = Busboy(options);
     const ret = {};
     const promises: Promise<any>[] = [Promise.resolve()];
 
-    this.bodyStream.pipe(busb);
+    busb.on('partsLimit', function () {
+      reject(Error('LIMIT_PART_COUNT'));
+    });
+    busb.on('filesLimit', function () {
+      reject(Error('LIMIT_FILE_COUNT'));
+    });
+    busb.on('fieldsLimit', function () {
+      reject(Error('LIMIT_FIELD_COUNT'));
+    });
 
-    busb.on('limit', () => {
-      if (options.abortOnLimit) {
-        reject(Error('limit'));
+    busb.on(
+      'file',
+      function (fieldname, fileStream, { filename: originalname, encoding, mimeType }) {
+        if (!originalname) return fileStream.resume();
+
+        const value: Partial<UploadedFile> = {
+          fieldname,
+          originalname,
+          encoding,
+          mimeType,
+          path: undefined
+        };
+
+        Object.defineProperty(value, 'stream', {
+          configurable: true,
+          enumerable: false,
+          value: fileStream
+        });
+
+        fileStream.on('error', reject);
+        fileStream.on('limit', function () {
+          reject(Error('LIMIT_FILE_SIZE: ' + fieldname));
+        });
+
+        promises.push(
+          stob(fileStream).then((b) => {
+            value.size = b.length;
+            if (typeof options.destinationDir === 'string') {
+              const ext = getExt(mimeType);
+              const finalPath = join(options.destinationDir, uuid() + (ext ? `.${ext}` : ''));
+
+              value.path = finalPath;
+              value.destination = options.destinationDir;
+
+              const outStream = fs.createWriteStream(finalPath);
+              outStream.on('error', reject);
+
+              Readable.from(b).pipe(outStream);
+            } else {
+              value.buffer = b;
+            }
+            return b;
+          })
+        );
+
+        setRetValue(ret, fieldname, value);
       }
-    });
-
-    busb.on('file', function (fieldname, file, filename, encoding, mimetype) {
-      const value: Partial<UploadedFile> & { size: number } = {
-        fieldname,
-        originalname: filename,
-        stream: file,
-        encoding,
-        mimetype,
-        size: 0,
-        path: undefined
-      };
-
-      promises.push(
-        buffer(file).then((bfr) => {
-          value.buffer = bfr;
-          value.size = bfr.byteLength;
-          if (typeof options.localDir === 'string') {
-            const ext = getExt(mimetype);
-            const fileToSave = join(options.localDir, uuid() + (ext ? `.${ext}` : ''));
-            mkdirp(dirname(fileToSave));
-            writeFileSync(fileToSave, bfr);
-            value.path = fileToSave;
-          }
-        })
-      );
-
-      setRetValue(ret, fieldname, value);
-    });
+    );
 
     busb.on('field', function (fieldname, value) {
       setRetValue(ret, fieldname, value);
@@ -65,13 +95,15 @@ function formData(this: SifrrResponse, contType: string, options: UploadFileConf
     });
 
     busb.on('error', reject);
+
+    this.bodyStream.pipe(busb);
   });
 }
 
 function setRetValue(
   ret: { [x: string]: any },
   fieldname: string,
-  value: { filename: string; encoding: string; mimetype: string; filePath?: string } | any
+  value: Partial<UploadedFile> | string
 ) {
   if (fieldname.endsWith('[]')) {
     fieldname = fieldname.substring(0, fieldname.length - 2);

@@ -1,6 +1,6 @@
 import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
-import { Readable } from 'stream';
+import { Readable, ReadableOptions } from 'stream';
 import {
   us_listen_socket_close,
   TemplatedApp,
@@ -67,7 +67,13 @@ const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: Upl
       if (contType.indexOf('application/json') > -1) {
         return json(res.bodyStream) as T;
       } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
-        return formData.call(res, contType, uploadConfig) as T;
+        return formData.call(
+          res,
+          {
+            'content-type': contType
+          },
+          uploadConfig
+        ) as T;
       } else {
         return text(res.bodyStream) as T;
       }
@@ -133,7 +139,14 @@ function handleRequest(
       }
     });
 
-    handler(res as SifrrResponse, req as unknown as SifrrRequest);
+    const promise = handler(res as SifrrResponse, req as unknown as SifrrRequest);
+    if (promise instanceof Promise) {
+      promise.catch((e) => {
+        console.error(e);
+        res.writeStatus('500 Internal Server Error');
+        res.end();
+      });
+    }
   };
 }
 

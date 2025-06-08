@@ -1,3 +1,4 @@
+import { BusboyConfig } from 'busboy';
 import { ParsedQuery, ParseOptions } from 'query-string';
 import { Readable } from 'stream';
 import { AppOptions, WebSocketBehavior, HttpResponse, HttpRequest } from 'uWebSockets.js';
@@ -106,27 +107,26 @@ export interface UploadedFile {
    */
   encoding: string;
   /** Value of the `Content-Type` header for this file. */
-  mimetype: string;
-  /** Size of the file in bytes. Is not set if useStream is true in config. */
-  size: number;
+  mimeType: string;
   /**
-   * A readable stream of this file. It is not available unless useStream is set to true in config.
+   * A readable stream of this file. It is not available if localDir was set given in config.
    */
   stream: NodeJS.ReadableStream;
-  /** Full path to the uploaded file. Only available when localDir is given in config and useStream is falsy.  */
-  path: string;
-  /** A Buffer containing the entire file. Only available if path is not used and useStream is falsy. */
+  /** File buffer, only available if destinationDir was not given in config. */
   buffer: Buffer;
+  /** Destination folder of file uploaded, is same as destinationDir given in config. */
+  destination: string;
+  /** Full path to the uploaded file. Only available when localDir is given in config.  */
+  path: string;
+  /** Size of file uploaded in bytes */
+  size: number;
 }
 
-export type UploadFileConfig = busboy.BusboyConfig & {
-  abortOnLimit?: boolean;
+export type UploadFileConfig = Omit<BusboyConfig, 'headers'> & {
   /** Path to local disk directory. it will store the uploaded files to local disk if directory is given
-   * Path where file is uploaded will be added to UploadedFile.path
+   * Path where file is saved will be added to UploadedFile.path
    */
-  localDir?: string;
-  /** Adds body buffer to UploadedFile.buffer */
-  buffer?: boolean;
+  destinationDir?: string;
 };
 
 export {};

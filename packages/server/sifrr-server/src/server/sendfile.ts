@@ -53,7 +53,10 @@ function sendFileToRes(
     }
     headers['last-modified'] = mtimeutc;
   }
-  headers['content-type'] = getMimetype(path);
+  const mime = getMimetype(path);
+  if (mime) {
+    headers['content-type'] = mime;
+  }
 
   // write data
   let start = 0,

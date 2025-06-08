@@ -17,3 +17,15 @@ export function writeHeaders(
     }
   });
 }
+
+export const stob = (fileStream: NodeJS.ReadableStream) =>
+  new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    fileStream.on('data', (chunk) => {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk, 'utf-8') : Buffer.from(chunk));
+    });
+    fileStream.on('end', () => {
+      resolve(Buffer.concat(chunks));
+    });
+    fileStream.on('error', reject);
+  });
