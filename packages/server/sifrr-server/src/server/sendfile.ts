@@ -8,11 +8,18 @@ const compressions = {
 };
 import { getMimetype } from './mime';
 const bytes = 'bytes=';
-import { SendFileOptions, SifrrRequest, SifrrResponse } from './types';
+import { SendFileOptions, SifrrRequest } from './types';
 import { writeHeaders } from '@/server/utils';
 import { Duplex } from 'stream';
+import { HttpRequest, HttpResponse } from 'uWebSockets.js';
+import { SifrrResponse } from '@/server/response';
 
-function sendFile(path: string, options: SendFileOptions, res: SifrrResponse, req: SifrrRequest) {
+function sendFile(
+  path: string,
+  options: SendFileOptions,
+  req: HttpRequest | SifrrRequest,
+  res: HttpResponse | SifrrResponse
+) {
   sendFileToRes(
     res,
     {
@@ -26,7 +33,7 @@ function sendFile(path: string, options: SendFileOptions, res: SifrrResponse, re
 }
 
 function sendFileToRes(
-  res: SifrrResponse,
+  res: HttpResponse | SifrrResponse,
   reqHeaders: { [name: string]: string },
   path: string,
   {
@@ -119,7 +126,7 @@ function sendFileToRes(
         res.abOffset = lastOffset;
 
         // Register async handlers for drainage
-        res.onWritable((offset) => {
+        res.onWritable((offset: number) => {
           const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
           if (done) {
             readStream.destroy();

@@ -14,15 +14,15 @@ const port = 6006;
 app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
 app.folder('/', path.join(__dirname, 'public'));
 
-app.get('/get', (res, req) => {
+app.get('/get', (req, res) => {
   res.json(req.query);
 });
 
-app.get('/get-json', (res, req) => {
+app.get('/get-json', (req, res) => {
   res.json({ ok: 'ok' });
 });
 
-app.post('/post', async (res, req) => {
+app.post('/post', async (req, res) => {
   const body = await res.body;
   try {
     await res.bodyBuffer;
@@ -32,7 +32,7 @@ app.post('/post', async (res, req) => {
   }
 });
 
-app.post('/post-stream', async (res, req) => {
+app.post('/post-stream', async (req, res) => {
   const stream = await buffer(res.bodyStream);
   try {
     await res.body;
@@ -42,7 +42,7 @@ app.post('/post-stream', async (res, req) => {
   }
 });
 
-app.post('/post-buffer', async (res, req) => {
+app.post('/post-buffer', async (req, res) => {
   const bodyBuffer = await res.bodyBuffer;
   try {
     await res.body;
@@ -52,11 +52,11 @@ app.post('/post-buffer', async (res, req) => {
   }
 });
 
-app.put('/put', async (res, req) => {
+app.put('/put', async (req, res) => {
   res.json(await res.body);
 });
 
-app.delete('/delete/:id', (res, req) => {
+app.delete('/delete/:id', (req, res) => {
   if (req.getParameter('id') === '1') {
     res.writeStatus('200').end();
   } else {
@@ -79,38 +79,86 @@ app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
   headers
 });
 
-app.options('/*', (res) => {
+app.options('/*', (req, res) => {
   writeHeaders(res, headers);
   writeHeaders(res, 'access-control-allow-headers', 'content-type');
   res.end();
 });
 
-app.get('/empty', (res) => {
+app.get('/empty', (req, res) => {
   res.end();
 });
 
-app.post<{
-  file?: UploadedFile;
-  file2?: UploadedFile[];
-  buffer1?: Buffer;
-}>('/buffer', async (res) => {
+app.post('/buffer', async (req, res) => {
   writeHeaders(res, headers);
   const body = await res.body;
   res.json(body);
 });
 
 app.post<{
-  file?: UploadedFile;
-  file2?: UploadedFile[];
+  file: UploadedFile;
+  file2: UploadedFile[];
 }>(
-  '/tmpdir',
-  async (res) => {
+  '/tmpdir-0',
+  async (req, res) => {
     writeHeaders(res, headers);
     res.writeHeader('content-type', 'application/json');
     res.json(await res.body);
   },
   {
-    destinationDir: path.join(__dirname, './tmp')
+    destinationDir: path.join(__dirname, './tmp'),
+    fields: {
+      file: {
+        maxCount: 1
+      },
+      file2: {
+        maxCount: 0
+      }
+    }
+  }
+);
+
+app.post<{
+  file: UploadedFile;
+  file2: UploadedFile[];
+}>(
+  '/tmpdir-1',
+  async (req, res) => {
+    writeHeaders(res, headers);
+    res.json(await res.body);
+  },
+  {
+    destinationDir: path.join(__dirname, './tmp'),
+    fields: {
+      file: {
+        maxCount: 1
+      },
+      file2: {
+        maxCount: 1
+      }
+    }
+  }
+);
+
+app.post<{
+  file: UploadedFile;
+  file2: UploadedFile[];
+}>(
+  '/tmpdir',
+  async (req, res) => {
+    writeHeaders(res, headers);
+    res.json(await res.body);
+  },
+  {
+    destinationDir: path.join(__dirname, './tmp'),
+    fields: {
+      file: {
+        maxCount: 1
+      },
+      file2: {
+        maxCount: 5
+      }
+    }
   }
 );
 

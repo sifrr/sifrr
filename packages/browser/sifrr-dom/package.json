@@ -41,7 +41,7 @@
     "test:playwright": "playwright test",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "test:server": "npx tsx test/server",
+    "test:server": "npx tsx watch --include test/public test/server",
     "storybook:dev": "storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build"
   },

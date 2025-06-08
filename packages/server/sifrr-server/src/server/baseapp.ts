@@ -1,6 +1,5 @@
 import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
-import { Readable, ReadableOptions } from 'stream';
 import {
   us_listen_socket_close,
   TemplatedApp,
@@ -14,116 +13,36 @@ import {
   us_socket_local_port
 } from 'uWebSockets.js';
 import * as Graphql from 'graphql';
-import { buffer, json, text } from 'stream/consumers';
 
 import sendFile from './sendfile';
-import formData from './formdata';
 import { graphqlPost, graphqlWs } from './graphql';
 import {
   SendFileOptions,
   SifrrServerOptions,
-  SifrrResponse,
   SifrrRequest,
   ISifrrServer,
   RequestHandler,
-  UploadFileConfig
+  FormDataConfig,
+  KeysMatching
 } from './types';
 import { GraphQLArgs, GraphQLSchema } from 'graphql';
 import { parse, ParseOptions } from 'query-string';
+import { SifrrResponse } from '@/server/response';
 
-const formDataContentTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
-const bodyUserError = Error(
-  'Stream was already read. You can only read of body, bodyBuffer, bodyStream.'
-);
-
-const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: UploadFileConfig) => {
-  const contType = req.getHeader('content-type');
-
-  res.bodyStream = new Readable();
-  res.bodyStream._read = noOp;
-
-  res.onData((ab, isLast) => {
-    res.bodyStream.push(Buffer.from(ab));
-    if (isLast) {
-      res.bodyStream.push(null);
-    }
-  });
-
-  Object.defineProperty(res, 'bodyBuffer', {
-    get() {
-      if (res.bodyStream.closed) {
-        throw bodyUserError;
-      }
-      return buffer(res.bodyStream);
-    }
-  });
-
-  Object.defineProperty(res, 'body', {
-    async get(): Promise<T> {
-      if (res.bodyStream.closed) {
-        throw bodyUserError;
-      }
-      if (contType.indexOf('application/json') > -1) {
-        return json(res.bodyStream) as T;
-      } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
-        return formData.call(
-          res,
-          {
-            'content-type': contType
-          },
-          uploadConfig
-        ) as T;
-      } else {
-        return text(res.bodyStream) as T;
-      }
-    }
-  });
-};
 
 function handleRequest(
   handler: RequestHandler,
-  uploadConfig?: UploadFileConfig
+  uploadConfig?: FormDataConfig
 ): (res: HttpResponse, req: HttpRequest) => void | Promise<void> {
   return (res, req) => {
-    if (['post', 'put', 'patch'].includes(req.getMethod()))
-      handleBody(res as SifrrResponse, req as unknown as SifrrRequest, uploadConfig);
+    let handleBody = false;
+    if (['post', 'put', 'patch'].includes(req.getMethod())) handleBody = true;
 
-    res.onAborted(() => {
-      res.aborted = true;
-    });
-    res._write = res.write;
-    res.write = (body) => {
-      let ret = true;
-      if (res.aborted) return ret;
-      res.cork(() => {
-        ret = res.write(body);
-      });
-      return ret;
-    };
-    res._end = res.end;
-    res.end = (body, close) => {
-      if (res.aborted) return res;
-      res.cork(() => {
-        return res._end(body, close);
-      });
-      return res;
-    };
-    res._tryEnd = res.tryEnd;
-    res.tryEnd = (body, size) => {
-      let ret = [true, true] as [boolean, boolean];
-      if (res.aborted) return ret;
-      res.cork(() => {
-        ret = res._tryEnd(body, size);
-      });
-      return ret;
-    };
-    res.json = (obj: any) => {
-      res.cork(() => {
-        res.writeHeader('content-type', 'application/json');
-        res.end(JSON.stringify(obj));
-      });
-    };
+    // setup response
+    const sifrrRes = new SifrrResponse(res, req, handleBody, uploadConfig);
+
+    // setup request
     const orig = req.getQuery.bind(req);
     (req as unknown as SifrrRequest).getQuery = (options?: ParseOptions) =>
       parse(orig() as unknown as string, {
@@ -139,7 +58,7 @@ function handleRequest(
       }
     });
 
-    const promise = handler(res as SifrrResponse, req as unknown as SifrrRequest);
+    const promise = handler(req as unknown as SifrrRequest, sifrrRes);
     if (promise instanceof Promise) {
       promise.catch((e) => {
         console.error(e);
@@ -187,15 +106,27 @@ export class SifrrServer implements ISifrrServer {
     this.app.options(pattern, handleRequest(handler));
     return this;
   }
-  post<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+  post<T>(
+    pattern: string,
+    handler: RequestHandler<T>,
+    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+  ) {
     this.app.post(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  put<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+  put<T>(
+    pattern: string,
+    handler: RequestHandler<T>,
+    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+  ) {
     this.app.put(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  patch<T>(pattern: string, handler: RequestHandler<T>, formDataConfig?: UploadFileConfig) {
+  patch<T>(
+    pattern: string,
+    handler: RequestHandler<T>,
+    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+  ) {
     this.app.patch(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
@@ -238,11 +169,11 @@ export class SifrrServer implements ISifrrServer {
   }
 
   sendFile(filePath: string, options: SendFileOptions = {}): RequestHandler {
-    return sendFile.bind(this, filePath, options);
+    return sendFile.bind(undefined, filePath, options);
   }
 
   file(pattern: string, filePath: string, options: SendFileOptions = {}) {
-    return this.get(pattern, sendFile.bind(this, filePath, options));
+    return this.get(pattern, sendFile.bind(undefined, filePath, options));
   }
 
   folder(prefix: string, folder: string, options: SendFileOptions = {}, base: string = folder) {

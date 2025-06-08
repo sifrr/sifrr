@@ -1,8 +1,9 @@
-import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
+import { createAsyncIterator, isAsyncIterable } from 'iterall';
 import { AppOptions, WebSocketBehavior } from 'uWebSockets.js';
 import { GraphQLArgs, GraphQLSchema, parse as parseGql } from 'graphql';
 import * as Graphql from 'graphql';
-import { SifrrRequest, SifrrResponse } from '@/server/types';
+import { SifrrRequest } from '@/server/types';
+import { SifrrResponse } from '@/server/response';
 // client -> server
 const GQL_START = 'start';
 const GQL_STOP = 'stop';
@@ -51,21 +52,18 @@ function graphqlPost(
 ) {
   const execute = graphqlImpl.graphql || require('graphql').graphql;
 
-  return async (res: SifrrResponse, req: SifrrRequest) => {
-    res.writeHeader('content-type', 'application/json');
-    res.end(
-      JSON.stringify(
-        await execute({
-          schema,
-          ...(await getGraphqlParams(res, req)),
-          ...graphqlOptions,
-          contextValue: {
-            res,
-            req,
-            ...(graphqlOptions.contextValue as object)
-          }
-        })
-      )
+  return async (req: SifrrRequest, res: SifrrResponse) => {
+    res.json(
+      await execute({
+        schema,
+        ...(await getGraphqlParams(res, req)),
+        ...graphqlOptions,
+        contextValue: {
+          res,
+          req,
+          ...(graphqlOptions.contextValue as object)
+        }
+      })
     );
   };
 }

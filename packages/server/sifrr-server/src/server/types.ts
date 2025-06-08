@@ -1,7 +1,7 @@
+import { SifrrResponse } from '@/server/response';
 import { BusboyConfig } from 'busboy';
 import { ParsedQuery, ParseOptions } from 'query-string';
-import { Readable } from 'stream';
-import { AppOptions, WebSocketBehavior, HttpResponse, HttpRequest } from 'uWebSockets.js';
+import { AppOptions, WebSocketBehavior, HttpRequest } from 'uWebSockets.js';
 import { ZlibOptions, BrotliOptions } from 'zlib';
 
 export type SifrrServerOptions = AppOptions & {
@@ -12,34 +12,12 @@ export interface SifrrRequest extends Omit<HttpRequest, 'getQuery'> {
   getQuery(options?: ParseOptions): ParsedQuery<string | number | boolean>;
   query: ParsedQuery<string | number | boolean>;
 }
-export interface SifrrResponse<T = unknown> extends HttpResponse {
-  /**
-   * Get Body stream, is not available if buffer or body is already used
-   */
-  bodyStream: Readable;
-  /**
-   * Get Request body buffer, is not available if stream or body is already used
-   */
-  bodyBuffer: Promise<Buffer>;
-  /**
-   * Request body, is not available if stream or buffer is already used
-   */
-  body: Promise<T>;
-  /**
-   * Sends json response with content-type `application/json`
-   * @param obj Object to send
-   */
-  json(obj: any): void;
-}
 
 export type RequestHandler<T = unknown> = (
-  res: SifrrResponse<T>,
-  req: SifrrRequest
+  req: SifrrRequest,
+  res: SifrrResponse<T>
 ) => void | Promise<void>;
-export type RequestFxn = (
-  pattern: string,
-  handler: (res: SifrrResponse, req: SifrrRequest) => void | Promise<void>
-) => ISifrrServer;
+export type RequestFxn = (pattern: string, handler: RequestHandler) => ISifrrServer;
 export interface ISifrrServer {
   /** Listens to hostname & port. Callback hands either false or a listen socket. */
   listen(
@@ -109,24 +87,50 @@ export interface UploadedFile {
   /** Value of the `Content-Type` header for this file. */
   mimeType: string;
   /**
-   * A readable stream of this file. It is not available if localDir was set given in config.
+   * A readable stream of this file. It is not available if localDir was set given in FormDataConfig.
    */
   stream: NodeJS.ReadableStream;
-  /** File buffer, only available if destinationDir was not given in config. */
+  /** File buffer, only available if destinationDir was not given in FormDataConfig. */
   buffer: Buffer;
-  /** Destination folder of file uploaded, is same as destinationDir given in config. */
+  /** Destination folder of file uploaded, is same as destinationDir given in FormDataConfig. */
   destination: string;
-  /** Full path to the uploaded file. Only available when localDir is given in config.  */
+  /** Full path to the uploaded file. Only available when localDir is given in FormDataConfig.  */
   path: string;
   /** Size of file uploaded in bytes */
   size: number;
 }
 
-export type UploadFileConfig = Omit<BusboyConfig, 'headers'> & {
-  /** Path to local disk directory. it will store the uploaded files to local disk if directory is given
+export type FormDataConfig<T extends string = string> = Omit<BusboyConfig, 'headers'> & {
+  /**
+   * Path to local disk directory. it will store the uploaded files to local disk if directory is given
    * Path where file is saved will be added to UploadedFile.path
    */
   destinationDir?: string;
+  /**
+   * Filter function for files, if it return false, files will be ignored.
+   */
+  filterFile?(fileInfo: UploadedFile): boolean;
+  /**
+   * Add custom handler for reading file streams, if it is provided buffer/path will not be available in uploaded file info
+   */
+  handleFileStream?(
+    fileInfo: Omit<UploadedFile, 'buffer' | 'destination' | 'path' | 'size'>
+  ): void | Promise<void>;
+  /**
+   * Config for file fields.
+   * If undefined, all files and fields are allowed.
+   */
+  fields?: Partial<
+    Record<
+      T,
+      {
+        /** Any files > maxCount for a field will be ignored */
+        maxCount?: number;
+      }
+    >
+  >;
 };
+
+export type KeysMatching<T, V> = Extract<keyof T, V>;
 
 export {};

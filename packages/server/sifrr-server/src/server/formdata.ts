@@ -1,18 +1,15 @@
 import { join } from 'path';
 import Busboy, { BusboyConfig } from 'busboy';
 import mkdirp from 'mkdirp';
-import { SifrrResponse, UploadedFile, UploadFileConfig } from '@/server/types';
+import { SifrrResponse, UploadedFile, FormDataConfig } from '@/server/types';
 import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
-import fs from 'fs';
-import { buffer } from 'stream/consumers';
 import { defer, stob, stof } from '@/server/utils';
-import { Readable, Transform } from 'stream';
 
 function formData(
   this: SifrrResponse,
   headers: Record<string, string>,
-  options: UploadFileConfig = {}
+  options: FormDataConfig = {}
 ) {
   (options as BusboyConfig).headers = headers;
 
@@ -22,7 +19,7 @@ function formData(
 
   return new Promise((resolve, reject) => {
     const busb = Busboy(options);
-    const ret = {};
+    const ret: Record<string, string | string[] | UploadedFile | UploadedFile[]> = {};
     const promises: Promise<any>[] = [Promise.resolve()];
 
     busb.on('partsLimit', function () {
@@ -39,20 +36,32 @@ function formData(
       'file',
       function (fieldname, fileStream, { filename: originalname, encoding, mimeType }) {
         if (!originalname) return fileStream.resume();
+        if (options.fields) {
+          if (options.fields[fieldname]) {
+            const max = options.fields[fieldname].maxCount ?? Infinity;
+            if (
+              max === 0 ||
+              (max === 1 && ret[fieldname]) ||
+              (Array.isArray(ret[fieldname]) && ret[fieldname].length >= max)
+            ) {
+              return fileStream.resume();
+            }
+          } else {
+            return fileStream.resume();
+          }
+        }
 
         const value: Partial<UploadedFile> = {
           fieldname,
           originalname,
+          stream: fileStream,
           encoding,
           mimeType,
           path: undefined
         };
 
-        Object.defineProperty(value, 'stream', {
-          configurable: true,
-          enumerable: false,
-          value: fileStream
-        });
+        options.handleFileStream?.(value as any);
+        if (fileStream.readableEnded) return;
 
         fileStream.on('error', reject);
         fileStream.on('limit', function () {
@@ -85,6 +94,7 @@ function formData(
             .catch(rej);
         }
 
+        if (options.filterFile?.(value as any) === false) return;
         setRetValue(ret, fieldname, value);
       }
     );
