@@ -33,6 +33,9 @@ import { parse, ParseOptions } from 'query-string';
 
 const formDataContentTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 const noOp = () => true;
+const bodyUserError = Error(
+  'Stream was already read. You can only read of body, bodyBuffer, bodyStream.'
+);
 
 const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: UploadFileConfig) => {
   const contType = req.getHeader('content-type');
@@ -49,12 +52,18 @@ const handleBody = <T>(res: SifrrResponse, req: SifrrRequest, uploadConfig?: Upl
 
   Object.defineProperty(res, 'bodyBuffer', {
     get() {
+      if (res.bodyStream.closed) {
+        throw bodyUserError;
+      }
       return buffer(res.bodyStream);
     }
   });
 
   Object.defineProperty(res, 'body', {
     async get(): Promise<T> {
+      if (res.bodyStream.closed) {
+        throw bodyUserError;
+      }
       if (contType.indexOf('application/json') > -1) {
         return json(res.bodyStream) as T;
       } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {

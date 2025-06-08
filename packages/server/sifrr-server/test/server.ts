@@ -1,6 +1,7 @@
 import { SifrrServer, UploadedFile } from '@/index';
 import { writeHeaders } from '@/server/utils';
 import path from 'path';
+import { buffer } from 'stream/consumers';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +24,29 @@ app.get('/get-json', (res, req) => {
 
 app.post('/post', async (res, req) => {
   const body = await res.body;
-  res.json(body);
+  try {
+    await res.bodyBuffer;
+  } catch (e) {
+    res.json({ body, bodyBuffer: (e as Error).message });
+  }
+});
+
+app.post('/post-stream', async (res, req) => {
+  const stream = await buffer(res.bodyStream);
+  try {
+    await res.body;
+  } catch (e) {
+    res.json({ stream, body: (e as Error).message });
+  }
+});
+
+app.post('/post-buffer', async (res, req) => {
+  const bodyBuffer = await res.bodyBuffer;
+  try {
+    await res.body;
+  } catch (e) {
+    res.json({ bodyBuffer, body: (e as Error).message });
+  }
 });
 
 app.put('/put', async (res, req) => {

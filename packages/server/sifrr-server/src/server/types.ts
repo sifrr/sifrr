@@ -1,4 +1,3 @@
-import { SifrrServer } from '@/server/baseapp';
 import { ParsedQuery, ParseOptions } from 'query-string';
 import { Readable } from 'stream';
 import { AppOptions, WebSocketBehavior, HttpResponse, HttpRequest } from 'uWebSockets.js';
@@ -14,7 +13,7 @@ export interface SifrrRequest extends Omit<HttpRequest, 'getQuery'> {
 }
 export interface SifrrResponse<T = unknown> extends HttpResponse {
   /**
-   * Get Body stream
+   * Get Body stream, is not available if buffer or body is already used
    */
   bodyStream: Readable;
   /**
@@ -122,12 +121,12 @@ export interface UploadedFile {
 
 export type UploadFileConfig = busboy.BusboyConfig & {
   abortOnLimit?: boolean;
-  /** Path to local disk directory. it will store the uploaded files to local disk if directory is given */
+  /** Path to local disk directory. it will store the uploaded files to local disk if directory is given
+   * Path where file is uploaded will be added to UploadedFile.path
+   */
   localDir?: string;
+  /** Adds body buffer to UploadedFile.buffer */
+  buffer?: boolean;
 };
-
-export type ClusterConfig = {
-  app: SifrrServer;
-} & ({ port: number; ports: undefined } | { ports: number[]; port: undefined });
 
 export {};
