@@ -46,7 +46,15 @@ function sendFileToRes(
   }: SendFileOptions = {}
 ) {
   const res: HttpResponse = givenRes._res ?? givenRes;
-  let { mtime, size } = statSync(path);
+  let mtime: Date, size: number;
+  try {
+    const stat = statSync(path);
+    mtime = stat.mtime;
+    size = stat.size;
+  } catch (e) {
+    console.error(e);
+    return res.writeStatus('404').end();
+  }
   headers = { ...headers };
   // handling last modified
   if (lastModified) {

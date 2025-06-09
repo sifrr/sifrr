@@ -33,7 +33,8 @@
     "test:playwright": "playwright test",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "test:server": "npx tsx watch --include test/public test/server",
+    "test:server": "npx tsx test/server",
+    "test:server:watch": "npx tsx watch --include test/public test/server",
     "test:cluster": "npx tsx watch --include test/public test/server-cluster"
   },
   "dependencies": {
@@ -60,10 +61,12 @@
     "@types/busboy": "^1.5.4",
     "@types/compression": "^1.8.1",
     "@types/node": "^22.15.30",
+    "@types/node-forge": "^1.3.11",
     "@types/yargs": "^15.0.12",
     "compression": "^1.8.0",
     "graphql": "^16.11.0",
-    "loadtest": "^8.2.0"
+    "loadtest": "^8.2.0",
+    "node-forge": "^1.3.1"
   },
   "peerDependenciesMeta": {
     "@nestjs/core": {

@@ -12,7 +12,7 @@ eapp.use(express.static(join(import.meta.dirname, '../public')));
 
 const maxReq = 1000;
 
-test.describe.only('speed test', function () {
+test.describe('speed test', function () {
   let server: Server;
   test.beforeAll(async () => {
     server = eapp.listen(EPORT, () => global.console.log('listening express on ', EPORT));

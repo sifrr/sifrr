@@ -2,6 +2,10 @@
   "extends": "@sifrr/typescript-config/server.json",
   "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts"],
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "removeComments": false,
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

@@ -74,7 +74,7 @@ const headers = {
   Connection: 'keep-alive'
 };
 
-app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
+app.file('/random/:pattern', path.join(__dirname, 'public/static.html'), {
   headers
 });
 
@@ -174,8 +174,6 @@ app.post<{
     }
   }
 );
-
-app.file('/*', path.join(__dirname, './public/index.html'));
 
 // Start the server
 app.listen(port, () => {

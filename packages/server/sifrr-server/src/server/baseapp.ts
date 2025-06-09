@@ -1,5 +1,5 @@
-import { readdirSync, statSync } from 'fs';
-import { join, relative } from 'path';
+import { existsSync, readdirSync, statSync } from 'fs';
+import { basename, join, relative } from 'path';
 import {
   us_listen_socket_close,
   TemplatedApp,
@@ -75,7 +75,8 @@ export class SifrrServer implements ISifrrServer {
   private readonly config?: SifrrServerOptions;
 
   constructor(options?: SifrrServerOptions) {
-    this.app = options?.ssl ? SSLApp(options ?? {}) : App(options ?? {});
+    const { ssl, ..._options } = options ?? {};
+    this.app = ssl ? SSLApp(_options) : App(_options);
     this.config = options;
   }
 
@@ -172,6 +173,9 @@ export class SifrrServer implements ISifrrServer {
   }
 
   file(pattern: string, filePath: string, options: SendFileOptions = {}) {
+    if (!statSync(filePath).isFile()) {
+      throw Error(`${filePath} is not a file.`);
+    }
     return this.app.get(pattern, (res, req) => sendFile(filePath, options, req, res));
   }
 
@@ -197,6 +201,9 @@ export class SifrrServer implements ISifrrServer {
         // Recursive if directory
         this.folder(prefix, filePath, options, base);
       } else {
+        if (basename(filePath) === 'index.html') {
+          this.file(prefix || '/', filePath, options);
+        }
         this.file(prefix + '/' + relative(base, filePath), filePath, options);
       }
     });

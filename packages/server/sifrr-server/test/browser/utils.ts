@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { loadTest, LoadTestResult } from 'loadtest';
 
 export const EPORT = 7777;
@@ -62,9 +62,7 @@ export const runLoadTest = async (
   expect(sifrrResults.totalErrors).toBe(0);
 };
 
-export const okTest = async (page: any, url: any) => {
-  return page
-    .goto(url)
-    .then(() => true)
-    .catch(() => false);
+export const okTest = async (page: Page, url: any) => {
+  const st = (await page.goto(url))?.status();
+  return st && st < 400;
 };
