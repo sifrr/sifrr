@@ -10,16 +10,16 @@ import { getMimetype } from './mime';
 const bytes = 'bytes=';
 import { SendFileOptions, SifrrRequest } from './types';
 import { toab, writeHeaders } from '@/server/utils';
-import { Duplex, Writable } from 'stream';
-import { HttpRequest, HttpResponse } from 'uWebSockets.js';
+import { Duplex, Readable, Writable } from 'stream';
+import { HttpResponse } from 'uWebSockets.js';
 import { SifrrResponse } from '@/server/response';
 
-function sendFile(
+export const sendFile = (
   path: string,
   options: SendFileOptions,
-  req: HttpRequest | SifrrRequest,
-  res: HttpResponse | SifrrResponse
-) {
+  req: SifrrRequest,
+  res: SifrrResponse
+) => {
   sendFileToRes(
     res,
     {
@@ -30,9 +30,9 @@ function sendFile(
     path,
     options
   );
-}
+};
 
-function sendFileToRes(
+export const sendFileToRes = (
   givenRes: HttpResponse | SifrrResponse,
   reqHeaders: { [name: string]: string },
   path: string,
@@ -44,7 +44,7 @@ function sendFileToRes(
       priority: ['br', 'gzip', 'deflate']
     }
   }: SendFileOptions = {}
-) {
+) => {
   const res: HttpResponse = givenRes._res ?? givenRes;
   let mtime: Date, size: number;
   try {
@@ -92,6 +92,7 @@ function sendFileToRes(
   if (end < 0) end = 0;
 
   let readStream: ReadStream | Duplex = createReadStream(path, { start, end });
+  let compressed = false;
   // Compression;
   if (compress && compressionOptions.priority?.length) {
     for (const type of compressionOptions.priority) {
@@ -100,18 +101,39 @@ function sendFileToRes(
         readStream.pipe(compressor);
         readStream = compressor;
         headers['content-encoding'] = type;
+        compressed = true;
         break;
       }
     }
   }
 
-  res.onAborted(() => readStream.destroy());
   writeHeaders(res, headers);
 
+  sendStreamToRes(res, readStream, compressed ? undefined : size);
+};
+
+export const sendStreamToRes = (
+  origRes: HttpResponse | SifrrResponse,
+  readStream: Readable,
+  size?: number
+) => {
+  const res = origRes._res ?? origRes;
+  res.onAborted(() => readStream.destroy());
   const writable = new Writable({
     write(chunk, e, cb) {
+      const bfr = toab(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, e));
       res.cork(() => {
-        const ok = res.write(toab(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, e)));
+        let ok = true;
+        if (!size) {
+          ok = res.write(bfr);
+        } else {
+          const ret = res.tryEnd(bfr, size);
+          ok = ret[0];
+          if (ret[1]) {
+            readStream.destroy();
+            return cb();
+          }
+        }
         if (!ok) {
           readStream.pause();
           res.onWritable(() => {
@@ -138,6 +160,4 @@ function sendFileToRes(
       });
     })
     .pipe(writable);
-}
-
-export default sendFile;
+};

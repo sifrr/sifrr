@@ -10,6 +10,14 @@ let eapp = express();
 eapp.use(compression());
 eapp.use(express.static(join(import.meta.dirname, '../public')));
 
+const _listen = eapp.listen;
+let listening = false;
+(eapp as any).listen = (port: number, handle: () => void) => {
+  if (listening) return;
+  listening = true;
+  _listen.call(eapp, port, handle);
+};
+
 const maxReq = 1000;
 
 test.describe('speed test', function () {
@@ -38,6 +46,7 @@ test.describe('speed test', function () {
   });
 
   test('faster in static files (big, compression)', async () => {
+    await new Promise((res) => setTimeout(res, 1000));
     global.console.log('# big file with gzip compression');
     await runLoadTest((p) => `${p}/big.html`, true, maxReq);
   });

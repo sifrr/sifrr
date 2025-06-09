@@ -13,7 +13,7 @@ import {
 } from 'uWebSockets.js';
 import * as Graphql from 'graphql';
 
-import sendFile from './sendfile';
+import { sendFile } from './sendfile';
 import { graphqlPost, graphqlWs } from './graphql';
 import {
   SendFileOptions,
@@ -215,7 +215,7 @@ export class SifrrServer implements ISifrrServer {
     if (!statSync(filePath).isFile()) {
       throw Error(`${filePath} is not a file.`);
     }
-    return this.app.get(pattern, (res, req) => sendFile(filePath, options, req, res));
+    return this.get(pattern, sendFile.bind(undefined, filePath, options));
   }
 
   folder(prefix: string, folder: string, options: SendFileOptions = {}, base: string = folder) {

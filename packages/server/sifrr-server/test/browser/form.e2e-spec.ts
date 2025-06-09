@@ -49,7 +49,7 @@ test.describe('form test', function () {
 
     expect(bfr.data.length).toEqual(249);
     expect(bfr2.data.length).toEqual(1372);
-    expect(bfr3.data.length).toEqual(12);
+    expect(bfr3.data.length).toEqual(45);
 
     // Response doesn't have filePath
     expect(resp.data).toEqual({
@@ -74,7 +74,7 @@ test.describe('form test', function () {
           fieldname: 'file2',
           mimeType: 'application/json',
           originalname: '304.json',
-          size: 12
+          size: 45
         }
       ]
     });
@@ -140,7 +140,7 @@ test.describe('form test', function () {
           fieldname: 'file2',
           mimeType: 'application/json',
           originalname: '304.json',
-          size: 12
+          size: 45
         }
       ]
     });
