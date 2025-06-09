@@ -11,6 +11,9 @@
   "scripts": {
     "build": "turbo build",
     "test": "turbo test",
+    "test:jest": "turbo test:jest",
+    "test:storybook": "turbo test:storybook",
+    "test:playwright": "turbo test:playwright",
     "lint": "turbo lint",
     "dev": "turbo dev",
     "test:e2e": "turbo test:e2e",

@@ -1,6 +1,6 @@
 {
   "extends": "@sifrr/typescript-config/server.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.cjs"],
   "compilerOptions": {
     "baseUrl": ".",
     "removeComments": false,

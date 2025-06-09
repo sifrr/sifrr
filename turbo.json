@@ -13,7 +13,13 @@
     "test": {
       "dependsOn": ["build"]
     },
-    "test:e2e": {
+    "test:storybook": {
+      "dependsOn": ["build"]
+    },
+    "test:jest": {
+      "dependsOn": ["build"]
+    },
+    "test:playwright": {
       "dependsOn": ["build"]
     },
     "pre-release": {},

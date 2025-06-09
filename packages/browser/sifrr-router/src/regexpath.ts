@@ -3,7 +3,7 @@ const getRegex = (path: string | RegExp) => {
   return new RegExp(
     '^' +
       path
-        .replace(/\/:\w+\?/g, '(/[^\\/]{0,})?')
+        .replace(/\/:\w+\?/g, '(?:/([^\\/]{0,}))?')
         .replace(/\*\*/g, '(.{0,})')
         .replace(/\*/g, '([^\\/]{0,})')
         .replace(/:\w+/g, '([^\\/]{0,})') +
@@ -11,10 +11,20 @@ const getRegex = (path: string | RegExp) => {
   );
 };
 
+const GROUP_REGEX = /\((<[a-zA-Z]+>)?[^)]*\)/g;
+
 const getDataMap = (path: string, delimiter = '/') => {
   const dataMap: string[] = [];
   path.split(delimiter).forEach((r: string) => {
-    if (r.startsWith(':') || r === '*' || r === '**' || r.match(/\(.*\)/)) {
+    if (r.startsWith(':') || r === '*' || r === '**') {
+      if (r.endsWith('?')) {
+        r = r.substring(0, r.length - 1);
+      }
+      return dataMap.push(r);
+    }
+    let m;
+    while (null != (m = GROUP_REGEX.exec(r))) {
+      console.log(m);
       dataMap.push(r);
     }
   });
