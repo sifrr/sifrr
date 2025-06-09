@@ -11,7 +11,7 @@ const bodyUsedError = Error(
 const noOp = () => true;
 const formDataContentTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 
-export class SifrrResponse<T = unknown> implements Omit<HttpResponse, 'onData'> {
+export class SifrrResponse<Body = unknown> implements Omit<HttpResponse, 'onData'> {
   readonly _res: HttpResponse;
   private readonly _req: HttpRequest;
   private readonly uploadConfig: FormDataConfig | undefined;
@@ -66,15 +66,15 @@ export class SifrrResponse<T = unknown> implements Omit<HttpResponse, 'onData'> 
   /**
    * Request body, is not available if stream or buffer is already used
    */
-  get body(): Promise<T> {
+  get body(): Promise<Body> {
     if (this.bodyStream.closed) {
       throw bodyUsedError;
     }
     const contType = this._req.getHeader('content-type');
     if (contType.indexOf('application/json') > -1) {
-      return json(this.bodyStream) as Promise<T>;
+      return json(this.bodyStream) as Promise<Body>;
     } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
-      return formData<T>(
+      return formData<Body>(
         this.bodyStream,
         {
           'content-type': contType
@@ -82,7 +82,7 @@ export class SifrrResponse<T = unknown> implements Omit<HttpResponse, 'onData'> 
         this.uploadConfig
       );
     } else {
-      return text(this.bodyStream) as Promise<T>;
+      return text(this.bodyStream) as Promise<Body>;
     }
   }
 

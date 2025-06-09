@@ -7,16 +7,21 @@ import { ZlibOptions, BrotliOptions } from 'zlib';
 export type SifrrServerOptions = AppOptions & {
   ssl?: boolean;
 };
-
-export interface SifrrRequest extends Omit<HttpRequest, 'getQuery'> {
-  getQuery(options?: ParseOptions): ParsedQuery<string | number | boolean>;
-  query: ParsedQuery<string | number | boolean>;
+export type AllQuery = ParsedQuery<string | number | boolean>;
+export interface SifrrRequest<
+  Params extends string | number = string | number,
+  Query extends AllQuery = AllQuery
+> extends Omit<HttpRequest, 'getQuery' | 'getParameter'> {
+  getQuery(options?: ParseOptions): Query;
+  query: Query;
+  getParameter(name: Params): string | undefined;
 }
 
-export type RequestHandler<T = unknown> = (
-  req: SifrrRequest,
-  res: SifrrResponse<T>
-) => void | Promise<void>;
+export type RequestHandler<
+  Params extends string | number = string | number,
+  Query extends AllQuery = AllQuery,
+  Body = unknown
+> = (req: SifrrRequest<Params, Query>, res: SifrrResponse<Body>) => void | Promise<void>;
 export type RequestFxn = (pattern: string, handler: RequestHandler) => ISifrrServer;
 export interface ISifrrServer {
   /** Listens to hostname & port. Callback hands either false or a listen socket. */

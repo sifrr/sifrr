@@ -1,11 +1,10 @@
-import { existsSync, readdirSync, statSync } from 'fs';
+import { readdirSync, statSync } from 'fs';
 import { basename, join, relative } from 'path';
 import {
   us_listen_socket_close,
   TemplatedApp,
   SSLApp,
   App,
-  AppOptions,
   us_listen_socket,
   HttpResponse,
   HttpRequest,
@@ -23,7 +22,8 @@ import {
   ISifrrServer,
   RequestHandler,
   FormDataConfig,
-  KeysMatching
+  KeysMatching,
+  AllQuery
 } from './types';
 import { GraphQLArgs, GraphQLSchema } from 'graphql';
 import { parse, ParseOptions } from 'query-string';
@@ -87,64 +87,103 @@ export class SifrrServer implements ISifrrServer {
   numSubscribers(topic: string): number {
     return this.app.numSubscribers(topic);
   }
-  get(pattern: string, handler: RequestHandler) {
-    this.app.get(pattern, handleRequest(handler));
-    return this;
-  }
-  head(pattern: string, handler: RequestHandler) {
-    this.app.head(pattern, handleRequest(handler));
-    return this;
-  }
-  del(pattern: string, handler: RequestHandler) {
-    this.app.del(pattern, handleRequest(handler));
-    return this;
-  }
-  delete(pattern: string, handler: RequestHandler) {
-    this.app.del(pattern, handleRequest(handler));
-    return this;
-  }
-  options(pattern: string, handler: RequestHandler) {
-    this.app.options(pattern, handleRequest(handler));
-    return this;
-  }
-  post<T>(
+  get<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
-    handler: RequestHandler<T>,
-    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.get(pattern, handleRequest(handler as RequestHandler));
+    return this;
+  }
+  head<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.head(pattern, handleRequest(handler as RequestHandler));
+    return this;
+  }
+  del<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.del(pattern, handleRequest(handler as RequestHandler));
+    return this;
+  }
+  delete<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.del(pattern, handleRequest(handler as RequestHandler));
+    return this;
+  }
+  options<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.options(pattern, handleRequest(handler as RequestHandler));
+    return this;
+  }
+  post<
+    Body = unknown,
+    Params extends string | number = string | number,
+    Query extends AllQuery = AllQuery
+  >(
+    pattern: string,
+    handler: RequestHandler<Params, Query, Body>,
+    formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
     this.app.post(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  put<T>(
+  put<
+    Body = unknown,
+    Params extends string | number = string | number,
+    Query extends AllQuery = AllQuery
+  >(
     pattern: string,
-    handler: RequestHandler<T>,
-    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+    handler: RequestHandler<Params, Query, Body>,
+    formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
     this.app.put(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  patch<T>(
+  patch<
+    Body = unknown,
+    Params extends string | number = string | number,
+    Query extends AllQuery = AllQuery
+  >(
     pattern: string,
-    handler: RequestHandler<T>,
-    formDataConfig?: FormDataConfig<KeysMatching<T, string>>
+    handler: RequestHandler<Params, Query, Body>,
+    formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
     this.app.patch(pattern, handleRequest(handler as RequestHandler, formDataConfig));
     return this;
   }
-  use(pattern: string, handler: RequestHandler) {
-    this.app.any(pattern, handleRequest(handler));
+  use<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.any(pattern, handleRequest(handler as RequestHandler));
     return this;
   }
-  any(pattern: string, handler: RequestHandler) {
-    this.app.any(pattern, handleRequest(handler));
+  any<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.any(pattern, handleRequest(handler as RequestHandler));
     return this;
   }
-  connect(pattern: string, handler: RequestHandler) {
-    this.app.connect(pattern, handleRequest(handler));
+  connect<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.connect(pattern, handleRequest(handler as RequestHandler));
     return this;
   }
-  trace(pattern: string, handler: RequestHandler) {
-    this.app.trace(pattern, handleRequest(handler));
+  trace<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
+    pattern: string,
+    handler: RequestHandler<Params, Query>
+  ) {
+    this.app.trace(pattern, handleRequest(handler as RequestHandler));
     return this;
   }
   ws<T>(pattern: string, behavior: WebSocketBehavior<T>) {

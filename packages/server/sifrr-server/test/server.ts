@@ -60,7 +60,7 @@ app.patch('/patch', async (req, res) => {
   res.json({ body: await res.body });
 });
 
-app.delete('/delete/:id', (req, res) => {
+app.delete<'id'>('/delete/:id', (req, res) => {
   if (req.getParameter('id') === '1') {
     res.writeStatus('200').end();
   } else {

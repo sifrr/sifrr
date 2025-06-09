@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
-test.describe.only('static test', function () {
+test.describe('static test', function () {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/static.html`);
   });
