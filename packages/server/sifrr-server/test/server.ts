@@ -16,9 +16,6 @@ app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
 app.folder('/', path.join(__dirname, 'public'), {
   compress: true
 });
-app.file('/*', path.join(__dirname, 'public/index.html'), {
-  compress: true
-});
 
 app.get('/get', (req, res) => {
   res.json(req.query);

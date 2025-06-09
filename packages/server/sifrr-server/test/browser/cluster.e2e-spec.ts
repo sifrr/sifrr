@@ -20,12 +20,12 @@ const checkResult = ({
   expect(cluser.rps).toBeGreaterThanOrEqual(sifrr.rps);
   expect(cluser.meanLatencyMs).toBeLessThanOrEqual(sifrr.meanLatencyMs);
   expect(cluser.totalErrors).toBe(0);
-  expect(cluser.totalErrors).toBe(0);
+  expect(sifrr.totalErrors).toBe(0);
 };
 
 const maxReq = 1000;
 
-test.describe('speed test - sifrr & sifrr-cluster', function () {
+test.describe.serial('speed test - sifrr & sifrr-cluster', function () {
   let server: Cluster | undefined;
   test.beforeAll(async () => {
     server = launchCluster(app, EPORT);

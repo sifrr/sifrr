@@ -1,3 +1,15 @@
+declare global {
+  interface Element {
+    $: typeof Element.prototype.querySelector;
+    $$: typeof Element.prototype.querySelectorAll;
+  }
+
+  interface Document {
+    $: typeof Document.prototype.querySelector;
+    $$: typeof Document.prototype.querySelectorAll;
+  }
+}
+
 function moveEl(arr: any[], oldPosition: number, newPosition: number) {
   [arr[oldPosition], arr[newPosition]] = [arr[newPosition], arr[oldPosition]];
 }

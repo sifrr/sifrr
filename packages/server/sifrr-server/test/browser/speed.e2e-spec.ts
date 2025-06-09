@@ -26,7 +26,7 @@ const checkResult = ({
   expect(sifrr.rps).toBeGreaterThanOrEqual(express.rps);
   expect(sifrr.meanLatencyMs).toBeLessThanOrEqual(express.meanLatencyMs);
   expect(sifrr.totalErrors).toBe(0);
-  expect(sifrr.totalErrors).toBe(0);
+  expect(express.totalErrors).toBe(0);
 };
 
 const _listen = eapp.listen;

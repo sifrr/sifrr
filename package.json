@@ -12,7 +12,7 @@
     "build": "turbo build",
     "test": "turbo test",
     "test:jest": "turbo test:jest",
-    "test:storybook": "turbo test:storybook",
+    "test:storybook:ci": "turbo test:storybook:ci",
     "test:playwright": "turbo test:playwright",
     "lint": "turbo lint",
     "dev": "turbo dev",

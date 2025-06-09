@@ -13,7 +13,7 @@
     "test": {
       "dependsOn": ["build"]
     },
-    "test:storybook": {
+    "test:storybook:ci": {
       "dependsOn": ["build"]
     },
     "test:jest": {
