@@ -132,6 +132,14 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
               }
         );
       } else {
+        if (!direct) {
+          bm.push({
+            type: SifrrBindType.Attribute,
+            name: attribute.name,
+            value
+          });
+        }
+
         remove = false;
       }
 

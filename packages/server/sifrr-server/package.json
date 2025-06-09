@@ -28,7 +28,7 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:playwright && yarn test:storybook:ci",
+    "test": "yarn test:jest && yarn test:playwright",
     "test:jest": "jest",
     "test:playwright": "playwright test",
     "build": "rm -rf dist && vite build",

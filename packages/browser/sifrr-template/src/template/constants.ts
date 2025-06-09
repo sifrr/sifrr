@@ -9,12 +9,17 @@ export const REF_REG = new RegExp(REF);
 export const REF_REG_GLOBAL = new RegExp(REF, 'g');
 export const REF_REG_EXACT = new RegExp('^' + REF + '$');
 export const REF_LENGTH = 4 /* for {{}} */ + PREFIX.length + BIND_REF_LENGTH;
+export const CommentKeySymbol = Symbol('comment-key');
 
 // dom elements
 export const TEMPLATE = () => <HTMLTemplateElement>temp.cloneNode(false);
 export const TREE_WALKER = (root: Node) =>
   document.createTreeWalker(root, NodeFilter.SHOW_ALL, null);
-export const REFERENCE_COMMENT = () => comment.cloneNode(true) as Comment;
+export const REFERENCE_COMMENT = (key?: false) => {
+  const node = comment.cloneNode(true) as Comment;
+  if (key) (node as any).key = CommentKeySymbol;
+  return node;
+};
 export const SIFRR_FRAGMENT = () => document.createElement('sifrr-fragment');
 
 // node types

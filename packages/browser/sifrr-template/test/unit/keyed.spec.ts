@@ -42,6 +42,16 @@ describe('Keyed', () => {
       expectSameState(childNodes, newData);
     });
 
+    it('adds all', () => {
+      const oldData = [];
+      const newData = buildData(10, 11);
+      const childNodes = dataToChildNodes(oldData);
+      parent(childNodes);
+      makeChildrenEqualKeyed(childNodes, newData, dataToChildNode);
+
+      expectSameState(childNodes, newData);
+    });
+
     // it('skips prefixes and suffixes', () => {
     //   const oldData = buildData(10);
     //   const newData = buildData(10).map(o => {

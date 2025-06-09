@@ -11,10 +11,10 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "dependsOn": ["lint", "build"]
+      "dependsOn": ["build"]
     },
     "test:e2e": {
-      "dependsOn": ["lint", "build"]
+      "dependsOn": ["build"]
     },
     "pre-release": {},
     "publish-package": {},

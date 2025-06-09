@@ -36,7 +36,7 @@ export const playwrightConfigOptions: PlaywrightTestConfig = {
   ],
   // Run your local dev server before starting the tests.
   webServer: {
-    command: 'npm run test:server',
+    command: 'yarn test:server',
     url: 'http://localhost:6006',
     reuseExistingServer: !process.env.CI
   }

@@ -17,7 +17,7 @@ export function makeChildrenEqual<T>(
   parent = lastChild.parentNode ?? parent;
 
   if (!parent) {
-    console.error(oldChildren, lastChild);
+    console.error(oldChildren);
     throw Error(
       '^ Parent should be present for old children given. Open an issue on sifrr if this is a bug.'
     );
@@ -28,6 +28,9 @@ export function makeChildrenEqual<T>(
     if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
       newChildren.push(REFERENCE_COMMENT());
     else newChildren = oldChildren;
+  } else if (oldChildren.length === 1 && oldChildren[0]?.nodeType === COMMENT_NODE) {
+    oldChildren[0]?.remove();
+    oldChildren = [];
   }
 
   const returnValues = flattenOperation<T>(
@@ -36,7 +39,7 @@ export function makeChildrenEqual<T>(
     makeEqual,
     removeFxn,
     (i) => parent.insertBefore(i as SifrrNode<T>, nextSib),
-    (i) => !!createFn && !isSifrrNode(i),
+    (i) => !!createFn && i instanceof Node,
     createFn
   );
 

@@ -2,7 +2,7 @@
   "name": "@sifrr/test-suite",
   "version": "1.0.0",
   "description": "Release it shared config - internal only",
-  "main": "dist/index.umd.js",
+  "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/sifrr/sifrr",

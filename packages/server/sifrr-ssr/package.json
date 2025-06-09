@@ -21,8 +21,6 @@
     "server side rendering"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/server/sifrr-ssr",
-    "build": "yarn rollup -c",
     "test-build": "cd test/public && yarn build",
     "test-server": "yarn test -s"
   },

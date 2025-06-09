@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 // @ts-nocheck
-import { REFERENCE_COMMENT } from '@/template/constants';
+import { COMMENT_NODE, REFERENCE_COMMENT } from '@/template/constants';
 import { makeEqual } from './makeequal';
 import {
   ChildNodeKeyed,
@@ -28,10 +28,17 @@ export function makeChildrenEqualKeyed<T>(
   newData: SifrrKeyedProps<T>[],
   createFn: SifrrCreateFunction<T>
 ): SifrrNodesArrayKeyed<T> {
+  // special case of no value return
+  if (newData.length < 1) {
+    if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
+      newData.push(REFERENCE_COMMENT(true));
+    else newData = oldChildren;
+  }
+
   const newL = newData.length,
     oldL = oldChildren.length;
 
-  const lastChild: Node = oldChildren ?? flatLastElement(oldChildren);
+  const lastChild: Node = oldChildren && flatLastElement(oldChildren);
   const nextSib = lastChild.nextSibling;
   const parent = lastChild.parentNode;
   const returnNodes: SifrrNodesArrayKeyed<T> = new Array(newL);
@@ -40,13 +47,6 @@ export function makeChildrenEqualKeyed<T>(
     throw Error(
       'Parent should be given of there were no Child Nodes Before. Open an issue on sifrr/sifrr if you think this is a bug.'
     );
-  }
-
-  // special case of no value return
-  if (newChildren.length < 1) {
-    if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
-      newChildren.push(REFERENCE_COMMENT());
-    else newChildren = oldChildren;
   }
 
   if (oldL === 0) {

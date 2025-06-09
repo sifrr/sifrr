@@ -53,7 +53,7 @@ export function recurseArray<T, X>(
   createFn?: (a: X) => T[]
 ): T | T[] {
   if (!Array.isArray(values)) {
-    if (createFn) {
+    if (createFn && !(values instanceof Node)) {
       const createdV = createFn(<X>values);
       if (Array.isArray(createdV)) {
         if (createdV.length === 1) return singleValFxn(createdV[0]);
