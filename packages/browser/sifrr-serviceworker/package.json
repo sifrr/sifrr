@@ -51,8 +51,6 @@
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",
-    "axios": "^1.9.0",
-    "node-fetch": "^3.3.2",
     "typescript": "^5.8.3"
   },
   "files": [

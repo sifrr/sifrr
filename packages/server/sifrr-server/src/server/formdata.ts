@@ -1,16 +1,16 @@
 import { join } from 'path';
 import Busboy, { BusboyConfig } from 'busboy';
 import mkdirp from 'mkdirp';
-import { SifrrResponse, UploadedFile, FormDataConfig } from '@/server/types';
+import { UploadedFile, FormDataConfig } from '@/server/types';
 import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
 import { defer, stob, stof } from '@/server/utils';
 
-function formData(
-  this: SifrrResponse,
+function formData<T>(
+  stream: NodeJS.ReadableStream,
   headers: Record<string, string>,
   options: FormDataConfig = {}
-) {
+): Promise<T> {
   (options as BusboyConfig).headers = headers;
 
   if (typeof options.destinationDir === 'string') {
@@ -105,13 +105,13 @@ function formData(
 
     busb.on('finish', function () {
       Promise.all(promises)
-        .then(() => resolve(ret))
+        .then(() => resolve(ret as T))
         .catch(reject);
     });
 
     busb.on('error', reject);
 
-    this.bodyStream.pipe(busb);
+    stream.pipe(busb);
   });
 }
 
@@ -120,7 +120,9 @@ function setRetValue(
   fieldname: string,
   value: Partial<UploadedFile> | string
 ) {
+  let array = false;
   if (fieldname.endsWith('[]')) {
+    array = true;
     fieldname = fieldname.substring(0, fieldname.length - 2);
   }
   if (Array.isArray(ret[fieldname])) {
@@ -128,7 +130,7 @@ function setRetValue(
   } else if (ret[fieldname]) {
     ret[fieldname] = [ret[fieldname], value];
   } else {
-    ret[fieldname] = value;
+    ret[fieldname] = array ? [value] : value;
   }
 }
 

@@ -1,7 +1,7 @@
 import { devices, PlaywrightTestConfig } from '@playwright/test';
 
 export const playwrightConfigOptions: PlaywrightTestConfig = {
-  // Look for test files in the "tests" directory, relative to this configuration file.
+  // Look for test files in the "test" directory, relative to this configuration file.
   testDir: 'test',
   testMatch: '**/?(*.)+(e2e-spec).ts',
 

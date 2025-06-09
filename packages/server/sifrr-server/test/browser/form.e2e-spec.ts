@@ -1,9 +1,10 @@
-import { readFileSync, unlinkSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 import { test, expect, ElementHandle } from '@playwright/test';
+const __dirname = import.meta.dirname;
 
 test.describe('form test', function () {
-  test.beforeAll(async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(`/multipart.html`);
   });
 
@@ -12,7 +13,7 @@ test.describe('form test', function () {
       return await (window as any).submitForm2(`/stream`);
     });
 
-    expect(resp).toEqual({
+    expect(resp.data).toEqual({
       firstname: 'Aaditya',
       lastname: 'Taparia',
       address: ['address1', 'address2', 'address3'],
@@ -26,82 +27,132 @@ test.describe('form test', function () {
     fileInput.setInputFiles(join(__dirname, '../public/nocl.json'));
 
     const filesInput = (await page.$('#mulfile')) as ElementHandle<HTMLInputElement>;
-    filesInput.setInputFiles([
+    await filesInput.setInputFiles([
       join(__dirname, '../public/static.html'),
-      join(__dirname, '../public/all.js')
+      join(__dirname, '../public/304.json')
     ]);
 
     const resp = await page.evaluate(async () => {
       return await (window as any).submitForm(`/buffer`);
     });
 
+    const bfr = resp.data.file.buffer;
+    const bfr2 = resp.data.file2[0].buffer;
+    const bfr3 = resp.data.file2[1].buffer;
+
+    delete resp.data.file.buffer;
+    delete resp.data.file2[0].buffer;
+    delete resp.data.file2[1].buffer;
+    delete resp.data.file.stream;
+    delete resp.data.file2[0].stream;
+    delete resp.data.file2[1].stream;
+
+    expect(bfr.data.length).toEqual(249);
+    expect(bfr2.data.length).toEqual(1372);
+    expect(bfr3.data.length).toEqual(12);
+
     // Response doesn't have filePath
-    expect(resp).toEqual({
+    expect(resp.data).toEqual({
       name: 'Aaditya',
       file: {
-        filename: 'nocl.json',
         encoding: '7bit',
-        mimetype: 'application/json'
+        fieldname: 'file',
+        mimeType: 'application/json',
+        originalname: 'nocl.json',
+        size: 249
       },
       file2: [
         {
-          filename: 'static.html',
           encoding: '7bit',
-          mimetype: 'text/html'
+          fieldname: 'file2',
+          mimeType: 'text/html',
+          originalname: 'static.html',
+          size: 1372
         },
         {
-          filename: 'all.js',
           encoding: '7bit',
-          mimetype: 'text/javascript'
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: 12
         }
       ]
     });
   });
 
   test('gives uploaded file and saves in tmpDir', async ({ page }) => {
-    const { resp2, time } = await page.evaluate(async () => {
+    const fileInput = (await page.$('#onefile'))! as ElementHandle<HTMLInputElement>;
+    fileInput.setInputFiles(join(__dirname, '../public/nocl.json'));
+
+    const filesInput = (await page.$('#mulfile')) as ElementHandle<HTMLInputElement>;
+    await filesInput.setInputFiles([
+      join(__dirname, '../public/static.html'),
+      join(__dirname, '../public/304.json')
+    ]);
+
+    const { resp, time } = await page.evaluate(async () => {
       const start = performance.now();
       let resp;
       for (let i = 0; i < 100; i++) {
         resp = await (window as any).submitForm(`/tmpdir`);
       }
-      return { resp2: resp, time: performance.now() - start };
+      return { resp, time: performance.now() - start };
     });
 
     global.console.log(`100 file uploads took: ${time}ms`);
 
-    // Response has filePath
-    expect(resp2).toEqual({
+    const file = resp.data.file.path;
+    const file2 = resp.data.file2[0].path;
+    const file3 = resp.data.file2[1].path;
+
+    delete resp.data.file.path;
+    delete resp.data.file2[0].path;
+    delete resp.data.file2[1].path;
+    delete resp.data.file.stream;
+    delete resp.data.file2[0].stream;
+    delete resp.data.file2[1].stream;
+
+    const destination = join(__dirname, '../tmp');
+
+    // Response doesn't have filePath
+    expect(resp.data).toEqual({
       name: 'Aaditya',
       file: {
-        filename: 'nocl.json',
+        destination,
         encoding: '7bit',
-        mimetype: 'application/json',
-        filePath: join(__dirname, '../public/tmp/nocl.json')
+        fieldname: 'file',
+        mimeType: 'application/json',
+        originalname: 'nocl.json',
+        size: 249
       },
       file2: [
         {
-          filename: 'static.html',
+          destination,
           encoding: '7bit',
-          mimetype: 'text/html',
-          filePath: join(__dirname, '../public/tmp/static.html')
+          fieldname: 'file2',
+          mimeType: 'text/html',
+          originalname: 'static.html',
+          size: 1372
         },
         {
-          filename: 'all.js',
+          destination,
           encoding: '7bit',
-          mimetype: 'text/javascript',
-          filePath: join(__dirname, '../public/tmp/some.js')
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: 12
         }
       ]
     });
 
     // Same file content
-    expect(readFileSync(resp2.file.filePath)).toEqual(
-      readFileSync(join(__dirname, '../public/nocl.json'))
-    );
+    expect(readFileSync(file)).toEqual(readFileSync(join(__dirname, '../public/nocl.json')));
+    expect(readFileSync(file2)).toEqual(readFileSync(join(__dirname, '../public/static.html')));
+    expect(readFileSync(file3)).toEqual(readFileSync(join(__dirname, '../public/304.json')));
 
-    // delete files
-    unlinkSync(resp2.file2[0].filePath);
-    unlinkSync(resp2.file2[1].filePath);
+    console.log(file.replace(destination, ''));
+    expect(file.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.json$/);
+    expect(file2.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.html$/);
+    expect(file3.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.json$/);
   });
 });

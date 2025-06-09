@@ -55,6 +55,13 @@ export const stof = (fileStream: NodeJS.ReadableStream, writeFilePath: string) =
   });
 };
 
+export const toab = (buffer: Buffer): ArrayBuffer => {
+  return buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength
+  ) as ArrayBuffer;
+};
+
 export const defer = <T>(): {
   promise: Promise<T>;
   resolve: (v: T) => void;

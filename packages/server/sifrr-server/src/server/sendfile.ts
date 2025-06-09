@@ -9,8 +9,8 @@ const compressions = {
 import { getMimetype } from './mime';
 const bytes = 'bytes=';
 import { SendFileOptions, SifrrRequest } from './types';
-import { writeHeaders } from '@/server/utils';
-import { Duplex } from 'stream';
+import { toab, writeHeaders } from '@/server/utils';
+import { Duplex, Writable } from 'stream';
 import { HttpRequest, HttpResponse } from 'uWebSockets.js';
 import { SifrrResponse } from '@/server/response';
 
@@ -33,7 +33,7 @@ function sendFile(
 }
 
 function sendFileToRes(
-  res: HttpResponse | SifrrResponse,
+  givenRes: HttpResponse | SifrrResponse,
   reqHeaders: { [name: string]: string },
   path: string,
   {
@@ -41,10 +41,11 @@ function sendFileToRes(
     headers = {},
     compress = false,
     compressionOptions = {
-      priority: ['gzip', 'br', 'deflate']
+      priority: ['br', 'gzip', 'deflate']
     }
   }: SendFileOptions = {}
 ) {
+  const res: HttpResponse = givenRes._res ?? givenRes;
   let { mtime, size } = statSync(path);
   headers = { ...headers };
   // handling last modified
@@ -54,8 +55,7 @@ function sendFileToRes(
     // Return 304 if last-modified
     if (reqHeaders['if-modified-since']) {
       if (new Date(reqHeaders['if-modified-since']) >= mtime) {
-        res.writeStatus('304 Not Modified');
-        return res.end();
+        return res.writeStatus('304 Not Modified').end();
       }
     }
     headers['last-modified'] = mtimeutc;
@@ -85,11 +85,9 @@ function sendFileToRes(
 
   let readStream: ReadStream | Duplex = createReadStream(path, { start, end });
   // Compression;
-  let compressed: boolean | string = false;
   if (compress && compressionOptions.priority?.length) {
     for (const type of compressionOptions.priority) {
-      if (reqHeaders['accept-encoding'] && reqHeaders['accept-encoding']?.indexOf(type) > -1) {
-        compressed = type!;
+      if (reqHeaders['accept-encoding']?.includes(type)) {
         const compressor = compressions[type](compressionOptions);
         readStream.pipe(compressor);
         readStream = compressor;
@@ -101,53 +99,37 @@ function sendFileToRes(
 
   res.onAborted(() => readStream.destroy());
   writeHeaders(res, headers);
-  if (compressed) {
-    readStream.on('data', (buffer: Buffer) => {
-      res.write(
-        buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer
-      );
-    });
-  } else {
-    readStream.on('data', (buffer: Buffer) => {
-      const chunk = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
-        lastOffset = res.getWriteOffset();
 
-      // First try
-      const [ok, done] = res.tryEnd(chunk as ArrayBuffer, size);
-
-      if (done) {
-        readStream.destroy();
-      } else if (!ok) {
-        // pause because backpressure
-        readStream.pause();
-
-        // Save unsent chunk for later
-        res.ab = chunk;
-        res.abOffset = lastOffset;
-
-        // Register async handlers for drainage
-        res.onWritable((offset: number) => {
-          const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), size);
-          if (done) {
-            readStream.destroy();
-          } else if (ok) {
+  const writable = new Writable({
+    write(chunk, e, cb) {
+      res.cork(() => {
+        const ok = res.write(toab(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, e)));
+        if (!ok) {
+          readStream.pause();
+          res.onWritable(() => {
             readStream.resume();
-          }
-          return ok;
-        });
-      }
-    });
-  }
+            return true;
+          });
+        }
+        cb();
+      });
+    }
+  });
   readStream
     .on('error', (e: Error) => {
+      console.error(e);
       res.writeStatus('500 Internal server error');
       readStream.destroy();
-      console.error(e);
-      res.end();
+      res.cork(() => {
+        res.end();
+      });
     })
     .on('end', () => {
-      res.end();
-    });
+      res.cork(() => {
+        res.end();
+      });
+    })
+    .pipe(writable);
 }
 
 export default sendFile;

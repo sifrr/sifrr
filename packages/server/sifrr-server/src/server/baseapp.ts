@@ -172,7 +172,7 @@ export class SifrrServer implements ISifrrServer {
   }
 
   file(pattern: string, filePath: string, options: SendFileOptions = {}) {
-    return this.get(pattern, sendFile.bind(undefined, filePath, options));
+    return this.app.get(pattern, (res, req) => sendFile(filePath, options, req, res));
   }
 
   folder(prefix: string, folder: string, options: SendFileOptions = {}, base: string = folder) {

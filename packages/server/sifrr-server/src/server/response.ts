@@ -6,13 +6,13 @@ import { buffer, json, text } from 'stream/consumers';
 import { HttpRequest, HttpResponse, RecognizedString, us_socket_context_t } from 'uWebSockets.js';
 
 const bodyUsedError = Error(
-  'Stream was already read. You can only read of body, bodyBuffer, bodyStream.'
+  'Stream was already read. You can only read one of body, bodyBuffer, bodyStream and only once.'
 );
 const noOp = () => true;
 const formDataContentTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
 
 export class SifrrResponse<T = unknown> implements Omit<HttpResponse, 'onData'> {
-  private readonly _res: HttpResponse;
+  readonly _res: HttpResponse;
   private readonly _req: HttpRequest;
   private readonly uploadConfig: FormDataConfig | undefined;
   private _status: number = 200;
@@ -67,20 +67,20 @@ export class SifrrResponse<T = unknown> implements Omit<HttpResponse, 'onData'> 
    * Request body, is not available if stream or buffer is already used
    */
   get body(): Promise<T> {
-    const contType = this._req.getHeader('content-type');
     if (this.bodyStream.closed) {
       throw bodyUsedError;
     }
+    const contType = this._req.getHeader('content-type');
     if (contType.indexOf('application/json') > -1) {
       return json(this.bodyStream) as Promise<T>;
     } else if (formDataContentTypes.map((t) => contType.indexOf(t) > -1).indexOf(true) > -1) {
-      return formData.call(
-        this,
+      return formData<T>(
+        this.bodyStream,
         {
           'content-type': contType
         },
         this.uploadConfig
-      ) as Promise<T>;
+      );
     } else {
       return text(this.bodyStream) as Promise<T>;
     }

@@ -1,6 +1,7 @@
 import { SifrrServer, UploadedFile } from '@/index';
 import { writeHeaders } from '@/server/utils';
 import path from 'path';
+import { Readable, Writable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { fileURLToPath } from 'url';
 
@@ -12,7 +13,9 @@ const port = 6006;
 
 // Serve static files from multiple directories
 app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
-app.folder('/', path.join(__dirname, 'public'));
+app.folder('/', path.join(__dirname, 'public'), {
+  compress: true
+});
 
 app.get('/get', (req, res) => {
   res.json(req.query);
@@ -26,7 +29,6 @@ app.post('/post', async (req, res) => {
   const body = await res.body;
   try {
     await res.bodyBuffer;
-    res.json({ body });
   } catch (e) {
     res.json({ body, bodyBuffer: (e as Error).message });
   }
@@ -36,7 +38,6 @@ app.post('/post-stream', async (req, res) => {
   const stream = await buffer(res.bodyStream);
   try {
     await res.body;
-    res.json({ stream });
   } catch (e) {
     res.json({ stream, body: (e as Error).message });
   }
@@ -46,14 +47,17 @@ app.post('/post-buffer', async (req, res) => {
   const bodyBuffer = await res.bodyBuffer;
   try {
     await res.body;
-    res.json({ bodyBuffer });
   } catch (e) {
     res.json({ bodyBuffer, body: (e as Error).message });
   }
 });
 
 app.put('/put', async (req, res) => {
-  res.json(await res.body);
+  res.json({ body: await res.body });
+});
+
+app.patch('/patch', async (req, res) => {
+  res.json({ body: await res.body });
 });
 
 app.delete('/delete/:id', (req, res) => {
@@ -69,11 +73,6 @@ const headers = {
   'access-control-allow-methods': '*',
   Connection: 'keep-alive'
 };
-
-app.folder('', path.join(__dirname, 'public/compress'), {
-  headers,
-  compress: true
-});
 
 app.file('/random/:pattern', path.join(__dirname, 'public/random.html'), {
   headers
@@ -94,6 +93,20 @@ app.post('/buffer', async (req, res) => {
   const body = await res.body;
   res.json(body);
 });
+
+app.post(
+  '/stream',
+  async (req, res) => {
+    writeHeaders(res, headers);
+    const body = await res.body;
+    res.json(body);
+  },
+  {
+    handleFileStream: ({ stream }) => {
+      stream.pipe(new Writable());
+    }
+  }
+);
 
 app.post<{
   file: UploadedFile;
@@ -161,6 +174,8 @@ app.post<{
     }
   }
 );
+
+app.file('/*', path.join(__dirname, './public/index.html'));
 
 // Start the server
 app.listen(port, () => {
