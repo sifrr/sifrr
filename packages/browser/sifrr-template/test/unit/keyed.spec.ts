@@ -5,7 +5,7 @@
 import { makeChildrenEqualKeyed, longestPositiveIncreasingSubsequence } from '@/template/keyed';
 import { buildData, dataToChildNode, dataToChildNodes, parent } from '../helpers/keyed';
 
-function expectSameState(nodes, states) {
+function expectSameState(nodes: any[], states: any[]) {
   const nodeLabels = nodes.map((n) => n.val.data);
   const stateLabels = states.map((n) => n.label);
   expect(nodeLabels).toEqual(stateLabels);

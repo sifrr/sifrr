@@ -1,52 +1,40 @@
 import { runLoadTest } from './utils';
-import express from 'express';
 import { test } from '@playwright/test';
-import { Server } from 'http';
-import { join } from 'path';
-import compression from 'compression';
 import { LoadTestResult } from 'loadtest';
+import { Cluster } from 'cluster';
+import { launchCluster } from '@/index';
+import app from '../server';
 
 export const EPORT = 7777;
 export const SPORT = 6006;
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 
-let eapp = express();
-
-eapp.use(compression());
-eapp.use(express.static(join(import.meta.dirname, '../public')));
-
 const checkResult = ({
   sifrr,
-  express
+  cluser
 }: {
   sifrr: LoadTestResult;
-  express: LoadTestResult;
+  cluser: LoadTestResult;
 }): void => {
-  expect(sifrr.rps).toBeGreaterThanOrEqual(express.rps);
-  expect(sifrr.meanLatencyMs).toBeLessThanOrEqual(express.meanLatencyMs);
-  expect(sifrr.totalErrors).toBe(0);
-  expect(sifrr.totalErrors).toBe(0);
-};
-
-const _listen = eapp.listen;
-let listening = false;
-(eapp as any).listen = (port: number, handle: () => void) => {
-  if (listening) return;
-  listening = true;
-  _listen.call(eapp, port, handle);
+  expect(cluser.rps).toBeGreaterThanOrEqual(sifrr.rps);
+  expect(cluser.meanLatencyMs).toBeLessThanOrEqual(sifrr.meanLatencyMs);
+  expect(cluser.totalErrors).toBe(0);
+  expect(cluser.totalErrors).toBe(0);
 };
 
 const maxReq = 1000;
 
-test.describe('speed test - sifrr vs express', function () {
-  let server: Server;
+test.describe('speed test - sifrr & sifrr-cluster', function () {
+  let server: Cluster | undefined;
   test.beforeAll(async () => {
-    server = eapp.listen(EPORT, () => global.console.log('listening express on ', EPORT));
+    server = launchCluster(app, EPORT);
   });
 
   test.afterAll(() => {
-    server?.close();
+    for (const w of Object.values(server?.workers ?? {})) {
+      w?.kill();
+    }
   });
 
   test('faster in static files (small)', async () => {
@@ -55,7 +43,7 @@ test.describe('speed test - sifrr vs express', function () {
       await runLoadTest(
         {
           sifrr: `${PATH}/304.json`,
-          express: `${EPATH}/304.json`
+          cluser: `${EPATH}/304.json`
         },
         false,
         maxReq
@@ -69,7 +57,7 @@ test.describe('speed test - sifrr vs express', function () {
       await runLoadTest(
         {
           sifrr: `${PATH}/304.json`,
-          express: `${EPATH}/304.json`
+          cluser: `${EPATH}/304.json`
         },
         true,
         maxReq
@@ -83,7 +71,7 @@ test.describe('speed test - sifrr vs express', function () {
       await runLoadTest(
         {
           sifrr: `${PATH}/big.html`,
-          express: `${EPATH}/big.html`
+          cluser: `${EPATH}/big.html`
         },
         false,
         maxReq
@@ -98,7 +86,7 @@ test.describe('speed test - sifrr vs express', function () {
       await runLoadTest(
         {
           sifrr: `${PATH}/big.html`,
-          express: `${EPATH}/big.html`
+          cluser: `${EPATH}/big.html`
         },
         true,
         maxReq

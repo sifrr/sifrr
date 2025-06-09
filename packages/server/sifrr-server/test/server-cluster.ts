@@ -1,10 +1,6 @@
-import { launchCluster, SifrrServer } from '@/index';
+import { launchCluster } from '@/index';
+import app from './server';
 
-const app = new SifrrServer().get('/*', (res) => {
-  res.json({
-    banging: 'yes'
-  });
-});
 const port = 6010;
 
 launchCluster(app, port, {

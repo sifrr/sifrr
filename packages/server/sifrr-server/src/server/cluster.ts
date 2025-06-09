@@ -18,7 +18,7 @@ export function launchCluster(
   numberOfWorkers = numberOfWorkers ?? availableParallelism();
   restartOnError = restartOnError ?? false;
   if (cluster.isPrimary) {
-    console.log(`Primary ${process.pid} is running`);
+    console.log(`Cluster: Primary process is running on ${process.pid}`);
 
     // Fork workers.
     for (let i = 0; i < numberOfWorkers; i++) {

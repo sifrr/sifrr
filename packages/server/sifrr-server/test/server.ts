@@ -1,7 +1,7 @@
 import { SifrrServer, UploadedFile } from '@/index';
 import { writeHeaders } from '@/server/utils';
 import path from 'path';
-import { Readable, Writable } from 'stream';
+import { Writable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +14,9 @@ const port = 6006;
 // Serve static files from multiple directories
 app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
 app.folder('/', path.join(__dirname, 'public'), {
+  compress: true
+});
+app.file('/*', path.join(__dirname, 'public/index.html'), {
   compress: true
 });
 
@@ -179,3 +182,5 @@ app.post<{
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+export default app;
