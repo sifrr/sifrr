@@ -112,7 +112,7 @@ export const Attribute: Story = {
   play: async ({ canvasElement, canvas }) => {
     const div = canvasElement.querySelector('.div') as HTMLDivElement;
 
-    expect(div.innerHTML).toEqual(`<div class="attr" attr1="okay value" attr="abcd-some value efg">
+    expect(div.innerHTML).toEqual(`<div class="attr" attr="abcd-some value efg" attr1="okay value">
       classes
     </div>`);
   }

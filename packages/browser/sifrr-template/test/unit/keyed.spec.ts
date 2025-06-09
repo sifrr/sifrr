@@ -43,7 +43,7 @@ describe('Keyed', () => {
     });
 
     it('adds all', () => {
-      const oldData = [];
+      const oldData = buildData(10);
       const newData = buildData(10, 11);
       const childNodes = dataToChildNodes(oldData);
       parent(childNodes);
