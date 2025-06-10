@@ -5,10 +5,10 @@ const date = new Date(0).toUTCString();
 const equal = '%3D',
   equalRegex = new RegExp(equal, 'g');
 const all = (prefix: string) => {
-  let result = document.cookie,
+  const result = document.cookie,
     ans: SavedDataObject = {};
   result.split('; ').forEach((value) => {
-    let [k, v] = value.split('=');
+    const [k, v] = value.split('=');
     if (k?.indexOf(prefix) === 0) {
       const parsed = parse(v?.replace(equalRegex, '='));
       if (typeof parsed === 'undefined') return;

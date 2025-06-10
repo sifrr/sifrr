@@ -69,9 +69,7 @@ export default async function (
         totals[m] = totals[m] || 0;
         totals[m] += diff[m];
       }
-    } else {
-      if (verbose) process.stdout.write(`${i + 1}W `);
-    }
+    } else if (verbose) process.stdout.write(`${i + 1}W `);
   }
   if (verbose) process.stdout.write('\n');
 

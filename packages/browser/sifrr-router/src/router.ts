@@ -35,7 +35,7 @@ export type Options = {
   after?: () => void;
 };
 
-export const getFlatRoutes = (routes: Route[], prefix = '') => {
+export const getFlatRoutes = (routes: Route[], prefix = ''): Route[] => {
   const newRoutes: Omit<Route, 'children'>[] = [];
   routes.forEach((route) => {
     const { children, ...r } = route;
@@ -69,7 +69,7 @@ export const getCurrent = (
     query[k] = v.length > 1 ? v : (v[0] ?? null);
   }
 
-  const title = matchedRoute.title || document.title;
+  const title = matchedRoute.title ?? document.title;
   window.document.title = title;
 
   return {
@@ -83,34 +83,36 @@ export const getCurrent = (
   };
 };
 
-const getClickEventListener = (routerStore: Router) => (event: Event) => {
-  const e = event as PointerEvent | TouchEvent;
-  if (!window.history?.pushState) return false;
-  if (e.metaKey || e.ctrlKey) return false;
+const getClickEventListener =
+  (routerStore: Router) =>
+  (event: Event): void | false => {
+    const e = event as PointerEvent | TouchEvent;
+    if (!window.history?.pushState) return false;
+    if (e.metaKey || e.ctrlKey) return false;
 
-  // find closest link element
-  const composedPath = e.composedPath ? e.composedPath() : [e.target],
-    l = composedPath.length;
-  let target: HTMLAnchorElement | undefined = undefined;
-  for (let i = 0; i < l; i++) {
-    const t = <HTMLElement>composedPath[i];
-    if (t.tagName && t.tagName === 'A') {
-      target = <HTMLAnchorElement>t;
-      break;
+    // find closest link element
+    const composedPath = e.composedPath ? e.composedPath() : [e.target],
+      l = composedPath.length;
+    let target: HTMLAnchorElement | undefined = undefined;
+    for (let i = 0; i < l; i++) {
+      const t = <HTMLElement>composedPath[i];
+      if (t.tagName && t.tagName === 'A') {
+        target = <HTMLAnchorElement>t;
+        break;
+      }
     }
-  }
 
-  if (
-    !target ||
-    target.host !== window.location.host ||
-    (target.target && target.target !== '_self')
-  )
-    return false;
+    if (
+      !target ||
+      target.host !== window.location.host ||
+      (target.target && target.target !== '_self')
+    )
+      return false;
 
-  e.preventDefault();
-  // replace title with First title if there's no attribute
-  routerStore.value.push(target);
-};
+    e.preventDefault();
+    // replace title with First title if there's no attribute
+    routerStore.value.push(target);
+  };
 
 export const createRouter = (options: Options) => {
   const flatRoutes = getFlatRoutes(options.routes).map((r) => ({
@@ -165,7 +167,7 @@ export const createRouter = (options: Options) => {
 
   window.document.addEventListener('click', getClickEventListener(router));
 
-  window.addEventListener('popstate', (e: PopStateEvent) => {
+  window.addEventListener('popstate', (_e: PopStateEvent) => {
     router.value.replace();
   });
 

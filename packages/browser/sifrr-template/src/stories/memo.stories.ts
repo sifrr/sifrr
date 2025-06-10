@@ -2,12 +2,12 @@ import { html, memo } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/Memo'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 export const Primary: Story = {
   render: () => {
@@ -87,45 +87,45 @@ export const Primary: Story = {
     const valuesStart = getValues('memo0');
     await setProps({ text: 'aa', text1: 'bb' });
     await setProps({ object: {} });
-    expect(valuesStart).toEqual(getValues('memo0'));
+    await expect(valuesStart).toEqual(getValues('memo0'));
 
     // memo1
     const startMemo1 = getValues('memo1');
     await setProps({ text: 'sfsdf' });
-    expect(startMemo1 + 1).toEqual(getValues('memo1'));
+    await expect(startMemo1 + 1).toEqual(getValues('memo1'));
     await setProps({ object: {} });
-    expect(startMemo1 + 1).toEqual(getValues('memo1'));
+    await expect(startMemo1 + 1).toEqual(getValues('memo1'));
     await setProps({ text: 'sfsdf' });
-    expect(startMemo1 + 1).toEqual(getValues('memo1'));
+    await expect(startMemo1 + 1).toEqual(getValues('memo1'));
     await setProps({ text1: 'b' });
-    expect(startMemo1 + 1).toEqual(getValues('memo1'));
+    await expect(startMemo1 + 1).toEqual(getValues('memo1'));
     await setProps({ text: 'sgkll' });
-    expect(startMemo1 + 2).toEqual(getValues('memo1'));
+    await expect(startMemo1 + 2).toEqual(getValues('memo1'));
 
     // memoobj
     const startObj = getValues('memoobj');
     await setProps({ object: {} });
-    expect(startObj + 1).toEqual(getValues('memoobj'));
+    await expect(startObj + 1).toEqual(getValues('memoobj'));
     await setProps({ text: 'sfsdf' });
-    expect(startObj + 1).toEqual(getValues('memoobj'));
+    await expect(startObj + 1).toEqual(getValues('memoobj'));
     await setProps({ text1: 'b' });
-    expect(startObj + 1).toEqual(getValues('memoobj'));
+    await expect(startObj + 1).toEqual(getValues('memoobj'));
     await setProps({ object: {} });
-    expect(startObj + 2).toEqual(getValues('memoobj'));
+    await expect(startObj + 2).toEqual(getValues('memoobj'));
     await setProps({ object: getProps().object });
-    expect(startObj + 2).toEqual(getValues('memoobj'));
+    await expect(startObj + 2).toEqual(getValues('memoobj'));
 
     // memomulti
     const startMulti = getValues('memomulti');
     await setProps({ object: {} });
-    expect(startMulti).toEqual(getValues('memomulti'));
+    await expect(startMulti).toEqual(getValues('memomulti'));
     await setProps({ text: 'aasdf' });
-    expect(startMulti + 1).toEqual(getValues('memomulti'));
+    await expect(startMulti + 1).toEqual(getValues('memomulti'));
     await setProps({ text1: 'bghhhg' });
-    expect(startMulti + 2).toEqual(getValues('memomulti'));
+    await expect(startMulti + 2).toEqual(getValues('memomulti'));
     await setProps({ object: {} });
-    expect(startMulti + 2).toEqual(getValues('memomulti'));
+    await expect(startMulti + 2).toEqual(getValues('memomulti'));
     await setProps({ text1: 'dsgdfh;', text: 'sdghh' });
-    expect(startMulti + 3).toEqual(getValues('memomulti'));
+    await expect(startMulti + 3).toEqual(getValues('memomulti'));
   }
 };

@@ -2,12 +2,12 @@ import { html, ref } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect, userEvent } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/Attributes'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 export const ClassAndStyle: Story = {
   render: () => {
@@ -43,12 +43,12 @@ export const ClassAndStyle: Story = {
 
     return div;
   },
-  play: async ({ canvasElement, canvas }) => {
+  play: async ({ canvasElement }) => {
     const div = canvasElement.querySelector('.div') as HTMLDivElement;
     const toggleClass = canvasElement.querySelector('.toggle-class') as HTMLButtonElement;
     const increase = canvasElement.querySelector('.increase') as HTMLButtonElement;
 
-    expect(div.innerHTML).toEqual(`<style>
+    await expect(div.innerHTML).toEqual(`<style>
         .fourth {
           font-size: 20px;
         }
@@ -60,7 +60,7 @@ export const ClassAndStyle: Story = {
 
     await userEvent.click(toggleClass);
 
-    expect(div.innerHTML).toEqual(`<style>
+    await expect(div.innerHTML).toEqual(`<style>
         .fourth {
           font-size: 20px;
         }
@@ -71,7 +71,7 @@ export const ClassAndStyle: Story = {
       </button><button class="increase">Increase padding</button>`);
     await userEvent.click(increase);
 
-    expect(div.innerHTML).toEqual(`<style>
+    await expect(div.innerHTML).toEqual(`<style>
         .fourth {
           font-size: 20px;
         }
@@ -82,7 +82,7 @@ export const ClassAndStyle: Story = {
       </button><button class="increase">Increase padding</button>`);
     await userEvent.click(toggleClass);
 
-    expect(div.innerHTML).toEqual(`<style>
+    await expect(div.innerHTML).toEqual(`<style>
         .fourth {
           font-size: 20px;
         }
@@ -109,10 +109,11 @@ export const Attribute: Story = {
 
     return div;
   },
-  play: async ({ canvasElement, canvas }) => {
+  play: async ({ canvasElement }) => {
     const div = canvasElement.querySelector('.div') as HTMLDivElement;
 
-    expect(div.innerHTML).toEqual(`<div class="attr" attr="abcd-some value efg" attr1="okay value">
+    await expect(div.innerHTML)
+      .toEqual(`<div class="attr" attr="abcd-some value efg" attr1="okay value">
       classes
     </div>`);
   }

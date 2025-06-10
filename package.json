@@ -15,6 +15,7 @@
     "test:storybook:ci": "turbo test:storybook:ci",
     "test:playwright": "turbo test:playwright",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
     "dev": "turbo dev",
     "test:e2e": "turbo test:e2e",
     "prepare": "husky",

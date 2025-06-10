@@ -10,7 +10,7 @@ export default function memo<T, O, N = O>(
 ): BindingFxn<T, O, N> {
   const isFunc = typeof deps === 'function';
   const depsL = !isFunc ? deps.length : 0;
-  let retValue: N | Promise<N> | O | Symbol | string = startRet;
+  let retValue: N | Promise<N> | O | symbol | string = startRet;
 
   const getMemo = (props: SifrrProps<T>) => {
     if (isFunc) {

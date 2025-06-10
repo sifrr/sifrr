@@ -2,12 +2,12 @@ import { html } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/Async'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 const fetchData = async (): Promise<{
   [key: string]: {
@@ -36,7 +36,7 @@ const fetchData = async (): Promise<{
 
 export const Primary: Story = {
   render: () => {
-    const Component2 = async ({ id }: { id: string }, oldValue = undefined) => {
+    const Component2 = async ({ id }: { id: string }) => {
       const data = await fetchData().then((d) => d[id]);
       return `${data?.firstname} ${data?.lastname}`;
     };
@@ -59,15 +59,15 @@ export const Primary: Story = {
 
     return element;
   },
-  play: async ({ canvasElement, canvas }) => {
-    expect(canvasElement.innerHTML).toEqual(`<div>
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.innerHTML).toEqual(`<div>
       Comp2 <br><sifrr-fragment></sifrr-fragment><br>
       Comp1 <br><sifrr-fragment>
       Name:
       
       Id: </sifrr-fragment></div>`);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    expect(canvasElement.innerHTML).toEqual(`<div>
+    await expect(canvasElement.innerHTML).toEqual(`<div>
       Comp2 <br><sifrr-fragment>Aaditya Taparia</sifrr-fragment><br>
       Comp1 <br><sifrr-fragment>
       Name:

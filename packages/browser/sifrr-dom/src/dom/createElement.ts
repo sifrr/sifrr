@@ -49,7 +49,7 @@ export function createElement<T>(
   register(elementClass, true);
   if (oldElement instanceof elementClass) {
     (oldElement as ISifrrElement).setProps(props);
-    return oldElement;
+    return oldElement!;
   } else {
     const element = <ISifrrElement>document.createElement(elementClass.elementName);
     element.setProps?.(props);

@@ -1,4 +1,4 @@
-const getRegex = (path: string | RegExp) => {
+const getRegex = (path: string | RegExp): RegExp => {
   if (path instanceof RegExp) return path;
   return new RegExp(
     '^' +
@@ -47,26 +47,26 @@ class RegexPath extends RegExp {
 
   testRoute(route: string) {
     let data: {
-        regexGroups?: string[];
-        '*'?: string[];
-        '**'?: string[];
-        [k: string]: string | string[] | undefined;
-      } = {},
-      match = this.exec(route);
+      regexGroups?: string[];
+      '*'?: string[];
+      '**'?: string[];
+      [k: string]: string | string[] | undefined;
+    } = {};
+    const match = this.exec(route);
     if (match) {
       match.forEach((m, i) => {
         if (i === 0) return;
         const d = this.dataMap[i - 1];
         if (d === '*') {
-          data['*'] = data['*'] || [];
+          data['*'] = data['*'] ?? [];
           data['*'].push(m);
         } else if (d === '**') {
-          data['**'] = data['**'] || [];
+          data['**'] = data['**'] ?? [];
           data['**'].push(m);
         } else if (d?.startsWith(':')) {
           data[d.substring(1)] = m;
         } else {
-          data.regexGroups = data.regexGroups || [];
+          data.regexGroups = data.regexGroups ?? [];
           data.regexGroups.push(m);
         }
       });

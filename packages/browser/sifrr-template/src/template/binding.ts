@@ -76,14 +76,14 @@ export function createBindings<T>(
   return indices;
 }
 
-export function cleanEmptyNodes(node: DocumentFragment | ChildNode) {
+export function cleanEmptyNodes(node: DocumentFragment | ChildNode): void {
   const TW = TREE_WALKER(node);
   let ntr: ChildNode;
   while (node) {
     if (node.nodeType === TEXT_NODE && (<Text>(<unknown>node)).data.trim() === '') {
       ntr = <ChildNode>node;
       node = <ChildNode>TW.nextNode();
-      ntr.remove && ntr.remove();
+      ntr.remove?.();
     } else {
       node = <HTMLElement>TW.nextNode();
     }

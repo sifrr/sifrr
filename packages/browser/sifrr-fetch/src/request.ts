@@ -1,7 +1,5 @@
-import { isObject, isValidJson } from '@/util';
+import { isValidJson } from '@/util';
 import { SifrrFetchOptions, SifrrFetchResponse } from './types';
-
-const objConst = {}.constructor;
 
 /**
  * calls onProgress callback on response download progress
@@ -113,7 +111,7 @@ class Request<T, E> {
    * url with encoded params
    * @readonly
    */
-  get url() {
+  get url(): string {
     const { params } = this._options;
     if (params && Object.keys(params).length > 0) {
       Object.keys(params).forEach((key) => {

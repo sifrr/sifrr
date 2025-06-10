@@ -14,7 +14,6 @@ export { Element, register, setup, elements, createElement, store, getStore };
 export * from './dom/types';
 export * from './dom/symbols';
 export * from './dom/decorator';
-export * from './dom/symbols';
 export {
   html,
   cls,

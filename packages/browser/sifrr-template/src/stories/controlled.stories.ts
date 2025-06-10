@@ -3,12 +3,12 @@ import { computed } from '@/template/ref';
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/Controlled'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 export const Primary: Story = {
   render: () => {
@@ -54,7 +54,7 @@ export const Primary: Story = {
 
     return div;
   },
-  play: ({ canvasElement, canvas }) => {
+  play: async ({ canvasElement }) => {
     const values = canvasElement.querySelector('#values');
 
     const setValues = (v: object) => {
@@ -64,23 +64,23 @@ export const Primary: Story = {
       (window as any).value.value.deep[k] = v;
     };
 
-    expect(values?.textContent).toEqual('input---textarea---');
+    await expect(values?.textContent).toEqual('input---textarea---');
 
     setValue('input', 'input1');
-    expect(values?.textContent).toEqual('input1---textarea---');
+    await expect(values?.textContent).toEqual('input1---textarea---');
 
     setValues({});
-    expect(values?.textContent).toEqual('undefined---undefined---undefined');
+    await expect(values?.textContent).toEqual('undefined---undefined---undefined');
 
     setValue('input', 'input2');
-    expect(values?.textContent).toEqual('input2---undefined---undefined');
+    await expect(values?.textContent).toEqual('input2---undefined---undefined');
 
     setValue('text', 'text1');
-    expect(values?.textContent).toEqual('input2---text1---undefined');
+    await expect(values?.textContent).toEqual('input2---text1---undefined');
 
     setValue('contenteditable', 'contenteditable1');
-    expect(values?.textContent).toEqual('input2---text1---contenteditable1');
+    await expect(values?.textContent).toEqual('input2---text1---contenteditable1');
 
-    expect(canvasElement.querySelector('#count')?.textContent).toEqual('5');
+    await expect(canvasElement.querySelector('#count')?.textContent).toEqual('5');
   }
 };

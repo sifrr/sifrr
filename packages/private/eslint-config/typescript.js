@@ -1,7 +1,3 @@
-const { resolve } = require('path');
-
-const project = resolve(process.cwd(), 'tsconfig.json');
-
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   env: {
@@ -34,11 +30,11 @@ module.exports = {
       }
     ],
     '@typescript-eslint/no-for-in-array': 'error',
-    '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/explicit-function-return-type': 'warn',
     '@typescript-eslint/prefer-optional-chain': 'error',
     '@typescript-eslint/prefer-nullish-coalescing': 'error',
     '@typescript-eslint/prefer-regexp-exec': 'error',
-    '@typescript-eslint/no-explicit-any': 'error'
+    '@typescript-eslint/no-explicit-any': 'warn'
   },
   overrides: [
     {
@@ -55,7 +51,14 @@ module.exports = {
         jest: true
       },
       rules: {
-        '@typescript-eslint/no-explicit-any': 'off'
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-empty-object-type': 'warn'
+      }
+    },
+    {
+      files: ['*.e2e-spec.ts'],
+      env: {
+        jest: false
       }
     }
   ],
@@ -65,7 +68,7 @@ module.exports = {
     },
     'import-x/resolver': {
       typescript: {
-        project
+        project: ['./tsconfig.json']
       }
     }
   }

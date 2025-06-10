@@ -8,6 +8,7 @@ const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'] as const;
 const isAbort = !!AbortController;
 const TimeoutError = new Error('Request timed out');
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 class SifrrFetch {
   static async request<T = any, E = any>(
     u: string,
@@ -76,6 +77,7 @@ type SifrrFetchWithoutBody = <T = any, E = any>(
   options?: SifrrFetchOptions
 ) => Promise<SifrrFetchResponse<T, E>>;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 interface SifrrFetch {
   get: SifrrFetchWithoutBody;
   post: SifrrFetchWithBody;

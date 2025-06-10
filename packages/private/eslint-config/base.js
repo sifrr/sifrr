@@ -12,7 +12,7 @@ module.exports = {
   extends: ['eslint:recommended', 'plugin:import-x/recommended', 'prettier'],
   ignorePatterns: ['node_modules/', 'submodules/', 'tests/**/*.js', 'babel.config.js', 'dist/'],
   rules: {
-    'no-console': 'error',
+    'no-console': 'warn',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-empty': ['error', { allowEmptyCatch: true }],

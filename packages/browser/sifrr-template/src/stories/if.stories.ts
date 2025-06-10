@@ -1,18 +1,17 @@
 import { html, ref } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/If-show'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 export const Primary: Story = {
   render: () => {
     const ifref = ref(true);
-    let i = 0,
-      j = 0;
+    let i = 0;
     const temp1 = html`<div :if=${() => ifref.value}>
         If thing
         ${() => {
@@ -25,6 +24,5 @@ export const Primary: Story = {
     div.append(...temp1);
 
     return div;
-  },
-  play: ({ canvasElement, canvas }) => {}
+  }
 };

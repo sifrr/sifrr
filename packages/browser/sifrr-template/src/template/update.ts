@@ -27,7 +27,7 @@ const getClasses = (
     });
   } else {
     Object.keys(classList).forEach((c) => {
-      classList[c] && classes.add(c);
+      if (classList[c]) classes.add(c);
     });
   }
   return classes;

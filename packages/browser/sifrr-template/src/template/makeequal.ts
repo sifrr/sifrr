@@ -1,7 +1,7 @@
 import { update } from './update';
 import { TEXT_NODE, COMMENT_NODE, REFERENCE_COMMENT } from './constants';
 import { SifrrCreateFunction, SifrrProps, SifrrNode, SifrrNodesArray } from './types';
-import { flatLastElement, flattenOperation, isSifrrNode } from './utils';
+import { flatLastElement, flattenOperation } from './utils';
 
 const removeFxn = (i?: ChildNode) => i?.remove();
 

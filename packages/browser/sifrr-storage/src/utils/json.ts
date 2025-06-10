@@ -35,7 +35,7 @@ export function parse(data: any): any {
     const [type, av, av2] = data.split(uId);
 
     if (type === 'ArrayBuffer') {
-      ans = new Uint8Array(av?.split(',').map((i) => parseInt(i)) || []).buffer;
+      ans = new Uint8Array(av?.split(',').map((i) => parseInt(i)) ?? []).buffer;
     } else if (type === 'Blob') ans = decodeBlob(av2 as string, av as string);
     else ans = new (window as any)[type as string]((av as string).split(','));
   } else if (Array.isArray(data)) {
@@ -59,8 +59,8 @@ export function stringify(data: any): string {
   if (Array.isArray(data)) return JSON.stringify(data.map((d) => stringify(d)));
   const type = toS.call(data).slice(8, -1);
   if (type === 'Object') {
-    let ans: any = {};
-    for (let k in data) {
+    const ans: any = {};
+    for (const k in data) {
       ans[k] = stringify(data[k]);
     }
     return JSON.stringify(ans);

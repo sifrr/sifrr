@@ -3,7 +3,7 @@ import createUniqueString from '@/ustring';
 describe('ustring', () => {
   it('should have correct length', () => {
     for (let i = 0; i < 100; i++) {
-      createUniqueString(i + 1).length === i + 1;
+      expect(createUniqueString(i + 1).length).toEqual(i + 1);
     }
   });
 

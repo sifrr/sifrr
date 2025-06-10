@@ -11,7 +11,7 @@ export const SPORT = 6006;
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 
-let eapp = express();
+const eapp = express();
 
 eapp.use(compression());
 eapp.use(express.static(join(import.meta.dirname, '../public')));

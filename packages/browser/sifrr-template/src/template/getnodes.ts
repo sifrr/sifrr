@@ -1,7 +1,5 @@
 import { DomBindingReturnValue, SifrrNodesArray, SifrrNode } from './types';
 
-const emptyArray: SifrrNode<any>[] = [];
-
 export default function getNodesFromBindingValue<T>(
   value: DomBindingReturnValue | SifrrNodesArray<T> | SifrrNode<T>
 ): SifrrNode<T>[] {

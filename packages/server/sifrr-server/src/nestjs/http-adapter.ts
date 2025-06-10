@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { SifrrServer } from '@/server/baseapp';
 import { SifrrResponse } from '@/server/response';
 import { SifrrRequest } from '@/server/types';
@@ -24,13 +25,13 @@ export class SifrrHttpAdapter extends AbstractHttpAdapter<
       ssl_ciphers: options.httpsOptions?.ciphers
     });
   }
-  useStaticAssets(...args: any[]) {
+  useStaticAssets(..._args: any[]) {
     throw new Error('Method not implemented.');
   }
-  setViewEngine(engine: string) {
+  setViewEngine(_engine: string) {
     throw new Error('Method not implemented.');
   }
-  getRequestHostname(request: SifrrRequest) {
+  getRequestHostname(_request: SifrrRequest) {
     throw new Error('Method not implemented.');
   }
   getRequestMethod(request: SifrrRequest) {
@@ -42,25 +43,25 @@ export class SifrrHttpAdapter extends AbstractHttpAdapter<
   status(response: SifrrResponse, statusCode: number) {
     response.status(statusCode);
   }
-  reply(response: SifrrResponse, body: any, statusCode?: number) {
+  reply(_response: SifrrResponse, _body: any, _statusCode?: number) {
     throw new Error('Method not implemented.');
   }
   end(response: SifrrResponse, message?: string) {
     response.end(message);
   }
-  render(response: SifrrResponse, view: string, options: any) {
+  render(_response: SifrrResponse, _view: string, _options: any) {
     throw new Error('Method not implemented.');
   }
   redirect(response: SifrrResponse, statusCode: number, url: string) {
     response.setHeader('Location', url).status(statusCode).end();
   }
-  setErrorHandler(handler: Function, prefix?: string) {
+  setErrorHandler(_handler: Function, _prefix?: string) {
     throw new Error('Method not implemented.');
   }
-  setNotFoundHandler(handler: Function, prefix?: string) {
+  setNotFoundHandler(_handler: Function, _prefix?: string) {
     throw new Error('Method not implemented.');
   }
-  isHeadersSent(response: SifrrResponse) {
+  isHeadersSent(_response: SifrrResponse) {
     throw new Error('Method not implemented.');
   }
   getHeader(response: SifrrResponse, name: string) {
@@ -72,14 +73,14 @@ export class SifrrHttpAdapter extends AbstractHttpAdapter<
   appendHeader(response: SifrrResponse, name: string, value: string) {
     response.writeHeader(name, value);
   }
-  registerParserMiddleware(prefix?: string, rawBody?: boolean) {
+  registerParserMiddleware(_prefix?: string, _rawBody?: boolean) {
     throw new Error('Method not implemented.');
   }
-  enableCors(options?: any, prefix?: string) {
+  enableCors(_options?: any, _prefix?: string) {
     throw new Error('Method not implemented.');
   }
   createMiddlewareFactory(
-    requestMethod: RequestMethod
+    _requestMethod: RequestMethod
   ):
     | ((path: string, callback: Function) => any)
     | Promise<(path: string, callback: Function) => any> {
@@ -89,9 +90,9 @@ export class SifrrHttpAdapter extends AbstractHttpAdapter<
     throw new Error('Method not implemented.');
   }
   applyVersionFilter(
-    handler: Function,
-    version: VersionValue,
-    versioningOptions: VersioningOptions
+    _handler: Function,
+    _version: VersionValue,
+    _versioningOptions: VersioningOptions
   ): (req: any, res: any, next: () => void) => Function {
     throw new Error('Method not implemented.');
   }

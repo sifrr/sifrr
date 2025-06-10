@@ -229,7 +229,7 @@ export class SifrrServer implements ISifrrServer {
     if (prefix.endsWith('/')) prefix = prefix.slice(0, -1);
 
     // serve folder
-    const filter = options ? options.filter || noOp : noOp;
+    const filter = options.filter ?? noOp;
     readdirSync(folder).forEach((file) => {
       // Absolute path
       const filePath = join(folder, file);
@@ -273,7 +273,7 @@ export class SifrrServer implements ISifrrServer {
 
   close(port?: number) {
     if (port) {
-      this._sockets.has(port) && us_listen_socket_close(this._sockets.get(port)!);
+      if (this._sockets.has(port)) us_listen_socket_close(this._sockets.get(port)!);
       this._sockets.delete(port);
     } else {
       this._sockets.forEach((app) => {

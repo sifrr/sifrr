@@ -4,16 +4,14 @@ import { update } from '@/template/update';
 export const tempNumSymbol = Symbol('tempNum');
 export const bindingSymbol = Symbol('bindings');
 
-export type SifrrNode<T> =
-  | (ChildNode & {
-      [bindingSymbol]?: SifrrBindingCollection<T>[];
-      [tempNumSymbol]?: number;
-      key?: string | number;
-      [x: string]: unknown;
-    })
-  | (Text & {
-      [tempNumSymbol]?: number;
-    });
+export type SifrrNode<T> = (ChildNode | Text | Comment) & {
+  [bindingSymbol]?: SifrrBindingCollection<T>[];
+  [tempNumSymbol]?: number;
+  key?: SifrrKeyType;
+};
+
+export type SifrrKeyType = string | number | symbol;
+export type SifrrNodeKeyed<T> = SifrrNode<T> & { key: SifrrKeyType };
 
 export type SifrrProps<T> = T & {
   onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
@@ -21,11 +19,11 @@ export type SifrrProps<T> = T & {
 };
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
-  key: string | number;
+  key: SifrrKeyType;
 };
 
 export type ChildNodeKeyed = ChildNode & {
-  key: string | number;
+  key: SifrrKeyType;
 };
 
 type _RTValue = null | undefined | string | number | boolean | Node | DomBindingReturnArrayValue;
@@ -49,7 +47,7 @@ export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
   }
 }
 
-export type SifrrNodesArrayKeyed<T> = (SifrrNode<T> & { key: string | number })[] & {
+export type SifrrNodesArrayKeyed<T> = SifrrNodeKeyed<T>[] & {
   isRendered?: boolean;
   update?: (p: SifrrProps<T>) => void;
 };

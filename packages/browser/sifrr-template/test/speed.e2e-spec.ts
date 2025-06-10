@@ -6,7 +6,7 @@ function getArg(name: string) {
   if (argi !== -1) {
     return process.argv[argi + 1];
   }
-  return false;
+  return undefined;
 }
 
 let benchmarks = [
@@ -22,31 +22,32 @@ let benchmarks = [
   '10k-update10th',
   '1k-append'
 ];
-const runs = parseInt(getArg('runs') || '1', 10),
-  warmups = parseInt(getArg('warmups') || '1', 10);
+const runs = parseInt(getArg('runs') ?? '1', 10),
+  warmups = parseInt(getArg('warmups') ?? '1', 10);
 
-const benchmarkFilters = (getArg('benchmarks') || '').split(',');
+const benchmarkFilters = (getArg('benchmarks') ?? '').split(',');
 benchmarks = benchmarks.filter((b) => {
   return benchmarkFilters.map((bf) => b.indexOf(bf) >= 0).indexOf(true) >= 0;
 });
 
-const ExpectedLayoutCounts: Record<(typeof benchmarks)[number], number> = {
-  '1k-run': 1,
-  '10k-run': 1,
-  '1k-replace': 1,
-  '10k-replace': 1,
-  '1k-clear': 1,
-  '10k-clear': 1,
-  '1k-swap': 1,
-  '1k-select': 1,
-  '1k-delete': 1,
-  '10k-update10th': 1,
-  '1k-append': 1
-};
+// const ExpectedLayoutCounts: Record<(typeof benchmarks)[number], number> = {
+//   '1k-run': 1,
+//   '10k-run': 1,
+//   '1k-replace': 1,
+//   '10k-replace': 1,
+//   '1k-clear': 1,
+//   '10k-clear': 1,
+//   '1k-swap': 1,
+//   '1k-select': 1,
+//   '1k-delete': 1,
+//   '10k-update10th': 1,
+//   '1k-append': 1
+// };
 
 const suffixes = ['', '&useKey', '&useClean', '&useAsync'],
   compare: any = {};
 const url =
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   getArg('url') ||
   `http://localhost:6006/iframe.html?globals=&id=sifrr-template-speed--primary&viewMode=story&speedtest=true`;
 const urls = suffixes.map((s) => url + s);
@@ -69,7 +70,7 @@ for (const u of urls) {
       //   `${bm} layoutcount should be ${ExpectedLayoutCounts[bm]}, but was ${bmd['LayoutCount']}`
       // );
 
-      compare[bm] = compare[bm] || {};
+      compare[bm] = compare[bm] ?? {};
       compare[bm][shortu] = [
         bmd['ScriptDuration'] + bmd['LayoutDuration'] + bmd['RecalcStyleDuration'],
         bmd['TaskDuration']

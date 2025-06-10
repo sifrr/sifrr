@@ -2,7 +2,7 @@ import { html } from '@/index';
 import type { Meta, StoryObj } from '@storybook/html';
 import { fn } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/Events'
 };
 

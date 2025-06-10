@@ -18,7 +18,7 @@ function shuffle(array: any[], percent: number = 50) {
   let currentIndex = array.length;
 
   while (currentIndex > (array.length * (100 - percent)) / 100) {
-    let randomIndex = Math.floor(Math.random() * currentIndex);
+    const randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
     moveEl(array, currentIndex, randomIndex);

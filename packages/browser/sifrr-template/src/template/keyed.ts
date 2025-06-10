@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-// @ts-nocheck
+/* eslint-disable */
 import { COMMENT_NODE, REFERENCE_COMMENT } from '@/template/constants';
 import { makeEqual } from './makeequal';
 import {
@@ -7,10 +6,15 @@ import {
   SifrrCreateFunction,
   SifrrNode,
   SifrrKeyedProps,
-  DomBindingReturnArrayValue,
-  SifrrNodesArrayKeyed
+  SifrrNodesArrayKeyed,
+  SifrrKeyType,
+  SifrrNodeKeyed
 } from './types';
 import { flatLastElement } from './utils';
+
+const isComment = (c?: Node | any): c is Comment => {
+  return c?.nodeType === COMMENT_NODE;
+};
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
@@ -25,14 +29,14 @@ import { flatLastElement } from './utils';
 // only works with data nodes
 export function makeChildrenEqualKeyed<T>(
   oldChildren: SifrrNodesArrayKeyed<T>,
-  newData: SifrrKeyedProps<T>[],
-  createFn: SifrrCreateFunction<T>
+  newData: (SifrrKeyedProps<T> | (Comment & { key: SifrrKeyType }))[],
+  createFn: SifrrCreateFunction<T & { key: SifrrKeyType }>
 ): SifrrNodesArrayKeyed<T> {
   // special case of no value return
   if (newData.length < 1) {
     if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
       newData.push(REFERENCE_COMMENT(true));
-    else newData = oldChildren;
+    else newData = oldChildren as (Comment & { key: SifrrKeyType })[];
   }
 
   const newL = newData.length,
@@ -51,9 +55,10 @@ export function makeChildrenEqualKeyed<T>(
 
   if (oldL === 0) {
     for (let i = 0; i < newL; i++) {
-      const n = createFn(newData[i])[0];
-      n.key = newData[i].key;
-      returnNodes[i] = n;
+      const d = newData[i]!;
+      const n = isComment(d) ? d : createFn(d)[0]!;
+      n.key = newData[i]!.key;
+      returnNodes[i] = n! as SifrrNodeKeyed<T>;
       parent.insertBefore(n, nextSib);
     }
     return returnNodes;
@@ -65,12 +70,12 @@ export function makeChildrenEqualKeyed<T>(
     loop = true,
     prevEnd = oldL - 1,
     newEnd = newL - 1,
-    prevStartNode = oldChildren[0],
-    prevEndNode = oldChildren[oldL - 1],
+    prevStartNode = oldChildren[0]!,
+    prevEndNode = oldChildren[oldL - 1]!,
     finalNode,
     a: any,
     b: any,
-    _node: SifrrNode<T>;
+    _node: SifrrNodeKeyed<T>;
 
   fixes: while (loop) {
     loop = false;
@@ -79,9 +84,9 @@ export function makeChildrenEqualKeyed<T>(
     a = prevStartNode;
     b = newData[newStart];
     while (b && a.key === b.key) {
-      returnNodes[newStart] = makeEqual(prevStartNode, b);
+      returnNodes[newStart] = makeEqual(prevStartNode, b) as SifrrNodeKeyed<T>;
       prevStart++;
-      prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
+      prevStartNode = (prevStartNode?.nextSibling ?? undefined) as SifrrNodeKeyed<T>;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = prevStartNode;
@@ -92,10 +97,10 @@ export function makeChildrenEqualKeyed<T>(
     a = prevEndNode;
     b = newData[newEnd];
     while (b && a.key === b.key) {
-      returnNodes[newEnd] = makeEqual(prevEndNode, b);
+      returnNodes[newEnd] = makeEqual(prevEndNode, b) as SifrrNodeKeyed<T>;
       prevEnd--;
       finalNode = prevEndNode;
-      prevEndNode = <ChildNodeKeyed>prevEndNode.previousSibling;
+      prevEndNode = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
       a = prevEndNode;
@@ -107,10 +112,10 @@ export function makeChildrenEqualKeyed<T>(
     b = newData[newStart];
     while (b && a.key === b.key) {
       loop = true;
-      returnNodes[newStart] = makeEqual(prevEndNode, b);
-      _node = prevEndNode.previousSibling;
+      returnNodes[newStart] = makeEqual(prevEndNode, b) as SifrrNodeKeyed<T>;
+      _node = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
       parent.insertBefore(prevEndNode, prevStartNode);
-      prevEndNode = <ChildNodeKeyed>_node;
+      prevEndNode = _node;
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
@@ -123,12 +128,12 @@ export function makeChildrenEqualKeyed<T>(
     b = newData[newEnd];
     while (b && a.key === b.key) {
       loop = true;
-      returnNodes[newEnd] = makeEqual(prevStartNode, b);
-      _node = prevStartNode.nextSibling;
+      returnNodes[newEnd] = makeEqual(prevStartNode, b) as SifrrNodeKeyed<T>;
+      _node = prevStartNode.nextSibling as SifrrNodeKeyed<T>;
       parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
       finalNode = prevStartNode;
-      prevEndNode = <ChildNodeKeyed>prevStartNode.previousSibling;
-      prevStartNode = <ChildNodeKeyed>_node;
+      prevEndNode = prevStartNode.previousSibling as SifrrNodeKeyed<T>;
+      prevStartNode = _node;
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
@@ -145,9 +150,9 @@ export function makeChildrenEqualKeyed<T>(
         if (prevEnd === 0) {
           parent.removeChild(prevEndNode);
         } else {
-          next = <ChildNodeKeyed>prevEndNode.previousSibling;
+          next = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
           parent.removeChild(prevEndNode);
-          prevEndNode = <ChildNodeKeyed>next;
+          prevEndNode = next as SifrrNodeKeyed<T>;
         }
         prevEnd--;
       }
@@ -159,11 +164,12 @@ export function makeChildrenEqualKeyed<T>(
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
       while (newStart <= newEnd) {
-        _node = createFn(newData[newStart])[0];
-        _node.key = newData[newStart].key;
+        const d = newData[newStart]!;
+        _node = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
+        _node.key = d.key;
 
         returnNodes[newStart] = _node;
-        parent.insertBefore(_node, finalNode);
+        parent.insertBefore(_node, finalNode!);
         newStart++;
       }
     }
@@ -182,7 +188,7 @@ export function makeChildrenEqualKeyed<T>(
     if (!newData[i]?.key) {
       window.console.error(`Key is missing for index ${i},  props: `, newData[i]);
     }
-    if (newData[i]?.key) newKeys.set(newData[i].key, i);
+    if (newData[i]?.key) newKeys.set(newData[i]!.key, i);
   }
 
   let reusingNodes = 0;
@@ -194,7 +200,7 @@ export function makeChildrenEqualKeyed<T>(
       toDelete.push(prevStartNode);
     }
     nodes[prevStart] = prevStartNode;
-    prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
+    prevStartNode = prevStartNode.nextSibling as SifrrNodeKeyed<T>;
     prevStart++;
   }
 
@@ -207,8 +213,9 @@ export function makeChildrenEqualKeyed<T>(
   if (reusingNodes === 0) {
     for (let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      returnNodes[i] = createFn(newData[i]!)[0];
-      (returnNodes[i]! as ChildNodeKeyed).key = newData[i]!.key;
+      const d = newData[i]!;
+      returnNodes[i] = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
+      returnNodes[i]!.key = newData[i]!.key;
 
       parent.insertBefore(returnNodes[i] as Node, prevStartNode!);
     }
@@ -218,21 +225,22 @@ export function makeChildrenEqualKeyed<T>(
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   let lisIdx = longestSeq.length - 1,
-    tmpD: SifrrNode<T>;
+    tmpD: SifrrNodeKeyed<T>;
   for (let i = newEnd; i >= newStart; i--) {
     if (longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
       returnNodes[i] = finalNode;
       // returnNodes[i] = finalNode; reused nodes, not needed to set key
-      makeEqual(finalNode, newData[i]!);
+      makeEqual(finalNode, newData[i]! as SifrrNode<T>);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
-        tmpD = createFn(newData[i]!)[0]!;
+        const d = newData[i]!;
+        tmpD = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
         tmpD.key = newData[i]!.key;
       } else {
         tmpD = nodes[oldKeys[i]];
-        makeEqual(tmpD, newData[i]!);
+        makeEqual(tmpD, newData[i] as SifrrNode<T>);
       }
       returnNodes[i] = tmpD;
       parent.insertBefore(tmpD, finalNode);

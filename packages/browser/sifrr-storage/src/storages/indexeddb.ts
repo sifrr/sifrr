@@ -1,4 +1,3 @@
-import { parse } from '@/utils/json';
 import { SavedData, SavedDataObject, SifrrStore } from './types';
 
 class IndexedDBStore implements SifrrStore {
@@ -13,7 +12,7 @@ class IndexedDBStore implements SifrrStore {
 
   get store(): Promise<IDBDatabase> {
     this._store =
-      this._store ||
+      this._store ??
       new Promise((resolve, reject) => {
         const request = window.indexedDB.open(this.prefix, 1);
         request.onupgradeneeded = () => {
@@ -39,7 +38,7 @@ class IndexedDBStore implements SifrrStore {
         const tx = db.transaction(this.prefix, scope).objectStore(this.prefix);
         const request = fn === 'put' ? tx.put(param1, param2) : tx[fn](param1);
         request.onsuccess = () => resolve(request.result);
-        request.onerror = (event) => reject(request.error);
+        request.onerror = (_event) => reject(request.error);
       });
     });
   }

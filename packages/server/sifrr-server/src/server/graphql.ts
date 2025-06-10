@@ -1,5 +1,5 @@
 import { createAsyncIterator, isAsyncIterable } from 'iterall';
-import { AppOptions, WebSocketBehavior } from 'uWebSockets.js';
+import { WebSocketBehavior } from 'uWebSockets.js';
 import { GraphQLArgs, GraphQLSchema, parse as parseGql } from 'graphql';
 import * as Graphql from 'graphql';
 import { SifrrRequest } from '@/server/types';
@@ -12,6 +12,7 @@ const GQL_DATA = 'data';
 const GQL_QUERY = 'query';
 
 declare module 'uWebSockets.js' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface WebSocket<UserData> {
     operations?: {
       [id: number]: { return?: () => void };
@@ -50,7 +51,7 @@ function graphqlPost(
   graphqlOptions: Partial<GraphQLArgs>,
   graphqlImpl: typeof Graphql
 ) {
-  const execute = graphqlImpl.graphql || require('graphql').graphql;
+  const execute = graphqlImpl.graphql || Graphql.graphql;
 
   return async (req: SifrrRequest, res: SifrrResponse) => {
     res.json(
@@ -85,8 +86,8 @@ function graphqlWs<T>(
   uwsOptions: WebSocketBehavior<T>,
   graphql: typeof Graphql
 ) {
-  const subscribe = graphql.subscribe || require('graphql').subscribe;
-  const execute = graphql.graphql || require('graphql').graphql;
+  const subscribe = graphql.subscribe || Graphql.subscribe;
+  const execute = graphql.graphql || Graphql.graphql;
 
   const opts: WebSocketBehavior<T> = {
     open: (ws) => {

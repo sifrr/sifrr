@@ -2,12 +2,12 @@ import createUniqueString from '@/ustring';
 import type { Meta, StoryObj } from '@storybook/html';
 import { expect } from '@storybook/test';
 
-const meta: Meta<{}> = {
+const meta: Meta<unknown> = {
   title: 'Sifrr/Template/UString'
 };
 
 export default meta;
-type Story = StoryObj<{}>;
+type Story = StoryObj<unknown>;
 
 export const Primary: Story = {
   render: () => {
@@ -15,7 +15,7 @@ export const Primary: Story = {
 
     return text;
   },
-  play: ({ canvasElement, canvas }) => {
-    expect(canvasElement.textContent?.length).toEqual(10);
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.textContent?.length).toEqual(10);
   }
 };

@@ -99,7 +99,7 @@ export const Primary: Story = {
       </tr>
     `;
 
-    const template = html<{}>`
+    const template = html<unknown>`
       <style>
         ${currentStyle} .remove,
         .lbl {
@@ -160,7 +160,7 @@ export const Primary: Story = {
                       for (let i = 0; i < l; i += 10) {
                         data.value[i]!.label = data.value[i]!.label + ' !!!';
                       }
-                      setData(data.value);
+                      inner.update({});
                     }}
                     id="update"
                   >
@@ -188,7 +188,7 @@ export const Primary: Story = {
                         const a = data.value[1];
                         data.value[1] = data.value[998]!;
                         data.value[998] = a!;
-                        setData(data.value);
+                        inner.update({});
                       }
                     }}
                     id="swaprows"
@@ -205,7 +205,7 @@ export const Primary: Story = {
                         {
                           data: data.value
                         },
-                        setData
+                        () => inner.update({})
                       );
                     }}
                     id="rearrange50"
@@ -222,7 +222,7 @@ export const Primary: Story = {
                         {
                           data: data.value
                         },
-                        setData
+                        () => inner.update({})
                       );
                     }}
                     id="rearrange100"
@@ -236,11 +236,11 @@ export const Primary: Story = {
         </div>
         <table class="table table-hover table-striped test-data">
           <tbody>
-            <!--${(_: {}, oldValue: SifrrNodesArrayKeyed<any>) => {
+            <!--${(_: unknown, oldValue: SifrrNodesArrayKeyed<any>) => {
               if (useKey) {
                 return forKeyed(row, data.value, oldValue);
               } else if (useClean) {
-                return data.value.map((d: any, i: number) => row(d));
+                return data.value.map((d: any, _i: number) => row(d));
               } else {
                 return forNonKeyed(row, data.value, oldValue as SifrrNodesArray<any>);
               }
@@ -349,7 +349,7 @@ export const Primary: Story = {
 
     const setData = (newData: any) => {
       data.value = newData;
-      inner.update?.({});
+      // inner.update?.({});
     };
 
     div.addEventListener('click', (e: any) => {
@@ -369,7 +369,7 @@ export const Primary: Story = {
 
     return div;
   },
-  play: async ({ canvasElement, canvas, args }) => {
+  play: async ({ canvasElement, args }) => {
     if (window.location.href.indexOf('speedtest') >= 0) return;
 
     const table = canvasElement.querySelector('table');
