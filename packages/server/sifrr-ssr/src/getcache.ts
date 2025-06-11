@@ -1,6 +1,6 @@
-const Cache = require('cache-manager');
+import { caching } from 'cache-manager';
 
-module.exports = ops => {
+export default (ops) => {
   ops = Object.assign(
     {
       cacheStore: 'memory',
@@ -10,7 +10,7 @@ module.exports = ops => {
     ops
   );
 
-  return Cache.caching({
+  return caching({
     store: ops.cacheStore,
     ttl: ops.ttl,
     length: (val, key) => {

@@ -6,11 +6,12 @@ function isTypeOf(request, types) {
 }
 
 class PageRequest {
+  addListener: any;
   constructor(npage, filter = () => true) {
     this.npage = npage;
     this.filter = filter;
     this.pendingRequests = 0;
-    this.pendingPromise = new Promise(res => (this.pendingResolver = res));
+    this.pendingPromise = new Promise((res) => (this.pendingResolver = res));
     this.addOnRequestListener();
     this.addEndRequestListener();
   }
@@ -18,7 +19,7 @@ class PageRequest {
   addOnRequestListener() {
     const me = this;
     this.addListener = this.npage.setRequestInterception(true).then(() => {
-      me.npage.on('request', request => {
+      me.npage.on('request', (request) => {
         if (isTypeOf(request, whiteTypes) && this.filter(request.url())) {
           me.pendingRequests++;
           request.__allowed = true;
@@ -34,10 +35,10 @@ class PageRequest {
   addEndRequestListener() {
     // resolve pending fetch/xhrs
     const me = this;
-    this.npage.on('requestfailed', request => {
+    this.npage.on('requestfailed', (request) => {
       me.onEnd(request);
     });
-    this.npage.on('requestfinished', request => {
+    this.npage.on('requestfinished', (request) => {
       me.onEnd(request);
     });
   }
@@ -55,4 +56,4 @@ class PageRequest {
   }
 }
 
-module.exports = PageRequest;
+export default PageRequest;

@@ -1,8 +1,17 @@
-const Renderer = require('./renderer');
+import Renderer from './renderer';
+import getCache from './getcache';
+
 const isHeadless = new RegExp('(headless|Headless)');
-const getCache = require('./getcache');
 
 class SifrrSeo {
+  _uas: RegExp[];
+  shouldRenderCache: Record<string, boolean>;
+  options: { cacheKey: (url: string, headers: Record<string, string>) => any };
+  _renderer?: Renderer;
+  static Renderer = Renderer;
+  _poptions: any;
+  _cache: any;
+
   constructor(
     userAgents = [
       'Googlebot', // Google
@@ -16,36 +25,36 @@ class SifrrSeo {
     ],
     options = {}
   ) {
-    this._uas = userAgents.map(ua => new RegExp(ua));
+    this._uas = userAgents.map((ua) => new RegExp(ua));
     this.shouldRenderCache = {};
     this.options = Object.assign(
       {
-        cacheKey: url => url
+        cacheKey: (url) => url
       },
       options
     );
   }
 
   get renderer() {
-    this._renderer = this._renderer || new SifrrSeo.Renderer(this._poptions, this.options);
+    this._renderer = this._renderer ?? new SifrrSeo.Renderer(this._poptions, this.options);
     return this._renderer;
   }
 
   get cache() {
-    this._cache = this._cache || getCache(this.options);
+    this._cache = this._cache ?? getCache(this.options);
     return this._cache;
   }
 
-  getExpressMiddleware(getUrl = expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`) {
+  getExpressMiddleware(getUrl = (expressReq: Request) => `http://127.0.0.1:80${expressReq.url}`) {
     return require('./middleware')(getUrl).bind(this);
   }
 
-  addUserAgent(userAgent) {
+  addUserAgent(userAgent: string) {
     this._uas.push(new RegExp(userAgent));
   }
 
-  setPuppeteerOption(name, value) {
-    this._poptions = this._poptions || {};
+  setPuppeteerOption(name: string, value: string) {
+    this._poptions = this._poptions ?? {};
     this._poptions[name] = value;
   }
 
@@ -53,16 +62,16 @@ class SifrrSeo {
     return this.renderer.close();
   }
 
-  shouldRender(url, headers) {
+  shouldRender(url: string, headers: Record<string, string>) {
     return this._isUserAgent(headers);
   }
 
-  setShouldRenderCache(url, headers, val) {
+  setShouldRenderCache(url: string, headers: Record<string, string>, val: boolean) {
     const key = this.options.cacheKey(url, headers);
     this.shouldRenderCache[key] = val;
   }
 
-  getShouldRenderCache(url, headers) {
+  getShouldRenderCache(url: string, headers: Record<string, string>) {
     const key = this.options.cacheKey(url, headers);
     if (this.shouldRenderCache[key] === undefined) return null;
     return this.shouldRenderCache[key];
@@ -72,7 +81,7 @@ class SifrrSeo {
     this.cache.reset();
   }
 
-  async render(url, headers) {
+  async render(url, headers: Record<string, string>) {
     if (this.getShouldRenderCache(url, headers) === false) {
       throw Error(`No Render`);
     } else if (this.shouldRender(url, headers) && !this._isHeadless(headers)) {
@@ -85,12 +94,12 @@ class SifrrSeo {
           } else if (!val) {
             this.renderer
               .render(url, headers)
-              .then(resp => {
+              .then((resp) => {
                 this.cache.set(key, resp);
                 res(resp);
               })
               .catch(
-                /* istanbul ignore next */ err => {
+                /* istanbul ignore next */ (err) => {
                   rej(err);
                 }
               );
@@ -104,14 +113,14 @@ class SifrrSeo {
     }
   }
 
-  _isHeadless(headers = {}) {
-    return !!isHeadless.test(headers['user-agent']);
+  _isHeadless(headers: Record<string, string> = {}) {
+    return !!isHeadless.test(headers['user-agent'] ?? '');
   }
 
-  _isUserAgent(headers = {}) {
-    const ua = headers['user-agent'];
+  _isUserAgent(headers: Record<string, string> = {}) {
+    const ua = headers['user-agent'] ?? '';
     let ret = false;
-    this._uas.forEach(b => {
+    this._uas.forEach((b) => {
       if (b.test(ua)) ret = true;
     });
     return ret;
@@ -120,4 +129,4 @@ class SifrrSeo {
 
 SifrrSeo.Renderer = Renderer;
 
-module.exports = SifrrSeo;
+export default SifrrSeo;

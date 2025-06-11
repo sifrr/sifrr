@@ -19,7 +19,8 @@
     "dev": "turbo dev",
     "test:e2e": "turbo test:e2e",
     "prepare": "husky",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "yarn playwright install"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 # sifrr-ssr · [![npm version](https://img.shields.io/npm/v/@sifrr/ssr.svg)](https://www.npmjs.com/package/@sifrr/ssr) [![Doscify](https://img.shields.io/badge/API%20docs-Docsify-red.svg)](https://sifrr.github.io/sifrr/#/./packages/server/sifrr-ssr/)
 
-Server Side Pre-Redering for any js based app using puppeteer (headless chrome) with caching. Mainly focused on serving rendered content to crawlers/bots.
+Server Side Pre-Redering for any js based app using puppeteer (headless chrome) with caching.
 
 ## Features
 
@@ -169,12 +169,12 @@ async function renderUrls(
   urls = [
     /* array of urls */
   ],
-  path = url => url
+  path = (url) => url
 ) {
   for (let i = 0; i < urls.length; i++) {
     const html = await seo.render(urls[i]);
     await new Promise((res, rej) =>
-      fs.writeFile(path(urls[i]), html, err => {
+      fs.writeFile(path(urls[i]), html, (err) => {
         if (err) rej(err);
         res('The file has been saved!');
       })
@@ -183,7 +183,7 @@ async function renderUrls(
   await seo.close();
 }
 
-renderUrls(['http://localhost:8080/abcd', 'http://localhost:8080/whatever'], u =>
+renderUrls(['http://localhost:8080/abcd', 'http://localhost:8080/whatever'], (u) =>
   joinPath(__dirname, '.' + u.slice(21))
 );
 ```

@@ -1,8 +1,8 @@
-const { headerName, headerValue } = require('./constants');
+import { headerName, headerValue } from './constants';
 
 // this = sifrr seo instance
-module.exports = getUrl => {
-  return function(req, res, next) {
+export default (getUrl) => {
+  return function (req, res, next) {
     // Don't render other requests than GET
     if (req.method !== 'GET') return next();
 
@@ -25,7 +25,7 @@ module.exports = getUrl => {
     }
 
     return this.render(url, headers)
-      .then(html => {
+      .then((html) => {
         if (html) {
           res.set(headerName, headerValue);
           res.send(html);
@@ -33,7 +33,7 @@ module.exports = getUrl => {
           next();
         }
       })
-      .catch(e => {
+      .catch((e) => {
         if (e.message === 'No Render') {
           next();
         } else next(e);

@@ -9,7 +9,7 @@ const all = (prefix: string) => {
     ans: SavedDataObject = {};
   result.split('; ').forEach((value) => {
     const [k, v] = value.split('=');
-    if (k?.indexOf(prefix) === 0) {
+    if (k?.startsWith(prefix)) {
       const parsed = parse(v?.replace(equalRegex, '='));
       if (typeof parsed === 'undefined') return;
       ans[k.substring(prefix.length)] = parsed;

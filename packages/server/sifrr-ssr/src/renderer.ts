@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
-const PageRequest = require('./pagerequest');
+import puppeteer from 'puppeteer';
+import PageRequest from './pagerequest';
 // status
 // 0: closed
 // 1: launching
@@ -7,6 +7,11 @@ const PageRequest = require('./pagerequest');
 
 const prohibitedHeaders = ['user-agent', 'host'];
 class Renderer {
+  status: number;
+  puppeteerOptions: { headless: boolean; args: never[] };
+  options: {};
+  _browser: any;
+
   constructor(puppeteerOptions = {}, options = {}) {
     this.status = 0;
     this.puppeteerOptions = Object.assign(
@@ -22,7 +27,7 @@ class Renderer {
 
   async browserAsync() {
     if (!this._browser) {
-      this._browser = puppeteer.launch(this.puppeteerOptions).then(b => {
+      this._browser = puppeteer.launch(this.puppeteerOptions).then((b) => {
         b.on('disconnected', () => {
           /* istanbul ignore next */
           this._browser = null;
@@ -34,7 +39,7 @@ class Renderer {
   }
 
   close() {
-    if (this._browser) return this.browserAsync().then(b => b.close());
+    if (this._browser) return this.browserAsync().then((b) => b.close());
     else return Promise.resolve(true);
   }
 
@@ -42,12 +47,12 @@ class Renderer {
     const me = this;
 
     return this.browserAsync()
-      .then(b => b.newPage())
-      .then(async newp => {
+      .then((b) => b.newPage())
+      .then(async (newp) => {
         const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
         await fetches.addListener;
 
-        prohibitedHeaders.forEach(h => delete headers[h]);
+        prohibitedHeaders.forEach((h) => delete headers[h]);
 
         await newp.setExtraHTTPHeaders(headers);
         if (me.options.beforeRender) {
@@ -80,4 +85,4 @@ class Renderer {
   }
 }
 
-module.exports = Renderer;
+export default Renderer;

@@ -25,7 +25,7 @@
     "test-server": "yarn test -s"
   },
   "dependencies": {
-    "cache-manager": "^2.10.1",
+    "keyv": "^5.3.4",
     "puppeteer": "^2.0.0"
   },
   "peerDependencies": {},
