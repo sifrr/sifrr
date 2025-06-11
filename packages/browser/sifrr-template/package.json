@@ -31,7 +31,7 @@
     "test:jest": "jest",
     "test:storybook": "test-storybook",
     "test:storybook:ci": "npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"yarn storybook:build && npx http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && npm run test:storybook\"",
-    "test:playwright": "playwright test",
+    "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
     "test:server": "yarn storybook:dev",

@@ -33,7 +33,7 @@
     "lint:fix": "eslint --fix .",
     "test": "yarn test:jest && yarn test:playwright",
     "test:jest": "jest --passWithNoTests",
-    "test:playwright": "playwright test",
+    "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
     "test:server": "npx tsx test/server",

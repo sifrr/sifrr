@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   tag-release:
-    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') }}
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') && github.event.sender.id == 'aadityataparia' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -133,7 +133,7 @@ jobs:
           sha: ${{ steps.comment-based.outputs.sha }}
 
   update-visual-snapshots:
-    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/update-visual-snapshots') }}
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/release') && github.event.sender.id == 'aadityataparia' }}
     runs-on: ubuntu-latest
 
     steps:
