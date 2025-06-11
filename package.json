@@ -20,7 +20,7 @@
     "test:e2e": "turbo test:e2e",
     "prepare": "husky",
     "format": "prettier --write .",
-    "postinstall": "yarn playwright install"
+    "postinstall": "yarn playwright install --with-deps"
   },
   "repository": {
     "type": "git",
@@ -55,6 +55,7 @@
     "@sifrr/eslint-config": "*",
     "@sifrr/typescript-config": "*",
     "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
     "prettier": "^3.5.3",
     "turbo": "^2.5.3"
   }
