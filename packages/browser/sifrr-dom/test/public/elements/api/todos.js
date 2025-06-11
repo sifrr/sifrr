@@ -36,7 +36,7 @@ class ApiTodo extends Sifrr.Dom.Element {
       })}
       <div class="${({ loading }) => (loading ? 'loading' : 'loaded')}">
         <p>
-          <span><input type="checkbox" :checked="${({ completed }) => completed}"/></span
+          <span><input type="checkbox" :checked="${({ completed }) => completed}" /></span
           ><span>${({ dataId }) => `${dataId} `}</span>${({ dataTitle }) => dataTitle}
         </p>
       </div>
@@ -82,7 +82,7 @@ class ApiTodos extends Sifrr.Dom.Element {
   }
   onConnect() {
     this.setState({ loading: true });
-    Sifrr.Fetch.get('https://jsonplaceholder.typicode.com/todos').then(todos =>
+    Sifrr.Fetch.get('https://jsonplaceholder.typicode.com/todos').then((todos) =>
       this.setState({ todos, loading: false })
     );
   }

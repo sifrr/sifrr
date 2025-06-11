@@ -30,11 +30,7 @@ import { html } from '@sifrr/template'; // es module
 const { html } = Sifrr.Template; // if distribution files are used directly
 
 // define a Component
-const MainTemplate = html`
-  <div>
-    ${({ name }) => name}
-  </div>
-`;
+const MainTemplate = html` <div>${({ name }) => name}</div> `;
 
 // create a instance
 const mainTemplateInstance = MainTemplate({ name: 'Aaditya' }); // returns `Node[]`
@@ -100,9 +96,7 @@ html`
 #### 2. Attribute bindings
 
 ```js
-html`
-  <div name=${({ name }) => name}></div>
-`; // async functions work here as well
+html` <div name=${({ name }) => name}></div> `; // async functions work here as well
 ```
 
 Attribute name on div will have value = `name` from props passed
@@ -114,9 +108,7 @@ Attribute name on div will have value = `name` from props passed
 return value of binding function is used
 
 ```js
-html`
-  <div id="divElement" :name=${({ name }) => name}></div>
-`; // async functions work here as well
+html` <div id="divElement" :name=${({ name }) => name}></div> `; // async functions work here as well
 
 // now
 document.querySelector('#divElement').name === props.name;
@@ -134,7 +126,7 @@ html`
   <div
     id="divElement"
     ::style=${{ padding: '10px' }}
-    ::onclick=${event => console.log(event.target)}
+    ::onclick=${(event) => console.log(event.target)}
   ></div>
 `;
 ```
@@ -264,7 +256,7 @@ const Row = html`
 // un-optimized
 const Table = html`
   <table>
-    ${({ data = [] }, oldValue) => data.map(d => Row(d))}
+    ${({ data = [] }, oldValue) => data.map((d) => Row(d))}
   </table>
 `;
 
@@ -379,7 +371,7 @@ html`
 html`
   <div
     :style=${memo(
-      props => {
+      (props) => {
         display: props.visible ? 'block' : 'none';
       },
       ['visible']
@@ -391,10 +383,10 @@ html`
 html`
   <div
     :style=${memo(
-      props => {
+      (props) => {
         display: props.visible ? 'block' : 'none';
       },
-      props => props.visible // key function, binding will be recalculated if cache key given by this function changes
+      (props) => props.visible // key function, binding will be recalculated if cache key given by this function changes
     )}
   ></div>
 `;
@@ -408,12 +400,12 @@ if any node has `onPropChange` property, it will be called with `(propName, oldV
 html`
   <div
     :style=${memo(
-      props => {
+      (props) => {
         display: props.visible ? 'block' : 'none';
       },
-      props => props.visible
+      (props) => props.visible
     )}
-    :onclick=${memo(props => props.onDivClick, ['onDivClick'])}
+    :onclick=${memo((props) => props.onDivClick, ['onDivClick'])}
     ::on-prop-change=${console.log}
   ></div>
 `; // console.log will be called whenever style prop changes
@@ -424,9 +416,7 @@ html`
 You can wrap a Component like this to create new component, just pass oldValue with props as well
 
 ```js
-const ComponentA = html`
-  ${({ name }) => name}
-`;
+const ComponentA = html` ${({ name }) => name} `;
 
 // suspense like component, can be used directly in bindings easily
 const ComponentB = async ({ userId }, oldValue) => {
@@ -440,12 +430,10 @@ const ComponentB = async ({ userId }, oldValue) => {
 ```js
 // from above example
 // append yourself
-ComponentB({ userId: 1 }).then(els => document.body.append(...els));
+ComponentB({ userId: 1 }).then((els) => document.body.append(...els));
 
 // use in bindings
-html`
-  Name: ${({ user }, oldValue) => ComponentB({ userId: user.id }, oldValue)}
-`;
+html` Name: ${({ user }, oldValue) => ComponentB({ userId: user.id }, oldValue)} `;
 ```
 
 #### Stores
@@ -497,15 +485,11 @@ Note that classname will be applied to all components so should be used with tha
 // bad
 function some({ name }) {
   // do something
-  return html`
-    <p></p>
-  `({});
+  return html` <p></p> `({});
 }
 
 // good
-const HTML = html`
-  <p></p>
-`;
+const HTML = html` <p></p> `;
 function some({ name }) {
   // do something
   return HTML({});
@@ -525,15 +509,11 @@ loading ? <Loader /> : <SomeComponent />;
 
 // in sifrr you would do
 // recreates component on every change in loading
-html`
-  ${({ loading }) => (loading ? Loader() : SomeComponent())}
-`;
+html` ${({ loading }) => (loading ? Loader() : SomeComponent())} `;
 
 // and for max performance
 // reuses old component if available on change in loading
-html`
-  ${memo(({ loading }) => (loading ? Loader() : SomeComponent()), ['loading'])}
-`;
+html` ${memo(({ loading }) => (loading ? Loader() : SomeComponent()), ['loading'])} `;
 
 // don't memo for simple bindings which are fast already eg. `${({ text }) => text}`
 ```
@@ -566,7 +546,5 @@ html`
 ```js
 let i = 0;
 
-html`
-  ${() => i++}
-`; // renders i and increases i on every update
+html` ${() => i++} `; // renders i and increases i on every update
 ```

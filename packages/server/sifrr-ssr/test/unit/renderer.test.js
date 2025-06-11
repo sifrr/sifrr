@@ -56,7 +56,7 @@ describe('Renderer', () => {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       },
       {
-        cacheKey: url => url
+        cacheKey: (url) => url
       }
     );
     r.isHTML = () => false;

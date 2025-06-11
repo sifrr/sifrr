@@ -24,7 +24,7 @@ describe('Sifrr.Dom.Element', () => {
   });
 
   it("doesn't add shadowRoot to empty element", async () => {
-    const res = await page.$eval('element-empty', el => {
+    const res = await page.$eval('element-empty', (el) => {
       return {
         isSifrr: el.isSifrr(),
         shadowRoot: !!el.shadowRoot
@@ -81,24 +81,24 @@ describe('Sifrr.Dom.Element', () => {
 
   describe('states', () => {
     it('works without defaultState and has comment for empty place', async () => {
-      const srhtml = await page.$eval('element-nods-sr', el => el.shadowRoot.innerHTML);
-      const nosrhtml = await page.$eval('element-nods-nosr', el => el.innerHTML);
+      const srhtml = await page.$eval('element-nods-sr', (el) => el.shadowRoot.innerHTML);
+      const nosrhtml = await page.$eval('element-nods-nosr', (el) => el.innerHTML);
 
       assert.equal(srhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
       assert.equal(nosrhtml, '<p>Sifrr <!--Sifrr Reference Comment. Do not delete.--> Simple</p>');
     });
 
     it('works with defaultState', async () => {
-      const srhtml = await page.$eval('element-ds-sr', el => el.shadowRoot.innerHTML);
-      const nosrhtml = await page.$eval('element-ds-nosr', el => el.innerHTML);
+      const srhtml = await page.$eval('element-ds-sr', (el) => el.shadowRoot.innerHTML);
+      const nosrhtml = await page.$eval('element-ds-nosr', (el) => el.innerHTML);
 
       assert.equal(srhtml, '<p>Sifrr ok Simple</p>');
       assert.equal(nosrhtml, '<p>Sifrr ok Simple</p>');
     });
 
     it('works with programmatic state', async () => {
-      const srhtml = await page.$eval('element-ps-sr', el => el.shadowRoot.innerHTML);
-      const nosrhtml = await page.$eval('element-ps-nosr', el => el.innerHTML);
+      const srhtml = await page.$eval('element-ps-sr', (el) => el.shadowRoot.innerHTML);
+      const nosrhtml = await page.$eval('element-ps-nosr', (el) => el.innerHTML);
 
       assert.equal(srhtml, '<p>Sifrr ps Simple</p>');
       assert.equal(nosrhtml, '<p>Sifrr ps Simple</p>');
@@ -109,7 +109,7 @@ describe('Sifrr.Dom.Element', () => {
         const types = ['element-nods', 'element-ds', 'element-ps'],
           result = {};
 
-        types.forEach(t => {
+        types.forEach((t) => {
           result[t + '-sr'] = document.querySelector(t + '-sr').updateCount;
           result[t + '-nosr'] = document.querySelector(t + '-nosr').updateCount;
         });

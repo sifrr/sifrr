@@ -1,6 +1,6 @@
 async function isActive(selector) {
   await page.waitForSelector(selector);
-  return await page.$eval(selector, async el => (await el.loaded) && el.renderIf);
+  return await page.$eval(selector, async (el) => (await el.loaded) && el.renderIf);
 }
 
 describe('sifrr-route', () => {
@@ -20,7 +20,7 @@ describe('sifrr-route', () => {
   });
 
   it('makes el active on refresh if regex test is true', async () => {
-    await page.$eval('#test', el => {
+    await page.$eval('#test', (el) => {
       el.routeRegex.testRoute = () => {
         return { match: true };
       };
@@ -29,7 +29,7 @@ describe('sifrr-route', () => {
 
     expect(await isActive('#test')).to.be.true;
 
-    await page.$eval('#test', el => {
+    await page.$eval('#test', (el) => {
       el.routeRegex.testRoute = () => {
         return { match: false };
       };
@@ -45,33 +45,33 @@ describe('sifrr-route', () => {
   });
 
   it("refreshes once when a link is click and doesn't if somewhere else is click", async () => {
-    await page.$eval('#test', el => {
+    await page.$eval('#test', (el) => {
       el.i = 0;
       el.refresh = () => el.i++;
     });
     await page.click('a[href="/efgh"]');
     await page.click('h1');
 
-    assert.equal(await page.$eval('#test', el => el.i), 1);
+    assert.equal(await page.$eval('#test', (el) => el.i), 1);
   });
 
   it("doesn't refresh if same link is clicked", async () => {
     await page.click('a[href="/abcd"]');
-    await page.$eval('#test', el => {
+    await page.$eval('#test', (el) => {
       el.i = 0;
       el.refresh = () => (el.i = el.i + 1);
     });
     await page.click('a[href="/abcd"]');
 
-    assert.equal(await page.$eval('#test', el => el.i), 0);
+    assert.equal(await page.$eval('#test', (el) => el.i), 0);
 
     await page.click('a[href="/abcd?query=random"]');
 
-    assert.equal(await page.$eval('#test', el => el.i), 0);
+    assert.equal(await page.$eval('#test', (el) => el.i), 0);
 
     await page.click('a[href="/abcd#hash_random"]');
 
-    assert.equal(await page.$eval('#test', el => el.i), 0);
+    assert.equal(await page.$eval('#test', (el) => el.i), 0);
   });
 
   it('refreshes once when path is changed', async () => {
@@ -79,7 +79,7 @@ describe('sifrr-route', () => {
 
     expect(await isActive('#test')).to.be.true;
 
-    await page.$eval('#test', el => el.setProp('path', '/abcd'));
+    await page.$eval('#test', (el) => el.setProp('path', '/abcd'));
 
     expect(await isActive('#test')).to.be.false;
   });
@@ -95,41 +95,41 @@ describe('sifrr-route', () => {
   });
 
   it("doesn't reload when clicked on a link without target", async () => {
-    await page.$eval('#complexlink', el => (el.i = 1));
+    await page.$eval('#complexlink', (el) => (el.i = 1));
     await page.click('a[href="/abcd"]');
 
     expect(page.url()).to.equal(`${PATH}/abcd`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.equal(1);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.equal(1);
   });
 
   it('reloads when clicked on a link with target not equal to _self', async () => {
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => (el.i = 2));
+    await page.$eval('#complexlink', (el) => (el.i = 2));
     await page.click('a[target="_self"]');
 
     expect(page.url()).to.equal(`${PATH}/target`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.equal(2);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.equal(2);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => (el.i = 3));
+    await page.$eval('#complexlink', (el) => (el.i = 3));
     await page.click('a[target="_blank"]');
 
     expect(page.url()).to.not.equal(`${PATH}/target`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.equal(3);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.equal(3);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => (el.i = 4));
+    await page.$eval('#complexlink', (el) => (el.i = 4));
     await page.click('a[target="_top"]');
 
     expect(page.url()).to.equal(`${PATH}/target`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(4);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.not.equal(4);
 
     await page.goto(`${PATH}/`);
-    await page.$eval('#complexlink', el => (el.i = 5));
+    await page.$eval('#complexlink', (el) => (el.i = 5));
     await Promise.all([page.waitForNavigation(), page.click('a[target="_parent"]')]);
 
     expect(page.url()).to.equal(`${PATH}/target`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.not.equal(5);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.not.equal(5);
   });
 
   it.only('reloads when clicked on a link with target has different host', async () => {
@@ -177,16 +177,16 @@ describe('sifrr-route', () => {
   it("doesn't reload when clicking back/forward", async () => {
     await page.goto(`${PATH}/`);
     await page.click('a[href="/abcd"]');
-    await page.$eval('#complexlink', el => (el.i = 11));
+    await page.$eval('#complexlink', (el) => (el.i = 11));
     await page.goBack();
 
     expect(page.url()).to.equal(`${PATH}/`);
-    expect(await page.$eval('#complexlink', el => el.i)).to.equal(11);
+    expect(await page.$eval('#complexlink', (el) => el.i)).to.equal(11);
   });
 
   it('parses state from url', async () => {
     await page.click('#complexlink');
-    const state = await page.$eval('#complex', el => el.state);
+    const state = await page.$eval('#complex', (el) => el.state);
 
     expect(state).to.deep.equal({
       x: 'new',
@@ -198,8 +198,8 @@ describe('sifrr-route', () => {
 
   it('passes state to data-sifrr-route-state=true', async () => {
     await page.click('#complexlink');
-    const routeState = await page.$eval('#complex', el => el.state);
-    const childState = await page.$eval('#complex sifrr-test', el => el.state);
+    const routeState = await page.$eval('#complex', (el) => el.state);
+    const childState = await page.$eval('#complex sifrr-test', (el) => el.state);
 
     expect(childState.route).to.deep.equal(routeState);
   });

@@ -1,4 +1,4 @@
-describe('websocket fallback', function() {
+describe('websocket fallback', function () {
   before(async () => {
     await page.goto(`${PATH}/index.html`, { waitUntil: 'networkidle0' });
   });
@@ -17,8 +17,8 @@ describe('websocket fallback', function() {
       const sock = new Sifrr.Fetch.Socket(`ws://localhost:0909/`);
       return await sock
         .send({ ok: true })
-        .catch(e => e.message)
-        .then(m => m);
+        .catch((e) => e.message)
+        .then((m) => m);
     });
 
     expect(message).to.equal('No fallback provided for websocket failure.');
@@ -28,7 +28,7 @@ describe('websocket fallback', function() {
 let wsserver;
 const wsport = 7700;
 
-describe('websockets', function() {
+describe('websockets', function () {
   this.timeout(0);
 
   before(async () => {
@@ -42,11 +42,11 @@ describe('websockets', function() {
   });
 
   it('connections to ws', async () => {
-    const state = await page.evaluate(async port => {
+    const state = await page.evaluate(async (port) => {
       const sock = new Sifrr.Fetch.Socket(`ws://localhost:${port}/`);
       return await sock
         ._openSocket()
-        .then(ws => !!ws)
+        .then((ws) => !!ws)
         .catch(() => false);
     }, wsport);
 
@@ -54,7 +54,7 @@ describe('websockets', function() {
   });
 
   it('gets back the data', async () => {
-    const message = await page.evaluate(async port => {
+    const message = await page.evaluate(async (port) => {
       const sock = new Sifrr.Fetch.Socket(`ws://localhost:${port}/`);
       return await sock.send({ ok: true });
     }, wsport);
@@ -63,7 +63,7 @@ describe('websockets', function() {
   });
 
   it('gets back correct data', async () => {
-    const message = await page.evaluate(async port => {
+    const message = await page.evaluate(async (port) => {
       const sock = new Sifrr.Fetch.Socket(`ws://localhost:${port}/`);
       return {
         ok: await sock.send({ ok: true }),
@@ -122,7 +122,7 @@ describe('websockets', function() {
         }
         `
         },
-        d => data.push(d)
+        (d) => data.push(d)
       );
       const get = {
         query: `query($id: String) {
@@ -136,15 +136,15 @@ describe('websockets', function() {
       };
       await sock.graphql(get);
       await sock.graphql(get);
-      await new Promise(res => setTimeout(res, 100));
+      await new Promise((res) => setTimeout(res, 100));
       await sock.unsubscribe(id);
       await sock.graphql(get);
-      await new Promise(res => setTimeout(res, 100));
+      await new Promise((res) => setTimeout(res, 100));
       return data;
     });
 
     expect(res.length).to.equal(2);
-    res.forEach(d => {
+    res.forEach((d) => {
       expect(d).to.deep.equal({ data: { user: { id: 'a', name: 'alice' } } });
     });
   });

@@ -31,7 +31,7 @@ const server = express();
 // Show total request time
 if (global.ENV === 'development') {
   let time;
-  server.use(function(req, res, next) {
+  server.use(function (req, res, next) {
     time = Date.now();
     function afterResponse() {
       res.removeListener('finish', afterResponse);
@@ -57,7 +57,7 @@ server.use(serveStatic(path.join(baseDir, './browser/sifrr-dom/dist')));
 process.stdout.write('Serving sifrr-dom and sifrr-template \n');
 
 // export server for importing
-server.use(seo.getExpressMiddleware(expressReq => `${PATH}${expressReq.originalUrl}`));
+server.use(seo.getExpressMiddleware((expressReq) => `${PATH}${expressReq.originalUrl}`));
 server.get('/xuser', (req, res) => {
   res.set('content-type', 'text/html');
   res.send(`
@@ -86,7 +86,7 @@ server.use((req, res) => res.sendFile(path.join(__dirname, './index.html')));
 let ss;
 
 module.exports = {
-  listen: port => (ss = server.listen(port)),
+  listen: (port) => (ss = server.listen(port)),
   close: () => {
     ss && ss.close();
     seo.close();

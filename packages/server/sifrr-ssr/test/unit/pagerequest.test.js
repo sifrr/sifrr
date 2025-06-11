@@ -1,5 +1,5 @@
 const PageRequest = require('../../src/pagerequest');
-const request = url => {
+const request = (url) => {
   return {
     resourceType: () => 'document',
     url: () => url,
@@ -7,12 +7,12 @@ const request = url => {
     abort: () => {}
   };
 };
-const ee = new (require('events')).EventEmitter.EventEmitter();
+const ee = new (require('events').EventEmitter.EventEmitter)();
 ee.setRequestInterception = () => Promise.resolve(true);
 
 describe('PageRequest', () => {
   it('filters request if function is given', async () => {
-    const pr = new PageRequest(ee, url => url.indexOf('sifrr') > -1);
+    const pr = new PageRequest(ee, (url) => url.indexOf('sifrr') > -1);
     await pr.addListener;
 
     const randomReq = request('/random'),

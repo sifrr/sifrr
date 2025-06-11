@@ -4,7 +4,7 @@ async function getListeners(type = '') {
     await client.send('DOMDebugger.getEventListeners', {
       objectId: documentId
     })
-  ).listeners.filter(l => l.type.indexOf(type) >= 0);
+  ).listeners.filter((l) => l.type.indexOf(type) >= 0);
 }
 
 describe('Sifrr.Dom.Event', () => {
@@ -34,7 +34,7 @@ describe('Sifrr.Dom.Event', () => {
   });
 
   it('works with _event properties', async () => {
-    const ret = await page.$eval('a', el => {
+    const ret = await page.$eval('a', (el) => {
       let i = 0,
         sameEl = false;
       el._click = (e, target) => {
@@ -50,7 +50,7 @@ describe('Sifrr.Dom.Event', () => {
   });
 
   it('works with _event attribute', async () => {
-    const ret = await page.$eval('a', el => {
+    const ret = await page.$eval('a', (el) => {
       el._click = undefined;
       let i = 0,
         sameEl,

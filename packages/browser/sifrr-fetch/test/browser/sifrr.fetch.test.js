@@ -54,8 +54,8 @@ describe('sifrr-fetch', () => {
       (type, url, options, text) => {
         if (typeof Sifrr === 'undefined') return Sifrr;
         const ret = Sifrr.Fetch[type](url, options);
-        if (text) return ret.then(resp => resp.text());
-        else return ret.catch(e => e.message);
+        if (text) return ret.then((resp) => resp.text());
+        else return ret.catch((e) => e.message);
       },
       type,
       url,
@@ -127,7 +127,7 @@ describe('sifrr-fetch', () => {
 
   it('progress works for files', async () => {
     const resp = await page.evaluate(async () => {
-      return await new Promise(res => {
+      return await new Promise((res) => {
         Sifrr.Fetch.get('/image.jpg', {
           onProgress: ({ percent }) => res(percent)
         });
@@ -139,7 +139,7 @@ describe('sifrr-fetch', () => {
 
   it('progress works for json', async () => {
     const resp2 = await page.evaluate(async () => {
-      return await new Promise(res => {
+      return await new Promise((res) => {
         Sifrr.Fetch.get('/progress.json', {
           onProgress: ({ percent }) => res(percent)
         });
@@ -151,7 +151,7 @@ describe('sifrr-fetch', () => {
 
   it.skip('progresses to 100, total 0 without content-length', async () => {
     const resp2 = await page.evaluate(async () => {
-      return await new Promise(res => {
+      return await new Promise((res) => {
         Sifrr.Fetch.get('/nocl.json', {
           onProgress: ({ percent, total }) => res({ percent, total })
         });
@@ -164,7 +164,7 @@ describe('sifrr-fetch', () => {
 
   it('progresses to 100 when response not okay', async () => {
     const resp2 = await page.evaluate(async () => {
-      return await new Promise(res => {
+      return await new Promise((res) => {
         Sifrr.Fetch.get('/404', {
           onProgress: ({ percent }) => res(percent)
         });
@@ -183,7 +183,7 @@ describe('sifrr-fetch', () => {
           return { url, options, method };
         },
         use: () => ({ a: 'hijack part 2' }),
-        after: resp => {
+        after: (resp) => {
           resp.b = 'hijack part 3';
           return resp;
         }
@@ -201,7 +201,7 @@ describe('sifrr-fetch', () => {
         use: () => {
           throw Error('bang');
         },
-        after: resp => {
+        after: (resp) => {
           resp.b = 'hijack part 3';
           return resp;
         }
@@ -211,8 +211,8 @@ describe('sifrr-fetch', () => {
   });
 
   it('times out after timeout', async () => {
-    const error = await page.evaluate(async path => {
-      return await Sifrr.Fetch.get(`${path}/timeout`, { timeout: 100 }).catch(err => err.message);
+    const error = await page.evaluate(async (path) => {
+      return await Sifrr.Fetch.get(`${path}/timeout`, { timeout: 100 }).catch((err) => err.message);
     }, PATH);
 
     expect(error).to.equal('timeout');

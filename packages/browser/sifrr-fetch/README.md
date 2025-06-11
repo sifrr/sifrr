@@ -88,6 +88,7 @@ const { Socket } = require('@sifrr/fetch');
 ### Response
 
 response returned by api calls contains
+
 - **status** - status code of response
 - **response** - original response instance from fetch api
 - **data** - if response has `content-type: application/json` header, it is data received from `resp.json()`
@@ -101,18 +102,18 @@ you can add query parameters to get request options.
 options.query = { key: 'value' };
 Sifrr.Fetch.sFetch.get(url, options)
   .then({ data, status, response, ok } => {
-    
+
   })
   .catch(e => {
     // handle any network error
-    // Note that promise doesn;t 
+    // Note that promise doesn;t
   });
 ```
 
 #### PUT request
 
 ```js
-Sifrr.Fetch.sFetch.put(url, body, options).then(response => {
+Sifrr.Fetch.sFetch.put(url, body, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -127,7 +128,7 @@ options.body = { key: 'value' };
 options.headers = {
   'content-type': 'aaplication/json'
 };
-Sifrr.Fetch.sFetch.post(url, options).then(response => {
+Sifrr.Fetch.sFetch.post(url, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -136,7 +137,7 @@ Sifrr.Fetch.sFetch.post(url, options).then(response => {
 #### DELETE request
 
 ```js
-Sifrr.Fetch.sFetch.delete(url, options).then(response => {
+Sifrr.Fetch.sFetch.delete(url, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -148,9 +149,9 @@ Sifrr.Fetch.sFetch.delete(url, options).then(response => {
 const storage = new Sifrr.Storage();
 function cacheOrGet(url) {
   Sifrr.Fetch.sFetch.get(url, {
-    use: url =>
-      storage.get(url).then(v => (typeof v[url] === 'undefined' ? throw 'Not found' : v[url])),
-    after: response => {
+    use: (url) =>
+      storage.get(url).then((v) => (typeof v[url] === 'undefined' ? throw 'Not found' : v[url])),
+    after: (response) => {
       storage.set(url, response);
       return response;
     }
@@ -222,10 +223,10 @@ socket.fetch(message [, type, timeout]).then(resp => {
 
 ```js
 // same as websocket's hooks
-socket.onmessage = event => {};
+socket.onmessage = (event) => {};
 socker.onopen = () => {};
 socker.onclose = () => {};
-socker.onerror = e => {};
+socker.onerror = (e) => {};
 // called when websocket is reconnecting automatically on failure
 socker.onretry = (attemp, interval) => {};
 ```

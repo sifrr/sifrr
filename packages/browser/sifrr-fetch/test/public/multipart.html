@@ -1,26 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title></title>
   </head>
   <body>
     <h1>OK</h1>
-    <form name=form"" id="form">
-      <input type="text" name="name" value="Aaditya">
-      <input type="file" name="file" accept="image/png, image/jpeg" required>
-      <input type="file" name="file2" accept="*/*" multiple>
+    <form name="form" id="form">
+      <input type="text" name="name" value="Aaditya" />
+      <input type="file" name="file" accept="image/png, image/jpeg" required />
+      <input type="file" name="file2" accept="*/*" multiple />
       <button type="submit" name="submit">Submit</button>
     </form>
-    <pre id="response">
-    </pre>
+    <pre id="response"></pre>
     <script src="/index.iife.js" charset="utf-8"></script>
     <script type="text/javascript">
       const form = document.querySelector('#form');
       form.onsubmit = (e) => {
         e.preventDefault();
         const data = new FormData(form);
-        Sifrr.Fetch.sFetch.post('http://localhost:6006/form', data).then(resp => {
+        Sifrr.Fetch.sFetch.post('http://localhost:6006/form', data).then((resp) => {
           document.querySelector('#response').textContent = JSON.stringify(resp, null, 2);
         });
       };

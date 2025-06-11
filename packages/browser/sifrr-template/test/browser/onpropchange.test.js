@@ -13,7 +13,7 @@ describe('.onPropChange and .update', () => {
           i++} ::on-prop-change=${(name, oldValue, newValue) =>
           a.push({ name, oldValue, newValue })} ::update=${() => b++}></div>`;
         Temp({}, Temp({}));
-        await new Promise(res => setTimeout(res, 1));
+        await new Promise((res) => setTimeout(res, 1));
         return [a, b];
       }),
       [

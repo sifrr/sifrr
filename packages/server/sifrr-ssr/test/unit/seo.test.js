@@ -80,7 +80,7 @@ describe('SifrrSeo', () => {
       assert(seo.cache);
     });
 
-    it('cache expires after ttl', done => {
+    it('cache expires after ttl', (done) => {
       seo.cache.set('a', 'b');
       seo.cache.get('a', (err, res) => {
         assert.equal(res, 'b');

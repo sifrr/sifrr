@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head> </head>
   <body>
@@ -19,9 +19,9 @@
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script>
       Sifrr.Dom.setup({
-        url: name => `/elements/${name.split('-').join('/')}.js`
+        url: (name) => `/elements/${name.split('-').join('/')}.js`
       });
-      Sifrr.Dom.Element.prototype.onUpdate = function() {
+      Sifrr.Dom.Element.prototype.onUpdate = function () {
         this.updateCount = this.updateCount + 1 || 1;
       };
 

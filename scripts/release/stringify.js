@@ -23,12 +23,12 @@ const keys = [
 
 function sortObject(obj) {
   const ret = {};
-  keys.forEach(k => {
+  keys.forEach((k) => {
     if (obj[k]) ret[k] = obj[k];
   });
   return ret;
 }
 
-module.exports = obj => {
+module.exports = (obj) => {
   return JSON.stringify(sortObject(obj), null, 2);
 };

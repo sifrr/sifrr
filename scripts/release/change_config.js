@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const stringify = require('./stringify');
 
-module.exports = function(folder, isBrowser) {
+module.exports = function (folder, isBrowser) {
   const pkgFileString = '../.' + folder + '/package.json',
     pkgFile = require(pkgFileString);
   const pkgFolder = folder.split('/')[folder.split('/').length - 1];
@@ -57,7 +57,7 @@ module.exports = function(folder, isBrowser) {
   const rollupConfigFileString = '../.' + folder + '/rollup.config.js';
   const config = `const getConfig = require('../../../rollup.base');
 
-module.exports = getConfig('${jsFileName.replace(/(^|\.)(\S)/g, s =>
+module.exports = getConfig('${jsFileName.replace(/(^|\.)(\S)/g, (s) =>
     s.toUpperCase()
   )}', __dirname, ${isBrowser});
 `;
@@ -70,7 +70,7 @@ function orderedDependencies(dependencies) {
   const ordered = {};
   Object.keys(dependencies)
     .sort()
-    .forEach(function(key) {
+    .forEach(function (key) {
       ordered[key] = dependencies[key];
     });
 

@@ -5,7 +5,7 @@ const { loadDir, generateChangelog } = require('@sifrr/dev');
 
 loadDir({
   dir: path.resolve('./packages'),
-  onDir: dir => {
+  onDir: (dir) => {
     if (dir.match(/sifrr-[a-z]*/)) {
       generateChangelog({
         changelogFile: path.join(dir, './CHANGELOG.md'),

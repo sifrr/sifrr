@@ -58,7 +58,7 @@ import { IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore } from '@si
 const storage = new Storage({
   store: [IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore], // it will pick first supported store from list
   prefix: 'store1/'
-})
+});
 ```
 
 ## API
@@ -73,7 +73,7 @@ Sifrr.Storage uses Promises, but the api itself is similar to `Map` with some sm
 const storage = new Storage({
   store: [IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore], // it will pick first supported store from list
   prefix: 'store1/' // optional, default: '', save prefix storage will use set/get same values since storages are shared
-})
+});
 ```
 
 _Note_: If that type is not supported in the browser, then first supported storage will be selected based on priority order.
@@ -91,7 +91,7 @@ storage.set(key, value).then(() => {
 });
 
 // inserting with different ttl (30 seconds in example) than set in third param
-storage.set(key, value, 30 * 1000 ).then(() => {
+storage.set(key, value, 30 * 1000).then(() => {
   /* Do something here */
 });
 ```
@@ -102,12 +102,12 @@ storage.set(key, value, 30 * 1000 ).then(() => {
 
 ```js
 // get key-value
-storage.get('key').then(value => console.log(value)); // > { a: 'b' }
+storage.get('key').then((value) => console.log(value)); // > { a: 'b' }
 ```
 
 ### Deleting a key
 
-```js
+````js
 // delete key-value
 storage.delete('key').then(() => {
   /* Do something here */
@@ -121,14 +121,14 @@ storage.delete('key').then(() => {
 
 ```js
 storage.all().then(data => console.log(data)); // > { key: { a: 'b' }, a: 'b', c: { d: 'e' } }
-```
+````
 
 ### Clear table
 
 ```js
 storage.clear().then(() => {
   // checking if data is deleted
-  storage.all().then(data => console.log(data)); // > {}
+  storage.all().then((data) => console.log(data)); // > {}
 });
 ```
 

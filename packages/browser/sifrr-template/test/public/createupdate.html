@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head> </head>
   <body>
@@ -7,26 +7,18 @@
     <script type="text/javascript">
       var { html, update } = Sifrr.Template;
       /* eslint-disable */
-      var seText = html`
-        abcd
-      `()[0];
+      var seText = html` abcd `()[0];
 
-      var seTextState = html`
-        ${({ text }) => text}
-      `({ text: 'yay' })[0];
+      var seTextState = html` ${({ text }) => text} `({ text: 'yay' })[0];
 
-      var seBasic = html`
-        <div><p>abcd</p></div>
-      `()[0];
+      var seBasic = html` <div><p>abcd</p></div> `()[0];
 
       var seMultipleChild = html`
         <div></div>
         <p></p>
       `();
 
-      var seStateBase = html`
-        <p>${({ p }) => p}</p>
-      `({ p: 'default' })[0];
+      var seStateBase = html` <p>${({ p }) => p}</p> `({ p: 'default' })[0];
       var seState = seStateBase;
 
       var seExtra = html`
@@ -46,9 +38,9 @@
         </div>
       `()[0];
 
-      var seComment = html`
-        <p>ab<!-- ${({ comment }) => comment} -->cd</p>
-      `({ comment: 'comment' })[0];
+      var seComment = html` <p>ab<!-- ${({ comment }) => comment} -->cd</p> `({
+        comment: 'comment'
+      })[0];
     </script>
   </body>
 </html>

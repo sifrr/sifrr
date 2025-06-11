@@ -1,14 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
-  <head is="sifrr-head">
-  </head>
+  <head is="sifrr-head"> </head>
   <body>
     <style media="screen">
       *:not(:defined) * {
         display: none;
       }
       *:not(:defined)::before {
-        content: " ";
+        content: ' ';
         display: block !important;
         width: 46px;
         height: 46px;
@@ -29,19 +28,18 @@
     </style>
     <h1>OK</h1>
     <sifrr-test data-sifrr-state='{"a": "b"}'>
-      <p>asdjasjasf  asf saf as  </p>
-      <p>af df dsf df f sf </p>
+      <p>asdjasjasf asf saf as</p>
+      <p>af df dsf df f sf</p>
       sf sdfksdf nsjkf
     </sifrr-test>
-    <sifrr-test data-sifrr-state='{"data": []}'>
-    </sifrr-test>
+    <sifrr-test data-sifrr-state='{"data": []}'> </sifrr-test>
     <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
     <script src="/sifrr.dom.js" charset="utf-8"></script>
     <script type="module">
       import '/elements/sifrr/head.js';
     </script>
     <script>
-      var state = {a: 'b'};
+      var state = { a: 'b' };
       Sifrr.Dom.setup({
         useShadowRoot: true
       });

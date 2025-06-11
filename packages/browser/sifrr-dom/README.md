@@ -45,7 +45,6 @@ Add script tag in your website.
 | Shadow DOM v1                                        | <https://caniuse.com/#feat=shadowdomv1>       | <https://github.com/webcomponents/shadydom>        |
 | ES6 Modules (if you use type='module' on script tag) | <https://caniuse.com/#feat=es6-module>        | <https://github.com/ModuleLoader/es-module-loader> |
 
-
 If custom elements v1 API is supported by browsers, it is very likely that other APIs are supported as well.
 
 ### Using npm
@@ -83,8 +82,10 @@ class CustomTag extends Element {
           color: blue;
         }
       </style>
-      <p>${el => el.data()}</p>
-      <button @click=${el => () => el.context.count++}>Click to increase${el => el.context.count}</button>
+      <p>${(el) => el.data()}</p>
+      <button @click=${(el) => () => el.context.count++}>
+        Click to increase${(el) => el.context.count}
+      </button>
     `; // el is the element instance
   }
   // other methods for the custom element
@@ -94,16 +95,16 @@ class CustomTag extends Element {
   // can setup anything to be run before component is created
   // and return value will be used as context, context is a reactive object so element is re-rendered whenever any of it's properties changes
   setup() {
-    const count = 0
+    const count = 0;
     const deep = {
       a: 'reactive'
-    }
+    };
 
     // value returned is set as this.context
     return {
       count,
       deep
-    }
+    };
   }
 }
 Sifrr.Dom.register(CustomTag); // you should register in file itself to keep this file independently usable
@@ -186,8 +187,8 @@ class CustomTag extends Element {
           color: blue; // Only applies to p inside this element
         }
       </style>
-      <p>${el => el.state.number}</p>
-      <p attr=${el => el.state.attribute}>${el => el.state.number}</p>
+      <p>${(el) => el.state.number}</p>
+      <p attr=${(el) => el.state.attribute}>${(el) => el.state.number}</p>
     `; // el is the element instance
   }
 
@@ -196,7 +197,7 @@ class CustomTag extends Element {
     this.state = {
       number: 1,
       attribute: 'abcd'
-    }
+    };
   }
 }
 Sifrr.Dom.register(CustomTag);
@@ -240,7 +241,7 @@ class CustomTag {
   constructor() {
     super({
       useShadowRoot: false
-    })
+    });
   }
 }
 ```
@@ -251,15 +252,13 @@ You can define props for an element like this:
 
 ```ts
 class CustomCount extends Element {
-  // Note prop decorator is needed if you need to access property on first render, 
+  // Note prop decorator is needed if you need to access property on first render,
   // else browser removes props when element is connected
-  @Prop() 
-  count!: number
+  @Prop()
+  count!: number;
 
   static get template() {
-    return html`
-      <p>${el => el.count}</p>
-    `; // el is the element instance
+    return html` <p>${(el) => el.count}</p> `; // el is the element instance
   }
 
   constructor() {
@@ -351,19 +350,30 @@ customtag.$$(selector);
 #### Controlled inputs
 
 ```js
-import { memo } from '@sifrr/template'
-import { Element } from '@sifrr/dom'
+import { memo } from '@sifrr/template';
+import { Element } from '@sifrr/dom';
 
 class ControlledInputs extends Element {
-  static template = html`
-    <input :value="${el => el.context.input}" @input=${memo(el => evt => el.context.input = evt.target.value)} />
-    <select :value="${el => el.context.select}" @change=${memo(el => evt => el.context.select = evt.target.value)}>
+  static template = html` <input
+      :value="${(el) => el.context.input}"
+      @input=${memo((el) => (evt) => (el.context.input = evt.target.value))}
+    />
+    <select
+      :value="${(el) => el.context.select}"
+      @change=${memo((el) => (evt) => (el.context.select = evt.target.value))}
+    >
       <!-- options -->
     </select>
-    <textarea @input=${memo(el => evt => el.context.textarea = evt.target.value)} :value=${el => el.context.textarea}></textarea>
-    <div contenteditable @input=${memo(el => evt => el.context.elements = evt.target.textContent)}>
-      ${el => el.context.elements}
-    </div>`
+    <textarea
+      @input=${memo((el) => (evt) => (el.context.textarea = evt.target.value))}
+      :value=${(el) => el.context.textarea}
+    ></textarea>
+    <div
+      contenteditable
+      @input=${memo((el) => (evt) => (el.context.elements = evt.target.textContent))}
+    >
+      ${(el) => el.context.elements}
+    </div>`;
 
   setup() {
     return {
@@ -371,7 +381,7 @@ class ControlledInputs extends Element {
       select: 'a',
       textarea: `text\narea`,
       elements: '<p>paragraph</p>'
-    }
+    };
   }
 }
 ```
@@ -427,7 +437,7 @@ class CustomTag extends Element {
 
   constructor() {
     super();
-    this.watch(someStore)
+    this.watch(someStore);
   }
 }
 Sifrr.Dom.register(CustomTag);

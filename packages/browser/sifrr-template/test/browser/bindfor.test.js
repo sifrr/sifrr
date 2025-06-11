@@ -9,7 +9,7 @@ function getIds() {
 }
 
 function getDataIds() {
-  return window.DIV.data.map(d => d.id);
+  return window.DIV.data.map((d) => d.id);
 }
 
 describe('keyed', () => {
@@ -18,23 +18,13 @@ describe('keyed', () => {
   });
 
   it('rearranges swaps rows and not update them', async () => {
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#run')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#run').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
 
     await page.evaluate("var old2 = document.body.$('#main-element').$$('tr')[1]");
     await page.evaluate("var old998 = document.body.$('#main-element').$$('tr')[998]");
 
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#swaprows')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#swaprows').click());
     await page.waitForFunction(
       "document.body.$('#main-element').$$('tr')[1].$('td').textContent === '999'"
     );
@@ -47,23 +37,12 @@ describe('keyed', () => {
   });
 
   it('deletes row and not update them and remove last one', async () => {
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#run')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#run').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
 
     await page.evaluate("var old5 = document.body.$('#main-element').$$('tr')[5]");
 
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$$('tr')[0]
-        .$('td .remove')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$$('tr')[0].$('td .remove').click());
     await page.waitForFunction(
       "document.body.$('#main-element').$$('tr')[0].$('td').textContent === '2'"
     );
@@ -74,38 +53,18 @@ describe('keyed', () => {
   });
 
   it('can replace and add rows', async () => {
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#run')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#run').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
 
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#runlots')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#runlots').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 10000");
   });
 
   it('can replace and delete rows', async () => {
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#runlots')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#runlots').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 10000");
 
-    await page.evaluate(() =>
-      document.body
-        .$('#main-element')
-        .$('#run')
-        .click()
-    );
+    await page.evaluate(() => document.body.$('#main-element').$('#run').click());
     await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
   });
 
@@ -114,34 +73,19 @@ describe('keyed', () => {
   for (let i = 0; i < l; i++) {
     it(`has same arrangement as non keyed version for ${arrangements[i].name}`, async () => {
       await page.goto(`${PATH}/speedtest.html?useKey`);
-      await page.evaluate(() =>
-        document.body
-          .$('#main-element')
-          .$('#run')
-          .click()
-      );
+      await page.evaluate(() => document.body.$('#main-element').$('#run').click());
       await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
       const arrangedKeyed = await page.evaluate(arrangements[i]);
       const arrangementKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html`);
-      await page.evaluate(() =>
-        document.body
-          .$('#main-element')
-          .$('#run')
-          .click()
-      );
+      await page.evaluate(() => document.body.$('#main-element').$('#run').click());
       await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
       const arrangedNonKeyed = await page.evaluate(arrangements[i]);
       const arrangementNonKeyed = await page.evaluate(getIds);
 
       await page.goto(`${PATH}/speedtest.html?useAsync`);
-      await page.evaluate(() =>
-        document.body
-          .$('#main-element')
-          .$('#run')
-          .click()
-      );
+      await page.evaluate(() => document.body.$('#main-element').$('#run').click());
       await page.waitForFunction("document.body.$('#main-element').$$('tr').length === 1000");
       const arrangedAsync = await page.evaluate(arrangements[i]);
       const arrangementAsync = await page.evaluate(getIds);

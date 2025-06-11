@@ -75,24 +75,24 @@ function buildData(count = 10, from = 1) {
 }
 
 function dataToChildNodes(data) {
-  const ret = data.map(d => {
+  const ret = data.map((d) => {
     const node = {
       state: d
     };
     node._getStub = sinon.stub().callsFake(() => node.state);
-    node._setStub = sinon.stub().callsFake(v => (node.state = v));
+    node._setStub = sinon.stub().callsFake((v) => (node.state = v));
     node.getState = node._getStub;
     node.setState = node._setStub;
     return node;
   });
-  ret.forEach(n => {
+  ret.forEach((n) => {
     Object.defineProperty(n, 'nextSibling', {
       get: () => ret[findIndex(ret, n) + 1]
     });
     Object.defineProperty(n, 'previousSibling', {
       get: () => ret[findIndex(ret, n) - 1]
     });
-    n.replaceWith = function(x) {
+    n.replaceWith = function (x) {
       const idx = findIndex(ret, n);
       ret[idx] = x;
     };
@@ -106,15 +106,15 @@ function dataToChildNode(d) {
 
 function findIndex(childNodes, a) {
   if (typeof a === 'number') {
-    return childNodes.findIndex(n => n.state.id === a);
+    return childNodes.findIndex((n) => n.state.id === a);
   } else {
-    return childNodes.findIndex(n => n.state.id === a.state.id);
+    return childNodes.findIndex((n) => n.state.id === a.state.id);
   }
 }
 
 function parent(childNodes) {
   const parent = {
-    insertBefore: function(a, b) {
+    insertBefore: function (a, b) {
       const childNodes = this.childNodes;
       const indexOld = findIndex(childNodes, a);
       if (indexOld > -1) childNodes.splice(indexOld, 1);
@@ -123,11 +123,11 @@ function parent(childNodes) {
         childNodes.splice(indexNew, 0, a);
       } else this.appendChild(a);
     },
-    removeChild: function(a) {
+    removeChild: function (a) {
       const indexOld = findIndex(childNodes, a);
       this.childNodes.splice(indexOld, 1);
     },
-    appendChild: function(a) {
+    appendChild: function (a) {
       this.childNodes.push(a);
     }
   };

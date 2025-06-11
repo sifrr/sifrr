@@ -5,11 +5,11 @@ const http = require('http');
 function getByHttp() {
   return new Promise((res, rej) => {
     http
-      .get(`${PATH}/ok.json`, resp => {
+      .get(`${PATH}/ok.json`, (resp) => {
         let data = '';
 
         // A chunk of data has been recieved.
-        resp.on('data', chunk => {
+        resp.on('data', (chunk) => {
           data += chunk;
         });
 
@@ -80,7 +80,7 @@ describe('works with node', () => {
 
     const startAxios = process.hrtime();
     for (let i = 0; i < 300; i++) {
-      await axios.get(`${PATH}/ok.json`).then(r => r.data);
+      await axios.get(`${PATH}/ok.json`).then((r) => r.data);
     }
     const endAxios = process.hrtime();
 
