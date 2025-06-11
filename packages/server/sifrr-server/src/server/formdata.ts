@@ -1,10 +1,10 @@
 import { join } from 'path';
-import Busboy, { BusboyConfig } from 'busboy';
-import mkdirp from 'mkdirp';
+import busboyFxn, { BusboyConfig } from 'busboy';
 import { UploadedFile, FormDataConfig } from '@/server/types';
 import { v4 as uuid } from 'uuid';
 import { getExt } from '@/server/mime';
 import { defer, stob, stof } from '@/server/utils';
+import { mkdirSync } from 'fs';
 
 function formData<T>(
   stream: NodeJS.ReadableStream,
@@ -14,11 +14,13 @@ function formData<T>(
   (options as BusboyConfig).headers = headers;
 
   if (typeof options.destinationDir === 'string') {
-    mkdirp.sync(options.destinationDir);
+    mkdirSync(options.destinationDir, {
+      recursive: true
+    });
   }
 
   return new Promise((resolve, reject) => {
-    const busb = Busboy(options);
+    const busb = busboyFxn(options);
     const ret: Record<string, string | string[] | UploadedFile | UploadedFile[]> = {};
     const promises: Promise<any>[] = [Promise.resolve()];
 

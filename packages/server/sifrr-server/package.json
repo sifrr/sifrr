@@ -41,7 +41,6 @@
     "busboy": "^1.6.0",
     "iterall": "^1.3.0",
     "mime": "^4.0.7",
-    "mkdirp": "^0.5.1",
     "query-string": "^6.8.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.52.0",
     "uuid": "^11.1.0"
