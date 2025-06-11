@@ -36,8 +36,8 @@
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "test:server": "npx tsx ./test/server",
-    "test:server:watch": "npx tsx watch --include ./test/public ./test/server"
+    "test:server": "tsx ./test/server",
+    "test:server:watch": "tsx watch --include ./test/public ./test/server"
   },
   "dependencies": {},
   "peerDependencies": {},
