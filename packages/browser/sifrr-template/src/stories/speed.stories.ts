@@ -35,13 +35,7 @@ const meta: Meta<Args> = {
     useAsync: {
       type: 'boolean'
     }
-  }
-};
-
-export default meta;
-type Story = StoryObj<Args>;
-
-export const Primary: Story = {
+  },
   render: (args) => {
     HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
     HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
@@ -443,5 +437,31 @@ export const Primary: Story = {
     type: 'normal',
     useAnimation: false,
     useAsync: false
+  }
+};
+
+export default meta;
+type Story = StoryObj<Args>;
+
+export const Primary: Story = {};
+
+export const Keyed: Story = {
+  args: {
+    type: 'keyed',
+    useAnimation: false,
+    useAsync: false
+  }
+};
+
+export const Async: Story = {
+  args: {
+    useAsync: true
+  }
+};
+
+export const Animated: Story = {
+  args: {
+    type: 'keyed',
+    useAnimation: true
   }
 };
