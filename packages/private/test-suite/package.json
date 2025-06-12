@@ -2,9 +2,16 @@
   "name": "@sifrr/test-suite",
   "version": "1.0.0",
   "description": "Release it shared config - internal only",
+  "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.es.js"
+    }
+  },
   "repository": "https://github.com/sifrr/sifrr",
   "license": "UNLICENSED",
   "private": true,
@@ -26,6 +33,7 @@
     "express": "^5.1.0",
     "jest": "^29.3.3",
     "jest-environment-jsdom": "^29.7.0",
+    "portfinder": "^1.0.37",
     "storybook": "^8.6.12",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",

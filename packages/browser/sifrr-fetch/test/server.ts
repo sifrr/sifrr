@@ -1,12 +1,13 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getCliArg } from '@sifrr/test-suite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 6006;
+const port = parseInt(getCliArg('port') ?? '6006');
 
 // Serve static files from multiple directories
 app.use(express.json());
