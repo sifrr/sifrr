@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -ex
-
-./scripts/repeat "./packages/*/*" "yarn $1" "${@:2}"

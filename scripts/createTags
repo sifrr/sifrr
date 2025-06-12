@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const { execSync } = require('child_process')
+const { getPackages } = require('./_utils/packages.cjs')
+
+const packages = getPackages()
+
+packages.forEach((p) => {
+  try {
+    const pkgJson = require(`${p}/package.json`)
+    const tag = `${pkgJson.name}-v${pkgJson.version}`
+
+    if (pkgJson.private) return
+    execSync(`git tag ${tag}`, { encoding: 'utf-8' })
+  } catch (e) {
+    console.error(e)
+  }
+})
