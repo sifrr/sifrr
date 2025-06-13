@@ -1,4 +1,4 @@
-import SW from './index.es.js';
+import SW from './index.mjs';
 
 const sw = new SW({
   version: 2,

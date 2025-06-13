@@ -1,6 +1,6 @@
 {
   "extends": "@sifrr/typescript-config/server.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.cjs", "playwright.config.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts", "playwright.config.ts"],
   "compilerOptions": {
     "baseUrl": ".",
     "removeComments": false,

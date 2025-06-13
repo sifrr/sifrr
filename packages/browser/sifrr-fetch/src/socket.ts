@@ -31,10 +31,10 @@ class Socket implements EventTarget {
   };
 
   url: string | URL;
-  protocol: string;
+  protocol?: string;
   onretry?: (attempt: number, interval: number) => void;
 
-  constructor(url: string | URL, protocol: string, options: typeof this.options = {}) {
+  constructor(url: string | URL, protocol?: string, options: typeof this.options = {}) {
     this.ws = new WebSocketKlass(url, protocol) as WebSocket;
     this.id = 1;
     this.url = url;

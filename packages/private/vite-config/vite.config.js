@@ -27,6 +27,22 @@ export default (baseDir, external = [], isBrowser = true) => {
     JSON.parse(readFileSync(resolve(baseDir, 'package.json'), 'utf-8')).name
   );
 
+  const formats = isBrowser ? ['es', 'umd', 'iife'] : ['es', 'cjs'];
+  const outputs = formats.map((format) => ({
+    name,
+    format,
+    preserveModules: !isBrowser,
+    // Put chunk files at <output>/chunks
+    chunkFileNames: 'chunks/[name].[hash].js',
+    // Put chunk styles at <output>/assets
+    assetFileNames: 'assets/[name][extname]',
+    entryFileNames: `[name]${format === 'cjs' || format === 'es' ? '' : '.[format]'}.${format === 'cjs' ? 'cjs' : format === 'es' ? 'mjs' : 'js'}`,
+    globals: external.reduce((prev, cur) => {
+      if (cur.startsWith('@sifrr')) prev[cur] = nameToGlobal(cur);
+      return prev;
+    }, {})
+  }));
+
   return defineConfig({
     resolve: {
       alias: [
@@ -49,7 +65,6 @@ export default (baseDir, external = [], isBrowser = true) => {
       sourcemap: true,
       target: isBrowser ? 'modules' : 'node16',
       lib: {
-        formats: isBrowser ? ['es', 'umd', 'iife'] : ['es', 'cjs'],
         entry: {
           ...entries,
           index: resolve(baseDir, 'src/index.ts')
@@ -58,19 +73,7 @@ export default (baseDir, external = [], isBrowser = true) => {
       },
       rollupOptions: {
         external,
-        output: {
-          name,
-          preserveModules: !isBrowser,
-          // Put chunk files at <output>/chunks
-          chunkFileNames: 'chunks/[name].[hash].js',
-          // Put chunk styles at <output>/assets
-          assetFileNames: 'assets/[name][extname]',
-          entryFileNames: '[name].[format].js',
-          globals: external.reduce((prev, cur) => {
-            if (cur.startsWith('@sifrr')) prev[cur] = nameToGlobal(cur);
-            return prev;
-          }, {})
-        }
+        output: outputs
       }
     }
   });

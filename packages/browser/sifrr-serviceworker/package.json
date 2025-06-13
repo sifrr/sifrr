@@ -14,7 +14,7 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "type": "module",
   "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
+  "module": "dist/index.mjs",
   "browser": "dist/index.iife.js",
   "types": "dist/index.d.ts",
   "browserslist": [

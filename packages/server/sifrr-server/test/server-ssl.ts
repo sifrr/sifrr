@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SifrrServer } from '@/index';
 import { join } from 'path';
 import forge from 'node-forge';

@@ -1,13 +1,11 @@
 import { devices, PlaywrightTestConfig } from '@playwright/test';
 
-export const getPlaywrightConfigOptions = async (
-  port: number | Promise<number>
-): Promise<PlaywrightTestConfig> => {
-  console.log('Playwright using port: ', await port);
+export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig => {
+  console.log('Playwright test server using port: ', port);
   return {
     // Look for test files in the "test" directory, relative to this configuration file.
     testDir: 'test',
-    testMatch: '**/?(*.)+(e2e-spec).ts',
+    testMatch: '**/*.e2e-spec.ts',
 
     // Run all tests in parallel.
     fullyParallel: true,
@@ -40,8 +38,8 @@ export const getPlaywrightConfigOptions = async (
     ],
     // Run your local dev server before starting the tests.
     webServer: {
-      command: `set -ex; yarn test:server -p ${await port}`,
-      url: `http://localhost:${await port}`,
+      command: `set -ex; yarn test:server -p ${port}`,
+      url: `http://localhost:${port}`,
       reuseExistingServer: !process.env.CI
     }
   };

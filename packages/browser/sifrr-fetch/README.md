@@ -51,7 +51,6 @@ import { sFetch, Fetch, Socket } from '@sifrr/fetch';
 
 ```js
 // set global.fetch
-global.fetch = require('node-fetch);
 const { Fetch } = require('@sifrr/fetch');
 // set global.WebSocket
 global.WebSocket = require('isomorphic-ws');

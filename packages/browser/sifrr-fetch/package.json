@@ -14,7 +14,7 @@
   "homepage": "https://github.com/sifrr/sifrr",
   "type": "module",
   "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
+  "module": "dist/index.mjs",
   "browser": "dist/index.iife.js",
   "types": "dist/index.d.ts",
   "browserslist": [
@@ -44,12 +44,14 @@
   "devDependencies": {
     "@sifrr/eslint-config": "*",
     "@sifrr/release-it-config": "*",
+    "@sifrr/server": "*",
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",
     "axios": "^1.9.0",
-    "node-fetch": "^3.3.2",
-    "typescript": "^5.8.3"
+    "isomorphic-ws": "^5.0.0",
+    "typescript": "^5.8.3",
+    "yarn": "^1.22.22"
   },
   "files": [
     "bin",

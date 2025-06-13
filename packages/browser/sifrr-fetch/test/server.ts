@@ -23,13 +23,11 @@ app.get('/get-json', (req, res) => {
 });
 
 app.post('/post', (req, res) => {
-  if (req.body) res.set('content-type', 'application/json');
-  res.send(req.body);
+  res.json(req.body);
 });
 
 app.put('/put', (req, res) => {
-  if (req.body) res.set('content-type', 'application/json');
-  res.send(req.body);
+  res.json(req.body);
 });
 
 app.delete('/delete/:id', (req, res) => {

@@ -1,15 +1,16 @@
 {
   "name": "@sifrr/test-suite",
   "version": "1.0.0",
-  "description": "Release it shared config - internal only",
+  "description": "shared test config - internal only",
   "type": "module",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.es.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.es.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
   "repository": "https://github.com/sifrr/sifrr",
