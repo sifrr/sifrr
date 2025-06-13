@@ -5,6 +5,7 @@ import { cls, computed, html, memo, SifrrCreateFunction } from '@sifrr/template'
 const randomColor = () => '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
 
 export class FlexElement extends Element {
+  static readonly elementName = 'flex-element';
   flexDirection?: 'column' | 'row';
   gap?: 0;
 
@@ -23,6 +24,7 @@ export class FlexElement extends Element {
 }
 
 export class ExampleElement extends Element {
+  static readonly elementName = 'example-element';
   static readonly flexCls = cls();
 
   static get template() {
@@ -119,6 +121,8 @@ export class ExampleElement extends Element {
   tag: 'child-element'
 })
 class ChildElement extends Element {
+  static readonly elementName = 'child-element';
+
   @Prop()
   prop!: number;
 
@@ -150,6 +154,7 @@ class ChildElement extends Element {
 
 export class ParentElement extends Element {
   static readonly dependencies = [ChildElement];
+  static readonly elementName = 'parent-element';
 
   static readonly template = html<ParentElement>`<button
       @click=${memo((el) => () => el.context.prop++)}
@@ -192,6 +197,7 @@ export class ParentElement extends Element {
 
 export class ControlledInputs extends Element {
   static readonly dependencies = [FlexElement];
+  static readonly elementName = 'controlled-inputs';
 
   static readonly template = html` <flex-element :gap="12">
     <input
