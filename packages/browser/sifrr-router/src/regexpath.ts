@@ -24,8 +24,7 @@ const getDataMap = (path: string, delimiter = '/') => {
     }
     let m;
     while (null != (m = GROUP_REGEX.exec(r))) {
-      console.log(m);
-      dataMap.push(r);
+      dataMap.push(m[0]);
     }
   });
   return dataMap;
