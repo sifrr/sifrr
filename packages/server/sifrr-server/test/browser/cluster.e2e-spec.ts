@@ -1,11 +1,10 @@
 import { runLoadTest, waitForOk } from './utils';
 import { test, expect } from '@playwright/test';
 import { LoadTestResult } from 'loadtest';
-import { getCliArg } from '@sifrr/test-suite';
 import { ChildProcess, exec } from 'child_process';
 
 export const EPORT = 6010;
-export const SPORT = getCliArg('port') ?? '6006';
+export const SPORT = (global as any).__PORT ?? 6006;
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 

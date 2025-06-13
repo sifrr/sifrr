@@ -4,7 +4,6 @@ import path from 'path';
 import { Writable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { fileURLToPath } from 'url';
-import { getCliArg } from '@sifrr/test-suite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

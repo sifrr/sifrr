@@ -5,10 +5,9 @@ import { Server } from 'http';
 import { join } from 'path';
 import compression from 'compression';
 import { LoadTestResult } from 'loadtest';
-import { getCliArg } from '@sifrr/test-suite';
 
 export const EPORT = 7777;
-export const SPORT = getCliArg('port') ?? '6006';
+export const SPORT = (global as any).__PORT ?? 6006;
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 
