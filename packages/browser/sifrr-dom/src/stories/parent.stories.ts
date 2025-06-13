@@ -12,6 +12,5 @@ type Story = StoryObj<unknown>;
 export const Primary: Story = {
   render: () => {
     return createElement(ParentElement, {});
-  },
-  play: async () => {}
+  }
 };
