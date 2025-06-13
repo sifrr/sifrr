@@ -26,7 +26,8 @@ export const runLoadTest = async <T extends Record<string, string>>(
             maxRequests,
             headers: compress
               ? {
-                  'accept-encoding': 'gzip'
+                  'accept-encoding': 'gzip',
+                  'if-modified-since': ''
                 }
               : undefined
           },
@@ -46,4 +47,17 @@ export const runLoadTest = async <T extends Record<string, string>>(
 export const okTest = async (page: Page, url: any) => {
   const st = (await page.goto(url))?.status();
   return st && st < 400;
+};
+
+export const waitForOk = async (page: Page, url: any, tries = 1) => {
+  try {
+    await okTest(page, url);
+  } catch (e) {
+    if (tries > 10) {
+      console.error(`Page not ok: ${url}`, e);
+    } else {
+      await new Promise((res) => setTimeout(res, 1000));
+      await waitForOk(page, url, tries++);
+    }
+  }
 };

@@ -1,12 +1,11 @@
-import { runLoadTest } from './utils';
-import { test } from '@playwright/test';
+import { runLoadTest, waitForOk } from './utils';
+import { test, expect } from '@playwright/test';
 import { LoadTestResult } from 'loadtest';
-import { Cluster } from 'cluster';
-import { launchCluster } from '@/index';
-import app from '../server';
+import { getCliArg } from '@sifrr/test-suite';
+import { ChildProcess, exec } from 'child_process';
 
-export const EPORT = 7777;
-export const SPORT = 6006;
+export const EPORT = 6010;
+export const SPORT = getCliArg('port') ?? '6006';
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 
@@ -23,18 +22,23 @@ const checkResult = ({
   expect(sifrr.totalErrors).toBe(0);
 };
 
-const maxReq = 1000;
+const maxReq = 10000;
 
 test.describe.serial('speed test - sifrr & sifrr-cluster', function () {
-  let server: Cluster | undefined;
+  let server: ChildProcess | undefined;
   test.beforeAll(async () => {
-    server = launchCluster(app, EPORT);
+    server = exec(`yarn test:cluster`);
+    server.stdout?.on('data', (m) => {
+      console.log(m);
+    });
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await waitForOk(page, `${EPATH}/304.json`);
   });
 
   test.afterAll(() => {
-    for (const w of Object.values(server?.workers ?? {})) {
-      w?.kill();
-    }
+    server?.kill();
   });
 
   test('faster in static files (small)', async () => {

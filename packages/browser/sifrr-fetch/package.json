@@ -44,7 +44,6 @@
   "devDependencies": {
     "@sifrr/eslint-config": "*",
     "@sifrr/release-it-config": "*",
-    "@sifrr/server": "*",
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",

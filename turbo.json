@@ -14,16 +14,16 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     },
     "test:storybook:ci": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     },
     "test:jest": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     },
     "test:playwright": {
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     },
     "pre-release": {},
     "publish-package": {},

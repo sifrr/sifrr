@@ -44,13 +44,13 @@ const wsport = 7700;
 test.describe('Sifrr Fetch', () => {
   const fetchInstance = new Fetch({ baseUrl: PATH });
 
-  beforeAll(() => {
+  test.beforeAll(() => {
     wsapp.listen(wsport, () => {
       console.log('listening on ', wsport);
     });
   });
 
-  afterAll(async () => {
+  test.afterAll(async () => {
     (global as any).WebSocket = undefined;
     wsapp.close();
   });
@@ -103,7 +103,7 @@ test.describe('Sifrr Fetch', () => {
     expect(status).toEqual(404);
   });
 
-  it('works with sockets', async () => {
+  test('works with sockets', async () => {
     const sock = new Socket(`ws://localhost:${wsport}/ws`);
     expect((await sock.fetch({ ok: true })).dataYouSent).toEqual({ ok: true });
     sock.close();

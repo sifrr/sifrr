@@ -177,8 +177,9 @@ app.post<{
 );
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+app.listen(port, (list) => {
+  if (list) console.log(`Server listening on port ${list}`);
+  else console.error('Error in listening on port');
 });
 
 export default app;

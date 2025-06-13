@@ -13,9 +13,16 @@
   },
   "homepage": "https://github.com/sifrr/sifrr",
   "type": "module",
-  "main": "dist/index.cjs",
+  "main": "dist/index.mjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "engines": {
     "node": ">16.7.0"
   },
@@ -53,6 +60,7 @@
     "@nestjs/common": "^11.1.3",
     "@nestjs/core": "^11.1.3",
     "@sifrr/eslint-config": "*",
+    "@sifrr/fetch": "*",
     "@sifrr/release-it-config": "*",
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
