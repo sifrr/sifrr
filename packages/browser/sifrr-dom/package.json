@@ -43,7 +43,7 @@
     "dev": "vite build --watch",
     "test:server": "yarn storybook:dev",
     "storybook:dev": "storybook dev -p 6006 --no-open",
-    "storybook:build": "storybook build"
+    "storybook:build": "storybook build --quiet"
   },
   "dependencies": {
     "@sifrr/template": "*"

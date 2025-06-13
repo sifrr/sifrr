@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = new SifrrServer();
-const port = parseInt(getCliArg('port') ?? '6006');
+const port = (global as any).__PORT ?? 6006;
 
 // Serve static files from multiple directories
 app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
@@ -175,6 +175,15 @@ app.post<{
     }
   }
 );
+
+// middleware
+app.use((req, res) => {
+  if (req.getMethod() === 'get' && req.getUrl() === '/middleware') {
+    res.json({ ok: 'middleware' });
+    return true;
+  }
+  return false;
+});
 
 // Start the server
 app.listen(port, (list) => {

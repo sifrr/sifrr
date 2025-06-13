@@ -22,6 +22,11 @@ export type RequestHandler<
   Query extends AllQuery = AllQuery,
   Body = unknown
 > = (req: SifrrRequest<Params, Query>, res: SifrrResponse<Body>) => void | Promise<void>;
+export type Middleware<
+  Params extends string | number = string | number,
+  Query extends AllQuery = AllQuery,
+  Body = unknown
+> = (req: SifrrRequest<Params, Query>, res: SifrrResponse<Body>) => boolean | Promise<boolean>;
 export type RequestFxn = (pattern: string, handler: RequestHandler) => ISifrrServer;
 export interface ISifrrServer {
   /** Listens to hostname & port. Callback hands either false or a listen socket. */
@@ -56,7 +61,7 @@ export interface ISifrrServer {
   /** Registers an HTTP TRACE handler matching specified URL pattern. */
   trace: RequestFxn;
   /** Registers an HTTP handler matching specified URL pattern on any HTTP method. */
-  use: RequestFxn;
+  use: (handler: Middleware) => ISifrrServer;
   any: RequestFxn;
   /** Registers a handler matching specified URL pattern where WebSocket upgrade requests are caught. */
   ws<UserData>(pattern: string, behavior: WebSocketBehavior<UserData>): ISifrrServer;

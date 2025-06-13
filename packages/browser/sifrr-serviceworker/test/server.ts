@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = parseInt(getCliArg('port') ?? '6007');
+const port = (global as any).__PORT ?? 6007;
 
 // Serve static files from multiple directories
 app.use('/', express.static(path.join(__dirname, '../dist')));

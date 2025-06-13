@@ -1,5 +1,5 @@
 import { SifrrServer } from '@/server/baseapp';
-import cluster from 'node:cluster';
+import cluster, { Cluster } from 'node:cluster';
 import { availableParallelism } from 'node:os';
 
 export function launchCluster(
@@ -14,7 +14,7 @@ export function launchCluster(
     restartOnError?: boolean;
     onListen?: (port: number | false) => void;
   } = {}
-) {
+): Cluster | undefined {
   numberOfWorkers = numberOfWorkers ?? availableParallelism();
   restartOnError = restartOnError ?? false;
   if (cluster.isPrimary) {

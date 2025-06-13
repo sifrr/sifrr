@@ -137,8 +137,16 @@ export class SifrrResponse<Body = unknown> implements Omit<HttpResponse, 'onData
     this._res.cork(() => {
       this._res.writeStatus(`${this._status}`);
       writeHeaders(this._res, this._headers);
-      this._res._end(body);
+      this._res.end(body);
     });
+  }
+  /**
+   * Error handler. It is called in case request handler throws error.
+   */
+  onError(e: unknown) {
+    console.error(e);
+    this._res.writeStatus('500 Internal Server Error');
+    this._res.end();
   }
   write(chunk: RecognizedString): boolean {
     let ret = true;

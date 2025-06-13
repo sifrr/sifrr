@@ -16,7 +16,7 @@ function parseBuffer<T>(buf: ArrayBuffer): T {
   }
 }
 
-wsapp.ws('/ws', {
+wsapp.ws<{ id: number }>('/ws', {
   /* Options */
   maxPayloadLength: 1 * 1024 * 1024,
   idleTimeout: 120,

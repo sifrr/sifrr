@@ -23,7 +23,8 @@ import {
   RequestHandler,
   FormDataConfig,
   KeysMatching,
-  AllQuery
+  AllQuery,
+  Middleware
 } from './types';
 import { GraphQLArgs, GraphQLSchema } from 'graphql';
 import { parse, ParseOptions } from 'query-string';
@@ -33,6 +34,7 @@ const noOp = () => true;
 
 function handleRequest(
   handler: RequestHandler,
+  middlewares: Middleware[],
   uploadConfig?: FormDataConfig
 ): (res: HttpResponse, req: HttpRequest) => void | Promise<void> {
   return (res, req) => {
@@ -58,14 +60,22 @@ function handleRequest(
       }
     });
 
-    const promise = handler(req as unknown as SifrrRequest, sifrrRes);
-    if (promise instanceof Promise) {
-      promise.catch((e) => {
-        console.error(e);
-        res.writeStatus('500 Internal Server Error');
-        res.end();
+    let promise = Promise.resolve(false);
+    for (const middleware of middlewares) {
+      promise = promise.then((handled) => {
+        if (handled) return true;
+        return middleware(req as unknown as SifrrRequest, sifrrRes);
       });
     }
+
+    promise
+      .then((handled) => {
+        if (handled) return true;
+        return handler(req as unknown as SifrrRequest, sifrrRes);
+      })
+      .catch((e) => {
+        sifrrRes.onError(e);
+      });
   };
 }
 
@@ -73,6 +83,7 @@ export class SifrrServer implements ISifrrServer {
   private readonly _sockets = new Map<number, us_listen_socket>();
   private readonly app: TemplatedApp;
   private readonly config?: SifrrServerOptions;
+  private readonly middlewares: Middleware[] = [];
 
   constructor(options?: SifrrServerOptions) {
     const { ssl, ..._options } = options ?? {};
@@ -91,35 +102,35 @@ export class SifrrServer implements ISifrrServer {
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.get(pattern, handleRequest(handler as RequestHandler));
+    this.app.get(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   head<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.head(pattern, handleRequest(handler as RequestHandler));
+    this.app.head(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   del<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.del(pattern, handleRequest(handler as RequestHandler));
+    this.app.del(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   delete<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.del(pattern, handleRequest(handler as RequestHandler));
+    this.app.del(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   options<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.options(pattern, handleRequest(handler as RequestHandler));
+    this.app.options(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   post<
@@ -131,7 +142,10 @@ export class SifrrServer implements ISifrrServer {
     handler: RequestHandler<Params, Query, Body>,
     formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
-    this.app.post(pattern, handleRequest(handler as RequestHandler, formDataConfig));
+    this.app.post(
+      pattern,
+      handleRequest(handler as RequestHandler, this.middlewares, formDataConfig)
+    );
     return this;
   }
   put<
@@ -143,7 +157,10 @@ export class SifrrServer implements ISifrrServer {
     handler: RequestHandler<Params, Query, Body>,
     formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
-    this.app.put(pattern, handleRequest(handler as RequestHandler, formDataConfig));
+    this.app.put(
+      pattern,
+      handleRequest(handler as RequestHandler, this.middlewares, formDataConfig)
+    );
     return this;
   }
   patch<
@@ -155,39 +172,53 @@ export class SifrrServer implements ISifrrServer {
     handler: RequestHandler<Params, Query, Body>,
     formDataConfig?: FormDataConfig<KeysMatching<Body, string>>
   ) {
-    this.app.patch(pattern, handleRequest(handler as RequestHandler, formDataConfig));
-    return this;
-  }
-  use<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
-    pattern: string,
-    handler: RequestHandler<Params, Query>
-  ) {
-    this.app.any(pattern, handleRequest(handler as RequestHandler));
+    this.app.patch(
+      pattern,
+      handleRequest(handler as RequestHandler, this.middlewares, formDataConfig)
+    );
     return this;
   }
   any<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.any(pattern, handleRequest(handler as RequestHandler));
+    this.app.any(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   connect<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.connect(pattern, handleRequest(handler as RequestHandler));
+    this.app.connect(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
   trace<Params extends string | number = string | number, Query extends AllQuery = AllQuery>(
     pattern: string,
     handler: RequestHandler<Params, Query>
   ) {
-    this.app.trace(pattern, handleRequest(handler as RequestHandler));
+    this.app.trace(pattern, handleRequest(handler as RequestHandler, this.middlewares));
     return this;
   }
+
+  /**
+   * Add route handler for websockets
+   * @param pattern Route pattern
+   * @param behavior Websocket handling config
+   * @returns this
+   */
   ws<T>(pattern: string, behavior: WebSocketBehavior<T>) {
     this.app.ws(pattern, behavior);
+    return this;
+  }
+
+  /**
+   * Add middlewares to requests. It is only triggered for routes added using get,put,post,patch,head,options,any,etc.
+   * If a route hasn't been added, middleware will not trigger
+   * @param handler Middleware request handler
+   * @returns this
+   */
+  use(handler: Middleware) {
+    this.middlewares.push(handler);
     return this;
   }
 
