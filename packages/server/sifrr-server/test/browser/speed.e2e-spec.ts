@@ -7,7 +7,7 @@ import compression from 'compression';
 import { LoadTestResult } from 'loadtest';
 
 export const EPORT = 7777;
-export const SPORT = (global as any).__PORT ?? 6006;
+export const SPORT = parseInt(process.env.PORT ?? '6006');
 const EPATH = `http://localhost:${EPORT}`;
 const PATH = `http://localhost:${SPORT}`;
 
