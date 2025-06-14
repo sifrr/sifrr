@@ -56,7 +56,7 @@ class Socket implements EventTarget {
    * set to 0 to disable timeout.
    * @returns
    */
-  fetch<T = unknown>(
+  fetch<T = any>(
     payload: object | string,
     name = 'sifrr-fetch',
     timeout = this.options.defaultFetchTimeout ?? 1000
@@ -74,7 +74,7 @@ class Socket implements EventTarget {
     this.ws.close();
   }
 
-  private async sendRaw<T = unknown>(
+  private async sendRaw<T = any>(
     message: string | ArrayBufferLike | Blob | ArrayBufferView,
     id?: number,
     original: typeof message | object = message,

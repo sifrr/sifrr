@@ -40,9 +40,9 @@
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "test:server": "tsx test/server",
-    "test:server:watch": "tsx watch --include test/public test/server",
-    "test:cluster": "tsx watch --include test/public test/server-cluster"
+    "test:server": "tsx ./test/server",
+    "test:server:watch": "tsx watch --include ./test/public ./test/server",
+    "test:cluster": "tsx watch --include ./test/public ./test/server-cluster"
   },
   "dependencies": {
     "busboy": "^1.6.0",

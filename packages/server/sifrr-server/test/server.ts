@@ -187,7 +187,7 @@ app.use((req, res) => {
 // Start the server
 app.listen(port, (list) => {
   if (list) console.log(`Server listening on port ${list}`);
-  else console.error('Error in listening on port');
+  else console.error('Error in listening on port', port);
 });
 
 export default app;

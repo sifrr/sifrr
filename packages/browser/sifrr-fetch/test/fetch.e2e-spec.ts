@@ -37,8 +37,9 @@ test.describe('Sifrr Fetch', () => {
   const fetchInstance = new Fetch({ baseUrl: PATH });
 
   test.beforeAll(() => {
-    wsapp.listen(wsport, () => {
-      console.log('listening on ', wsport);
+    wsapp.listen(wsport, (list) => {
+      if (list) console.log(`Server listening on port ${list}`);
+      else console.error('Error in listening on port', port);
     });
   });
 
@@ -97,7 +98,15 @@ test.describe('Sifrr Fetch', () => {
 
   test('works with sockets', async () => {
     const sock = new Socket(`ws://localhost:${wsport}/ws`);
-    expect((await sock.fetch({ ok: true })).dataYouSent).toEqual({ ok: true });
+    expect(
+      (
+        await sock.fetch<{
+          dataYouSent: {
+            ok: true;
+          };
+        }>({ ok: true })
+      ).dataYouSent
+    ).toEqual({ ok: true });
     sock.close();
   });
 
