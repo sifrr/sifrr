@@ -6,7 +6,7 @@ import http from 'http';
 import axios from 'axios';
 import wsapp from './wsserver';
 
-const port = (global as any).__PORT ?? 6006;
+const port = parseInt(process.env.PORT ?? '6006');
 const PATH = `http://localhost:${port}`;
 
 function getByHttp() {

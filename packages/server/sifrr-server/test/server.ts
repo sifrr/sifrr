@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = new SifrrServer();
-const port = (global as any).__PORT ?? 6006;
+const port = parseInt(process.env.PORT ?? '6006');
 
 // Serve static files from multiple directories
 app.folder('/fetch', path.join(__dirname, '../../../browser/sifrr-fetch/dist'));
