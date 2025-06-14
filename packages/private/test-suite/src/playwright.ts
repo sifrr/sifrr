@@ -2,6 +2,7 @@ import { devices, PlaywrightTestConfig } from '@playwright/test';
 
 export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig => {
   console.log('Playwright test server using port: ', port);
+  process.env.PORT = '' + port;
   return {
     // Look for test files in the "test" directory, relative to this configuration file.
     testDir: 'test',

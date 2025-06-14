@@ -7,12 +7,12 @@ describe('Fetch', () => {
     jest.spyOn(Fetch, 'request');
     fetch = new Fetch({
       baseUrl: 'http://ok.ok',
-      timeout: 5000
+      timeout: 10
     });
   });
 
-  it('calls request with merged options', () => {
-    fetch
+  it('calls request with merged options', async () => {
+    await fetch
       .post('/ok', { a: 'b' }, { headers: { 'Content-Type': 'application/json' } })
       .catch(() => {});
     expect(Fetch.request).toHaveBeenCalledWith(
@@ -21,7 +21,7 @@ describe('Fetch', () => {
         body: { a: 'b' },
         headers: { 'Content-Type': 'application/json' },
         baseUrl: 'http://ok.ok',
-        timeout: 5000
+        timeout: 10
       }),
       'POST'
     );
