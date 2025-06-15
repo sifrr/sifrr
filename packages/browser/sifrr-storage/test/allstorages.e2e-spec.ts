@@ -1,4 +1,3 @@
-import { CookieStore, IndexedDBStore, LocalStorageStore, MemoryStore } from '@/index';
 import * as SifrrStorage from '@/index';
 import { expect, test } from '@playwright/test';
 
@@ -219,7 +218,7 @@ for (const key of stores) {
           stores: [window.Sifrr.Storage[key]]
         });
         let i = 0;
-        const func = async (a: string, b: string) => i;
+        const func = async (_a: string, _b: string) => i;
         const memoized = storage.memoize(func, (a, b) => a + b);
         const first = await memoized('some', 'ok');
         i++;

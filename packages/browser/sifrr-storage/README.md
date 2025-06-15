@@ -107,11 +107,12 @@ storage.get('key').then((value) => console.log(value)); // > { a: 'b' }
 
 ### Deleting a key
 
-````js
+```js
 // delete key-value
 storage.delete('key').then(() => {
   /* Do something here */
 });
+```
 
 ### Updating a key
 
@@ -120,8 +121,8 @@ storage.delete('key').then(() => {
 ### Get all data in table
 
 ```js
-storage.all().then(data => console.log(data)); // > { key: { a: 'b' }, a: 'b', c: { d: 'e' } }
-````
+storage.all().then((data) => console.log(data)); // > { key: { a: 'b' }, a: 'b', c: { d: 'e' } }
+```
 
 ### Clear table
 
@@ -157,7 +158,7 @@ should be `string`
 
 ### value
 
-can be any of these types:
+can be any of these types, or object with the type of values or array containing these types:
 
 - `Array`,
 - `ArrayBuffer`,

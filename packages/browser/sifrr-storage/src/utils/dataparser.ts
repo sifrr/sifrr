@@ -1,4 +1,4 @@
-import { SavedData } from '../storages/types';
+import { Value, SavedData } from '../storages/types';
 
 function parseGetData(
   original: SavedData | undefined,
@@ -17,7 +17,7 @@ function parseGetData(original: SavedData | undefined, onExpire?: () => unknown)
   return original.value;
 }
 
-export const parseSetValue = (value: any, ttl: number = 0): SavedData => {
+export const parseSetValue = (value: Value, ttl: number = 0): SavedData => {
   return {
     value,
     ttl,
