@@ -20,7 +20,7 @@ function save_IndexedDBStore() {
 }
 
 function arrayEqual(buf1, buf2) {
-  if (typeof buf1 !== 'object') return buf1 === buf2;
+  if (typeof buf1 !== 'object' || buf1 === null) return buf1 === buf2;
   if (buf1 instanceof window.Blob) {
     return buf1.type === buf2.type && buf1.size === buf2.size;
   }
@@ -56,7 +56,10 @@ window.AllDataTypes = {
   Uint16Array: new Uint16Array(ab),
   Uint32Array: new Uint32Array(ab),
   String: `<html lang="en" dir="ltr"><head>
-    <meta charset="utf-8">`
+    <meta charset="utf-8">`,
+  BigInt: BigInt(12323412324234),
+  boolean: false,
+  null: null
 };
 
 window.LF = {

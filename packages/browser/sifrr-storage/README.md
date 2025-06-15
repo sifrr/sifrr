@@ -174,7 +174,12 @@ can be any of these types, or object with the type of values or array containing
 - `Uint16Array`,
 - `Uint32Array`,
 - `Uint8ClampedArray`,
+- `BigInt`
+- `Boolean`
 - `String`
+- `null`
+
+`undefined` is same as property not defined so it might not be explicitly stored
 
 ### Gotchas
 

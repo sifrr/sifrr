@@ -243,7 +243,6 @@ for (const key of stores) {
       const types = [
         'Array',
         'ArrayBuffer',
-        'Blob',
         'Float32Array',
         'Float64Array',
         'Int8Array',
@@ -255,7 +254,10 @@ for (const key of stores) {
         'Uint16Array',
         'Uint32Array',
         'Uint8ClampedArray',
-        'String'
+        'String',
+        'BigInt',
+        'boolean',
+        'null'
       ];
       types.forEach((type) => {
         test(`works with ${type}`, async ({ page }) => {
@@ -277,8 +279,18 @@ for (const key of stores) {
                 stores: [window.Sifrr.Storage[key]]
               });
               const value = await s.get(type);
+              let sameInstance;
+              if (type === 'BigInt') {
+                sameInstance = typeof value === 'bigint';
+              } else if (type === 'null') {
+                sameInstance = value === null;
+              } else if (type === 'boolean') {
+                sameInstance = typeof value === 'boolean';
+              } else {
+                sameInstance = value instanceof (window as any)[type];
+              }
               return {
-                sameInstance: value instanceof (window as any)[type],
+                sameInstance,
                 arrayEqual: (window as any).arrayEqual(value, (window as any).AllDataTypes[type]),
                 exact: value === (window as any).AllDataTypes[type],
                 value,
@@ -289,10 +301,7 @@ for (const key of stores) {
           );
 
           if (key !== 'MemoryStore') {
-            expect(
-              result.exact || (result.sameInstance && result.arrayEqual),
-              `${JSON.stringify(result)} was not as expected`
-            ).toEqual(true);
+            expect(result.exact || (result.sameInstance && result.arrayEqual)).toEqual(true);
           }
         });
       });

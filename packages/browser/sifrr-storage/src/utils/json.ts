@@ -20,7 +20,7 @@ export function parse(data: any): any {
       ans = new Uint8Array(av?.split(',').map((i) => parseInt(i)) ?? []).buffer;
     } else if (type === 'BigInt') {
       ans = BigInt(av!);
-    } else ans = new (global as any)[type as string]((av as string).split(','));
+    } else ans = new (globalThis as any)[type as string]((av as string).split(','));
   } else if (Array.isArray(data)) {
     ans = [];
     data.forEach((v, i) => {
