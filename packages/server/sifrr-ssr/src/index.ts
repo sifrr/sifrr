@@ -79,6 +79,4 @@ export const botUserAgents = [
   'Exabot' // Exalead
 ];
 
-export { Renderer };
-
-export default SifrrSeo;
+export { SifrrSeo, Renderer };

@@ -111,3 +111,4 @@ register(SifrrRoute, false, 'sifrr-route');
 
 export { RegexPath, SifrrRoute };
 export { createRouter, type Route, type Options } from './router';
+export { useRoute, useRouter } from './helpers';

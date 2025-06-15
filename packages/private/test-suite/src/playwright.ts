@@ -7,7 +7,7 @@ export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig =
     // Look for test files in the "test" directory, relative to this configuration file.
     testDir: 'test',
     testMatch: '**/*.e2e-spec.ts',
-    snapshotPathTemplate: '{testDir}/__screenshots__/{testFileName}/{arg}{ext}',
+    snapshotPathTemplate: '{testDir}/__snapshots__/{testFileName}/{arg}{ext}',
 
     // Run all tests in parallel.
     fullyParallel: true,

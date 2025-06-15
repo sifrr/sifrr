@@ -52,17 +52,16 @@ All the packages can be used with node, es6 modules, and are compatible with bun
 ### commonJS (node)
 
 ```js
-const SifrrDom = require('@sifrr/dom');
+const { Element } = require('@sifrr/dom');
 ```
 
 ### ES6 modules (`import`)
 
 ```js
-import SifrrDom from '@sifrr/dom'; // default export
-import { Element } from '@sifrr/dom'; // named export
+import { Element } from '@sifrr/dom';
 ```
 
-### standalone distributions (browser packages only)
+### Browser distributions (browser packages only)
 
 For eg.
 
@@ -77,7 +76,7 @@ For eg.
 
 ## Node support (server packages and development)
 
-Sifrr officially supports node v10, v12 (LTS), v13 (current). Other versions might work for some packages.
+Sifrr officially supports node v20, v22 (LTS), v24. Other versions might work.
 
 ## Browser Support (browser packages)
 

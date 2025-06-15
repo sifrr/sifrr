@@ -19,10 +19,12 @@ jobs:
         shouldRunAll:
           - ${{ contains(github.ref, 'main') || contains(github.ref, 'master') || contains(github.ref, 'release') }}
         # Run on 20,22 for master and release branches, else only on 20
-        node-version: [20.x, 22.x]
+        node-version: [20.x, 22.x, 24.x]
         exclude:
           - shouldRunAll: false
-            node-version: 22.x
+            node-version: 20.x
+          - shouldRunAll: false
+            node-version: 24.x
     env:
       base_branch: ${{ github.event.pull_request.base.ref }}
 
