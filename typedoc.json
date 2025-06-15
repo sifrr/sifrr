@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "out": "./wiki",
+  "out": "./docs",
   "name": "Sifrr",
   "entryPoints": ["packages/browser/*", "packages/server/*"],
   "entryPointStrategy": "packages",

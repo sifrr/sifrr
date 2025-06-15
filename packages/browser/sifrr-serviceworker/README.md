@@ -4,10 +4,10 @@ Customizable Service Worker.
 
 ## Size
 
-| Type                                                   |                               Size                               |
-| :----------------------------------------------------- | :--------------------------------------------------------------: |
-| Minified (`dist/sifrr.serviceworker.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/serviceworker)   |
-| Minified + Gzipped (`dist/sifrr.serviceworker.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/serviceworker) |
+| Type                                      |                               Size                               |
+| :---------------------------------------- | :--------------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/serviceworker)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/serviceworker) |
 
 ## How to use
 

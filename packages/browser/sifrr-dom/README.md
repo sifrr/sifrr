@@ -6,10 +6,10 @@ Sifrr-Dom is best of both worlds: write components in pure HTML, CSS, JS with ea
 
 ## Size
 
-| Type                                         |                          Size                          |
-| :------------------------------------------- | :----------------------------------------------------: |
-| Minified (`dist/sifrr.dom.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/dom)   |
-| Minified + Gzipped (`dist/sifrr.dom.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/dom) |
+| Type                                      |                          Size                          |
+| :---------------------------------------- | :----------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/dom)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/dom) |
 
 ## Tradeoffs
 
@@ -32,8 +32,8 @@ Add script tag in your website.
 
 ```html
 <!-- Sifrr.Template is also required -->
-<script src="https://unpkg.com/@sifrr/template@{version}/dist/sifrr.template.min.js"></script>
-<script src="https://unpkg.com/@sifrr/dom@{version}/dist/sifrr.dom.min.js"></script>
+<script src="https://unpkg.com/@sifrr/template@{version}/dist/index.iife.js"></script>
+<script src="https://unpkg.com/@sifrr/dom@{version}/dist/index.iife.js"></script>
 ```
 
 #### Browser API support needed for

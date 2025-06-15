@@ -20,15 +20,12 @@ History API based Routing library for building One Page Applications with sifrr.
 import '@sifrr/route';
 <!-- OR ES6 modules and using CDN -->
 <script
-  src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js"
+  src="https://unpkg.com/@sifrr/route@{version}/dist/index.iife.js"
   charset="utf-8"
   type="module"
 ></script>
 <!-- OR without module -->
-<script
-  src="https://unpkg.com/@sifrr/route@{version}/dist/sifrr.route.min.js"
-  charset="utf-8"
-></script>
+<script src="https://unpkg.com/@sifrr/route@{version}/dist/index.iife.js" charset="utf-8"></script>
 ```
 
 - You also need to take care in your server configuration that correct html file is served for all sifrr-routes.

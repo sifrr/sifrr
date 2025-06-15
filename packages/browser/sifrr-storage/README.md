@@ -4,10 +4,10 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 
 ## Size
 
-| Type                                             |                            Size                            |
-| :----------------------------------------------- | :--------------------------------------------------------: |
-| Minified (`dist/sifrr.storage.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/storage)   |
-| Minified + Gzipped (`dist/sifrr.storage.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/storage) |
+| Type                                      |                            Size                            |
+| :---------------------------------------- | :--------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/storage)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/storage) |
 
 ## Types of storages available (in default priority order)
 

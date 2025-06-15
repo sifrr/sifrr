@@ -4,10 +4,10 @@
 
 ## Size
 
-| Type                                           |                           Size                           |
-| :--------------------------------------------- | :------------------------------------------------------: |
-| Minified (`dist/sifrr.fetch.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/fetch)   |
-| Minified + Gzipped (`dist/sifrr.fetch.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/fetch) |
+| Type                                      |                           Size                           |
+| :---------------------------------------- | :------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/fetch)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/fetch) |
 
 ## How to use
 
@@ -16,7 +16,7 @@
 Add script tag in your website.
 
 ```html
-<script src="https://unpkg.com/@sifrr/fetch@{version}/dist/sifrr.fetch.min.js"></script>
+<script src="https://unpkg.com/@sifrr/fetch@{version}/dist/index.iife.js"></script>
 ```
 
 #### Browser API support needed for

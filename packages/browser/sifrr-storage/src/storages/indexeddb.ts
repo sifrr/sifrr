@@ -58,7 +58,7 @@ class IndexedDBStore implements SifrrStore {
       .then(() => true)
       .catch(() => false);
   }
-  async clear() {
+  clear() {
     return this.txn('readwrite', 'clear', undefined)
       .then(() => {})
       .catch(() => {});

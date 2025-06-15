@@ -32,16 +32,16 @@ runs:
         FILTER_ARGS=($(echo $PKG_TO_PUBLISH | tr "," " "))
         if [[ ! -z $PKG_TO_PUBLISH ]]; then
           yarn turbo publish-package "${FILTER_ARGS[@]}" --continue
-          yarn turbo post-release "${FILTER_ARGS[@]}" --continue
           echo "Released $PKG_TO_PUBLISH"
         fi
+        yarn docs
 
     - name: Deploy Docs
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ inputs.github_token }}
         publish_branch: gh-pages
-        publish_dir: ./__docs__
+        publish_dir: ./docs
         exclude_assets: ''
         user_name: aadityataparia
         user_email: aadityataparia@gmail.com
