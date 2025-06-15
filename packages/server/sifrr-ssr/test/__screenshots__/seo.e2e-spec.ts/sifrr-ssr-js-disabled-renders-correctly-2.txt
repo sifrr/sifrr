@@ -3,7 +3,6 @@
   "content-type": "text/html; charset=utf-8",
   "x-ssr-powered-by": "@sifrr/ssr",
   "content-length": "768",
-  "etag": "W/\"300-imoEnAnOH7KVx0SJIPa0cMoGZfw\"",
   "connection": "keep-alive",
   "keep-alive": "timeout=5"
 }

@@ -2,8 +2,6 @@
   "x-powered-by": "Express",
   "accept-ranges": "bytes",
   "cache-control": "public, max-age=0",
-  "last-modified": "Sat, 14 Jun 2025 13:29:36 GMT",
-  "etag": "W/\"178-1976ea1a4ea\"",
   "content-type": "text/javascript; charset=utf-8",
   "content-length": "376",
   "connection": "keep-alive",

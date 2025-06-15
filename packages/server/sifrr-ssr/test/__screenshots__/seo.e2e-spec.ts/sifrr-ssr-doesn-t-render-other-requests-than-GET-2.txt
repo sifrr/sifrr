@@ -2,7 +2,6 @@
   "x-powered-by": "Express",
   "content-type": "text/html; charset=utf-8",
   "content-length": "49",
-  "etag": "W/\"31-6mGxDtl0C7nFekaZrQRFR2KdMEI\"",
   "connection": "keep-alive",
   "keep-alive": "timeout=5"
 }
