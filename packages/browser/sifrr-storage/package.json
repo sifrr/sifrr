@@ -17,6 +17,14 @@
   "module": "dist/index.mjs",
   "browser": "dist/index.iife.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -55,7 +63,6 @@
   },
   "files": [
     "bin",
-    "dist",
-    "src"
+    "dist"
   ]
 }
