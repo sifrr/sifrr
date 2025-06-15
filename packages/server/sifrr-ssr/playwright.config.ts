@@ -1,5 +1,5 @@
 import { defineConfig } from '@playwright/test';
 import * as pkg from '@sifrr/test-suite';
 
-const port = !process.env.CI ? 6006 : 8007;
+const port = !process.env.CI ? 6006 : 8008;
 export default defineConfig(pkg.getPlaywrightConfigOptions(port));
