@@ -94,6 +94,7 @@ class Request<T, E> {
       ? {
           data: data as T,
           response: resp,
+          headers: resp.headers,
           status: resp.status,
           ok: true,
           errorData: undefined
@@ -101,6 +102,7 @@ class Request<T, E> {
       : {
           data: undefined,
           errorData: data as E,
+          headers: resp.headers,
           response: resp,
           status: resp.status,
           ok: false

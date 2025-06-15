@@ -10,7 +10,10 @@ declare global {
 
 export type BeforeOpts = { url: string; options: SifrrFetchOptions };
 
-export type SifrrFetchResponse<T = any, E = any> = { status: number } & (
+export type SifrrFetchResponse<T = any, E = any> = {
+  status: number;
+  headers: Headers;
+} & (
   | { data?: T; ok: true; errorData: undefined; response?: Response }
   | { data: undefined; ok: false; errorData: E; response: Response }
 );
