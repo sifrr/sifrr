@@ -12,8 +12,17 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "src/sifrr.seo.js",
-  "module": "dist/sifrr.seo.module.js",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "keywords": [
     "sifrr",
     "seo",
@@ -21,12 +30,19 @@
     "server side rendering"
   ],
   "scripts": {
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright",
+    "test:jest": "jest",
+    "test:playwright": "playwright test --pass-with-no-tests",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "tsx ./test/server",
+    "test:server:watch": "tsx watch --include ./test/public ./test/server"
   },
   "dependencies": {
     "keyv": "^5.3.4",
-    "puppeteer": "^2.0.0"
+    "puppeteer": "^24.10.1"
   },
   "peerDependencies": {},
   "devDependencies": {},

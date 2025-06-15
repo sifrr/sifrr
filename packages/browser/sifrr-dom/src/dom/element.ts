@@ -46,7 +46,8 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
       this[content] = temp(this);
       if (useShadowRoot) {
         this.attachShadow({
-          mode: shadowRootMode
+          mode: shadowRootMode,
+          serializable: true
         });
       }
       const propKeys = (this.constructor as SifrrElementKlass<any>)[props];

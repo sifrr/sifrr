@@ -1,17 +1,18 @@
 class SifrrTest extends Sifrr.Dom.Element {
   static get template() {
-    return Sifrr.Template.html`<style media="screen">
+    return Sifrr.Dom.html`<style media="screen">
       p {
         color: blue;
       }
     </style>
     <p>Simple element</p>
-    <p>${({ state }) => state.id}</p>`;
+    <p>${({ context }) => context.id}</p>`;
   }
 
-  constructor() {
-    super();
-    this.state = { id: 1 };
+  setup() {
+    return {
+      id: 2
+    };
   }
 }
 

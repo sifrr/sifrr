@@ -1,0 +1,9 @@
+{
+  "x-powered-by": "Express",
+  "content-type": "text/html; charset=utf-8",
+  "content-length": "49",
+  "etag": "W/\"31-6mGxDtl0C7nFekaZrQRFR2KdMEI\"",
+  "date": "Sun, 15 Jun 2025 09:44:20 GMT",
+  "connection": "keep-alive",
+  "keep-alive": "timeout=5"
+}

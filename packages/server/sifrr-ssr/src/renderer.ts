@@ -1,87 +1,141 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser, HTTPResponse, LaunchOptions, Page } from 'puppeteer';
 import PageRequest from './pagerequest';
-// status
-// 0: closed
-// 1: launching
-// 2: launched
+import { Keyv } from 'keyv';
 
-const prohibitedHeaders = ['user-agent', 'host'];
+const prohibitedHeaders = [
+  'authorization',
+  'cookie',
+  'if-modified-since',
+  'cookie2',
+  'content-length',
+  'connection',
+  'keep-alive',
+  'host',
+  'transfer-encoding',
+  'if-none-match'
+];
+const SIFRR_USER_AGENT = 'sifrr/ssr';
+
+export type RendererOptions = {
+  cacheKey: (url: string, headers: Record<string, string>) => any;
+  /**
+   * Keyv Cache store to use for render cache.
+   * It will use memory keyv store by default
+   */
+  cache: Keyv;
+  shouldRender: (url: string, headers: Record<string, string>) => boolean;
+  filterOutgoingRequests?: (url: string) => boolean;
+  beforeRender?: (page: Page, url: string) => void | Promise<void>;
+  afterRender?: (page: Page, url: string) => void | Promise<void>;
+  puppeteerOptions?: LaunchOptions;
+};
+
 class Renderer {
   status: number;
-  puppeteerOptions: { headless: boolean; args: never[] };
-  options: {};
-  _browser: any;
+  puppeteerOptions: LaunchOptions;
+  options: RendererOptions;
+  _browser?: Promise<Browser>;
+  private shouldRenderCache: Record<string, boolean> = {};
 
-  constructor(puppeteerOptions = {}, options = {}) {
+  constructor(options: RendererOptions) {
     this.status = 0;
-    this.puppeteerOptions = Object.assign(
-      {
-        headless: true,
-        args: []
-      },
-      puppeteerOptions
-    );
-    this.puppeteerOptions.args.push('--no-sandbox', '--disable-setuid-sandbox');
+    this.puppeteerOptions = {
+      headless: true,
+      args: [],
+      ...options.puppeteerOptions
+    };
+    this.puppeteerOptions.args?.push('--no-sandbox', '--disable-setuid-sandbox');
     this.options = options;
   }
 
-  async browserAsync() {
-    if (!this._browser) {
-      this._browser = puppeteer.launch(this.puppeteerOptions).then((b) => {
-        b.on('disconnected', () => {
-          /* istanbul ignore next */
-          this._browser = null;
-        });
-        return b;
+  async browserAsync(): Promise<Browser> {
+    this._browser ??= puppeteer.launch(this.puppeteerOptions).then((b) => {
+      b.on('disconnected', () => {
+        /* istanbul ignore next */
+        this._browser = undefined;
       });
-    }
+      return b;
+    });
     return this._browser;
   }
 
-  close() {
-    if (this._browser) return this.browserAsync().then((b) => b.close());
-    else return Promise.resolve(true);
+  async close() {
+    return (await (await this._browser)?.close()) ?? true;
   }
 
-  render(url, headers = {}) {
-    const me = this;
+  async render(url: string, headers: Record<string, string> = {}): Promise<string | null> {
+    if (headers['user-agent']?.includes(SIFRR_USER_AGENT)) {
+      return null;
+    }
+    if (this.getShouldRenderCache(url, headers) === false) {
+      return null;
+    }
+    const shouldRender = this.options.shouldRender(url, headers);
+    this.setShouldRenderCache(url, headers, shouldRender);
 
-    return this.browserAsync()
-      .then((b) => b.newPage())
-      .then(async (newp) => {
-        const fetches = new PageRequest(newp, me.options.filterOutgoingRequests);
-        await fetches.addListener;
+    if (!shouldRender) return null;
 
-        prohibitedHeaders.forEach((h) => delete headers[h]);
+    const key = this.options.cacheKey(url, headers);
+    const cachedVal = await this.options.cache?.get<string>(key);
+    if (cachedVal) {
+      return cachedVal;
+    }
 
-        await newp.setExtraHTTPHeaders(headers);
-        if (me.options.beforeRender) {
-          /* istanbul ignore next */
-          await newp.evaluateOnNewDocument(me.options.beforeRender).catch(console.error);
-        }
-        const resp = await newp.goto(url, { waitUntil: 'load' });
-        const sRC = me.isHTML(resp);
-        let ret;
+    const b = await this.browserAsync();
+    const newp = await b.newPage();
+    const fetches = new PageRequest(newp, this.options.filterOutgoingRequests);
+    await fetches.addListener;
 
-        if (sRC) {
-          await fetches.all();
-          if (me.options.afterRender) {
-            /* istanbul ignore next */
-            await newp.evaluate(me.options.afterRender).catch(console.error);
-          }
-          ret = await newp.content();
-        } else ret = false;
+    prohibitedHeaders.forEach((h) => delete headers[h]);
+    Object.keys(headers).forEach((h) => {
+      if (h.startsWith('proxy')) delete headers[h];
+      if (h.startsWith('sec-')) delete headers[h];
+    });
+    await this.options.beforeRender?.(newp, url);
 
-        await newp.close();
-        return ret;
+    headers['user-agent'] = (headers['user-agent'] ?? '') + ' ' + SIFRR_USER_AGENT;
+    await newp.setExtraHTTPHeaders(headers);
+
+    const resp = await newp.goto(url, { waitUntil: 'networkidle0' });
+    const status = resp?.status() ?? 200;
+
+    const sRC = this.isHTML(resp);
+    let ret: string | null;
+    if (sRC && status < 300) {
+      await this.options.afterRender?.(newp, url);
+      await fetches.all();
+      ret = await newp.evaluate(() => {
+        return (
+          document.documentElement.getHTML?.({ serializableShadowRoots: true }) ??
+          document.documentElement.outerHTML
+        );
       });
+      this.options.cache.set(key, ret);
+    } else if (status > 499) {
+      ret = null;
+    } else {
+      this.setShouldRenderCache(url, headers, false);
+      ret = null;
+    }
+
+    await newp.close();
+
+    return ret;
   }
 
-  isHTML(puppeteerResp) {
-    return (
-      puppeteerResp.headers()['content-type'] &&
-      puppeteerResp.headers()['content-type'].indexOf('html') >= 0
-    );
+  private setShouldRenderCache(url: string, headers: Record<string, string>, val: boolean) {
+    const key = this.options.cacheKey(url, headers);
+    this.shouldRenderCache[key] = val;
+  }
+
+  private getShouldRenderCache(url: string, headers: Record<string, string>) {
+    const key = this.options.cacheKey(url, headers);
+    if (this.shouldRenderCache[key] === undefined) return null;
+    return this.shouldRenderCache[key];
+  }
+
+  isHTML(puppeteerResp: HTTPResponse | null) {
+    return puppeteerResp?.headers()['content-type']?.includes('html') ?? false;
   }
 }
 

@@ -1,123 +1,64 @@
-import Renderer from './renderer';
-import getCache from './getcache';
-
-const isHeadless = new RegExp('(headless|Headless)');
+import Renderer, { RendererOptions } from './renderer';
+import { Keyv } from 'keyv';
 
 class SifrrSeo {
-  _uas: RegExp[];
-  shouldRenderCache: Record<string, boolean>;
-  options: { cacheKey: (url: string, headers: Record<string, string>) => any };
+  private readonly _uas: RegExp[];
+  options: {
+    userAgents: (RegExp | string)[];
+  } & RendererOptions;
   _renderer?: Renderer;
-  static Renderer = Renderer;
-  _poptions: any;
-  _cache: any;
 
-  constructor(
-    userAgents = [
-      'Googlebot', // Google
-      'Bingbot', // Bing
-      'Slurp', // Slurp
-      'DuckDuckBot', // DuckDuckGo
-      'Baiduspider', //Baidu
-      'YandexBot', // Yandex
-      'Sogou', // Sogou
-      'Exabot' // Exalead
-    ],
-    options = {}
-  ) {
-    this._uas = userAgents.map((ua) => new RegExp(ua));
-    this.shouldRenderCache = {};
-    this.options = Object.assign(
-      {
-        cacheKey: (url) => url
+  constructor(options: Partial<SifrrSeo['options']> = {}) {
+    this.options = {
+      userAgents: [/.*/],
+      cacheKey: (url: string): string => url,
+      cache: new Keyv(),
+      shouldRender: (url, headers): boolean => {
+        return this.shouldRender(url, headers);
       },
-      options
-    );
+      ...options
+    };
+    this._uas = this.options.userAgents.map((ua) => new RegExp(ua));
   }
 
   get renderer() {
-    this._renderer = this._renderer ?? new SifrrSeo.Renderer(this._poptions, this.options);
+    this._renderer ??= new Renderer(this.options);
     return this._renderer;
   }
 
-  get cache() {
-    this._cache = this._cache ?? getCache(this.options);
-    return this._cache;
-  }
-
-  getExpressMiddleware(getUrl = (expressReq: Request) => `http://127.0.0.1:80${expressReq.url}`) {
-    return require('./middleware')(getUrl).bind(this);
-  }
-
-  addUserAgent(userAgent: string) {
+  addUserAgent(userAgent: RegExp | string) {
     this._uas.push(new RegExp(userAgent));
   }
 
-  setPuppeteerOption(name: string, value: string) {
-    this._poptions = this._poptions ?? {};
-    this._poptions[name] = value;
-  }
-
-  close() {
-    return this.renderer.close();
+  async close() {
+    const closed = await this.renderer.close();
+    this._renderer = undefined;
+    return closed;
   }
 
   shouldRender(url: string, headers: Record<string, string>) {
     return this._isUserAgent(headers);
   }
 
-  setShouldRenderCache(url: string, headers: Record<string, string>, val: boolean) {
-    const key = this.options.cacheKey(url, headers);
-    this.shouldRenderCache[key] = val;
-  }
-
-  getShouldRenderCache(url: string, headers: Record<string, string>) {
-    const key = this.options.cacheKey(url, headers);
-    if (this.shouldRenderCache[key] === undefined) return null;
-    return this.shouldRenderCache[key];
-  }
-
   clearCache() {
-    this.cache.reset();
+    this.options.cache?.clear();
   }
 
-  async render(url, headers: Record<string, string>) {
-    if (this.getShouldRenderCache(url, headers) === false) {
-      throw Error(`No Render`);
-    } else if (this.shouldRender(url, headers) && !this._isHeadless(headers)) {
-      const key = this.options.cacheKey(url, headers);
-      return new Promise((res, rej) => {
-        this.cache.get(key, (err, val) => {
-          /* istanbul ignore if */
-          if (err) {
-            rej(err);
-          } else if (!val) {
-            this.renderer
-              .render(url, headers)
-              .then((resp) => {
-                this.cache.set(key, resp);
-                res(resp);
-              })
-              .catch(
-                /* istanbul ignore next */ (err) => {
-                  rej(err);
-                }
-              );
-          } else {
-            res(val);
-          }
-        });
-      });
-    } else {
-      throw Error(`No Render`);
+  async render(
+    url: string,
+    headers: Record<string, any>,
+    options: {
+      background: boolean;
+    } = {
+      background: false
     }
+  ): Promise<string | null> {
+    const rendered = this.renderer.render(url, headers);
+    if (options.background) return null;
+    else return rendered;
   }
 
-  _isHeadless(headers: Record<string, string> = {}) {
-    return !!isHeadless.test(headers['user-agent'] ?? '');
-  }
-
-  _isUserAgent(headers: Record<string, string> = {}) {
+  private _isUserAgent(headers: Record<string, string> = {}) {
     const ua = headers['user-agent'] ?? '';
     let ret = false;
     this._uas.forEach((b) => {
@@ -127,6 +68,17 @@ class SifrrSeo {
   }
 }
 
-SifrrSeo.Renderer = Renderer;
+export const botUserAgents = [
+  'Googlebot', // Google
+  'Bingbot', // Bing
+  'Slurp', // Slurp
+  'DuckDuckBot', // DuckDuckGo
+  'Baiduspider', //Baidu
+  'YandexBot', // Yandex
+  'Sogou', // Sogou
+  'Exabot' // Exalead
+];
+
+export { Renderer };
 
 export default SifrrSeo;

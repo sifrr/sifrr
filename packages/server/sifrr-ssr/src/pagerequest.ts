@@ -1,13 +1,21 @@
-const whiteTypes = ['document', 'script', 'xhr', 'fetch'];
+import { HTTPRequest, Page, ResourceType } from 'puppeteer';
 
-function isTypeOf(request, types) {
+const whiteTypes: ResourceType[] = ['document', 'script', 'xhr', 'fetch'];
+
+function isTypeOf(request: HTTPRequest, types: ResourceType[]): boolean {
   const resType = request.resourceType();
   return types.indexOf(resType) !== -1;
 }
 
 class PageRequest {
   addListener: any;
-  constructor(npage, filter = () => true) {
+  npage: Page;
+  filter: (url: string) => boolean;
+  pendingRequests: number;
+  pendingPromise: Promise<unknown>;
+  pendingResolver?: (value?: unknown) => void;
+
+  constructor(npage: Page, filter: (url: string) => boolean = () => true) {
     this.npage = npage;
     this.filter = filter;
     this.pendingRequests = 0;
@@ -17,11 +25,10 @@ class PageRequest {
   }
 
   addOnRequestListener() {
-    const me = this;
     this.addListener = this.npage.setRequestInterception(true).then(() => {
-      me.npage.on('request', (request) => {
+      this.npage.on('request', (request: HTTPRequest & { __allowed?: boolean }) => {
         if (isTypeOf(request, whiteTypes) && this.filter(request.url())) {
-          me.pendingRequests++;
+          this.pendingRequests++;
           request.__allowed = true;
           request.continue();
         } else {
@@ -34,19 +41,18 @@ class PageRequest {
 
   addEndRequestListener() {
     // resolve pending fetch/xhrs
-    const me = this;
     this.npage.on('requestfailed', (request) => {
-      me.onEnd(request);
+      this.onEnd(request);
     });
     this.npage.on('requestfinished', (request) => {
-      me.onEnd(request);
+      this.onEnd(request);
     });
   }
 
-  onEnd(request) {
+  onEnd(request: HTTPRequest & { __allowed?: boolean }) {
     if (request.__allowed) {
       this.pendingRequests--;
-      if (this.pendingRequests === 0) this.pendingResolver();
+      if (this.pendingRequests === 0) this.pendingResolver?.();
     }
   }
 
