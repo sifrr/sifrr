@@ -18,15 +18,6 @@ export interface ISifrrElement extends HTMLElement {
   setProps(props: object): void;
 }
 
-export interface EventListener {
-  __dom?: HTMLElement;
-}
-
-export interface SifrrEventListener {
-  (ev: Event, target: HTMLElement, dom: HTMLElement): void;
-  __dom?: HTMLElement;
-}
-
 export interface SifrrElementKlass<K extends ISifrrElement> {
   [elName]?: string;
   [props]?: Set<string>;

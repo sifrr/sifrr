@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "out": "./wiki",
-  "name": "Monorepo TSDoc GitHub Wiki Example",
+  "name": "Sifrr",
   "entryPoints": ["packages/browser/*", "packages/server/*"],
   "entryPointStrategy": "packages",
   "plugin": ["typedoc-plugin-missing-exports"],
@@ -9,6 +9,14 @@
     "entryPoints": ["src/index.ts"],
     "exclude": ["**/test/**"]
   },
-  "highlightLanguages": ["graphql", "css", "html", "javascript", "json", "typescript"],
+  "highlightLanguages": [
+    "graphql",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "typescript",
+    "shellscript"
+  ],
   "githubPages": false
 }

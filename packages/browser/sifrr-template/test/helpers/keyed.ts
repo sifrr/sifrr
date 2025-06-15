@@ -139,7 +139,7 @@ function parent(childNodes) {
     }
   };
   for (const name in parent) {
-    jest.spyOn(parent, name as any);
+    if (typeof parent[name] === 'function') jest.spyOn(parent, name as any);
   }
   parent.childNodes = childNodes;
   childNodes.forEach((cn) => (cn.parentNode = parent));
