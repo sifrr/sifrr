@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": ["esnext", "es2019", "dom"],
     "baseUrl": ".",
+    "noImplicitAny": false,
     "removeComments": false,
     "paths": {
       "@/*": ["src/*"]

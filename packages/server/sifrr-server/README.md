@@ -189,7 +189,7 @@ can be implemented easily using sifrr-fetch
 
 ## Static server Benchmarks
 
-From [this file](./test/browser/speed.test.js) on MacBook 14inch M1 Pro
+From [this file](./test/browser/speed.e2e-spec.js) on MacBook 14inch M1 Pro
 
 ```sh
 # small file

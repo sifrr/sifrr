@@ -26,7 +26,14 @@ class SifrrFetch {
       try {
         const r = o.use?.(opts);
         delete o.use;
-        return { data: await r, ok: true, response: undefined, status: 200, errorData: undefined };
+        return {
+          data: await r,
+          ok: true,
+          response: undefined,
+          headers: new Headers(),
+          status: 200,
+          errorData: undefined
+        };
       } catch (e) {
         window.console.error(e);
       }

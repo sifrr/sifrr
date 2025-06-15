@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "out": "./wiki",
+  "name": "Monorepo TSDoc GitHub Wiki Example",
+  "entryPoints": ["packages/browser/*", "packages/server/*"],
+  "entryPointStrategy": "packages",
+  "plugin": ["typedoc-plugin-missing-exports"],
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"],
+    "exclude": ["**/test/**"]
+  },
+  "highlightLanguages": ["graphql", "css", "html", "javascript", "json", "typescript"],
+  "githubPages": false
+}

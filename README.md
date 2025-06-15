@@ -105,7 +105,7 @@ To support mini browsers (opera mini, uc browser etc.), You can use sifrr-ssr to
 
 ### Code Contributors
 
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute. [[Contribute](./misc/CONTRIBUTING.md)].
 <a href="https://github.com/sifrr/sifrr/graphs/contributors"><img src="https://opencollective.com/sifrr-oc/contributors.svg?width=890&button=false" /></a>
 
 ### Financial Contributors

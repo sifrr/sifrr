@@ -179,7 +179,7 @@ export function makeChildrenEqualKeyed<T>(
   const oldKeys = new Array(newEnd + 1 - newStart),
     newKeys = new Map(),
     nodes = new Array(prevEnd - prevStart + 1),
-    toDelete = [];
+    toDelete: Node[] = [];
 
   for (let i = newStart; i <= newEnd; i++) {
     // Positions for reusing nodes from current DOM state
@@ -257,7 +257,7 @@ export function makeChildrenEqualKeyed<T>(
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
 export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number): number[] {
   const seq: number[] = [],
-    is = [],
+    is: number[] = [],
     pre = new Array(ns.length);
   let l = -1;
 

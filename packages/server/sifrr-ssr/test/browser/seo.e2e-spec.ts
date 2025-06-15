@@ -19,6 +19,8 @@ test.describe('sifrr-ssr', () => {
       await axios.get(`${PATH}/`);
       const time2 = getDuration(process.hrtime(start2));
 
+      delete headers['last-modified'];
+      delete headers['etag'];
       delete headers['date'];
       expect(data).toMatchSnapshot();
       expect(headers['x-ssr-powered-by']).toEqual('@sifrr/ssr');
@@ -56,6 +58,9 @@ test.describe('sifrr-ssr', () => {
   test("doesn't render non html files", async () => {
     const { data, headers } = await axios.get(`${PATH}/elements/nosr.js`);
     expect(data).toMatchSnapshot();
+
+    delete headers['last-modified'];
+    delete headers['etag'];
     delete headers['date'];
     expect(headers['x-ssr-powered-by']).toBeUndefined();
     expect(JSON.stringify(headers, null, 2)).toMatchSnapshot();
@@ -64,6 +69,9 @@ test.describe('sifrr-ssr', () => {
   test("doesn't render other requests than GET", async () => {
     const { data, headers } = await axios.post(`${PATH}/post`);
     expect(data).toMatchSnapshot();
+
+    delete headers['last-modified'];
+    delete headers['etag'];
     delete headers['date'];
     expect(headers['x-ssr-powered-by']).toBeUndefined();
     expect(JSON.stringify(headers, null, 2)).toMatchSnapshot();

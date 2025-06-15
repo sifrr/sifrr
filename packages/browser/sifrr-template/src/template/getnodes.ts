@@ -10,11 +10,11 @@ export default function getNodesFromBindingValue<T>(
   } else if (value instanceof SifrrNodesArray) {
     return value;
   } else if (Array.isArray(value)) {
-    const newValue = [];
+    const newValue: SifrrNode<T>[] = [];
     for (const element of value) {
       newValue.push(...getNodesFromBindingValue<T>(element));
     }
-    return newValue as SifrrNode<T>[];
+    return newValue;
   } else if (value instanceof HTMLTemplateElement) {
     return Array.prototype.slice.call(value.content.childNodes);
   } else if (value instanceof Node) {

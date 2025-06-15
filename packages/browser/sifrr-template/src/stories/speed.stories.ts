@@ -314,7 +314,7 @@ const meta: Meta<Args> = {
         'mouse',
         'keyboard'
       ];
-      const data = [];
+      const data: any[] = [];
       for (let i = 0; i < count; i++)
         data.push({
           id: i + frm,

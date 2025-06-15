@@ -60,7 +60,7 @@ function buildData(count = 10, from = 1): { id: number; key: number; label: stri
     'mouse',
     'keyboard'
   ];
-  const data = [];
+  const data: any[] = [];
   for (let i = 0; i < count; i++)
     data.push({
       id: i + from,
@@ -120,6 +120,7 @@ function findIndex(childNodes, a): number {
 
 function parent(childNodes) {
   const parent = {
+    childNodes: [] as any[],
     insertBefore: function (a, b) {
       const childNodes = this.childNodes;
       const indexOld = findIndex(childNodes, a);
@@ -138,7 +139,7 @@ function parent(childNodes) {
     }
   };
   for (const name in parent) {
-    jest.spyOn(parent, name);
+    jest.spyOn(parent, name as any);
   }
   parent.childNodes = childNodes;
   childNodes.forEach((cn) => (cn.parentNode = parent));

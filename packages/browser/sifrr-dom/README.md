@@ -113,7 +113,7 @@ module.exports = CustomTag;
 
 #### Template
 
-`template` should be return value of `Sifrr.Template.html`. check out [sifrr-template](../sifrr-template) for more details.
+`template` should be return value of `Sifrr.Template.html`. check out [sifrr-template](../sifrr-template/README.md) for more details.
 Bindings work as it does in `Sifrr.Template`, difference being instead of props, `Sifrr.Dom` passes element itself in binding functions' first argument
 
 #### Loading element
