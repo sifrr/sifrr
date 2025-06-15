@@ -10,6 +10,8 @@ async function loadTime(page) {
   });
 }
 
+const getDuration = (time: [number, number]) => time[0] * 1000 + time[1] / 1000000;
+
 export const SPORT = parseInt(process.env.PORT ?? '6006');
 const PATH = `http://localhost:${SPORT}`;
 
@@ -18,11 +20,19 @@ const PATH = `http://localhost:${SPORT}`;
 test.describe('sifrr-ssr', () => {
   test.describe('js disabled', () => {
     test('renders correctly', async () => {
+      const start = process.hrtime();
       const { data, headers } = await axios.get(`${PATH}/`);
+      const time1 = getDuration(process.hrtime(start));
 
+      const start2 = process.hrtime();
+      await axios.get(`${PATH}/`);
+      const time2 = getDuration(process.hrtime(start2));
+
+      delete headers['date'];
       expect(data).toMatchSnapshot();
       expect(headers['x-ssr-powered-by']).toEqual('@sifrr/ssr');
       expect(JSON.stringify(headers, null, 2)).toMatchSnapshot();
+      expect(time2).toBeLessThan(time1);
     });
   });
 
@@ -55,6 +65,7 @@ test.describe('sifrr-ssr', () => {
   test("doesn't render non html files", async () => {
     const { data, headers } = await axios.get(`${PATH}/elements/nosr.js`);
     expect(data).toMatchSnapshot();
+    delete headers['date'];
     expect(headers['x-ssr-powered-by']).toBeUndefined();
     expect(JSON.stringify(headers, null, 2)).toMatchSnapshot();
   });
@@ -62,6 +73,7 @@ test.describe('sifrr-ssr', () => {
   test("doesn't render other requests than GET", async () => {
     const { data, headers } = await axios.post(`${PATH}/post`);
     expect(data).toMatchSnapshot();
+    delete headers['date'];
     expect(headers['x-ssr-powered-by']).toBeUndefined();
     expect(JSON.stringify(headers, null, 2)).toMatchSnapshot();
   });

@@ -6,7 +6,6 @@
   "etag": "W/\"178-1976ea1a4ea\"",
   "content-type": "text/javascript; charset=utf-8",
   "content-length": "376",
-  "date": "Sun, 15 Jun 2025 09:44:19 GMT",
   "connection": "keep-alive",
   "keep-alive": "timeout=5"
 }
