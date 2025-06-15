@@ -1,15 +1,6 @@
 import { test, expect } from '@playwright/test';
 import axios from 'axios';
 
-async function loadTime(page) {
-  return page.evaluate(() => {
-    return (
-      (window.performance.getEntriesByName('responseEnd')[0]?.startTime ?? 0) -
-      (window.performance.getEntriesByName('requestStart')[0]?.startTime ?? 0)
-    );
-  });
-}
-
 const getDuration = (time: [number, number]) => time[0] * 1000 + time[1] / 1000000;
 
 export const SPORT = parseInt(process.env.PORT ?? '6006');
