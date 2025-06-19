@@ -4,8 +4,7 @@ import {
   ELEMENT_NODE,
   REF_REG,
   REF_REG_EXACT,
-  REF_REG_GLOBAL,
-  REF_LENGTH
+  REF_REG_GLOBAL
 } from './constants';
 
 import { SifrrBindType, SifrrBindMap, SifrrFunctionMap, BindingFxn } from './types';
@@ -15,9 +14,12 @@ function attrToProp(attrName: string) {
   return attrName.substring(1).replace(/-([a-z])/g, (g) => g[1]!.toUpperCase());
 }
 
-const emptyFxn = () => null;
+const emptyFxn = () => '';
 
 const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
+  const getValueFxn = (content: string) =>
+    functionMap.get(content) ?? new Function('me', `return ${content}`);
+
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {
     const textEl = <Text>el;
@@ -30,7 +32,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
       return [
         {
           type: SifrrBindType.Text,
-          value: functionMap.get(exactMatch[1]!)
+          value: getValueFxn(exactMatch[1]!)
         }
       ];
     }
@@ -38,17 +40,17 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
     const middleMatch = REF_REG.exec(x);
     if (middleMatch) {
       if (textEl.nodeType === COMMENT_NODE) {
-        console.error('Bindings in middle of comments are not supported and will be ignored.');
+        console.warn('Bindings in middle of comments are not supported and will be ignored.');
         return 0;
       }
       if (middleMatch.index === 0) {
-        textEl.splitText(REF_LENGTH);
+        textEl.splitText(middleMatch[0].length);
         textEl.data = '';
 
         return [
           {
             type: SifrrBindType.Text,
-            value: functionMap.get(middleMatch[1]!)
+            value: getValueFxn(middleMatch[1]!)
           }
         ];
       } else {
@@ -73,7 +75,7 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
       let value: BindingFxn<T, any, any>,
         direct = false;
       if (exactMatch) {
-        value = functionMap.get(exactMatch[1]!);
+        value = getValueFxn(exactMatch[1]!);
       } else {
         let middleMatch = REF_REG_GLOBAL.exec(attribute.value);
         if (!middleMatch) {
@@ -84,8 +86,8 @@ const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>
           let prev = 0;
           while (middleMatch) {
             text.push(attribute.value.substring(prev, middleMatch.index));
-            text.push(functionMap.get(middleMatch[1]!));
-            prev = middleMatch.index + REF_LENGTH;
+            text.push(getValueFxn(middleMatch[1]!));
+            prev = middleMatch.index + middleMatch[0].length;
             middleMatch = REF_REG_GLOBAL.exec(attribute.value);
           }
           text.push(attribute.value.substring(prev));

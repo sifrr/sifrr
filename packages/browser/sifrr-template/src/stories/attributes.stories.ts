@@ -26,13 +26,13 @@ export const ClassAndStyle: Story = {
           padding: padding.value
         })}
       >
-        classes
+        {{ me.properties }} {{ me.prop }} classes
       </div>
       <button class="toggle-class" ::onclick=${() => (ifref.value = !ifref.value)}>
         Toggle class
       </button>
       <button class="increase" ::onclick=${() => padding.value++}>Increase padding</button>`(
-      {},
+      { prop: 'value', properties: 'ps' },
       undefined
     );
     temp1.addRef(ifref);

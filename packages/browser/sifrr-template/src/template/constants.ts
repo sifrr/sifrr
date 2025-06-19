@@ -6,11 +6,11 @@ const comment = document.createComment('Sifrr');
 // binding string
 export const BIND_REF_LENGTH = 8;
 export const PREFIX = 'STB_';
-const REF = `{{${PREFIX}(.{${BIND_REF_LENGTH}})}}`;
+// const REF = `{{${PREFIX}(.{${BIND_REF_LENGTH}})}}`;
+const REF = `{{(?:${PREFIX})?([^}]+)}}`;
 export const REF_REG = new RegExp(REF);
 export const REF_REG_GLOBAL = new RegExp(REF, 'g');
 export const REF_REG_EXACT = new RegExp('^' + REF + '$');
-export const REF_LENGTH = 4 /* for {{}} */ + PREFIX.length + BIND_REF_LENGTH;
 export const CommentKeySymbol = Symbol('comment-key');
 
 // dom elements
