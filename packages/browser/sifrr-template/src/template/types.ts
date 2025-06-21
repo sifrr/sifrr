@@ -1,12 +1,12 @@
 import { Ref } from '@/template/ref';
 import { update } from '@/template/update';
 
-export const tempNumSymbol = Symbol('tempNum');
+export const templateId = Symbol('templateId');
 export const bindingSymbol = Symbol('bindings');
 
 export type SifrrNode<T> = (ChildNode | Text | Comment) & {
   [bindingSymbol]?: SifrrBindingCollection<T>[];
-  [tempNumSymbol]?: number;
+  [templateId]?: string;
   key?: SifrrKeyType;
 };
 

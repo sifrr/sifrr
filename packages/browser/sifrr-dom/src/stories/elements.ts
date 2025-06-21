@@ -14,7 +14,7 @@ export class FlexElement extends Element {
       .flex {
         display: flex;
         flex-direction: ${(el: FlexElement) => el.flexDirection ?? 'column'};
-        gap: ${(el: FlexElement) => (el.gap ?? 0) + 'px'};
+        gap: {{ me.gap }}px;
       }
     </style>
     <div class="flex">
@@ -57,7 +57,7 @@ export class ExampleElement extends Element {
           }}
         >
           Click to increase ${(el: ExampleElement) => el.context.deep.count},
-          ${(el: ExampleElement) => el.context.dd.value}
+          {{me.context.dd.value}}
         </button>
         <button
           @click=${(el: ExampleElement) => () => (el.context.hide.value = !el.context.hide.value)}

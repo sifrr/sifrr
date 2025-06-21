@@ -4,8 +4,8 @@ import { SifrrCreateFunction, SifrrProps, SifrrNodesArray, Ref, ref, watch } fro
 
 function elementClassFactory(baseClass: typeof HTMLElement) {
   class SifrrElement extends baseClass implements ISifrrElement {
-    static [elName]: string;
-    static [props]?: Set<string>;
+    static readonly [elName]: string;
+    static readonly [props]?: Set<string>;
     private static [tmp]: SifrrCreateFunction<any>;
     static readonly template: SifrrCreateFunction<any>;
     static readonly components?: SifrrElementKlass<any>[];
@@ -15,9 +15,7 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     }
 
     static get elementName() {
-      return (
-        this[elName] ?? (this[elName] = this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
-      );
+      return this[elName] ?? this.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     }
 
     static get n() {
@@ -111,8 +109,8 @@ function elementClassFactory(baseClass: typeof HTMLElement) {
     update() {
       this.beforeUpdate();
       this[content].update(this);
-      this.onUpdate();
       this[watchers].forEach((w) => w());
+      this.onUpdate();
       this.dispatchEvent(
         new CustomEvent('update', {
           bubbles: false

@@ -8,14 +8,13 @@ import {
   SifrrNodesArray,
   MaybePromise,
   BindingFxn,
-  tempNumSymbol,
-  bindingSymbol
+  bindingSymbol,
+  templateId
 } from './types';
 import creator from './creator';
 import { update } from './update';
 import { TEXT_NODE, SIFRR_FRAGMENT, REF_REG } from './constants';
-
-let tempNum = 1;
+import createUniqueString from '@/ustring';
 
 const createTemplate = <T = any>(
   str: TemplateStringsArray,
@@ -41,7 +40,7 @@ const createTemplate = <T = any>(
     const refs = createBindings<T>(childNodes[i]!, creator, functionMap);
     return refs;
   });
-  const tempNums = childNodes.map(() => tempNum++);
+  const tId = createUniqueString(10);
 
   const clone = (props: SifrrProps<T>): SifrrNodesArray<T> => {
     // https://jsbench.me/6qk4zc0s9x/1
@@ -50,7 +49,7 @@ const createTemplate = <T = any>(
     for (let i = 0; i < nodeLength; i++) {
       const n = (newNodes[i] = childNodes[i]!.cloneNode(true) as SifrrNode<T>);
 
-      n[tempNumSymbol] = tempNums[i];
+      n[templateId] = tId;
 
       if (refMaps[i]!.length < 1 || isText(n)) continue;
 
@@ -63,7 +62,7 @@ const createTemplate = <T = any>(
   // cloning this template, can be used as binding function in another template
   const createFxn = function (props: SifrrProps<T>, oldValue?: SifrrNodesArray<T>) {
     if (oldValue) {
-      if (isSameSifrrNode(oldValue, tempNums)) {
+      if (isSameSifrrNode(oldValue, tId)) {
         update(oldValue, props);
         oldValue.isRendered = true;
         return oldValue;

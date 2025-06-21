@@ -53,7 +53,7 @@ export const ClassAndStyle: Story = {
           font-size: 20px;
         }
       </style><div class="abcd first second third fourth" style="position: static; padding: 16px;">
-        classes
+        ps value classes
       </div><button class="toggle-class">
         Toggle class
       </button><button class="increase">Increase padding</button>`);
@@ -65,7 +65,7 @@ export const ClassAndStyle: Story = {
           font-size: 20px;
         }
       </style><div class="abcd first second third" style="position: static; padding: 16px;">
-        classes
+        ps value classes
       </div><button class="toggle-class">
         Toggle class
       </button><button class="increase">Increase padding</button>`);
@@ -76,7 +76,7 @@ export const ClassAndStyle: Story = {
           font-size: 20px;
         }
       </style><div class="abcd first second third" style="position: static; padding: 17px;">
-        classes
+        ps value classes
       </div><button class="toggle-class">
         Toggle class
       </button><button class="increase">Increase padding</button>`);
@@ -87,7 +87,7 @@ export const ClassAndStyle: Story = {
           font-size: 20px;
         }
       </style><div class="abcd first second third fourth" style="position: static; padding: 17px;">
-        classes
+        ps value classes
       </div><button class="toggle-class">
         Toggle class
       </button><button class="increase">Increase padding</button>`);
