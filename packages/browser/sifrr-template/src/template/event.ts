@@ -7,11 +7,10 @@ export const getEventListener = (name: string): EventListener => {
     while (dom) {
       const eventHandler = (dom as any)[`@${name}`];
       if (typeof eventHandler === 'function') {
-        eventHandler.call(target, e, dom);
-        return;
+        eventHandler.call(dom, e, dom);
       }
-      if (e.bubbles) {
-        dom = <HTMLElement>dom.parentNode || <HTMLElement>(<ShadowRoot>(<unknown>dom)).host;
+      if (e.bubbles && !e.isPropagationStopped && !e.isImmediatePropagationStopped) {
+        dom = dom.parentElement ?? ((dom as unknown as ShadowRoot).host as HTMLElement);
       } else {
         dom = null;
       }
@@ -27,4 +26,23 @@ export const add = (name: string) => {
   document.addEventListener(name, namedEL, listenOpts);
   SYNTHETIC_EVENTS.add(name);
   return true;
+};
+
+declare global {
+  interface Event {
+    isPropagationStopped?: boolean;
+    isImmediatePropagationStopped?: boolean;
+  }
+}
+
+const _stopPropogation = Event.prototype.stopPropagation;
+Event.prototype.stopPropagation = function (...args): void {
+  this.isPropagationStopped = true;
+  _stopPropogation.apply(this, ...args);
+};
+
+const _stopImmediatePropagation = Event.prototype.stopImmediatePropagation;
+Event.prototype.stopImmediatePropagation = function (...args): void {
+  this.isImmediatePropagationStopped = true;
+  _stopImmediatePropagation.apply(this, ...args);
 };

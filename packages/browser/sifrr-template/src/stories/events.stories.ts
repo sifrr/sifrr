@@ -31,6 +31,19 @@ export const Primary: Story = {
       <br />
       <div :@mouseenter=${args.mouseenter} :@mouseleave=${args.mouseleave}>Mouse enter</div>
       <br />
+      <div style="padding: 20px" :@click=${args.click}>
+        <div :@click=${args.click}>Nested</div>
+      </div>
+      <div style="padding: 20px" :@click=${args.click}>
+        <div
+          :@click=${(e: MouseEvent, tgt) => {
+            console.log(e, tgt);
+            e.stopPropagation();
+          }}
+        >
+          Nested Stop propogation
+        </div>
+      </div>
     `;
 
     const element = document.createElement('div');
@@ -43,7 +56,7 @@ export const Primary: Story = {
     return element;
   },
   args: {
-    click: fn(),
+    click: console.log,
     touchstart: fn(),
     mouseenter: fn(),
     mouseleave: fn()
