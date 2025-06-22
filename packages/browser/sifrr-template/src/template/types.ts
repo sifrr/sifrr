@@ -26,12 +26,19 @@ export type ChildNodeKeyed = ChildNode & {
   key: SifrrKeyType;
 };
 
-type _RTValue = null | undefined | string | number | boolean | Node | DomBindingReturnArrayValue;
-export type DomBindingReturnArrayValue = (NodeList | _RTValue[]) & {
+export type DomBindingReturnArrayValue = (NodeList | DomBindingReturnValue[]) & {
   isRendered?: boolean;
   reference?: Node;
 };
-export type DomBindingReturnValue = _RTValue | DomBindingReturnArrayValue;
+export type DomBindingReturnValue =
+  | null
+  | undefined
+  | string
+  | number
+  | boolean
+  | Node
+  | object
+  | DomBindingReturnArrayValue;
 
 export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
   isRendered = false;

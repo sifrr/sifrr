@@ -17,8 +17,16 @@ function attrToProp(attrName: string) {
 const emptyFxn = () => '';
 
 const creator = <T>(el: Node, functionMap: SifrrFunctionMap<T>): SifrrBindMap<T>[] | 0 => {
-  const getValueFxn = (content: string) =>
-    functionMap.get(content) ?? new Function('me', `return ${content}`);
+  const getValueFxn = (content: string) => {
+    const fxnMapVal = functionMap.get(content);
+    if (typeof fxnMapVal === 'function') {
+      return fxnMapVal;
+    }
+    if (fxnMapVal === undefined) {
+      return new Function('me', `return ${content}`);
+    }
+    return () => fxnMapVal;
+  };
 
   // TEXT/COMMENT Node
   if (el.nodeType === TEXT_NODE || el.nodeType === COMMENT_NODE) {

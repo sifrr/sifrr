@@ -100,6 +100,8 @@ export const Attribute: Story = {
       class="attr"
       attr="abcd-${() => 'some value'} efg"
       attr1=${() => 'okay value'}
+      attr2="${'okay value 2'}"
+      :prop=${{ a: true }}
     >
       classes
     </div>`({}, undefined);
@@ -113,8 +115,9 @@ export const Attribute: Story = {
     const div = canvasElement.querySelector('.div') as HTMLDivElement;
 
     await expect(div.innerHTML)
-      .toEqual(`<div class="attr" attr="abcd-some value efg" attr1="okay value">
+      .toEqual(`<div class="attr" attr="abcd-some value efg" attr1="okay value" attr2="okay value 2">
       classes
     </div>`);
+    await expect((div.querySelector('.attr') as any).prop).toEqual({ a: true });
   }
 };
