@@ -1,6 +1,6 @@
 import puppeteer, { Browser, HTTPResponse, LaunchOptions, Page } from 'puppeteer';
 import PageRequest from './pagerequest';
-import { Keyv } from 'keyv';
+import Keyv from 'keyv';
 
 const prohibitedHeaders = [
   'authorization',
@@ -22,7 +22,7 @@ export type RendererOptions = {
    * Keyv Cache store to use for render cache.
    * It will use memory keyv store by default
    */
-  cache: Keyv;
+  cache: Keyv<string>;
   shouldRender: (url: string, headers: Record<string, string>) => boolean;
   filterOutgoingRequests?: (url: string) => boolean;
   beforeRender?: (page: Page, url: string) => void | Promise<void>;
@@ -31,14 +31,12 @@ export type RendererOptions = {
 };
 
 class Renderer {
-  status: number;
   puppeteerOptions: LaunchOptions;
   options: RendererOptions;
-  _browser?: Promise<Browser>;
+  private browser?: Promise<Browser>;
   private shouldRenderCache: Record<string, boolean> = {};
 
   constructor(options: RendererOptions) {
-    this.status = 0;
     this.puppeteerOptions = {
       headless: true,
       args: [],
@@ -49,18 +47,18 @@ class Renderer {
   }
 
   async browserAsync(): Promise<Browser> {
-    this._browser ??= puppeteer.launch(this.puppeteerOptions).then((b) => {
+    this.browser ??= puppeteer.launch(this.puppeteerOptions).then((b) => {
       b.on('disconnected', () => {
         /* istanbul ignore next */
-        this._browser = undefined;
+        this.browser = undefined;
       });
       return b;
     });
-    return this._browser;
+    return this.browser;
   }
 
   async close() {
-    return (await (await this._browser)?.close()) ?? true;
+    return (await (await this.browser)?.close()) ?? true;
   }
 
   async render(url: string, headers: Record<string, string> = {}): Promise<string | null> {
@@ -76,7 +74,7 @@ class Renderer {
     if (!shouldRender) return null;
 
     const key = this.options.cacheKey(url, headers);
-    const cachedVal = await this.options.cache?.get<string>(key);
+    const cachedVal = await this.options.cache?.get(key);
     if (cachedVal) {
       return cachedVal;
     }

@@ -1,18 +1,18 @@
-const SifrrSeo = require('../../src/sifrr.seo');
-const seo = new SifrrSeo(undefined, {
+const SifrrSsr = require('../../src/sifrr.seo');
+const seo = new SifrrSsr(undefined, {
   ttl: 0.001,
   maxCacheSize: 0.00001 // In MB, 10 Bytes
 });
 
-describe('SifrrSeo', () => {
+describe('SifrrSsr', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   describe('calling renderer', () => {
     it('calls renderer with given options', () => {
-      const stubRen = sinon.spy(SifrrSeo, 'Renderer');
-      const s = new SifrrSeo(['Opera'], { c: 'd' });
+      const stubRen = sinon.spy(SifrrSsr, 'Renderer');
+      const s = new SifrrSsr(['Opera'], { c: 'd' });
       s.setPuppeteerOption('h', false);
       s.renderer;
       s.close();
@@ -48,7 +48,7 @@ describe('SifrrSeo', () => {
       const Cache = require('cache-manager');
       const store = Cache.caching().store;
 
-      const r = new SifrrSeo([], {
+      const r = new SifrrSsr([], {
         cacheStore: store
       });
 
@@ -56,7 +56,7 @@ describe('SifrrSeo', () => {
     });
 
     it('returns from cache if there is a response', async () => {
-      const seo2 = new SifrrSeo(undefined, { cacheKey: () => '/key' });
+      const seo2 = new SifrrSsr(undefined, { cacheKey: () => '/key' });
       seo2.cache.set('/key', 'v');
       sinon.stub(seo2, 'shouldRender').returns(true);
 

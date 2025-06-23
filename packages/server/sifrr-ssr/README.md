@@ -16,10 +16,10 @@ Do `npm i @sifrr/ssr` or `yarn add @sifrr/ssr` or add the package to your `packa
 
 ### Basic usage
 
-SifrrSeo listens for `load` page event and waits for any `fetch`, `xhr` request to complete before returning rendered HTML. It doesn't load any media content on server.
+SifrrSsr listens for `load` page event and waits for any `fetch`, `xhr` request to complete before returning rendered HTML. It doesn't load any media content on server.
 
 ```js
-const SifrrSeo = require('@sifrr/ssr');
+const SifrrSsr = require('@sifrr/ssr');
 
 // options
 // `cacheStore`: same as store in [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) options, default: memory store with 100MB storage
@@ -42,7 +42,7 @@ const options = {
   filterOutgoingRequests: (url) => true
 }
 
-const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options);
+const sifrrSsr = new SifrrSsr(/* Array of user agents to render for */, options);
 // By default array is made up of these crawl bot user agents:
 // 'Googlebot', // Google
 // 'Bingbot', // Bing
@@ -55,7 +55,7 @@ const sifrrSeo = new SifrrSeo(/* Array of user agents to render for */, options)
 
 // Add your own user agent for which you want to server render
 // You can give sub string of regex string like '(Google|Microsoft).*'
-sifrrSeo.addUserAgent(/* string */ 'Opera Mini');
+sifrrSsr.addUserAgent(/* string */ 'Opera Mini');
 
 // add middleware to any connect/express like server
 // for example in express:
@@ -63,12 +63,12 @@ const express = require('express');
 const server = express();
 
 // Only use for GET requests as a express middleware
-server.get(sifrrSeo.getExpressMiddleware(/* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
+server.get(sifrrSsr.getExpressMiddleware(/* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
 server.listen(8080);
 
 // Use it programatically - Only renders get urls
 // these url, headers are passed to other functions
-sifrrSeo.render(
+sifrrSsr.render(
   url, /* Full url of page to render with protocol, domain, port, etc. */,
   headers = {
     /* Headers to send with GET request */
@@ -87,10 +87,10 @@ sifrr-ssr only renders a request if it has no `Referer` header (i.e. direct brow
 
 #### Changing shouldRender()
 
-Change `sifrrSeo.shouldRender`, by default it returns `this._isUserAgent(headers)` ([details](#isUserAgent)). eg:
+Change `sifrrSsr.shouldRender`, by default it returns `this._isUserAgent(headers)` ([details](#isUserAgent)). eg:
 
 ```js
-sifrrSeo.shouldRender = (url, headers) => {
+sifrrSsr.shouldRender = (url, headers) => {
   // req is request argument given by server (express/connect)
   // return true to render it server-side, return false to not render it.
   return this.isUserAgent(req) && req.fullUrl.indexOf('html') >= 0;
@@ -102,7 +102,7 @@ sifrrSeo.shouldRender = (url, headers) => {
 By default, server side rendered html is cached till you restart the server or if you close the browser. You can manually clear cache using
 
 ```js
-sifrrSeo.clearCache();
+sifrrSsr.clearCache();
 ```
 
 ### Higher level API
@@ -112,7 +112,7 @@ sifrrSeo.clearCache();
 returns `Promise` which resolves in server rendered `html` if url response has content-type html, else resolves in `false`.
 
 ```js
-sifrrSeo.render(
+sifrrSsr.render(
   url, /* Full url of page to render with protocol, domain, port, etc. */,
   headers = {
     /* Headers to send with GET request */
@@ -129,17 +129,17 @@ Returns true if headers['user-agent'] matches any of user-agents given in initia
 closes puppeteer browser instance
 
 ```js
-sifrrSeo.close();
+sifrrSsr.close();
 ```
 
 #### setPuppeteerOption()
 
 adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
 
-Example: `sifrrSeo.setPuppeteerOption('headless', false)` to run it without headless mode
+Example: `sifrrSsr.setPuppeteerOption('headless', false)` to run it without headless mode
 
 ```js
-sifrrSeo.addPuppeteerOption('headless', false);
+sifrrSsr.addPuppeteerOption('headless', false);
 ```
 
 #### puppeteerOptions
@@ -147,7 +147,7 @@ sifrrSeo.addPuppeteerOption('headless', false);
 return options that will be used to launch puppeteer instance.
 
 ```js
-sifrrSeo.puppeteerOptions;
+sifrrSsr.puppeteerOptions;
 ```
 
 **Note**: Note that first server render will be slow (depending on server machine), but subsequent requests will be really fast because of caching (depending on efficiency of cache key).
@@ -162,7 +162,7 @@ sifrrSeo.puppeteerOptions;
 const fs = require('fs');
 const joinPath = require('path').join;
 
-const seo = new SifrrSeo();
+const seo = new SifrrSsr();
 seo.shouldRender = () => true;
 
 async function renderUrls(

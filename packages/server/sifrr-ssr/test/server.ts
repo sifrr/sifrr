@@ -1,7 +1,7 @@
 import express from 'express';
 import serveStatic from 'serve-static';
 import { dirname, join } from 'path';
-import { SifrrSeo } from '@/index';
+import { SifrrSsr } from '@/index';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,7 +11,7 @@ async function afterRender() {
   return Promise.resolve();
 }
 
-const seo = new SifrrSeo({
+const seo = new SifrrSsr({
   cacheKey: (url) => url,
   afterRender,
   puppeteerOptions: {

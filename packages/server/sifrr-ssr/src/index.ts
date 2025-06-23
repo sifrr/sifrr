@@ -1,18 +1,18 @@
 import Renderer, { RendererOptions } from './renderer';
-import { Keyv } from 'keyv';
+import Keyv from 'keyv';
 
-class SifrrSeo {
+class SifrrSsr {
   private readonly _uas: RegExp[];
   options: {
     userAgents: (RegExp | string)[];
   } & RendererOptions;
-  _renderer?: Renderer;
+  private _renderer?: Renderer;
 
-  constructor(options: Partial<SifrrSeo['options']> = {}) {
+  constructor(options: Partial<SifrrSsr['options']> = {}) {
     this.options = {
       userAgents: [/.*/],
       cacheKey: (url: string): string => url,
-      cache: new Keyv(),
+      cache: new Keyv<string>(),
       shouldRender: (url, headers): boolean => {
         return this.shouldRender(url, headers);
       },
@@ -79,4 +79,4 @@ export const botUserAgents = [
   'Exabot' // Exalead
 ];
 
-export { SifrrSeo, Renderer };
+export { SifrrSsr, Renderer };
