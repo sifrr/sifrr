@@ -48,7 +48,8 @@
     "test:server": "tsx test/server",
     "test:server:watch": "tsx watch --include test/public test/server",
     "storybook:dev": "storybook dev -p 6006 --no-open",
-    "storybook:build": "storybook build"
+    "storybook:build": "storybook build",
+    "release-it": "release-it --ci"
   },
   "dependencies": {},
   "peerDependencies": {

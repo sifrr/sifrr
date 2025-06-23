@@ -71,7 +71,7 @@ export const ref = <T>(value: T, deep = true) => {
 export const computed = <T>(fxn: (this: ComputedRef<T>) => T): ComputedRef<T> => {
   return {
     [isRef]: true,
-    get value() {
+    get value(): T {
       return fxn.call(this);
     }
   };
@@ -83,7 +83,7 @@ export const watch = <T>(
 ) => {
   const isFunc = typeof refOrFxn === 'function';
   let oldValue = isFunc ? refOrFxn() : refOrFxn.value;
-  return () => {
+  return (): void => {
     const newVal = isFunc ? refOrFxn() : refOrFxn.value;
     if (newVal !== oldValue) {
       callback(newVal, oldValue);

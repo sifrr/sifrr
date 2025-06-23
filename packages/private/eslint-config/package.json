@@ -35,9 +35,6 @@
   "devDependencies": {},
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "pre-release": "yarn version --prerelease --no-git-tag-version",
-    "publish-package": "yarn publish",
-    "release-it": "release-it --ci"
+    "lint:fix": "eslint --fix ."
   }
 }

@@ -44,7 +44,8 @@
     "dev": "vite build --watch",
     "test:server": "yarn storybook:build && npx http-server storybook-static --port ${PORT:-6006} --silent",
     "storybook:dev": "storybook dev -p ${PORT:-6006} --no-open",
-    "storybook:build": "storybook build --quiet"
+    "storybook:build": "storybook build --quiet",
+    "release-it": "release-it --ci"
   },
   "devDependencies": {
     "@sifrr/eslint-config": "*",

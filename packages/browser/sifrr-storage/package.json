@@ -49,7 +49,8 @@
     "test:server:watch": "tsx watch --include test/public test/server",
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "release-it": "release-it --ci"
   },
   "dependencies": {},
   "peerDependencies": {},

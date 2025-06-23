@@ -42,7 +42,8 @@
     "dev": "vite build --watch",
     "test:server": "tsx ./test/server",
     "test:server:watch": "tsx watch --include ./test/public ./test/server",
-    "test:cluster": "tsx watch --include ./test/public ./test/server-cluster"
+    "test:cluster": "tsx watch --include ./test/public ./test/server-cluster",
+    "release-it": "release-it --ci"
   },
   "dependencies": {
     "busboy": "^1.6.0",

@@ -6,10 +6,12 @@ const output = execSync('yarn turbo release-it -- --log-order=grouped -- -s --ch
   encoding: 'utf-8'
 });
 
+console.log(output);
+
 const grouped = {};
 output.split('\n').forEach((line) => {
-  const [packageName, _some, ...log] = line.split(':');
-  if (packageName.indexOf('@paypay') < 0) return;
+  const [packageName, , ...log] = line.split(':');
+  if (packageName.indexOf('@sifrr') < 0) return;
 
   grouped[packageName] = grouped[packageName] || [];
 
