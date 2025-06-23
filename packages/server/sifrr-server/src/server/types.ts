@@ -134,8 +134,15 @@ export type FormDataConfig<T extends string = string> = Omit<BusboyConfig, 'head
     Record<
       T,
       {
-        /** Any files > maxCount for a field will be ignored */
+        /**
+         * Any files > maxCount for a field will be ignored
+         * If max count is >1, field value will always be an array and if it's <= 1 it will always be single value
+         */
         maxCount?: number;
+        /**
+         * Default value for field
+         */
+        default?: string | string[] | UploadedFile | UploadedFile[];
       }
     >
   >;

@@ -24,6 +24,16 @@ function formData<T>(
     const ret: Record<string, string | string[] | UploadedFile | UploadedFile[]> = {};
     const promises: Promise<any>[] = [Promise.resolve()];
 
+    Object.keys(options.fields ?? {}).forEach((fieldname) => {
+      const field = options.fields![fieldname];
+      if (field?.maxCount && field.maxCount > 1) {
+        ret[fieldname] = [];
+      }
+      if (field?.default !== undefined) {
+        ret[fieldname] = field.default;
+      }
+    });
+
     busb.on('partsLimit', function () {
       reject(Error('LIMIT_PART_COUNT'));
     });
@@ -102,6 +112,21 @@ function formData<T>(
     );
 
     busb.on('field', function (fieldname, value) {
+      if (options.fields) {
+        if (options.fields[fieldname]) {
+          const max = options.fields[fieldname].maxCount ?? Infinity;
+          if (
+            max === 0 ||
+            (max === 1 && ret[fieldname]) ||
+            (Array.isArray(ret[fieldname]) && ret[fieldname].length >= max)
+          ) {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
       setRetValue(ret, fieldname, value);
     });
 

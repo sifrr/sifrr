@@ -110,7 +110,7 @@ app.post(
 
 app.post<{
   file: UploadedFile;
-  file2: UploadedFile[];
+  file2: undefined;
 }>(
   '/tmpdir-0',
   async (req, res) => {
@@ -133,7 +133,7 @@ app.post<{
 
 app.post<{
   file: UploadedFile;
-  file2: UploadedFile[];
+  file2: UploadedFile;
 }>(
   '/tmpdir-1',
   async (req, res) => {

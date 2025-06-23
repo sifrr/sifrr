@@ -49,11 +49,11 @@ app.get(uWSRoutingPattern, app.sendFile(filePath, options));
 ```
 
 - `options`:
-  - `lastModified`: **default: `true`** responds with `304 Not Modified` for non-modified files if this is set to true
+  - `filter`: **default** `(path: string) => true` Filter files
+  - `lastModified`: **default:** `true` responds with `304 Not Modified` for non-modified files if this is set to true
   - `headers`: **default:** `{}` Additional headers to set on response ,
   - `compress`: **default:** `false` responses are compressed if this is set to true and if `accept-encoding` header has supported compressions (gzip, brotli, deflate)
   - `compressionOptions` **default:** `{ priority: [ 'gzip', 'br', 'deflate' ] }` which compression to use in priority, and other [zlib options](https://nodejs.org/api/zlib.html#zlib_class_options)
-  - `cache`: **default:** `false`, if given a [node-cache-manager](https://github.com/BryanDonovan/node-cache-manager) instance, it will cache the files in given cache. Generally it might not be needed at all, check for performance improvement before using it blindly.
 
 ### host static files
 
@@ -80,7 +80,7 @@ app.folder('/example', folder, options);
 
 ### Post requests
 
-for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests), note that as stream can only be used once, only one of these function can be called for one request:
+for post responses there are extra helper methods added to uWS response object (res is a response object given by Sifrr Server on post requests), note that as stream can only be used once, only one of these function can be called once for one request:
 
 - `res.body.then(body => /* do something */)`: gives post body as json (if content type is json or formdata) or text
 - `res.bodyStream`: Gives post body stream
@@ -113,8 +113,11 @@ Options:
     Record<
       T,
       {
-        /** Any files > maxCount for a field will be ignored */
+        /** Any files or array fields > maxCount for a field will be ignored */
+        /** If max count is >1, field value will always be an array and if it's <= 1 it will always be single value */
         maxCount?: number;
+        /** Default value for field */
+        default?: string | string[] | UploadedFile | UploadedFile[];
       }
     >
   >;
@@ -125,21 +128,13 @@ and other busboy options
 
 Array fields/files:
 
-- if fieldname is `something` and it has multiple values, then `data.something` will be an array else it will be a single value.
-- if fieldname is `something[]` then `data.something` will always be an array with >=1 values.
+- When `fields` is not given, if fieldname is `something` and it has multiple values, then `body.something` will be an array else it will be a single value.
+- If `fields.something` max count is >1, field value will always be an array and if it's <= 1 it will always be single value exept when fieldname ends with `[]`
+- if fieldname is `something[]` then `body.something` will always be an array with >=1 values.
 
 ### graphql server
 
 ```js
-function contextFxn(res, err) {
-  // return context value
-  return {
-    user: {
-      id: 1
-    }
-  }
-}
-
 const graphqlSchema = /* get graphql executable schema from somewhere (Javascript one, not graphql dsl) */;
 
 app.graphql('/graphql', graphqlSchema, otherOptions);

@@ -157,4 +157,171 @@ test.describe('form test', function () {
     expect(file2.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.html$/);
     expect(file3.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.json$/);
   });
+
+  test('gives uploaded file upto max count 5', async ({ page }) => {
+    const fileInput = (await page.$('#onefile'))! as ElementHandle<HTMLInputElement>;
+    fileInput.setInputFiles(join(__dirname, '../public/nocl.json'));
+
+    const filesInput = (await page.$('#mulfile')) as ElementHandle<HTMLInputElement>;
+    await filesInput.setInputFiles([
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json')
+    ]);
+
+    const { resp } = await page.evaluate(async () => {
+      const resp = await (window as any).submitForm(`/tmpdir`);
+      return { resp };
+    });
+
+    delete resp.data.file.path;
+    delete resp.data.file2[0].path;
+    delete resp.data.file2[1].path;
+    delete resp.data.file2[2].path;
+    delete resp.data.file2[3].path;
+    delete resp.data.file2[4].path;
+    delete resp.data.file.stream;
+    delete resp.data.file2[0].stream;
+    delete resp.data.file2[1].stream;
+    delete resp.data.file2[2].stream;
+    delete resp.data.file2[3].stream;
+    delete resp.data.file2[4].stream;
+
+    const destination = join(__dirname, '../tmp');
+
+    // Response doesn't have filePath
+    expect(resp.data).toEqual({
+      file: {
+        destination,
+        encoding: '7bit',
+        fieldname: 'file',
+        mimeType: 'application/json',
+        originalname: 'nocl.json',
+        size: 249
+      },
+      file2: [
+        {
+          destination,
+          encoding: '7bit',
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+        },
+        {
+          destination,
+          encoding: '7bit',
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+        },
+        {
+          destination,
+          encoding: '7bit',
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+        },
+        {
+          destination,
+          encoding: '7bit',
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+        },
+        {
+          destination,
+          encoding: '7bit',
+          fieldname: 'file2',
+          mimeType: 'application/json',
+          originalname: '304.json',
+          size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+        }
+      ]
+    });
+  });
+
+  test('gives uploaded file upto max count 1', async ({ page }) => {
+    const fileInput = (await page.$('#onefile'))! as ElementHandle<HTMLInputElement>;
+    fileInput.setInputFiles(join(__dirname, '../public/nocl.json'));
+
+    const filesInput = (await page.$('#mulfile')) as ElementHandle<HTMLInputElement>;
+    await filesInput.setInputFiles([
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json')
+    ]);
+
+    const { resp } = await page.evaluate(async () => {
+      const resp = await (window as any).submitForm(`/tmpdir-1`);
+      return { resp };
+    });
+
+    delete resp.data.file.path;
+    delete resp.data.file2.path;
+    delete resp.data.file.stream;
+    delete resp.data.file2.stream;
+
+    const destination = join(__dirname, '../tmp');
+
+    // Response doesn't have filePath
+    expect(resp.data).toEqual({
+      file: {
+        destination,
+        encoding: '7bit',
+        fieldname: 'file',
+        mimeType: 'application/json',
+        originalname: 'nocl.json',
+        size: 249
+      },
+      file2: {
+        destination,
+        encoding: '7bit',
+        fieldname: 'file2',
+        mimeType: 'application/json',
+        originalname: '304.json',
+        size: readFileSync(join(__dirname, '../public/304.json')).byteLength
+      }
+    });
+  });
+
+  test('gives uploaded file upto max count 0', async ({ page }) => {
+    const fileInput = (await page.$('#onefile'))! as ElementHandle<HTMLInputElement>;
+    fileInput.setInputFiles(join(__dirname, '../public/nocl.json'));
+
+    const filesInput = (await page.$('#mulfile')) as ElementHandle<HTMLInputElement>;
+    await filesInput.setInputFiles([
+      join(__dirname, '../public/304.json'),
+      join(__dirname, '../public/304.json')
+    ]);
+
+    const { resp } = await page.evaluate(async () => {
+      const resp = await (window as any).submitForm(`/tmpdir-0`);
+      return { resp };
+    });
+
+    delete resp.data.file.path;
+    delete resp.data.file.stream;
+
+    const destination = join(__dirname, '../tmp');
+
+    // Response doesn't have filePath
+    expect(resp.data).toEqual({
+      file: {
+        destination,
+        encoding: '7bit',
+        fieldname: 'file',
+        mimeType: 'application/json',
+        originalname: 'nocl.json',
+        size: 249
+      },
+      file2: undefined
+    });
+  });
 });

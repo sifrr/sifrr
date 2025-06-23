@@ -33,29 +33,20 @@ const SifrrSsr = require('@sifrr/ssr');
 //
 // default values
 const options = {
-  cacheStore: 'memory', // default in memory caching
+  userAgents: [/.*/],
+  cache: new Keyv(), // Keyv cache store
   maxCacheSize: 100,
   ttl: 0,
   cacheKey: (url, headers) => url,
   beforeRender: () => {},
   afterRender: () => {},
+  shouldRender: (url, headers) => true,
   filterOutgoingRequests: (url) => true
+  puppeteerOptions: {} // puppeteer launch options
 }
 
-const sifrrSsr = new SifrrSsr(/* Array of user agents to render for */, options);
-// By default array is made up of these crawl bot user agents:
-// 'Googlebot', // Google
-// 'Bingbot', // Bing
-// 'Slurp', // Slurp
-// 'DuckDuckBot', // DuckDuckGo
-// 'Baiduspider', //Baidu
-// 'YandexBot', // Yandex
-// 'Sogou', // Sogou
-// 'Exabot', // Exalead
-
-// Add your own user agent for which you want to server render
-// You can give sub string of regex string like '(Google|Microsoft).*'
-sifrrSsr.addUserAgent(/* string */ 'Opera Mini');
+const sifrrSsr = new SifrrSsr(options);
+// By default it matches all user agents
 
 // add middleware to any connect/express like server
 // for example in express:
@@ -63,7 +54,23 @@ const express = require('express');
 const server = express();
 
 // Only use for GET requests as a express middleware
-server.get(sifrrSsr.getExpressMiddleware(/* function to get full url from express request */ expressReq => `http://127.0.0.1:80${expressReq.originalUrl}`));
+server.get(async (req, res, next) => {
+  const url = req.protocol + '://' + req.get('host') + req.originalUrl;
+  try {
+    const rendered = await seo.render(url, req.headers);
+    if (rendered) { // rendered is null if returned page was not html, or shouldRender is false
+      console.log('Rendered middleware ', url, rendered);
+      res.set('content-type', 'text/html');
+      res.set('x-ssr-powered-by', '@sifrr/ssr');
+      res.send(rendered);
+    } else {
+      next();
+    }
+  } catch (e) {
+    console.error(e);
+    next();
+  }
+});
 server.listen(8080);
 
 // Use it programatically - Only renders get urls
@@ -120,26 +127,12 @@ sifrrSsr.render(
 );
 ```
 
-#### \_isUserAgent(headers)
-
-Returns true if headers['user-agent'] matches any of user-agents given in initialization
-
 #### close()
 
 closes puppeteer browser instance
 
 ```js
 sifrrSsr.close();
-```
-
-#### setPuppeteerOption()
-
-adds puppeteer launch option. see list of options [here](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions).
-
-Example: `sifrrSsr.setPuppeteerOption('headless', false)` to run it without headless mode
-
-```js
-sifrrSsr.addPuppeteerOption('headless', false);
 ```
 
 #### puppeteerOptions
@@ -163,7 +156,6 @@ const fs = require('fs');
 const joinPath = require('path').join;
 
 const seo = new SifrrSsr();
-seo.shouldRender = () => true;
 
 async function renderUrls(
   urls = [
