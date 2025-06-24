@@ -3,7 +3,7 @@ import { join } from 'path';
 import { test, expect, ElementHandle } from '@playwright/test';
 const __dirname = import.meta.dirname;
 
-test.describe.only('form test', function () {
+test.describe('form test', function () {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/multipart.html`);
   });
