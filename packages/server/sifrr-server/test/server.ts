@@ -156,6 +156,7 @@ app.post<{
 app.post<{
   file: UploadedFile;
   file2: UploadedFile[];
+  name: string;
 }>(
   '/tmpdir',
   async (req, res) => {
@@ -170,7 +171,8 @@ app.post<{
       },
       file2: {
         maxCount: 5
-      }
+      },
+      name: {}
     }
   }
 );

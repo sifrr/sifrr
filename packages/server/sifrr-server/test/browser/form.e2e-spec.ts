@@ -3,7 +3,7 @@ import { join } from 'path';
 import { test, expect, ElementHandle } from '@playwright/test';
 const __dirname = import.meta.dirname;
 
-test.describe('form test', function () {
+test.describe.only('form test', function () {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/multipart.html`);
   });
@@ -152,7 +152,6 @@ test.describe('form test', function () {
     expect(readFileSync(file2)).toEqual(readFileSync(join(__dirname, '../public/static.html')));
     expect(readFileSync(file3)).toEqual(readFileSync(join(__dirname, '../public/304.json')));
 
-    console.log(file.replace(destination, ''));
     expect(file.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.json$/);
     expect(file2.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.html$/);
     expect(file3.replace(destination, '')).toMatch(/^\/[a-zA-Z0-9-]+\.json$/);
@@ -195,6 +194,7 @@ test.describe('form test', function () {
 
     // Response doesn't have filePath
     expect(resp.data).toEqual({
+      name: 'Aaditya',
       file: {
         destination,
         encoding: '7bit',
