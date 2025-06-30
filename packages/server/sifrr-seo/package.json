@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "cache-manager": "^2.10.1",
-    "puppeteer": "^2.0.0"
+    "puppeteer": "^24.11.1"
   },
   "peerDependencies": {},
   "devDependencies": {
