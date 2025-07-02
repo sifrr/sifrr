@@ -1,0 +1,40 @@
+{
+  "name": "@sifrr/eslint-config",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shareable ESLint configuration",
+  "main": "base.js",
+  "files": [
+    "base.js",
+    "typescript.js",
+    "vue.js",
+    "vue2.js",
+    "library.js"
+  ],
+  "keywords": [
+    "eslint",
+    "eslintconfig",
+    "config",
+    "javascript"
+  ],
+  "engines": {
+    "node": ">=10.16",
+    "yarn": "^1.19.2"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "eslint": "^8.0.0",
+    "eslint-plugin-import-x": "^3.1.0",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.4.3",
+    "prettier": "^3.5.3",
+    "typescript": "^5.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  }
+}

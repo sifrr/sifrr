@@ -1,6 +1,5 @@
-import { SifrrFetchOptions } from './types';
-
-const objConst = {}.constructor;
+import { isValidJson } from '@/util';
+import { SifrrFetchOptions, SifrrFetchResponse } from './types';
 
 /**
  * calls onProgress callback on response download progress
@@ -19,18 +18,9 @@ const objConst = {}.constructor;
  */
 function responseProgress(
   resp: Response,
-  onProgress: {
-    (progress: {
-      loaded?: number;
-      total?: number;
-      percent: number;
-      speed?: number;
-      value?: Uint8Array;
-    }): void;
-  }
+  onProgress: Exclude<SifrrFetchOptions['onProgress'], undefined>
 ) {
-  const contentLength = resp.headers.get('content-length');
-  const total = parseInt(contentLength, 10);
+  const total = Number(resp.headers.get('content-length') ?? 0);
   if (!total || !resp.body || !ReadableStream) {
     onProgress({
       total: 0,
@@ -44,24 +34,29 @@ function responseProgress(
       new ReadableStream({
         start(controller) {
           const start = performance.now();
-          function read() {
-            // eslint-disable-next-line consistent-return
-            return reader.read().then(({ done, value }) => {
-              if (done) {
-                controller.close();
-              } else {
-                loaded += value.byteLength;
-                onProgress({
-                  loaded,
-                  total,
-                  percent: (loaded / total) * 100,
-                  speed: loaded / (performance.now() - start),
-                  value
-                });
-                controller.enqueue(value);
-                return read();
-              }
+          async function read(): Promise<void> {
+            const { done, value } = await reader.read();
+            if (done) {
+              onProgress({
+                loaded: total,
+                total: total,
+                percent: 100,
+                speed: loaded / (performance.now() - start)
+              });
+              controller.close();
+              return;
+            }
+            loaded += value.byteLength;
+
+            onProgress({
+              loaded,
+              total: total || undefined,
+              percent: total ? (loaded / total) * 100 : 50,
+              speed: loaded / (performance.now() - start),
+              value
             });
+            controller.enqueue(value);
+            return read();
           }
           return read();
         }
@@ -73,55 +68,59 @@ function responseProgress(
 /**
  * @class Request
  */
-class Request {
-  private _options: SifrrFetchOptions;
-  private _url: string;
+class Request<T, E> {
+  private readonly _options: SifrrFetchOptions;
+  private readonly _url: URL;
   /**
-   * @param  {string|number} url url of request
+   * @param  {string|URL} url url of request
    * @param  {SifrrFetchOptions} options sifrr fetch options
    */
-  constructor(url: string | number, options: SifrrFetchOptions) {
+  constructor(url: string | URL, options: SifrrFetchOptions) {
     this._options = options;
-    this._url = (options.host || '') + url;
+    this._url = new URL(
+      (options.baseUrl ?? '') + (typeof url === 'string' ? url : url.href),
+      typeof window !== 'undefined' ? window.location.origin : undefined
+    );
   }
 
-  /**
-   * @returns Promise<any> response of the request
-   */
-  response() {
+  async response(): Promise<SifrrFetchResponse<T, E>> {
     const { onProgress } = this._options;
-    return fetch(this.url, this.options).then(resp => {
-      const showProgress = typeof onProgress === 'function';
-      if (resp.ok) {
-        resp = showProgress ? responseProgress(resp, onProgress) : resp;
-      } else {
-        if (showProgress) onProgress({ percent: 100 });
-        const error = Error(resp.statusText);
-        error.response = resp;
-        throw error;
-      }
-      const contentType = resp.headers.get('content-type');
-      return contentType && contentType.includes('application/json') ? resp.json() : resp;
-    });
+    let resp = await fetch(this.url, this.options);
+    const showProgress = typeof onProgress === 'function';
+    resp = showProgress ? responseProgress(resp, onProgress) : resp;
+    const contentType = resp.headers.get('content-type');
+    const data = contentType?.includes('application/json') ? await resp.json() : undefined;
+    return resp.ok
+      ? {
+          data: data as T,
+          response: resp,
+          headers: resp.headers,
+          status: resp.status,
+          ok: true,
+          errorData: undefined
+        }
+      : {
+          data: undefined,
+          errorData: data as E,
+          headers: resp.headers,
+          response: resp,
+          status: resp.status,
+          ok: false
+        };
   }
 
   /**
    * url with encoded params
    * @readonly
    */
-  get url() {
+  get url(): string {
     const { params } = this._options;
     if (params && Object.keys(params).length > 0) {
-      return (
-        this._url +
-        '?' +
-        Object.keys(params)
-          .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-          .join('&')
-      );
-    } else {
-      return this._url;
+      Object.keys(params).forEach((key) => {
+        this._url.searchParams.set(key, params[key] as string);
+      });
     }
+    return this._url.href;
   }
 
   /**
@@ -130,24 +129,16 @@ class Request {
    * @type {RequestInit}
    */
   get options(): RequestInit {
-    this._options.defaultOptions = this._options.defaultOptions || {};
     const options = {
-      redirect: 'follow',
-      ...this._options.defaultOptions,
+      redirect: 'follow' as const,
       ...this._options
     };
-    delete options.defaultOptions;
-    options.headers = Object.assign(
-      this._options.headers || {},
-      this._options.defaultOptions.headers
-    );
-    if (options.body && (options.body.constructor === objConst || Array.isArray(options.body))) {
-      options.headers['content-type'] = options.headers['content-type'] || 'application/json';
-    }
-    if (options.headers['content-type'] && options.headers['content-type'].indexOf('json') > -1) {
+    if (isValidJson(options.body)) {
+      options.headers = options.headers ?? {};
+      options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
-    return options as RequestInit;
+    return options;
   }
 }
 

@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+const { writeFileSync } = require('fs');
+const { execSync } = require('child_process');
+const { getPackages } = require('./_utils/packages.cjs');
+
+const packages = getPackages();
+
+const missing = [];
+const newVersions = {};
+packages.forEach((p) => {
+  const pkgJson = require(`${p}/package.json`);
+  if (pkgJson.private) {
+    return;
+  }
+  newVersions[pkgJson.name] = pkgJson.version;
+  try {
+    execSync(`npm view ${pkgJson.name}@${pkgJson.version} version`, {
+      stdio: 'ignore'
+    });
+  } catch (e) {
+    // if there is error version doesn't exist
+    missing.push(pkgJson.name);
+  }
+});
+
+packages.forEach((p) => {
+  const pkgJson = require(`${p}/package.json`);
+  if (!missing.includes(pkgJson.name)) {
+    return;
+  }
+
+  pkgJson.dependencies = Object.keys(pkgJson.dependencies || {}).reduce((acc, dep) => {
+    if (newVersions[dep] && pkgJson.dependencies[dep] === '*') {
+      acc[dep] = `^${newVersions[dep]}`;
+    } else {
+      acc[dep] = pkgJson.dependencies[dep];
+    }
+    return acc;
+  }, {});
+  writeFileSync(`${p}/package.json`, JSON.stringify(pkgJson, null, 2));
+});
+
+if (process.argv.includes('--with-filter')) {
+  console.log(missing.map((p) => `--filter=${p}`).join(','));
+} else {
+  console.log(missing.join(','));
+}

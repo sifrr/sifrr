@@ -1,2 +1,4 @@
 **/dist/*.js
 node_modules/**
+.eslint*
+vite.config*

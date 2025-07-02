@@ -2,43 +2,38 @@
 
 ### Open a Pull Request if it:
 
--   Fixes a bug
--   Doesn't decrease performance or increase package size
--   Decreases size of package without compromising on features or performance
--   Simplifies the API
--   Improve documentation
--   Improves testing or increases test coverage
+- Fixes a bug
+- Doesn't decrease performance or increase package size
+- Decreases size of package without compromising on features or performance
+- Simplifies the API
+- Improve documentation
+- Improves testing or increases test coverage
 
 ### Development Steps
 
--   Fork the repo
--   Clone the repo
+- Fork the repo
+- Clone the repo
 
+        git clone https://github.com/${username}/sifrr.git
 
-          git clone https://github.com/${username}/sifrr.git
+- Install dependencies
 
--   Install dependencies
+        yarn install
 
+- Build libraries (and watch for updates), works in every package folder as well
 
-          yarn install
+        yarn build -w
 
--   Build libraries (and watch for updates), works in every package folder as well
+- Now any change you make will update the `dist` files
+- Run tests with (works in every package folder as well)
 
+        yarn test
 
-          yarn build -w
+- Start test server with (works in only package folders)
 
--   Now any change you make will update the `dist` files
--   Run tests with (works in every package folder as well)
-
-
-          yarn test
-
--   Start test server with (works in only package folders)
-
-
-          yarn test-server
+        yarn test-server
 
 ### Guidelines
 
--   Build dist files before opening PR
--   Run `yarn install` if you update dependencies
+- Build dist files before opening PR
+- Run `yarn install` if you update dependencies

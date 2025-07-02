@@ -4,7 +4,7 @@ describe('Style', () => {
   });
 
   it('sets direct style', async () => {
-    const style = await page.$eval('#directstyle', el => {
+    const style = await page.$eval('#directstyle', (el) => {
       return {
         marginTop: el.style.marginTop,
         paddingTop: el.style.paddingTop
@@ -16,7 +16,7 @@ describe('Style', () => {
   });
 
   it('sets/unsets normal style', async () => {
-    const style = await page.$eval('#style', el => {
+    const style = await page.$eval('#style', (el) => {
       window.setStyle({ 'margin-top': '20px', paddingTop: '10px' });
       return {
         marginTop: el.style.marginTop,
@@ -29,7 +29,7 @@ describe('Style', () => {
     assert.equal(style.paddingTop, '10px', 'camelcase works');
     assert.equal(style.total, 'margin-top: 20px; padding-top: 10px;', 'adds new style');
 
-    const style2 = await page.$eval('#style', el => {
+    const style2 = await page.$eval('#style', (el) => {
       window.setStyle({ margin: '10px' });
       return {
         marginTop: el.style.marginTop,

@@ -1,66 +1,47 @@
-import Storage from './storage';
-import { StorageOptions } from './types';
+import { SavedDataObject, SifrrStore } from './types';
+import { stringify, parse } from '../utils/json';
 
-class LocalStorage extends Storage {
-  constructor(options: StorageOptions) {
-    super(options);
-    return (<typeof LocalStorage>this.constructor)._matchingInstance(this);
+class LocalStorageStore implements SifrrStore {
+  public static readonly isSupported: boolean =
+    typeof window !== 'undefined' && !!window.localStorage;
+  prefix: string;
+
+  constructor(prefix: string) {
+    this.prefix = prefix;
   }
 
-  protected select(keys: string[]) {
-    const table = {};
-    keys.forEach((k: string) => {
-      const v = (<typeof LocalStorage>this.constructor).parse(
-        this.getLocalStorage().getItem(this.tableName + '/' + k)
-      );
-      if (v !== null) table[k] = v;
-    });
-    return table;
+  get(key: string) {
+    const ret = window.localStorage.getItem(this.prefix + key);
+    if (ret === null) return undefined;
+    return parse(ret);
   }
-
-  protected upsert(data: { [x: string]: any }) {
-    for (const key in data) {
-      this.getLocalStorage().setItem(
-        this.tableName + '/' + key,
-        (<typeof LocalStorage>this.constructor).stringify(data[key])
-      );
-    }
+  set(key: string, value: any) {
+    window.localStorage.setItem(this.prefix + key, stringify(value));
+    return this;
+  }
+  delete(key: string) {
+    window.localStorage.removeItem(this.prefix + key);
     return true;
   }
-
-  protected delete(keys: string[]) {
-    keys.map((k: string) => this.getLocalStorage().removeItem(this.tableName + '/' + k));
-    return true;
+  clear() {
+    Object.keys(window.localStorage)
+      .filter((k) => k.startsWith(this.prefix))
+      .forEach((k) => window.localStorage.removeItem(k));
   }
-
-  protected deleteAll() {
-    Object.keys(this.getLocalStorage()).forEach(k => {
-      if (k.indexOf(this.tableName) === 0) this.getLocalStorage().removeItem(k);
-    });
-    return true;
+  has(key: string) {
+    return this.get(key) !== undefined;
   }
-
-  protected getStore() {
-    return this.select(
-      Object.keys(this.getLocalStorage())
-        .map(k => {
-          if (k.indexOf(this.tableName) === 0) return k.slice(this.tableName.length + 1);
-        })
-        .filter(k => typeof k !== 'undefined')
-    );
-  }
-
-  private getLocalStorage() {
-    return window.localStorage;
-  }
-
-  protected hasStore() {
-    return !!window.localStorage;
-  }
-
-  static get type() {
-    return 'localstorage';
+  all() {
+    const data: SavedDataObject = {};
+    Object.keys(window.localStorage)
+      .filter((k) => k.startsWith(this.prefix))
+      .forEach((k) => {
+        const val = this.get(k.substring(this.prefix.length));
+        if (typeof val === 'undefined') return;
+        data[k.substring(this.prefix.length)] = val;
+      });
+    return data;
   }
 }
 
-export default LocalStorage;
+export default LocalStorageStore;

@@ -1,0 +1,54 @@
+{
+  "name": "@sifrr/ssr",
+  "version": "0.0.9",
+  "description": "Server Side Redering for any js based app as a express middleware.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sifrr/sifrr.git"
+  },
+  "author": "aadityataparia <aadityataparia@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/sifrr/sifrr/issues"
+  },
+  "homepage": "https://github.com/sifrr/sifrr",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "keywords": [
+    "sifrr",
+    "seo",
+    "ssr",
+    "server side rendering"
+  ],
+  "scripts": {
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright",
+    "test:jest": "jest --passWithNoTests",
+    "test:playwright": "playwright test --pass-with-no-tests",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "tsx ./test/server",
+    "test:server:watch": "tsx watch --include ./test/public ./test/server",
+    "release-it": "release-it --ci"
+  },
+  "dependencies": {
+    "keyv": "^5.3.4",
+    "puppeteer": "^24.10.1"
+  },
+  "peerDependencies": {},
+  "devDependencies": {},
+  "files": [
+    "bin",
+    "dist"
+  ]
+}

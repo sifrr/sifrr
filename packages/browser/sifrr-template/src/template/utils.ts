@@ -1,6 +1,6 @@
 import { TEMPLATE, PREFIX, BIND_REF_LENGTH } from './constants';
 import createUniqueString from '../ustring';
-import { SifrrFunctionMap, SifrrNode, SifrrProps } from './types';
+import { SifrrFunctionMap, SifrrNode, SifrrNodesArray, SifrrProps, templateId } from './types';
 
 export const createTemplateFromString = (str: string): HTMLTemplateElement => {
   const template = TEMPLATE();
@@ -32,28 +32,26 @@ export function functionMapCreator<T>(str: TemplateStringsArray, substitutions: 
   };
 }
 
-export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): boolean {
-  return !!node.__tempNum;
+export function isSifrrNode(node: SifrrNode<any> | SifrrProps<any>): node is SifrrNode<any> {
+  return !!node[templateId];
 }
 
-export function isSameSifrrNode<T>(nodes: SifrrNode<T>[], tempNums: number[]) {
-  const ln = nodes.length,
-    tl = tempNums.length;
+export function isSameSifrrNode<T>(nodes: SifrrNodesArray<T>, tId: string) {
+  const ln = nodes.length;
 
-  if (ln !== tl) return false;
   for (let i = 0; i < ln; i++) {
-    if (nodes[i].__tempNum !== tempNums[i]) return false;
+    if (nodes[i]?.[templateId] !== tId) return false;
   }
   return true;
 }
 
 export function recurseArray<T, X>(
   values: any | any[],
-  singleValFxn: (a: T) => any,
+  singleValFxn: (a: T | undefined) => any,
   createFn?: (a: X) => T[]
 ): T | T[] {
   if (!Array.isArray(values)) {
-    if (createFn) {
+    if (createFn && !(values instanceof Node)) {
       const createdV = createFn(<X>values);
       if (Array.isArray(createdV)) {
         if (createdV.length === 1) return singleValFxn(createdV[0]);
@@ -67,20 +65,20 @@ export function recurseArray<T, X>(
   }
 
   const l = values.length,
-    retV = [];
+    retV: T[] = [];
   for (let i = 0; i < l; i++) {
-    retV.push(recurseArray(values[i], singleValFxn, createFn));
+    retV.push(recurseArray(values[i], singleValFxn, createFn) as T);
   }
   return retV;
 }
 
 // state of art recursive array equalising
-export function flattenOperation<T, X>(
+export function flattenOperation<P, T = SifrrNode<P>, X = SifrrProps<P>>(
   ovs: any[],
   nvs: any[],
   equaliser: (oldv: T, newv: T | X) => T,
-  removeFxn: (old: T) => void,
-  addFxn: (newv: T) => T,
+  removeFxn: (old: ChildNode | undefined) => void,
+  addFxn: (newv: T | undefined) => T,
   shouldCreate?: (newv: X | T) => boolean,
   createFn?: (newv: X) => T[]
 ) {
@@ -109,7 +107,7 @@ export function flattenOperation<T, X>(
     const ov = oldValues[i];
     const nv = newValues[i];
     if (!Array.isArray(ov) && !Array.isArray(nv)) {
-      returnValues[i] = equaliser(ov, nv);
+      returnValues[i] = equaliser(ov!, nv!);
     } else if (Array.isArray(ov) && Array.isArray(nv)) {
       returnValues[i] = flattenOperation(
         ov,
@@ -131,8 +129,14 @@ export function flattenOperation<T, X>(
         createFn
       )[0];
     } else if (!Array.isArray(ov) && Array.isArray(nv)) {
-      returnValues[i] = <T[]>(
-        flattenOperation([ov], nv, equaliser, removeFxn, addFxn, shouldCreate, createFn)
+      returnValues[i] = flattenOperation(
+        [ov],
+        nv,
+        equaliser,
+        removeFxn,
+        addFxn,
+        shouldCreate,
+        createFn
       );
     }
     i++;
@@ -144,15 +148,15 @@ export function flattenOperation<T, X>(
     i++;
   }
 
-  return <TRArray>returnValues;
+  return <SifrrNodesArray<any>>returnValues;
 }
 
 export function flatLastElement<T>(vs: any[]): T {
   type TRArray = (T | TRArray)[];
   const values = <TRArray>vs;
   let i = values.length - 1,
-    last: T,
-    lastArray: T | TRArray;
+    last: T | undefined = undefined,
+    lastArray: T | TRArray | undefined = undefined;
 
   while (last === undefined && i > -1) {
     lastArray = values[i];
@@ -167,3 +171,7 @@ export function flatLastElement<T>(vs: any[]): T {
   }
   return <T>last;
 }
+
+export const isText = (node?: Node): node is Text => {
+  return node?.nodeType === Node.TEXT_NODE;
+};

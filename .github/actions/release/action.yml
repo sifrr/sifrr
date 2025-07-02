@@ -1,0 +1,49 @@
+name: Release packages
+inputs:
+  tag:
+    required: false
+    description: Optional Dist tag
+  preid:
+    required: false
+    description: Optional commit SHA
+  github_token:
+    required: true
+    description: GitHub token
+
+runs:
+  using: composite
+
+  steps:
+    - name: Publish package
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        PREID: ${{ inputs.preid || inputs.tag }}
+      run: |
+        yarn build
+
+        if [[ ! -z $TAG ]]; then
+          yarn turbo pre-release -- --filter="[origin/main]" --continue -- --preid $PREID
+          echo "Releasing packages with tag - $TAG and preid - $PREID"
+        fi
+
+        PKG_TO_PUBLISH="$(./scripts/setupAndGetPackagesToPublish --with-filter)"
+        # Needed for multiple arguments
+        FILTER_ARGS=($(echo $PKG_TO_PUBLISH | tr "," " "))
+        if [[ ! -z $PKG_TO_PUBLISH ]]; then
+          yarn turbo publish-package "${FILTER_ARGS[@]}" --continue
+          echo "Released $PKG_TO_PUBLISH"
+        fi
+        yarn docs
+
+    - name: Deploy Docs
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_branch: gh-pages
+        publish_dir: ./docs
+        exclude_assets: ''
+        user_name: aadityataparia
+        user_email: aadityataparia@gmail.com
+        keep_files: true
+        commit_message: 'chore: update docs'

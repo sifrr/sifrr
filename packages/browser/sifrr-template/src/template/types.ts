@@ -1,81 +1,123 @@
-export interface SifrrNode<T> extends Node {
-  __sifrrRefs?: SifrrRefCollection<T>[];
-  __tempNum?: number;
-  key?: string | number;
-  onPropChange?: (prop: string, oldValue: any, newValue: any) => void;
-  update?: () => void;
-}
+import { Ref } from '@/template/ref';
+import { update } from '@/template/update';
+
+export const templateId = Symbol('templateId');
+export const bindingSymbol = Symbol('bindings');
+
+export type SifrrNode<T> = (ChildNode | Text | Comment) & {
+  [bindingSymbol]?: SifrrBindingCollection<T>[];
+  [templateId]?: string;
+  key?: SifrrKeyType;
+};
+
+export type SifrrKeyType = string | number | symbol;
+export type SifrrNodeKeyed<T> = SifrrNode<T> & { key: SifrrKeyType };
 
 export type SifrrProps<T> = T & {
-  nodeType?: number;
+  onPropChange?: (prop: string, oldValue: unknown, newValue: unknown) => void;
+  update?: () => void;
 };
 
 export type SifrrKeyedProps<T> = SifrrProps<T> & {
-  key: string | number;
+  key: SifrrKeyType;
 };
 
 export type ChildNodeKeyed = ChildNode & {
-  key: string | number;
+  key: SifrrKeyType;
 };
 
-type _RTValue = null | undefined | string | Node | _RTValue[];
-export type DomBindingReturnValue = (_RTValue | NodeList) & {
+export type DomBindingReturnArrayValue = (NodeList | DomBindingReturnValue[]) & {
   isRendered?: boolean;
   reference?: Node;
 };
+export type DomBindingReturnValue =
+  | null
+  | undefined
+  | string
+  | number
+  | boolean
+  | Node
+  | object
+  | DomBindingReturnArrayValue;
 
-export type SifrrNodesArray<T> = (SifrrNode<T> | SifrrNodesArray<T>)[];
+export class SifrrNodesArray<T> extends Array<SifrrNode<T>> {
+  isRendered = false;
+  props?: SifrrProps<T> = undefined;
 
-export type BindingFxn<T, O, N> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
+  update(p: SifrrProps<T>) {
+    this.props = p;
+    update(this, p);
+  }
+
+  addRef(ref: Ref<any>) {
+    ref.__sifrrWatchers?.add(() => this.props && this.update(this.props));
+  }
+}
+
+export type SifrrNodesArrayKeyed<T> = SifrrNodeKeyed<T>[] & {
+  isRendered?: boolean;
+  update?: (p: SifrrProps<T>) => void;
+};
+
+export type BindingFxn<T, O = any, N = any> = (props: SifrrProps<T>, oldValue: O) => N | Promise<N>;
 
 // clone/update a template element
 export type SifrrCreateFunction<T> = (
   parent: SifrrProps<T>,
-  oldValue?: SifrrNode<T>[]
-) => SifrrNode<T>[];
+  oldValue?: SifrrNodesArray<T>
+) => SifrrNodesArray<T>;
 
 export enum SifrrBindType {
   Text = 1,
   Prop = 2,
   DirectProp = 3,
-  Attribute = 4
+  Attribute = 4,
+  If = 5
 }
 
-export type SifrrBindMap<T> =  // T = props type of parent
-  | {
-      type: SifrrBindType.Text;
-      value: BindingFxn<T, SifrrNodesArray<T>, DomBindingReturnValue>;
-    }
-  | {
-      type: SifrrBindType.Attribute;
-      name: string;
-      value: BindingFxn<T, string | false | null | undefined, string | false | null | undefined>;
-    }
-  | {
-      type: SifrrBindType.Prop;
-      name: string;
-      value: BindingFxn<T, any, any>;
-    }
-  | {
-      type: SifrrBindType.DirectProp;
-      name: string;
-      value: any;
-    };
+export type SifrrBindMap<T> = // T = props type of parent
+
+    | {
+        type: SifrrBindType.Text;
+        value: BindingFxn<T, SifrrNodesArray<T>, DomBindingReturnValue>;
+      }
+    | {
+        type: SifrrBindType.Attribute;
+        name: string;
+        value: BindingFxn<T, string | false | null | undefined, string | false | null | undefined>;
+      }
+    | {
+        type: SifrrBindType.Prop;
+        name: string;
+        value: BindingFxn<T, any, any>;
+      }
+    | {
+        type: SifrrBindType.If;
+        value: BindingFxn<T, Node, boolean>;
+      }
+    | {
+        type: SifrrBindType.DirectProp;
+        name: string;
+        value: any;
+      };
 
 // ref map for each base template element
-export type SifrrRef<T> = {
+export type SifrrBinding<T> = {
   // T = props type of parent
   idx: number;
   map: SifrrBindMap<T>[];
 };
 
 // collection of ref for each sifrr template element
-export type SifrrRefCollection<T> = {
+export type SifrrBindingCollection<T> = {
   // T = props type of parent
-  node: Node;
+  node: HTMLElement & {
+    ifComment?: Comment;
+    update?: () => void;
+    [x: string]: unknown;
+  };
   bindMap: SifrrBindMap<T>[];
   currentValues: any[];
-  bindingSet: any[];
 };
 
 // uid -> fxn
@@ -87,5 +129,22 @@ export type SifrrBindCreatorFxn<T> = (
   el: Node,
   functionMap: SifrrFunctionMap<T>
 ) => SifrrBindMap<T>[] | 0;
+
+export type CssProperties = Partial<
+  Omit<
+    CSSStyleDeclaration,
+    | 'length'
+    | 'parentRule'
+    | 'getPropertyPriority'
+    | 'getPropertyValue'
+    | 'item'
+    | 'removeProperty'
+    | 'setProperty'
+    | number
+    | typeof Symbol.iterator
+  >
+>;
+
+export type MaybePromise<T> = T | Promise<T>;
 
 export default {};

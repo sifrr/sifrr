@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-lint-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        shouldRunAll:
+          - ${{ contains(github.ref, 'main') || contains(github.ref, 'master') || contains(github.ref, 'release') }}
+        # Run on 20,22 for master and release branches, else only on 20
+        node-version: [20.x, 22.x, 24.x]
+        exclude:
+          - shouldRunAll: false
+            node-version: 20.x
+          - shouldRunAll: false
+            node-version: 24.x
+    env:
+      base_branch: ${{ github.event.pull_request.base.ref }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Workspace
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run Lint, Build and Test
+        run: |
+          if [[ ! -z $base_branch ]]; then
+            yarn turbo run build --filter="[origin/$base_branch]..."
+            yarn turbo run lint test --filter="[origin/$base_branch]"
+          else
+            yarn turbo run lint build test
+          fi

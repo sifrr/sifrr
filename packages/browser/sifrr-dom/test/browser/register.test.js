@@ -26,14 +26,14 @@ describe('Sifrr.Dom.register', () => {
   });
 
   it('throws error if elementName is not defined', async () => {
-    const error = await page.evaluate(() => Sifrr.Dom.register({}).catch(e => e.message));
+    const error = await page.evaluate(() => Sifrr.Dom.register({}).catch((e) => e.message));
 
     expect(error).to.eq('Error creating Custom Element: No name given.');
   });
 
   it('throws error if elementName has no dash', async () => {
     const error = await page.evaluate(() =>
-      Sifrr.Dom.register({ elementName: 'nodash' }).catch(e => e.message)
+      Sifrr.Dom.register({ elementName: 'nodash' }).catch((e) => e.message)
     );
 
     expect(error).to.eq(
@@ -44,7 +44,7 @@ describe('Sifrr.Dom.register', () => {
   it('warns if element-name already taken', async () => {
     const error = await page.evaluate(() => {
       let msg;
-      window.console.warn = m => (msg = m);
+      window.console.warn = (m) => (msg = m);
       window.customElements.define('random-name', class extends HTMLElement {});
       Sifrr.Dom.register({ elementName: 'random-name' });
       return msg;
@@ -61,7 +61,7 @@ describe('Sifrr.Dom.register', () => {
       window.customElements.define = () => {
         throw Error('error on define');
       };
-      await Sifrr.Dom.register({ elementName: 'some-custom' }).catch(e => {
+      await Sifrr.Dom.register({ elementName: 'some-custom' }).catch((e) => {
         msg = e.message;
       });
       return msg;

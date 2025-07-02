@@ -2,7 +2,7 @@
 
 const { exec } = require('@sifrr/dev');
 
-(async function() {
+(async function () {
   const exists = await require('@sifrr/dev').checkTag();
   if (exists) return;
   await require('@sifrr/dev').gitAddCommitPush({

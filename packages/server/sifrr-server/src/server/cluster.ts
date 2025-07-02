@@ -1,48 +1,39 @@
-const noop = (a, b) => {};
+import { SifrrServer } from '@/server/baseapp';
+import cluster, { Cluster } from 'node:cluster';
+import { availableParallelism } from 'node:os';
 
-export default class Cluster {
-  apps: any[];
-  listens = {};
-  // apps = [ { app: SifrrServerApp, port/ports: int } ]
-  constructor(apps) {
-    if (!Array.isArray(apps)) apps = [apps];
-    this.apps = apps;
-  }
+export function launchCluster(
+  app: SifrrServer,
+  port: number,
+  {
+    numberOfWorkers,
+    restartOnError,
+    onListen
+  }: {
+    numberOfWorkers?: number;
+    restartOnError?: boolean;
+    onListen?: (port: number | false) => void;
+  } = {}
+): Cluster | undefined {
+  numberOfWorkers = numberOfWorkers ?? availableParallelism();
+  restartOnError = restartOnError ?? false;
+  if (cluster.isPrimary) {
+    console.log(`Cluster: Primary process is running on ${process.pid}`);
 
-  listen(onListen = noop) {
-    for (let i = 0; i < this.apps.length; i++) {
-      const config = this.apps[i];
-      let { app, port, ports } = config;
-      if (!Array.isArray(ports) || ports.length === 0) {
-        ports = [port];
+    // Fork workers.
+    for (let i = 0; i < numberOfWorkers; i++) {
+      cluster.fork();
+    }
+
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died with code ${code}`);
+      if (!signal && restartOnError) {
+        cluster.fork();
       }
-      ports.forEach(p => {
-        if (typeof p !== 'number') throw Error(`Port should be a number, given ${p}`);
-        if (this.listens[p]) return;
-
-        app.listen(p, socket => {
-          onListen.call(app, socket, p);
-        });
-        this.listens[p] = app;
-      });
-    }
-    return this;
-  }
-
-  closeAll() {
-    Object.keys(this.listens).forEach(port => {
-      this.close(port);
     });
-    return this;
-  }
-
-  close(port = null) {
-    if (port) {
-      this.listens[port] && this.listens[port].close(port);
-      delete this.listens[port];
-    } else {
-      this.closeAll();
-    }
-    return this;
+    return cluster;
+  } else {
+    console.log(`Cluster: Worker process started on ${process.pid}`);
+    app.listen(port, onListen);
   }
 }

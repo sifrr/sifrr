@@ -12,10 +12,19 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "dist/sifrr.storage.cjs.js",
-  "module": "dist/sifrr.storage.module.js",
-  "browser": "dist/sifrr.storage.min.js",
-  "types": "dist/types/sifrr.storage.d.ts",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "browser": "dist/index.iife.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -32,30 +41,29 @@
     "storage"
   ],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-storage",
-    "build": "yarn rollup -c",
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright",
+    "test:jest": "jest",
+    "test:server": "tsx test/server",
+    "test:server:watch": "tsx watch --include test/public test/server",
+    "test:playwright": "playwright test --pass-with-no-tests",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "release-it": "release-it --ci"
   },
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@sifrr/dev": "^0.0.44",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
-    "axios": "^0.21.1",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
+    "@sifrr/eslint-config": "*",
+    "@sifrr/release-it-config": "*",
+    "@sifrr/test-suite": "*",
+    "@sifrr/typescript-config": "*",
+    "@sifrr/vite-config": "*",
+    "typescript": "^5.8.3"
   },
   "files": [
     "bin",
-    "dist",
-    "src"
+    "dist"
   ]
 }

@@ -4,18 +4,17 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 
 ## Size
 
-| Type                                             |                            Size                            |
-| :----------------------------------------------- | :--------------------------------------------------------: |
-| Minified (`dist/sifrr.storage.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/storage)   |
-| Minified + Gzipped (`dist/sifrr.storage.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/storage) |
+| Type                                      |                            Size                            |
+| :---------------------------------------- | :--------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/storage)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/storage) |
 
 ## Types of storages available (in default priority order)
 
 - IndexedDB (Persisted - on page refresh or open/close)
-- WebSQL (Persisted - on page refresh or open/close)
 - LocalStorage (Persisted - on page refresh or open/close)
 - Cookies (Persisted - on page refresh or open/close), Sent to server with every request
-- JsonStorage (In memory - deleted on page refresh or open/close)
+- Memory (In memory - deleted on page refresh or open/close)
 
 ## How to use
 
@@ -24,7 +23,7 @@ Browser key-value(JSON) storage library with cow powers. ~2KB alternative to [lo
 Add script tag in your website.
 
 ```html
-<script src="https://unpkg.com/@sifrr/storage@{version}/dist/sifrr.storage.min.js"></script>
+<script src="https://unpkg.com/@sifrr/storage@{version}/dist/index.iife.js"></script>
 // Adds window.Sifrr.Storage
 ```
 
@@ -34,7 +33,6 @@ Add script tag in your website.
 | :----------- | :-------------------------------------------- | :-------------------------------------------- |
 | Promises API | <https://caniuse.com/#feat=promises>          | <https://github.com/stefanpenner/es6-promise> |
 | IndexedDB    | <https://caniuse.com/#feat=indexeddb>         | N/A                                           |
-| WebSQL       | <https://caniuse.com/#feat=sql-storage>       | N/A                                           |
 | LocalStorage | <https://caniuse.com/#feat=namevalue-storage> | N/A                                           |
 | Cookies      | 100%                                          | N/A                                           |
 
@@ -47,112 +45,71 @@ example, put in your frontend js module (compatible with webpack/rollup/etc):
 #### Commonjs
 
 ```js
-const Storage = require('@sifrr/storage');
+const { Storage } = require('@sifrr/storage');
 ```
 
 #### ES modules
 
 ```js
-import { getStorage } from '@sifrr/storage';
-// or Sifrr.Storage.getStorage (script tag)
-// or Storage.getStorage (node js import)
+import { Storage } from '@sifrr/storage';
+import { IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore } from '@sifrr/storage';
+// or Sifrr.Storage.Storage (script tag)
 
-// or
-// if you want to use one type of store without support checking based on priority
-import { IndexedDB, WebSQL, LocalStorage, Cookies, JsonStorage } from '@sifrr/storage';
+const storage = new Storage({
+  store: [IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore], // it will pick first supported store from list
+  prefix: 'store1/'
+});
 ```
 
 ## API
 
-Sifrr.Storage uses Promises.
+Sifrr.Storage uses Promises, but the api itself is similar to `Map` with some small differences like it also supports `all` and `clear` and also takes ttl in `set`
 
 ### Initialization
 
-- Initialize a storage with a type
+- Initialize a storage
 
 ```js
-let storage = getStorage(type);
+const storage = new Storage({
+  store: [IndexedDBStore, LocalStorageStore, CookieStore, MemoryStore], // it will pick first supported store from list
+  prefix: 'store1/' // optional, default: '', save prefix storage will use set/get same values since storages are shared
+});
 ```
-
-where type is one of `indexeddb`, `websql`, `localstorage`, `cookies`, `jsonstorage`.
 
 _Note_: If that type is not supported in the browser, then first supported storage will be selected based on priority order.
 
-- Initialize with options
-
-```js
-// Options with default values
-let options = {
-  priority: ['indexeddb', 'websql', 'localstorage', 'cookies', 'jsonstorage'], // Priority Array of type of storages to use
-  name: 'SifrrStorage', // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
-  version: 1, // version number (integer / float / string), 1 is treated same as '1'
-  desciption: 'Sifrr Storage', // description (text)
-  size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
-  ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
-};
-storage = getStorage(options);
-```
-
 **Initializing with same priority, name and version will give same instance.**
-
-### Details
-
-```js
-storage.type; // type of storage
-storage.name; // name of storage
-storage.version; // version number
-```
 
 ### Setting key-value
 
 ```js
-// insert single key-value
+// insert key-value
 let key = 'key';
-let value = { value: 'value' };
+let value = { a: 'b' };
 storage.set(key, value).then(() => {
   /* Do something here */
 });
 
-// insert multiple key-values
-let data = { a: 'b', c: { d: 'e' } };
-storage.set(data).then(() => {
-  /* Do something here */
-});
-
-// inserting with different ttl (30 seconds in example) than set in options
-storage.set(key, { value, ttl: 30 * 1000 ).then(() => {
+// inserting with different ttl (30 seconds in example) than set in third param
+storage.set(key, value, 30 * 1000).then(() => {
   /* Do something here */
 });
 ```
 
 **Note** Cookies are trucated after ~628 characters in chrome (total of key + value characters), other browsers may tructae at other values as well. Use cookies for small data only
 
-Set cookie that can be sent
-
-```js
-storage.store = `key=value; expires=...; path=/`;
-```
-
 ### Getting value
 
 ```js
-// get single key-value
-storage.get('key').then(value => console.log(value)); // > { key: { value: 'value' } }
-
-// get multiple key-values
-storage.get(['a', 'c']).then(value => console.log(value)); // > { a: 'b', c: { d: 'e' } }
+// get key-value
+storage.get('key').then((value) => console.log(value)); // > { a: 'b' }
 ```
 
 ### Deleting a key
 
 ```js
-// delete single key-value
-storage.del('key').then(() => {
-  /* Do something here */
-});
-
-// delete multiple key-values
-storage.del(['a', 'c']).then(() => {
+// delete key-value
+storage.delete('key').then(() => {
   /* Do something here */
 });
 ```
@@ -164,13 +121,7 @@ storage.del(['a', 'c']).then(() => {
 ### Get all data in table
 
 ```js
-storage.all().then(data => console.log(data)); // > { key: { value: 'value' }, a: 'b', c: { d: 'e' } }
-```
-
-### Get all keys in table
-
-```js
-storage.keys().then(keys => console.log(keys)); // > ['key', 'a', 'c']
+storage.all().then((data) => console.log(data)); // > { key: { a: 'b' }, a: 'b', c: { d: 'e' } }
 ```
 
 ### Clear table
@@ -178,7 +129,7 @@ storage.keys().then(keys => console.log(keys)); // > ['key', 'a', 'c']
 ```js
 storage.clear().then(() => {
   // checking if data is deleted
-  storage.all().then(data => console.log(data)); // > {}
+  storage.all().then((data) => console.log(data)); // > {}
 });
 ```
 
@@ -199,12 +150,6 @@ function cacheKeyFunction(a, b, c, d) {
 const memoizedSomeCustomCache = storage.memoize(some, cacheKeyFunction);
 ```
 
-### Get all created storage instances
-
-```js
-Sifrr.Storage.all;
-```
-
 ## Types of data supported
 
 ### key
@@ -213,7 +158,7 @@ should be `string`
 
 ### value
 
-can be any of these types:
+can be any of these types, or object with the type of values or array containing these types:
 
 - `Array`,
 - `ArrayBuffer`,
@@ -229,7 +174,12 @@ can be any of these types:
 - `Uint16Array`,
 - `Uint32Array`,
 - `Uint8ClampedArray`,
+- `BigInt`
+- `Boolean`
 - `String`
+- `null`
+
+`undefined` is same as property not defined so it might not be explicitly stored
 
 ### Gotchas
 

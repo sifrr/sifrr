@@ -12,10 +12,19 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "main": "dist/sifrr.template.cjs.js",
-  "module": "dist/sifrr.template.module.js",
-  "browser": "dist/sifrr.template.min.js",
-  "types": "dist/types/sifrr.template.d.ts",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "browser": "dist/index.iife.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
   "browserslist": [
     "chrome >= 55",
     "safari >= 10.1",
@@ -24,30 +33,30 @@
   ],
   "keywords": [],
   "scripts": {
-    "test": "node ../../../scripts/test/run.js ./packages/browser/sifrr-template",
-    "build": "yarn rollup -c",
-    "test-build": "cd test/public && yarn build",
-    "test-server": "yarn test -s"
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:storybook:ci",
+    "test:jest": "jest",
+    "test:storybook": "wait-on tcp:${PORT:-6006} && test-storybook --url http://localhost:${PORT:-6006}",
+    "test:storybook:ci": "PORT=8112 npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"yarn test:server\" \"yarn test:storybook\"",
+    "test:playwright": "playwright test --pass-with-no-tests",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "yarn storybook:build && npx http-server storybook-static --port ${PORT:-6006} --silent",
+    "storybook:dev": "storybook dev -p ${PORT:-6006} --no-open",
+    "storybook:build": "storybook build --quiet",
+    "release-it": "release-it --ci"
   },
-  "dependencies": {},
-  "peerDependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@sifrr/dev": "^0.0.44",
-    "@types/busboy": "^0.2.3",
-    "@types/mkdirp": "^1.0.0",
-    "@types/yargs": "^15.0.12",
-    "axios": "^0.21.1",
-    "cache-manager": "^3.4.0",
-    "graphql-subscriptions": "^1.1.0",
-    "isomorphic-ws": "^4.0.1",
-    "loadtest": "^5.1.2",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.12.0",
-    "ws": "^7.4.2"
+    "@sifrr/eslint-config": "*",
+    "@sifrr/release-it-config": "*",
+    "@sifrr/test-suite": "*",
+    "@sifrr/typescript-config": "*",
+    "@sifrr/vite-config": "*",
+    "typescript": "^5.8.3"
   },
   "files": [
     "bin",
-    "dist",
-    "src"
+    "dist"
   ]
 }

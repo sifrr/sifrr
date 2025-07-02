@@ -1,19 +1,27 @@
+import { SifrrKeyType } from '@/template/types';
+
 const temp = document.createElement('template');
-const comment = document.createComment('Sifrr Reference Comment. Do not delete.');
+const comment = document.createComment('Sifrr');
 
 // binding string
 export const BIND_REF_LENGTH = 8;
 export const PREFIX = 'STB_';
-export const REF_REG = /\{{STB_(.{8})}}/;
-export const REF_REG_GLOBAL = /\{{STB_(.{8})}}/g;
-export const REF_REG_EXACT = /^{{STB_(.{8})}}$/;
-export const REF_LENGTH = 4 /* for {{}} */ + PREFIX.length + BIND_REF_LENGTH;
+// const REF = `{{${PREFIX}(.{${BIND_REF_LENGTH}})}}`;
+const REF = `{{(?:${PREFIX})?([^}]+)}}`;
+export const REF_REG = new RegExp(REF);
+export const REF_REG_GLOBAL = new RegExp(REF, 'g');
+export const REF_REG_EXACT = new RegExp('^' + REF + '$');
+export const CommentKeySymbol = Symbol('comment-key');
 
 // dom elements
 export const TEMPLATE = () => <HTMLTemplateElement>temp.cloneNode(false);
 export const TREE_WALKER = (root: Node) =>
-  document.createTreeWalker(root, NodeFilter.SHOW_ALL, null, false);
-export const REFERENCE_COMMENT = () => comment.cloneNode(true);
+  document.createTreeWalker(root, NodeFilter.SHOW_ALL, null);
+export const REFERENCE_COMMENT = (key?: boolean) => {
+  const node = comment.cloneNode(true) as Comment;
+  if (key) (node as any).key = CommentKeySymbol;
+  return node as Comment & { key: SifrrKeyType; [x: string]: unknown };
+};
 export const SIFRR_FRAGMENT = () => document.createElement('sifrr-fragment');
 
 // node types

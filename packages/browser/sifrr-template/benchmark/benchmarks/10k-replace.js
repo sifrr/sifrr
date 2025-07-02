@@ -1,12 +1,12 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class TenkReplace extends Benchmark {
-  static beforeAll() {
-    return this.prototype.mainClick('#runlots');
+  beforeAll() {
+    return this.mainClick('#runlots');
   }
 
-  static beforeAllWait() {
-    return `${this.prototype.main}.$$('tr').length === 10000`;
+  beforeAllWait() {
+    return `${this.main}.$$('tr').length === 10000`;
   }
 
   run() {
@@ -14,11 +14,10 @@ class TenkReplace extends Benchmark {
   }
 
   runWait() {
-    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${this.constructor
-      .start +
-      10000 * (this.i + 1) +
-      1}'`;
+    return `${this.main}.$('tr td') && ${this.main}.$('tr td').textContent === '${
+      10000 * (this.i + 1) + 1
+    }'`;
   }
 }
 
-module.exports = TenkReplace;
+export default TenkReplace;

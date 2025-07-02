@@ -1,0 +1,71 @@
+{
+  "name": "@sifrr/router",
+  "version": "0.0.9",
+  "description": "History API based Routing library for sifrr in browser.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sifrr/sifrr.git"
+  },
+  "author": "aadityataparia <aadityataparia@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/sifrr/sifrr/issues"
+  },
+  "homepage": "https://github.com/sifrr/sifrr",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "browser": "dist/index.iife.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "browserslist": [
+    "chrome >= 55",
+    "safari >= 10.1",
+    "opera >= 42",
+    "firefox >= 63"
+  ],
+  "keywords": [
+    "sifrr",
+    "route",
+    "router",
+    "sifrr element"
+  ],
+  "scripts": {
+    "lint": "eslint src/.",
+    "lint:fix": "eslint --fix .",
+    "test": "yarn test:jest && yarn test:playwright",
+    "test:jest": "jest",
+    "test:playwright": "playwright test --pass-with-no-tests",
+    "build": "rm -rf dist && vite build",
+    "dev": "vite build --watch",
+    "test:server": "tsx test/server",
+    "test:server:watch": "tsx watch --include test/public test/server",
+    "storybook:dev": "storybook dev -p 6006 --no-open",
+    "storybook:build": "storybook build",
+    "release-it": "release-it --ci"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@sifrr/dom": "*"
+  },
+  "devDependencies": {
+    "@sifrr/dom": "*",
+    "@sifrr/eslint-config": "*",
+    "@sifrr/release-it-config": "*",
+    "@sifrr/test-suite": "*",
+    "@sifrr/typescript-config": "*",
+    "@sifrr/vite-config": "*",
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ]
+}

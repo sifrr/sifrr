@@ -3,7 +3,8 @@ categories:
     label: feature
   - title: 🐛 Bug Fixes
     label: fix
-tag-template: - $TITLE @$AUTHOR (#$NUMBER)
+tag-template:
+  - $TITLE @$AUTHOR (#$NUMBER)
 template: |
   ## Changes
 

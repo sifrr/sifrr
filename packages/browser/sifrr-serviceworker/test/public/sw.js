@@ -1,4 +1,4 @@
-const SW = require('../../src/sifrr.serviceworker');
+import SW from './index.mjs';
 
 const sw = new SW({
   version: 1,
@@ -41,16 +41,16 @@ sw.onInstall = () => {
   self.skipWaiting();
 };
 sw.setupPushNotification('default title', { body: 'default body' });
-sw.onNotificationClick = event => {
+sw.onNotificationClick = (event) => {
   event.notification.close();
   event.waitUntil(
     self.clients
       .matchAll({
         type: 'window'
       })
-      .then(function(clientList) {
-        for (let i = 0; i < clientList.length; i++) {
-          const client = clientList[i];
+      .then(function (clientList) {
+        for (const element of clientList) {
+          const client = element;
           const url = new URL(client.url);
           if (url.pathname == '/' && 'focus' in client) return client.focus();
         }
@@ -58,7 +58,7 @@ sw.onNotificationClick = event => {
       })
   );
 };
-self.addEventListener('message', async e => {
+self.addEventListener('message', async (e) => {
   if (e.data === 'coverage') {
     e.ports[0].postMessage(self.__coverage__);
   } else if (e.data === 'caches') {
@@ -67,4 +67,3 @@ self.addEventListener('message', async e => {
     sw.pushEventListener(e.data.event).then(() => e.ports[0].postMessage('ok'));
   }
 });
-module.exports = sw;

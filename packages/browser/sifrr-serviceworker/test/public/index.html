@@ -1,88 +1,96 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title></title>
-</head>
-
-<body>
-  <h1>OK</h1>
-  <script src="/sifrr.fetch.min.js" charset="utf-8"></script>
-  <script type="text/javascript">
-    window.VAPID = {
-      public: 'BPBd/HZ3wdfWAIa8+RpovOqWbbBeogrnZ9TrGwZzrmtfoFsO3cHnLT9jsPGf7u4beErBp7SrT7gro520ictbIL8=',
-      private: 'n1dpMYSzWcfg8rRVaOILgoBH+oDrHAFULKkjMSrRjbk='
-    };
-
-    function base64UrlToUint8Array(base64UrlData) {
-      const padding = '='.repeat((4 - base64UrlData.length % 4) % 4);
-      const base64 = (base64UrlData + padding)
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
-      const rawData = atob(base64);
-      const buffer = new Uint8Array(rawData.length);
-      for (let i = 0; i < rawData.length; ++i) {
-        buffer[i] = rawData.charCodeAt(i);
-      }
-      return buffer;
-    }
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        const sw = window.location.href.split('?')[1] || 'sw.bundled.js';
-        navigator.serviceWorker.register(sw).then(function(registration) {
-          // Registration was successful
-          window.console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: base64UrlToUint8Array(window.VAPID.public)
-          })
-            .then(function(subscription) {
-              window.pushSubscription = JSON.parse(JSON.stringify(subscription));
-              window.console.log(window.pushSubscription);
-              window.console.log('User is subscribed.');
-            })
-            .catch(function(err) {
-              window.console.log('Failed to subscribe the user: ');
-              window.console.error(err);
-            });
-        }, function(err) {
-          // registration failed :(
-          window.console.log('ServiceWorker registration failed: ', err);
-        }).then(() => {
-          window.send_message_to_sw = function(msg) {
-            return new Promise(function(resolve, reject) {
-              // Create a Message Channel
-              let msg_chan = new MessageChannel();
-
-              // Handler for recieving message reply from service worker
-              msg_chan.port1.onmessage = function(event) {
-                if (event.data.error) {
-                  reject(event.data.error);
-                } else {
-                  resolve(event.data);
-                }
-              };
-
-              // Send message to service worker along with port for reply
-              navigator.serviceWorker.controller.postMessage(msg, [msg_chan.port2]);
-            });
-          };
-          Object.defineProperty(window, '__coverage__', {
-            get: () => {
-              return window.send_message_to_sw('coverage');
-            }
-          });
-        });
-      });
-    }
-    window.sendPush = async function(data) {
-      const event = {
-        data: data
+  <body>
+    <h1>OK</h1>
+    <script type="module">
+      window.VAPID = {
+        public:
+          'BPBd/HZ3wdfWAIa8+RpovOqWbbBeogrnZ9TrGwZzrmtfoFsO3cHnLT9jsPGf7u4beErBp7SrT7gro520ictbIL8=',
+        private: 'n1dpMYSzWcfg8rRVaOILgoBH+oDrHAFULKkjMSrRjbk='
       };
-      await window.send_message_to_sw({ type: 'push', event });
-    };
-  </script>
-</body>
 
+      function base64UrlToUint8Array(base64UrlData) {
+        const padding = '='.repeat((4 - (base64UrlData.length % 4)) % 4);
+        const base64 = (base64UrlData + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = atob(base64);
+        const buffer = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          buffer[i] = rawData.charCodeAt(i);
+        }
+        return buffer;
+      }
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          const sw = window.location.href.split('?')[1] || 'sw.js';
+          navigator.serviceWorker
+            .register(sw, {
+              type: 'module'
+            })
+            .then(
+              function (registration) {
+                // Registration was successful
+                window.console.log(
+                  'ServiceWorker registration successful with scope: ',
+                  registration.scope
+                );
+                registration.pushManager
+                  .subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: base64UrlToUint8Array(window.VAPID.public)
+                  })
+                  .then(function (subscription) {
+                    window.pushSubscription = JSON.parse(JSON.stringify(subscription));
+                    window.console.log(window.pushSubscription);
+                    window.console.log('User is subscribed.');
+                  })
+                  .catch(function (err) {
+                    window.console.log('Failed to subscribe the user: ');
+                    window.console.error(err);
+                  });
+              },
+              function (err) {
+                // registration failed :(
+                window.console.log('ServiceWorker registration failed: ', err);
+              }
+            )
+            .then(() => {
+              window.send_message_to_sw = function (msg) {
+                return new Promise(function (resolve, reject) {
+                  // Create a Message Channel
+                  let msg_chan = new MessageChannel();
+
+                  // Handler for recieving message reply from service worker
+                  msg_chan.port1.onmessage = function (event) {
+                    if (event.data.error) {
+                      reject(event.data.error);
+                    } else {
+                      resolve(event.data);
+                    }
+                  };
+
+                  // Send message to service worker along with port for reply
+                  navigator.serviceWorker.controller.postMessage(msg, [msg_chan.port2]);
+                });
+              };
+              Object.defineProperty(window, '__coverage__', {
+                get: () => {
+                  return window.send_message_to_sw('coverage');
+                }
+              });
+            });
+        });
+      }
+      window.sendPush = async function (data) {
+        const event = {
+          data: data
+        };
+        await window.send_message_to_sw({ type: 'push', event });
+      };
+    </script>
+  </body>
 </html>

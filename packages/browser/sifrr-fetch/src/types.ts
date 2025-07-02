@@ -1,6 +1,6 @@
 declare global {
   interface Promise<T> {
-    abort?: () => void;
+    abort?: () => T | void;
   }
 
   interface Error {
@@ -8,23 +8,27 @@ declare global {
   }
 }
 
-export type beforeOpts = { url: string; options: SifrrFetchOptions; method: string };
+export type BeforeOpts = { url: string; options: SifrrFetchOptions };
+
+export type SifrrFetchResponse<T = any, E = any> = {
+  status: number;
+  headers: Headers;
+} & (
+  | { data?: T; ok: true; errorData: undefined; response?: Response }
+  | { data: undefined; ok: false; errorData: E; response: Response }
+);
 
 export type SifrrFetchOptions = {
-  // graphql
-  query?: string;
-  variables?: {};
   // normal
-  method?: string;
-  host?: string;
+  baseUrl?: string;
   headers?: { [name: string]: string };
-  params?: { [name: string]: string };
-  body?: any;
+  params?: { [name: string]: string | boolean | number | (string | boolean | number)[] };
   timeout?: number;
+  body?: RequestInit['body'] | object;
   // hooks
-  before?: (opts: beforeOpts) => MaybePromise<beforeOpts>;
-  use?: (opts: beforeOpts) => MaybePromise<beforeOpts>;
-  after?: (response: any) => any;
+  before?: (opts: BeforeOpts) => MaybePromise<BeforeOpts | void>;
+  use?: (opts: BeforeOpts) => MaybePromise<any>;
+  after?: (response: SifrrFetchResponse) => SifrrFetchResponse;
   onProgress?: (progress: {
     loaded?: number;
     total?: number;
@@ -32,8 +36,6 @@ export type SifrrFetchOptions = {
     speed?: number;
     value?: Uint8Array;
   }) => void;
-  // default options
-  defaultOptions?: SifrrFetchOptions;
 } & RequestInit;
 
 export type MaybePromise<T> = T | Promise<T>;

@@ -1,59 +1,28 @@
-import { SavedDataObject, SavedData } from '../storages/types';
+import { Value, SavedData } from '../storages/types';
 
-// always bind to storage
-export const parseGetData = (
-  original: SavedDataObject,
-  onExpire: (k: string) => Promise<boolean> | undefined
-): object => {
-  const now = Date.now();
-  Object.keys(original).forEach(k => {
-    if (typeof original[k] === 'undefined') return;
+function parseGetData(
+  original: SavedData | undefined,
+  onExpire?: () => unknown
+): SavedData['value'] | undefined;
+function parseGetData(original: undefined, onExpire?: () => unknown): undefined;
+function parseGetData(original: SavedData | undefined, onExpire?: () => unknown) {
+  if (!original) return undefined;
 
-    const { createdAt, ttl } = original[k];
-    original[k] = original[k] && original[k].value;
+  const { createdAt, ttl } = original;
 
-    if (ttl === 0) return;
-
-    if (now - createdAt > ttl) {
-      delete original[k];
-      onExpire && onExpire(k);
-    }
-  });
-  return original;
-};
-
-export const parseSetValue = (value: any, defaultTtl: number): SavedData => {
-  if (value && value.value) {
-    value.ttl = value.ttl || defaultTtl;
-    value.createdAt = Date.now();
-    return value;
-  } else {
-    return {
-      value,
-      ttl: defaultTtl,
-      createdAt: Date.now()
-    };
+  if (ttl && Date.now() - createdAt > ttl) {
+    onExpire?.();
+    return;
   }
+  return original.value;
+}
+
+export const parseSetValue = (value: Value, ttl: number = 0): SavedData => {
+  return {
+    value,
+    ttl,
+    createdAt: Date.now()
+  };
 };
 
-export const parseSetData = (
-  key: string | object,
-  value: any | undefined,
-  defaultTtl: number | undefined
-): SavedDataObject => {
-  if (typeof key === 'string') {
-    return { [key]: parseSetValue(value, defaultTtl) };
-  } else {
-    const data = {};
-    Object.keys(key).forEach(k => (data[k] = parseSetValue(key[k], defaultTtl)));
-    return data;
-  }
-};
-
-export const parseKey = (key: string | string[]): string[] => {
-  if (Array.isArray(key)) {
-    return key;
-  } else {
-    return [key];
-  }
-};
+export { parseGetData };

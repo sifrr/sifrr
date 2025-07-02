@@ -1,5 +1,5 @@
 function stubRequests() {
-  page.on('request', request => {
+  page.on('request', (request) => {
     if (page.__post) {
       request.continue({ method: 'POST' });
     } else if (page.__offline) {
@@ -10,7 +10,7 @@ function stubRequests() {
   });
 }
 
-describe('sifrr-serviceworker', function() {
+describe('sifrr-serviceworker', function () {
   this.retries(3);
 
   before(async () => {
@@ -52,7 +52,7 @@ describe('sifrr-serviceworker', function() {
     // await page.evaluate('window.sendPush({"title": "ok", "body": "body"})');
     const notifications = await page.evaluate(async () => {
       const notifs = await (await navigator.serviceWorker.getRegistration()).getNotifications();
-      return notifs.map(n => {
+      return notifs.map((n) => {
         return {
           title: n.title,
           body: n.body
@@ -146,7 +146,7 @@ describe('sifrr-serviceworker', function() {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
         if (sw.scriptURL.indexOf('sw.bundled.js') < 0 || sw.state !== 'activated') {
-          return new Promise(res => {
+          return new Promise((res) => {
             window.setTimeout(() => res(checkSW()), 100);
           });
         } else {
@@ -162,7 +162,7 @@ describe('sifrr-serviceworker', function() {
       async function checkSW() {
         const sw = (await navigator.serviceWorker.getRegistration()).active;
         if (sw.scriptURL.indexOf('sw2.bundled.js') < 0 || sw.state !== 'activated') {
-          return new Promise(res => {
+          return new Promise((res) => {
             window.setTimeout(() => res(checkSW()), 100);
           });
         } else {
@@ -173,7 +173,7 @@ describe('sifrr-serviceworker', function() {
     });
     const cachesNew = await page.evaluate("window.send_message_to_sw('caches')");
 
-    caches.forEach(k => {
+    caches.forEach((k) => {
       expect(cachesNew).to.not.include(k);
     });
   });

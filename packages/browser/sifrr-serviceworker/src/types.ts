@@ -1,4 +1,4 @@
-export type swOptions = {
+export type SwOptions = {
   version?: number;
   fallbackCacheName?: string;
   defaultCacheName?: string;

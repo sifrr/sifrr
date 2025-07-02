@@ -27,3 +27,11 @@ dist
 
 # test yarns
 **/test/public/yarn.lock
+
+.turbo
+
+*storybook.log
+playwright-report
+test-results
+storybook-static
+wiki

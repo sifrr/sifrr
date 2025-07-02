@@ -1,35 +1,46 @@
 import { BindingFxn, SifrrProps } from './types';
 
-type PropKeyFunction<T> = (props: SifrrProps<T>) => string;
+type PropKeyFunction<T> = (props: SifrrProps<T>) => any;
 
-export default function memo<T, O, N>(
+const startRet = Symbol('startRet');
+
+export default function memo<T, O, N = O>(
   fxn: BindingFxn<T, O, N>,
-  deps: string[] | PropKeyFunction<T> = []
+  deps: (keyof SifrrProps<T>)[] | PropKeyFunction<T> = []
 ): BindingFxn<T, O, N> {
   const isFunc = typeof deps === 'function';
-  const depsL = !isFunc && deps.length;
-  const memoValues = new Map();
+  const depsL = !isFunc ? deps.length : 0;
+  let retValue: N | Promise<N> | O | symbol | string = startRet;
+
+  const getMemo = (props: SifrrProps<T>) => {
+    if (isFunc) {
+      return [deps(props)];
+    }
+    return deps.map((k) => (props && typeof props === 'object' ? props[k] : ''));
+  };
+  let prevMemo: any[] = [];
 
   return (props: SifrrProps<T>, oldValue: O): N | Promise<N> => {
-    let memoMap: Map<any, N | Promise<N>>;
-    if (memoValues.has(props)) {
-      memoMap = memoValues.get(props);
-    } else {
-      memoMap = new Map();
-      memoValues.set(props, memoMap);
+    if (retValue === startRet) {
+      retValue = fxn(props, oldValue);
+      prevMemo = getMemo(props);
+      return retValue;
     }
-    let memoKey: string;
-    if (isFunc) {
-      memoKey = (<PropKeyFunction<T>>deps)(props);
-    } else {
-      for (let i = 0; i < depsL; i++) {
-        memoKey = memoKey ? `${memoKey}_${props[deps[i]]}` : props[deps[i]];
+
+    const newMemo = getMemo(props);
+    if (prevMemo.length !== newMemo.length) {
+      prevMemo = newMemo;
+      retValue = fxn(props, oldValue);
+      return retValue;
+    }
+    for (let i = 0; i < depsL; i++) {
+      if (prevMemo[i] !== newMemo[i]) {
+        prevMemo = newMemo;
+        retValue = fxn(props, oldValue);
+        return retValue;
       }
     }
 
-    if (!memoMap.has(memoKey)) {
-      memoMap.set(memoKey, fxn(props, oldValue));
-    }
-    return memoMap.get(memoKey);
+    return retValue as N | Promise<N>;
   };
 }

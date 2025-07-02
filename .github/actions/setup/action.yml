@@ -1,0 +1,44 @@
+name: Setup workspace
+inputs:
+  node-version:
+    required: true
+    description: Node Version to setup
+
+runs:
+  using: composite
+
+  steps:
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
+        cache-dependency-path: |
+          **/yarn.lock
+
+    - name: Setup yarn
+      shell: bash
+      run: npm i -g yarn@1
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        yarn install --frozen-lockfile
+
+    - name: Store Playwright's Version
+      shell: bash
+      run: |
+        PLAYWRIGHT_VERSION=$(yarn list playwright | grep playwright | sed 's/.*@//')
+        echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+        echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+    - name: Cache playwright binaries
+      uses: actions/cache@v3
+      id: playwright-cache
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-v1-${{ env.PLAYWRIGHT_VERSION }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-v1-${{ env.PLAYWRIGHT_VERSION }}
+          ${{ runner.os }}-playwright-v1-

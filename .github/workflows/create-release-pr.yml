@@ -1,0 +1,55 @@
+name: Create/Update Release PR
+
+on:
+  push:
+    branches: ['main']
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  create:
+    if: ${{ !startsWith(github.event.head_commit.message, 'release') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Workspace
+        uses: ./.github/actions/setup
+        with:
+          node-version: 20.x
+
+      - name: Get release notes
+        id: releasenotes
+        run: |
+          echo 'body<<DELIMITER' >> $GITHUB_OUTPUT
+          echo "$(./scripts/getReleaseNotes)" >> $GITHUB_OUTPUT
+          echo 'DELIMITER' >> $GITHUB_OUTPUT
+
+      - name: Create Changelogs and Bump versions
+        run: |
+          git config --global user.name "aadityataparia"
+          git config --global user.email "aadityataparia@gmail.com"
+          yarn turbo release-it --concurrency=1
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: release
+          title: 'release: update changelogs and bump packages'
+          token: ${{ secrets.GIT_ACCESS_TOKEN_WEB }}
+          add-paths: |
+            **/CHANGELOG.md
+          body: |
+            This is an automated PR, do not update manually. Merging changes to `${{ github.head_ref || github.ref_name || 'main' }}` branch automatically updates this PR.
+
+            Merging this PR will release the packages with the new versions specified in this PR.
+
+            <h1 align="center">Changelogs</h1>
+
+            ${{ steps.releasenotes.outputs.body }}

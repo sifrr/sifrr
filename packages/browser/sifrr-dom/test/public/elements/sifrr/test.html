@@ -32,13 +32,9 @@
   <div class="">
     <div :sifrr-html="true"></div>
   </div>
-  <div class="html" :sifrr-html="true">
-    ${this.state.html}
-  </div>
+  <div class="html" :sifrr-html="true">${this.state.html}</div>
   <textarea name="name" rows="2" cols="40" :sifrr-bind="textarea">${this.state.textarea}</textarea>
-  <div class="" contenteditable :sifrr-bind="elements">
-    ${this.state.elements}
-  </div>
+  <div class="" contenteditable :sifrr-bind="elements">${this.state.elements}</div>
   <sifrr-small _click="${this.sifrrSmallClick}"></sifrr-small>
 </template>
 <script type="text/javascript">

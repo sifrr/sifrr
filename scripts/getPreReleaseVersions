@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+const { getPackages } = require('./_utils/packages.cjs');
+
+const packages = getPackages();
+
+const versions = {};
+packages.forEach((p) => {
+  try {
+    const pkgJson = require(`${p}/package.json`);
+    if (pkgJson.version.indexOf('-') > 0) {
+      versions[pkgJson.name] = pkgJson.version;
+    }
+  } catch (e) {}
+});
+
+console.log(JSON.stringify(versions, undefined, 2));

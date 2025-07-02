@@ -1,98 +1,163 @@
-import { createWriteStream } from 'fs';
-import { join, dirname } from 'path';
-import Busboy from 'busboy';
-import mkdirp from 'mkdirp';
+import { join } from 'path';
+import busboyFxn, { BusboyConfig } from 'busboy';
+import { UploadedFile, FormDataConfig } from '@/server/types';
+import { v4 as uuid } from 'uuid';
+import { getExt } from '@/server/mime';
+import { defer, stob, stof } from '@/server/utils';
+import { mkdirSync } from 'fs';
 
-function formData(
-  contType: string,
-  options: busboy.BusboyConfig & {
-    abortOnLimit?: boolean;
-    tmpDir?: string;
-    onFile?: (
-      fieldname: string,
-      file: NodeJS.ReadableStream,
-      filename: string,
-      encoding: string,
-      mimetype: string
-    ) => string;
-    onField?: (fieldname: string, value: any) => void;
-    filename?: (oldName: string) => string;
-  } = {}
-) {
-  options.headers = {
-    'content-type': contType
-  };
+function formData<T>(
+  stream: NodeJS.ReadableStream,
+  headers: Record<string, string>,
+  options: FormDataConfig = {}
+): Promise<T> {
+  (options as BusboyConfig).headers = headers;
+
+  if (typeof options.destinationDir === 'string') {
+    mkdirSync(options.destinationDir, {
+      recursive: true
+    });
+  }
 
   return new Promise((resolve, reject) => {
-    const busb = new Busboy(options);
-    const ret = {};
+    const busb = busboyFxn(options);
+    const ret: Record<string, string | string[] | UploadedFile | UploadedFile[]> = {};
+    const promises: Promise<any>[] = [Promise.resolve()];
 
-    this.bodyStream().pipe(busb);
-
-    busb.on('limit', () => {
-      if (options.abortOnLimit) {
-        reject(Error('limit'));
+    Object.keys(options.fields ?? {}).forEach((fieldname) => {
+      const field = options.fields![fieldname];
+      if (field?.maxCount && field.maxCount > 1) {
+        ret[fieldname] = [];
+      }
+      if (field?.default !== undefined) {
+        ret[fieldname] = field.default;
       }
     });
 
-    busb.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      const value = {
-        filename,
-        encoding,
-        mimetype,
-        filePath: undefined
-      };
+    busb.on('partsLimit', function () {
+      reject(Error('LIMIT_PART_COUNT'));
+    });
+    busb.on('filesLimit', function () {
+      reject(Error('LIMIT_FILE_COUNT'));
+    });
+    busb.on('fieldsLimit', function () {
+      reject(Error('LIMIT_FIELD_COUNT'));
+    });
 
-      if (typeof options.tmpDir === 'string') {
-        if (typeof options.filename === 'function') filename = options.filename(filename);
-        const fileToSave = join(options.tmpDir, filename);
-        mkdirp(dirname(fileToSave));
+    busb.on(
+      'file',
+      function (fieldname, fileStream, { filename: originalname, encoding, mimeType }) {
+        if (!originalname) return fileStream.resume();
+        if (options.fields) {
+          if (options.fields[fieldname]) {
+            const max = options.fields[fieldname].maxCount ?? Infinity;
+            if (
+              max === 0 ||
+              (max === 1 && ret[fieldname]) ||
+              (Array.isArray(ret[fieldname]) && ret[fieldname].length >= max)
+            ) {
+              return fileStream.resume();
+            }
+          } else {
+            return fileStream.resume();
+          }
+        }
 
-        file.pipe(createWriteStream(fileToSave));
-        value.filePath = fileToSave;
+        const value: Partial<UploadedFile> = {
+          fieldname,
+          originalname,
+          stream: fileStream,
+          encoding,
+          mimeType,
+          path: undefined
+        };
+
+        options.handleFileStream?.(value as any);
+        if (fileStream.readableEnded) return;
+
+        fileStream.on('error', reject);
+        fileStream.on('limit', function () {
+          reject(Error('LIMIT_FILE_SIZE: ' + fieldname));
+        });
+
+        const { promise, resolve: res, reject: rej } = defer<void>();
+
+        promises.push(promise);
+
+        if (typeof options.destinationDir === 'string') {
+          const ext = getExt(mimeType);
+          const finalPath = join(options.destinationDir, uuid() + (ext ? `.${ext}` : ''));
+
+          value.path = finalPath;
+          value.destination = options.destinationDir;
+          stof(fileStream, finalPath)
+            .then((size) => {
+              value.size = size;
+              res();
+            })
+            .catch(rej);
+        } else {
+          stob(fileStream)
+            .then((b) => {
+              value.size = b.length;
+              value.buffer = b;
+              res();
+            })
+            .catch(rej);
+        }
+
+        if (options.filterFile?.(value as any) === false) return;
+        setRetValue(ret, fieldname, value);
       }
-      if (typeof options.onFile === 'function') {
-        value.filePath =
-          options.onFile(fieldname, file, filename, encoding, mimetype) || value.filePath;
+    );
+
+    busb.on('field', function (fieldname, value) {
+      if (options.fields) {
+        if (options.fields[fieldname]) {
+          const max = options.fields[fieldname].maxCount ?? Infinity;
+          if (
+            max === 0 ||
+            (max === 1 && ret[fieldname]) ||
+            (Array.isArray(ret[fieldname]) && ret[fieldname].length >= max)
+          ) {
+            return;
+          }
+        } else {
+          return;
+        }
       }
 
       setRetValue(ret, fieldname, value);
     });
 
-    busb.on('field', function(fieldname, value) {
-      if (typeof options.onField === 'function') options.onField(fieldname, value);
-
-      setRetValue(ret, fieldname, value);
-    });
-
-    busb.on('finish', function() {
-      resolve(ret);
+    busb.on('finish', function () {
+      Promise.all(promises)
+        .then(() => resolve(ret as T))
+        .catch(reject);
     });
 
     busb.on('error', reject);
+
+    stream.pipe(busb);
   });
 }
 
 function setRetValue(
   ret: { [x: string]: any },
   fieldname: string,
-  value: { filename: string; encoding: string; mimetype: string; filePath?: string } | any
+  value: Partial<UploadedFile> | string
 ) {
-  if (fieldname.slice(-2) === '[]') {
-    fieldname = fieldname.slice(0, fieldname.length - 2);
-    if (Array.isArray(ret[fieldname])) {
-      ret[fieldname].push(value);
-    } else {
-      ret[fieldname] = [value];
-    }
+  let array = false;
+  if (fieldname.endsWith('[]')) {
+    array = true;
+    fieldname = fieldname.substring(0, fieldname.length - 2);
+  }
+  if (Array.isArray(ret[fieldname])) {
+    ret[fieldname].push(value);
+  } else if (ret[fieldname]) {
+    ret[fieldname] = [ret[fieldname], value];
   } else {
-    if (Array.isArray(ret[fieldname])) {
-      ret[fieldname].push(value);
-    } else if (ret[fieldname]) {
-      ret[fieldname] = [ret[fieldname], value];
-    } else {
-      ret[fieldname] = value;
-    }
+    ret[fieldname] = array ? [value] : value;
   }
 }
 

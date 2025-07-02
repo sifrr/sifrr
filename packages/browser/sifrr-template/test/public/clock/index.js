@@ -1,6 +1,6 @@
 const { html, css, update, memo } = Sifrr.Template;
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const store = {
   backgrounds: [
     {
@@ -130,18 +130,18 @@ const store = {
   clockFileName: ''
 };
 
-const getSelectedBg = () => store.backgrounds.find(bg => bg.src === store.selectedBg);
-const setSelectedBg = src => {
+const getSelectedBg = () => store.backgrounds.find((bg) => bg.src === store.selectedBg);
+const setSelectedBg = (src) => {
   store.selectedBg = src;
   store.update();
 };
-const downloadBg = bg => {
+const downloadBg = (bg) => {
   setSelectedBg(bg.src);
   window
     .html2canvas(document.querySelector('#container'), {
       scale: 5
     })
-    .then(canvas => {
+    .then((canvas) => {
       store.update();
       const image = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');
       window.downloadImage(
@@ -175,9 +175,9 @@ const CSS = css`
 `;
 
 const Option = html`
-  <option value=${({ value }) => value} selected=${({ selected }) => selected}
-    >${({ label }) => label}</option
-  >
+  <option value=${({ value }) => value} selected=${({ selected }) => selected}>
+    ${({ label }) => label}
+  </option>
 `;
 
 const NumInput = html`
@@ -207,10 +207,11 @@ const NumInput = html`
     <span class="span-h">${({ name }) => name}</span>
     <span
       class="span-b"
-      :onclick=${({ value, name }) => () => {
-        value[name] = value[name] - 1;
-        store.update();
-      }}
+      :onclick=${({ value, name }) =>
+        () => {
+          value[name] = value[name] - 1;
+          store.update();
+        }}
       >-</span
     >
     <input
@@ -219,17 +220,19 @@ const NumInput = html`
       min="0"
       name=${({ name }) => name}
       :value=${({ value, name }) => value[name]}
-      :onchange=${({ value, name }) => e => {
-        value[name] = parseInt(e.target.value);
-        store.update();
-      }}
+      :onchange=${({ value, name }) =>
+        (e) => {
+          value[name] = parseInt(e.target.value);
+          store.update();
+        }}
     />
     <span
       class="span-b"
-      :onclick=${({ value, name }) => () => {
-        value[name] = value[name] + 1;
-        store.update();
-      }}
+      :onclick=${({ value, name }) =>
+        () => {
+          value[name] = value[name] + 1;
+          store.update();
+        }}
       >+</span
     >
   </div>
@@ -284,9 +287,9 @@ const Temp = html`
     </div>
     <div :style=${memo(() => ({ padding: '16px' }))}>
       <label for="bg-select">Select Background</label>
-      <select ::onchange=${e => setSelectedBg(e.target.value)}>
+      <select ::onchange=${(e) => setSelectedBg(e.target.value)}>
         ${({ backgrounds, selectedBg }) =>
-          backgrounds.map(bg =>
+          backgrounds.map((bg) =>
             Option({
               label: bg.src,
               value: bg.src,
@@ -300,12 +303,12 @@ const Temp = html`
           type="file"
           name="clock"
           accept="image/*"
-          ::onchange=${e => {
+          ::onchange=${(e) => {
             const files = e.target.files;
             if (files && files[0]) {
               var reader = new FileReader();
 
-              reader.onload = function(e) {
+              reader.onload = function (e) {
                 store.clock = e.target.result;
                 store.clockFileName = files[0].name;
                 store.update();

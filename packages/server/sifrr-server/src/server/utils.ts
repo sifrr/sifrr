@@ -1,52 +1,80 @@
+import { SifrrResponse } from '@/server/response';
+import { createWriteStream } from 'fs';
 import { HttpResponse } from 'uWebSockets.js';
-import { ReadStream } from 'fs';
 
-function writeHeaders(
-  res: HttpResponse,
+export function writeHeaders(res: HttpResponse | SifrrResponse, name: string, value: string): void;
+export function writeHeaders(
+  res: HttpResponse | SifrrResponse,
+  headers: { [name: string]: string }
+): void;
+export function writeHeaders(
+  res: HttpResponse | SifrrResponse,
   headers: { [name: string]: string } | string,
   other?: string
 ) {
-  if (typeof headers === 'string') {
-    res.writeHeader(headers, other.toString());
-  } else {
-    for (const n in headers) {
-      res.writeHeader(n, headers[n].toString());
-    }
-  }
-}
-
-function extend(who: object, from: object, overwrite = true) {
-  const ownProps = Object.getOwnPropertyNames(Object.getPrototypeOf(from)).concat(
-    Object.keys(from)
-  );
-  ownProps.forEach(prop => {
-    if (prop === 'constructor' || from[prop] === undefined) return;
-    if (who[prop] && overwrite) {
-      who[`_${prop}`] = who[prop];
-    }
-    if (typeof from[prop] === 'function') who[prop] = from[prop].bind(who);
-    else who[prop] = from[prop];
-  });
-}
-
-function stob(stream: ReadStream): Promise<Buffer> {
-  return new Promise(resolve => {
-    const buffers = [];
-    stream.on('data', buffers.push.bind(buffers));
-
-    stream.on('end', () => {
-      switch (buffers.length) {
-        case 0:
-          resolve(Buffer.allocUnsafe(0));
-          break;
-        case 1:
-          resolve(buffers[0]);
-          break;
-        default:
-          resolve(Buffer.concat(buffers));
+  res.cork(() => {
+    if (typeof headers === 'string') {
+      res.writeHeader(headers, other!.toString());
+    } else {
+      for (const n in headers) {
+        res.writeHeader(n, headers[n]!.toString());
       }
-    });
+    }
   });
 }
 
-export { writeHeaders, extend, stob };
+export const stob = (fileStream: NodeJS.ReadableStream) =>
+  new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    fileStream.on('data', (chunk) => {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk, 'utf-8') : Buffer.from(chunk));
+    });
+    fileStream.on('end', () => {
+      resolve(Buffer.concat(chunks));
+    });
+    fileStream.on('error', reject);
+  });
+
+export const stof = (fileStream: NodeJS.ReadableStream, writeFilePath: string) => {
+  const writable = createWriteStream(writeFilePath);
+  return new Promise<number>((resolve, reject) => {
+    let size = 0;
+    fileStream.on('data', (chunk) => {
+      const bfr = typeof chunk === 'string' ? Buffer.from(chunk, 'utf-8') : Buffer.from(chunk);
+      size += bfr.length;
+      writable.write(bfr);
+    });
+    fileStream.on('end', () => {
+      writable.end();
+    });
+    fileStream.on('error', reject);
+    writable.on('finish', () => {
+      resolve(size);
+    });
+    writable.on('error', reject);
+  });
+};
+
+export const toab = (buffer: Buffer): ArrayBuffer => {
+  return buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength
+  ) as ArrayBuffer;
+};
+
+export const defer = <T>(): {
+  promise: Promise<T>;
+  resolve: (v: T) => void;
+  reject: (reason?: any) => void;
+} => {
+  let resolve, reject;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return {
+    promise,
+    resolve: resolve!,
+    reject: reject!
+  };
+};

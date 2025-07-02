@@ -1,6 +1,9 @@
-import { parse } from 'query-string';
-import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
-import { HttpResponse, HttpRequest } from 'uWebSockets.js';
+import { createAsyncIterator, isAsyncIterable } from 'iterall';
+import { WebSocketBehavior } from 'uWebSockets.js';
+import { GraphQLArgs, GraphQLSchema, parse as parseGql } from 'graphql';
+import * as Graphql from 'graphql';
+import { SifrrRequest } from '@/server/types';
+import { SifrrResponse } from '@/server/response';
 // client -> server
 const GQL_START = 'start';
 const GQL_STOP = 'stop';
@@ -8,117 +11,124 @@ const GQL_STOP = 'stop';
 const GQL_DATA = 'data';
 const GQL_QUERY = 'query';
 
-async function getGraphqlParams(res: HttpResponse, req: HttpRequest) {
+declare module 'uWebSockets.js' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface WebSocket<UserData> {
+    operations?: {
+      [id: number]: { return?: () => void };
+    };
+  }
+}
+
+async function getGraphqlParams(res: SifrrResponse, req: SifrrRequest) {
   // query and variables
-  const queryParams = parse(req.getQuery());
+  const queryParams = req.query;
   let { query, variables, operationName } = queryParams;
   if (typeof variables === 'string') variables = JSON.parse(variables);
 
   // body
-  if (res && typeof res.json === 'function') {
-    const data = await res.json();
-    query = data.query || query;
-    variables = data.variables || variables;
-    operationName = data.operationName || operationName;
+  const data = await (
+    res as SifrrResponse<{
+      query: string;
+      variables: string;
+      operationName: string;
+    }>
+  ).body;
+  if (data) {
+    query = ((data.query as string) ?? query)?.toString();
+    variables = data.variables ?? variables;
+    operationName = data.operationName ?? operationName;
   }
   return {
-    source: query,
-    variableValues: variables,
-    operationName
+    source: query as string,
+    variableValues: variables as unknown as { readonly [variable: string]: unknown },
+    operationName: operationName as string
   };
 }
 
-function graphqlPost(schema, graphqlOptions: any = {}, graphql: any = {}) {
-  const execute = graphql.graphql || require('graphql').graphql;
+function graphqlPost(
+  schema: GraphQLSchema,
+  graphqlOptions: Partial<GraphQLArgs>,
+  graphqlImpl: typeof Graphql
+) {
+  const execute = graphqlImpl.graphql || Graphql.graphql;
 
-  return async (res: HttpResponse, req: HttpRequest) => {
-    res.onAborted(console.error);
-
-    res.writeHeader('content-type', 'application/json');
-    res.end(
-      JSON.stringify(
-        await execute({
-          schema,
-          ...(await getGraphqlParams(res, req)),
-          ...graphqlOptions,
-          contextValue: {
-            res,
-            req,
-            ...(graphqlOptions &&
-              (graphqlOptions.contextValue ||
-                (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(res, req)))))
-          }
-        })
-      )
+  return async (req: SifrrRequest, res: SifrrResponse) => {
+    res.json(
+      await execute({
+        schema,
+        ...(await getGraphqlParams(res, req)),
+        ...graphqlOptions,
+        contextValue: {
+          res,
+          req,
+          ...(graphqlOptions.contextValue as object)
+        }
+      })
     );
   };
 }
 
-function stopGqsSubscription(operations, reqOpId) {
-  if (!reqOpId) return;
-  operations[reqOpId] && operations[reqOpId].return && operations[reqOpId].return();
+function stopGqsSubscription(
+  operations?: {
+    [id: number]: { return?: () => void };
+  },
+  reqOpId?: number
+) {
+  if (!reqOpId || !operations) return;
+  operations[reqOpId]?.return?.();
   delete operations[reqOpId];
 }
 
-function graphqlWs(schema, graphqlOptions: any = {}, uwsOptions: any = {}, graphql: any = {}) {
-  const subscribe = graphql.subscribe || require('graphql').subscribe;
-  const execute = graphql.graphql || require('graphql').graphql;
+function graphqlWs<T>(
+  schema: GraphQLSchema,
+  graphqlOptions: Partial<Graphql.ExecutionArgs>,
+  uwsOptions: WebSocketBehavior<T>,
+  graphql: typeof Graphql
+) {
+  const subscribe = graphql.subscribe || Graphql.subscribe;
+  const execute = graphql.graphql || Graphql.graphql;
 
-  return {
-    open: (ws, req) => {
-      ws.req = req;
+  const opts: WebSocketBehavior<T> = {
+    open: (ws) => {
       ws.operations = {};
-      ws.opId = 1;
     },
     message: async (ws, message) => {
       const { type, payload = {}, id: reqOpId } = JSON.parse(Buffer.from(message).toString('utf8'));
-      let opId;
-      if (reqOpId) {
-        opId = reqOpId;
-      } else {
-        opId = ws.opId++;
-      }
 
       const params = {
         schema,
         source: payload.query,
+        document: parseGql(payload.query),
         variableValues: payload.variables,
         operationName: payload.operationName,
         contextValue: {
           ws,
-          ...(graphqlOptions &&
-            (graphqlOptions.contextValue ||
-              (graphqlOptions.contextFxn && (await graphqlOptions.contextFxn(ws)))))
+          ...(graphqlOptions.contextValue as object)
         },
         ...graphqlOptions
       };
 
       switch (type) {
         case GQL_START:
-          stopGqsSubscription(ws.operations, opId);
+          stopGqsSubscription(ws.operations, reqOpId);
 
           // eslint-disable-next-line no-case-declarations
-          let asyncIterable = await subscribe(
-            params.schema,
-            graphql.parse(params.source),
-            params.rootValue,
-            params.contextValue,
-            params.variableValues,
-            params.operationName
-          );
-          asyncIterable = isAsyncIterable(asyncIterable)
-            ? asyncIterable
-            : createAsyncIterator([asyncIterable]);
+          const result = await subscribe(params);
+          // eslint-disable-next-line no-case-declarations
+          const asyncIterable = isAsyncIterable(result)
+            ? result
+            : { [Symbol.asyncIterator]: () => createAsyncIterator([result]) };
 
-          forAwaitEach(asyncIterable, result =>
+          for await (const result of asyncIterable) {
             ws.send(
               JSON.stringify({
-                id: opId,
+                id: reqOpId,
                 type: GQL_DATA,
                 payload: result
               })
-            )
-          );
+            );
+          }
           break;
 
         case GQL_STOP:
@@ -126,13 +136,15 @@ function graphqlWs(schema, graphqlOptions: any = {}, uwsOptions: any = {}, graph
           break;
 
         default:
-          ws.send(JSON.stringify({ payload: await execute(params), type: GQL_QUERY, id: opId }));
+          ws.send(JSON.stringify({ payload: await execute(params), type: GQL_QUERY, id: reqOpId }));
           break;
       }
     },
     idleTimeout: 24 * 60 * 60,
     ...uwsOptions
   };
+
+  return opts;
 }
 
 export { graphqlPost, graphqlWs };

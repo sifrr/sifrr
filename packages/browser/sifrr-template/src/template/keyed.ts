@@ -1,13 +1,20 @@
-/* eslint-disable max-lines */
+/* eslint-disable */
+import { COMMENT_NODE, REFERENCE_COMMENT } from '@/template/constants';
 import { makeEqual } from './makeequal';
 import {
   ChildNodeKeyed,
   SifrrCreateFunction,
   SifrrNode,
   SifrrKeyedProps,
-  DomBindingReturnValue
+  SifrrNodesArrayKeyed,
+  SifrrKeyType,
+  SifrrNodeKeyed
 } from './types';
 import { flatLastElement } from './utils';
+
+const isComment = (c?: Node | any): c is Comment => {
+  return c?.nodeType === COMMENT_NODE;
+};
 
 // Inspired from https://github.com/Freak613/stage0/blob/master/reconcile.js
 // This is almost straightforward implementation of reconcillation algorithm
@@ -20,20 +27,25 @@ import { flatLastElement } from './utils';
 // without maintaining nodes arrays, and manipulates dom only when required
 
 // only works with data nodes
-// TODO: cleanup
 export function makeChildrenEqualKeyed<T>(
-  oldChildren: ChildNodeKeyed[],
-  newData: SifrrKeyedProps<T>[],
-  createFn: SifrrCreateFunction<T>
-) {
+  oldChildren: SifrrNodesArrayKeyed<T>,
+  newData: (SifrrKeyedProps<T> | (Comment & { key: SifrrKeyType }))[],
+  createFn: SifrrCreateFunction<T & { key: SifrrKeyType }>
+): SifrrNodesArrayKeyed<T> {
+  // special case of no value return
+  if (newData.length < 1) {
+    if (oldChildren.length !== 1 || oldChildren[0]?.nodeType !== COMMENT_NODE)
+      newData.push(REFERENCE_COMMENT(true));
+    else newData = oldChildren as (Comment & { key: SifrrKeyType })[];
+  }
+
   const newL = newData.length,
     oldL = oldChildren.length;
 
-  const lastChild: Node =
-    (<DomBindingReturnValue>oldChildren).reference || flatLastElement(oldChildren);
-  const nextSib = lastChild && lastChild.nextSibling;
+  const lastChild: Node = oldChildren && flatLastElement(oldChildren);
+  const nextSib = lastChild.nextSibling;
   const parent = lastChild.parentNode;
-  const returnNodes = new Array(newL);
+  const returnNodes: SifrrNodesArrayKeyed<T> = new Array(newL);
 
   if (!parent) {
     throw Error(
@@ -41,19 +53,12 @@ export function makeChildrenEqualKeyed<T>(
     );
   }
 
-  (<DomBindingReturnValue>returnNodes).reference = (<DomBindingReturnValue>oldChildren).reference;
-  // special case of no value return
-  if (returnNodes.length < 1 && !(<DomBindingReturnValue>returnNodes).reference) {
-    const referenceComment = document.createComment('Sifrr Reference Comment. Do not delete.');
-    (<DomBindingReturnValue>returnNodes).reference = referenceComment;
-    parent.insertBefore(referenceComment, lastChild);
-  }
-
   if (oldL === 0) {
     for (let i = 0; i < newL; i++) {
-      const n = createFn(newData[i])[0];
-      n.key = newData[i].key;
-      returnNodes[i] = n;
+      const d = newData[i]!;
+      const n = isComment(d) ? d : createFn(d)[0]!;
+      n.key = newData[i]!.key;
+      returnNodes[i] = n! as SifrrNodeKeyed<T>;
       parent.insertBefore(n, nextSib);
     }
     return returnNodes;
@@ -65,67 +70,75 @@ export function makeChildrenEqualKeyed<T>(
     loop = true,
     prevEnd = oldL - 1,
     newEnd = newL - 1,
-    prevStartNode = oldChildren[0],
-    prevEndNode = oldChildren[oldL - 1],
+    prevStartNode = oldChildren[0]!,
+    prevEndNode = oldChildren[oldL - 1]!,
     finalNode,
     a: any,
     b: any,
-    _node: SifrrNode<T>;
+    _node: SifrrNodeKeyed<T>;
 
   fixes: while (loop) {
     loop = false;
 
     // Skip prefix
-    (a = prevStartNode), (b = newData[newStart]);
+    a = prevStartNode;
+    b = newData[newStart];
     while (b && a.key === b.key) {
-      returnNodes[newStart] = makeEqual(prevStartNode, b);
+      returnNodes[newStart] = makeEqual(prevStartNode, b) as SifrrNodeKeyed<T>;
       prevStart++;
-      prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
+      prevStartNode = (prevStartNode?.nextSibling ?? undefined) as SifrrNodeKeyed<T>;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode), (b = newData[newStart]);
+      a = prevStartNode;
+      b = newData[newStart];
     }
 
     // Skip suffix
-    (a = prevEndNode), (b = newData[newEnd]);
+    a = prevEndNode;
+    b = newData[newEnd];
     while (b && a.key === b.key) {
-      returnNodes[newEnd] = makeEqual(prevEndNode, b);
+      returnNodes[newEnd] = makeEqual(prevEndNode, b) as SifrrNodeKeyed<T>;
       prevEnd--;
       finalNode = prevEndNode;
-      prevEndNode = <ChildNodeKeyed>prevEndNode.previousSibling;
+      prevEndNode = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode), (b = newData[newEnd]);
+      a = prevEndNode;
+      b = newData[newEnd];
     }
 
     // Fast path to swap backward
-    (a = prevEndNode), (b = newData[newStart]);
+    a = prevEndNode;
+    b = newData[newStart];
     while (b && a.key === b.key) {
       loop = true;
-      returnNodes[newStart] = makeEqual(prevEndNode, b);
-      _node = prevEndNode.previousSibling;
+      returnNodes[newStart] = makeEqual(prevEndNode, b) as SifrrNodeKeyed<T>;
+      _node = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
       parent.insertBefore(prevEndNode, prevStartNode);
-      prevEndNode = <ChildNodeKeyed>_node;
+      prevEndNode = _node;
       prevEnd--;
       newStart++;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevEndNode), (b = newData[newStart]);
+      a = prevEndNode;
+      b = newData[newStart];
     }
 
     // Fast path to swap forward
-    (a = prevStartNode), (b = newData[newEnd]);
+    a = prevStartNode;
+    b = newData[newEnd];
     while (b && a.key === b.key) {
       loop = true;
-      returnNodes[newEnd] = makeEqual(prevStartNode, b);
-      _node = prevStartNode.nextSibling;
+      returnNodes[newEnd] = makeEqual(prevStartNode, b) as SifrrNodeKeyed<T>;
+      _node = prevStartNode.nextSibling as SifrrNodeKeyed<T>;
       parent.insertBefore(prevStartNode, prevEndNode.nextSibling);
       finalNode = prevStartNode;
-      prevEndNode = <ChildNodeKeyed>prevStartNode.previousSibling;
-      prevStartNode = <ChildNodeKeyed>_node;
+      prevEndNode = prevStartNode.previousSibling as SifrrNodeKeyed<T>;
+      prevStartNode = _node;
       prevStart++;
       newEnd--;
       if (prevEnd < prevStart || newEnd < newStart) break fixes;
-      (a = prevStartNode), (b = newData[newEnd]);
+      a = prevStartNode;
+      b = newData[newEnd];
     }
   }
 
@@ -137,9 +150,9 @@ export function makeChildrenEqualKeyed<T>(
         if (prevEnd === 0) {
           parent.removeChild(prevEndNode);
         } else {
-          next = <ChildNodeKeyed>prevEndNode.previousSibling;
+          next = prevEndNode.previousSibling as SifrrNodeKeyed<T>;
           parent.removeChild(prevEndNode);
-          prevEndNode = <ChildNodeKeyed>next;
+          prevEndNode = next as SifrrNodeKeyed<T>;
         }
         prevEnd--;
       }
@@ -151,11 +164,12 @@ export function makeChildrenEqualKeyed<T>(
   if (prevEnd < prevStart) {
     if (newStart <= newEnd) {
       while (newStart <= newEnd) {
-        _node = createFn(newData[newStart])[0];
-        _node.key = newData[newStart].key;
+        const d = newData[newStart]!;
+        _node = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
+        _node.key = d.key;
 
         returnNodes[newStart] = _node;
-        parent.insertBefore(_node, finalNode);
+        parent.insertBefore(_node, finalNode!);
         newStart++;
       }
     }
@@ -165,13 +179,16 @@ export function makeChildrenEqualKeyed<T>(
   const oldKeys = new Array(newEnd + 1 - newStart),
     newKeys = new Map(),
     nodes = new Array(prevEnd - prevStart + 1),
-    toDelete = [];
+    toDelete: Node[] = [];
 
   for (let i = newStart; i <= newEnd; i++) {
     // Positions for reusing nodes from current DOM state
     oldKeys[i] = -1;
     // Index to resolve position from current to new
-    newKeys.set(newData[i].key, i);
+    if (!newData[i]?.key) {
+      window.console.error(`Key is missing for index ${i},  props: `, newData[i]);
+    }
+    if (newData[i]?.key) newKeys.set(newData[i]!.key, i);
   }
 
   let reusingNodes = 0;
@@ -183,23 +200,24 @@ export function makeChildrenEqualKeyed<T>(
       toDelete.push(prevStartNode);
     }
     nodes[prevStart] = prevStartNode;
-    prevStartNode = <ChildNodeKeyed>prevStartNode.nextSibling;
+    prevStartNode = prevStartNode.nextSibling as SifrrNodeKeyed<T>;
     prevStart++;
   }
 
   // Remove extra nodes
-  for (let i = 0; i < toDelete.length; i++) {
-    parent.removeChild(toDelete[i]);
+  for (const node of toDelete) {
+    parent.removeChild(node);
   }
 
   // Fast path for full replace
   if (reusingNodes === 0) {
     for (let i = newStart; i <= newEnd; i++) {
       // Add extra nodes
-      returnNodes[i] = createFn(newData[i])[0];
-      returnNodes[i].key = newData[i].key;
+      const d = newData[i]!;
+      returnNodes[i] = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
+      returnNodes[i]!.key = newData[i]!.key;
 
-      parent.insertBefore(returnNodes[i], prevStartNode);
+      parent.insertBefore(returnNodes[i] as Node, prevStartNode!);
     }
     return returnNodes;
   }
@@ -207,21 +225,22 @@ export function makeChildrenEqualKeyed<T>(
   const longestSeq = longestPositiveIncreasingSubsequence(oldKeys, newStart);
 
   let lisIdx = longestSeq.length - 1,
-    tmpD: SifrrNode<T>;
+    tmpD: SifrrNodeKeyed<T>;
   for (let i = newEnd; i >= newStart; i--) {
     if (longestSeq[lisIdx] === i) {
       finalNode = nodes[oldKeys[i]];
       returnNodes[i] = finalNode;
       // returnNodes[i] = finalNode; reused nodes, not needed to set key
-      makeEqual(finalNode, newData[i]);
+      makeEqual(finalNode, newData[i]! as SifrrNode<T>);
       lisIdx--;
     } else {
       if (oldKeys[i] === -1) {
-        tmpD = createFn(newData[i])[0];
-        tmpD.key = newData[i].key;
+        const d = newData[i]!;
+        tmpD = (isComment(d) ? d : createFn(d)[0]!) as SifrrNodeKeyed<T>;
+        tmpD.key = newData[i]!.key;
       } else {
         tmpD = nodes[oldKeys[i]];
-        makeEqual(tmpD, newData[i]);
+        makeEqual(tmpD, newData[i] as SifrrNode<T>);
       }
       returnNodes[i] = tmpD;
       parent.insertBefore(tmpD, finalNode);
@@ -236,46 +255,46 @@ export function makeChildrenEqualKeyed<T>(
 // https://github.com/adamhaile/surplus/blob/master/src/runtime/content.ts#L368
 
 // return an array of the indices of ns that comprise the longest increasing subsequence within ns
-export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number) {
-  const seq = [],
-    is = [],
+export function longestPositiveIncreasingSubsequence(ns: number[], newStart: number): number[] {
+  const seq: number[] = [],
+    is: number[] = [],
     pre = new Array(ns.length);
   let l = -1;
 
   for (let i = newStart, len = ns.length; i < len; i++) {
     const n = ns[i];
-    if (n < 0) continue;
-    const j = findGreatestIndexLEQ(seq, n);
+    if (n! < 0) continue;
+    const j = findGreatestIndexLEQ(seq, n!);
     if (j !== -1) pre[i] = is[j];
     if (j === l) {
       l++;
-      seq[l] = n;
+      seq[l] = n!;
       is[l] = i;
-    } else if (n < seq[j + 1]) {
-      seq[j + 1] = n;
+    } else if (n! < seq[j + 1]!) {
+      seq[j + 1] = n!;
       is[j + 1] = i;
     }
   }
 
-  for (let i = is[l]; l > -1; i = pre[i], l--) {
-    seq[l] = i;
+  for (let i = is[l]; l > -1; i = pre[i!], l--) {
+    seq[l] = i!;
   }
 
   return seq;
 }
 
-function findGreatestIndexLEQ(seq: number[], n: number) {
+function findGreatestIndexLEQ(seq: number[], n: number): number {
   // invariant: lo is guaranteed to be index of a value <= n, hi to be >
   // therefore, they actually start out of range: (-1, last + 1)
   let lo = -1,
     hi = seq.length;
 
   // fast path for simple increasing sequences
-  if (hi > 0 && seq[hi - 1] <= n) return hi - 1;
+  if (hi > 0 && seq[hi - 1]! <= n) return hi - 1;
 
   while (hi - lo > 1) {
     const mid = Math.floor((lo + hi) / 2);
-    if (seq[mid] > n) {
+    if (seq[mid]! > n) {
       hi = mid;
     } else {
       lo = mid;

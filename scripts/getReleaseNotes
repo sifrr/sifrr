@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+const { execSync } = require('child_process');
+
+const output = execSync('yarn turbo release-it -- --log-order=grouped -- -s --changelog', {
+  encoding: 'utf-8'
+});
+
+console.log(output);
+
+const grouped = {};
+output.split('\n').forEach((line) => {
+  const [packageName, , ...log] = line.split(':');
+  if (packageName.indexOf('@sifrr') < 0) return;
+
+  grouped[packageName] = grouped[packageName] || [];
+
+  const l = log.join(':').trim();
+  if (l.startsWith('#') || l.startsWith('*')) {
+    grouped[packageName].push(log.join(':').trim());
+  }
+});
+
+Object.keys(grouped)
+  .filter((pkg) => grouped[pkg].length !== 0)
+  .forEach((pkg, i) => {
+    console.log(`# ${i + 1}. ${pkg}`);
+    console.log(grouped[pkg].join('\n'));
+    if (grouped[pkg].filter((l) => l.startsWith('*')).length === 0) {
+      console.log('* No release notes (only chore/refactor/test changes in this version)');
+    }
+    console.log('\n----\n');
+  });

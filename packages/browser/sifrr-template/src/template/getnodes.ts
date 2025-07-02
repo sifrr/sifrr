@@ -1,26 +1,27 @@
 import { DomBindingReturnValue, SifrrNodesArray, SifrrNode } from './types';
 
-const emptyArray = [];
-
-export default function getNodesFromBindingValue<T, X>(
-  value: DomBindingReturnValue | X
-): SifrrNodesArray<T> | SifrrNode<T> | X {
+export default function getNodesFromBindingValue<T>(
+  value: DomBindingReturnValue | SifrrNodesArray<T> | SifrrNode<T>
+): SifrrNode<T>[] {
   if (value === null || value === undefined) {
-    return emptyArray;
+    return [];
   } else if (typeof value === 'string') {
-    return document.createTextNode(value);
+    return [document.createTextNode(value)];
+  } else if (value instanceof SifrrNodesArray) {
+    return value;
   } else if (Array.isArray(value)) {
-    for (let i = 0; i < value.length; i++) {
-      value[i] = <SifrrNodesArray<T> | SifrrNode<T>>getNodesFromBindingValue<T, X>(value[i]);
+    const newValue: SifrrNode<T>[] = [];
+    for (const element of value) {
+      newValue.push(...getNodesFromBindingValue<T>(element));
     }
-    return <SifrrNodesArray<T>>value;
+    return newValue;
   } else if (value instanceof HTMLTemplateElement) {
     return Array.prototype.slice.call(value.content.childNodes);
   } else if (value instanceof Node) {
-    return <SifrrNode<T>>value;
+    return [value as SifrrNode<T>];
   } else if (value instanceof NodeList) {
     return Array.prototype.slice.call(value);
   } else {
-    return document.createTextNode(value.toString());
+    return [document.createTextNode((value as any).toString())];
   }
 }

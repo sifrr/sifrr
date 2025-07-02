@@ -1,0 +1,8 @@
+{
+  "x-powered-by": "Express",
+  "content-type": "text/html; charset=utf-8",
+  "x-ssr-powered-by": "@sifrr/ssr",
+  "content-length": "768",
+  "connection": "keep-alive",
+  "keep-alive": "timeout=5"
+}

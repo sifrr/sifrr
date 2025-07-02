@@ -1,4 +1,4 @@
-const SW = require('../../src/sifrr.serviceworker');
+import SW from './index.mjs';
 
 const sw = new SW({
   version: 2,
@@ -13,7 +13,7 @@ sw.onInstall = () => {
   self.skipWaiting();
 };
 sw.setupPushNotification();
-self.addEventListener('message', async e => {
+self.addEventListener('message', async (e) => {
   if (e.data === 'coverage') {
     e.ports[0].postMessage(self.__coverage__);
   } else if (e.data === 'caches') {
@@ -22,4 +22,3 @@ self.addEventListener('message', async e => {
     sw.pushEventListener(e.data.event);
   }
 });
-module.exports = sw;

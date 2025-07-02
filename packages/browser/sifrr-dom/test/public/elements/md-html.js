@@ -51,14 +51,14 @@ const HTML = html`
     <textarea
       class="s-6"
       id="md"
-      :oninput=${memo(element => e => element.setState({ content: e.target.value }), [])}
+      :oninput=${memo((element) => (e) => element.setState({ content: e.target.value }), [])}
       :value=${({ state }) => state.content}
       ::on-prop-change=${console.log}
       rows="10000"
     >
     </textarea>
     <div class="s-6 markdown-body" id="html" :sifrr-html="true">
-      ${el => createTemplateFromString(el.mdtohtml()).content.childNodes}
+      ${(el) => createTemplateFromString(el.mdtohtml()).content.childNodes}
     </div>
   </div>
 `;

@@ -1,23 +1,21 @@
-const Benchmark = require('./benchmark');
+import Benchmark from './benchmark';
 
 class OnekDelete extends Benchmark {
-  static beforeAll() {
-    return this.prototype.mainClick('#run');
+  beforeAll() {
+    return this.mainClick('#run');
   }
 
-  static beforeAllWait() {
-    return `${this.prototype.main} && ${this.prototype.main}.$$('tr').length === 1000`;
+  beforeAllWait() {
+    return `${this.main} && ${this.main}.$$('tr').length === 1000`;
   }
 
   run() {
-    return page.evaluate(`${this.main}.$$('tr td:nth-child(3) a')[5].click()`);
+    return this.page.evaluate(`${this.main}.$$('tr td:nth-child(3) a')[5].click()`);
   }
 
   runWait() {
-    return `${this.main}.$$('tr td:first-child')[5].textContent == ${this.constructor.start +
-      this.i +
-      7}`;
+    return `${this.main}.$$('tr td:first-child')[5].textContent == ${this.i + 7}`;
   }
 }
 
-module.exports = OnekDelete;
+export default OnekDelete;

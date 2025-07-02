@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1>OK</h1>
-    <script src="/sifrr.fetch.js" charset="utf-8"></script>
+    <script src="/index.iife.js" charset="utf-8"></script>
     <script type="text/javascript">
       function testSocket(requests, connections = 1, wsevent = 'NORMAL') {
         const reqPerConn = requests / connections;
@@ -14,7 +14,7 @@
           size = 0,
           startTime = performance.now(),
           firstResponse;
-        return new Promise(res => {
+        return new Promise((res) => {
           for (let i = 0; i < connections; i++) {
             const sock = new Sifrr.Fetch.Socket('ws://localhost:7700/test', undefined, {
               url: 'http://localhost:7700/test',
@@ -28,7 +28,7 @@
                   },
                   wsevent
                 )
-                .then(response => {
+                .then((response) => {
                   size += lengthInUtf8Bytes(response);
                   if (k === 0) firstResponse = performance.now() - startTime;
                   console.log(response);
@@ -54,16 +54,15 @@
           firstResponse;
         let k = 0,
           size = 0;
-        return new Promise(res => {
+        return new Promise((res) => {
           for (let j = 0; j < requests; j++) {
-            Sifrr.Fetch.post('http://localhost:7700/test', {
+            Sifrr.Fetch.post('http://localhost:6006/test', {
               body: {
                 number: j
               }
-            }).then(response => {
+            }).then((response) => {
               size += lengthInUtf8Bytes(response);
               if (k === 0) firstResponse = performance.now() - startTime;
-              console.log(response);
               k++;
               if (k === requests)
                 res({

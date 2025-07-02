@@ -1,0 +1,39 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".github"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:storybook:ci": {
+      "dependsOn": ["^build"]
+    },
+    "test:jest": {
+      "dependsOn": ["^build"]
+    },
+    "test:playwright": {
+      "dependsOn": ["^build"]
+    },
+    "pre-release": {},
+    "publish-package": {},
+    "release-it": {
+      "dependsOn": ["^release-it"]
+    },
+    "post-release": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

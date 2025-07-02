@@ -4,10 +4,10 @@
 
 ## Size
 
-| Type                                           |                           Size                           |
-| :--------------------------------------------- | :------------------------------------------------------: |
-| Minified (`dist/sifrr.fetch.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/fetch)   |
-| Minified + Gzipped (`dist/sifrr.fetch.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/fetch) |
+| Type                                      |                           Size                           |
+| :---------------------------------------- | :------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/fetch)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/fetch) |
 
 ## How to use
 
@@ -16,7 +16,7 @@
 Add script tag in your website.
 
 ```html
-<script src="https://unpkg.com/@sifrr/fetch@{version}/dist/sifrr.fetch.min.js"></script>
+<script src="https://unpkg.com/@sifrr/fetch@{version}/dist/index.iife.js"></script>
 ```
 
 #### Browser API support needed for
@@ -42,24 +42,20 @@ window.Sifrr.Fetch = require('@sifrr/fetch');
 #### ES modules
 
 ```js
-import Fetch from '@sifrr/fetch';
-// or
-import { Fetch, Socket } from '@sifrr/fetch';
-// and use as Sifrr.Fetch or Sifrr.Fetch.Socket
+import { sFetch, Fetch, Socket } from '@sifrr/fetch';
+// and use as Sifrr.Fetch.Fetch or Sifrr.Fetch.Socket
+// sFetch is default instance of Fetch
 ```
 
 #### With node
 
 ```js
 // set global.fetch
-global.fetch = require('node-fetch);
 const { Fetch } = require('@sifrr/fetch');
-// use SFetch.get, post etc,
+// set global.WebSocket
 global.WebSocket = require('isomorphic-ws');
 const { Socket } = require('@sifrr/fetch');
 ```
-
-**Note**: You can not use websockets with node
 
 ## API
 
@@ -67,7 +63,8 @@ const { Socket } = require('@sifrr/fetch');
 
 **options** are Fetch API options with some extra keys:
 
-- **params** `json object` key, value pairs will be added to url as ?key=value
+- **baseUrl** baseUrl of api
+- **params** `json object` key, value pairs will be added to url as query params
 - **body** `json object | string` body to send with post requests
 - **onProgress** `function` if response has content-length, this function will be called with
 
@@ -87,27 +84,35 @@ const { Socket } = require('@sifrr/fetch');
 - **after** `function` this function will be called with `response` and should return modified `response`
 - **use** `function` this function will be called with `{ url, options, method }` and resolve/return with response which will be returned, if this function errors, response will be fetched normally (use case: use it as a middleware for cache)
 
+### Response
+
+response returned by api calls contains
+
+- **status** - status code of response
+- **response** - original response instance from fetch api
+- **data** - if response has `content-type: application/json` header, it is data received from `resp.json()`
+- **ok** - fetch response.ok property
+
 #### GET request
 
 you can add query parameters to get request options.
 
 ```js
 options.query = { key: 'value' };
-Sifrr.Fetch.get(url, options)
-  .then(response => {
-    // This will send request to url?key=value
-    // response is JSON if response has `content-type: application/json` header
-    // else it is a Fetch API response object.
+Sifrr.Fetch.sFetch.get(url, options)
+  .then({ data, status, response, ok } => {
+
   })
   .catch(e => {
-    // handle error, same for other type of requests
+    // handle any network error
+    // Note that promise doesn;t
   });
 ```
 
 #### PUT request
 
 ```js
-Sifrr.Fetch.put(url, options).then(response => {
+Sifrr.Fetch.sFetch.put(url, body, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -122,7 +127,7 @@ options.body = { key: 'value' };
 options.headers = {
   'content-type': 'aaplication/json'
 };
-Sifrr.Fetch.post(url, options).then(response => {
+Sifrr.Fetch.sFetch.post(url, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -131,31 +136,7 @@ Sifrr.Fetch.post(url, options).then(response => {
 #### DELETE request
 
 ```js
-Sifrr.Fetch.delete(url, options).then(response => {
-  // response is JSON if response has `content-type: application/json` header
-  // else it is a Fetch API response object.
-});
-```
-
-#### GET file request
-
-```js
-Sifrr.Fetch.file(url, options).then(response => {
-  // response is a Fetch API response object.
-  // You can get file text content using response.text() or other fetch response methods
-});
-```
-
-#### GRAPHQL request
-
-graphql request is a POST request.
-
-```js
-Sifrr.Fetch.graphql(url, {
-  query: 'graphql query string',
-  variables: { a: 'b' },
-  ...otherOptions
-}).then(response => {
+Sifrr.Fetch.sFetch.delete(url, options).then((response) => {
   // response is JSON if response has `content-type: application/json` header
   // else it is a Fetch API response object.
 });
@@ -166,10 +147,10 @@ Sifrr.Fetch.graphql(url, {
 ```js
 const storage = new Sifrr.Storage();
 function cacheOrGet(url) {
-  Sifrr.Fetch.get(url, {
-    use: url =>
-      storage.get(url).then(v => (typeof v[url] === 'undefined' ? throw 'Not found' : v[url])),
-    after: response => {
+  Sifrr.Fetch.sFetch.get(url, {
+    use: (url) =>
+      storage.get(url).then((v) => (typeof v[url] === 'undefined' ? throw 'Not found' : v[url])),
+    after: (response) => {
       storage.set(url, response);
       return response;
     }
@@ -177,10 +158,10 @@ function cacheOrGet(url) {
 }
 ```
 
-## Instance with default options
+## Create new Instance with options
 
 ```js
-const fetch = new Sifrr.Fetch(defaultOptions);
+const fetch = new Sifrr.Fetch(options);
 
 // then use
 fetch.get;
@@ -192,17 +173,31 @@ fetch.graphql;
 
 ## WebSockets
 
-Automatic connection retries, calls fallback on message sending failure/error
+Websocket with Automatic connection retries
 
-### WebSocket fetch
-
-**Note**: Only works with JSON messages/responses
+### Open a web socket
 
 ```js
 // Open a socket
-const socket = new Sifrr.Fetch.Socket(url, protocols, fallback /* (message) => 'fallback response' */);
+const socket = new Sifrr.Fetch.Socket(url, protocols, {
+  reconnect: boolean // should it reconnect automatically on close
+  reconnectInterval: number // retry after milliseconds
+});
+```
+
+### Send Message
+
+```js
 // send a message
-socket.send(message [, type]).then(resp => {
+socket.send(message);
+```
+
+### WebSocket fetch
+
+```js
+
+// send a message
+socket.fetch(message [, type, timeout]).then(resp => {
   // do something
 });
 
@@ -219,54 +214,20 @@ socket.send(message [, type]).then(resp => {
 // }
 // then resp will be equal to response sent above
 //
-// If socket connection fails
-// It will call fallback function with message and resolves with its return value
-```
-
-### Graphql query over websocket (compatible with sifrr-server)
-
-```js
-socket.graphql({
-  query: ...,
-  variables: ...
-}).then(data => {
-  // do something with data
-});
-```
-
-### Graphql Subscriptions (compatible with graphql-subscription-ws and sifrr-server)
-
-```js
-let subscriptionId;
-// subscribe
-socket.subscribe({ query: `subscription { ... }`, variables: { ... } }, callback).then(id => subscriptionId = id);
-// callback will be called with every data received from server
-
-// unsubscribe
-socket.unsubscribe(subscriptionId).then(...);
-```
-
-### Traditional WebSocket messaging
-
-```js
-// Open a socket
-const socket = new Sifrr.Fetch.Socket(
-  url,
-  protocols,
-  fallback /* (message) => 'fallback response' */
-);
-// send a message
-socket.sendRaw(message);
+// If socket connection fails or it doesn't receive response after timeout
+// Promise will reject
 ```
 
 ### Hooks
 
 ```js
 // same as websocket's hooks
-socket.onmessage = event => {};
+socket.onmessage = (event) => {};
 socker.onopen = () => {};
 socker.onclose = () => {};
-socker.onerror = e => {};
+socker.onerror = (e) => {};
+// called when websocket is reconnecting automatically on failure
+socker.onretry = (attemp, interval) => {};
 ```
 
 ## References

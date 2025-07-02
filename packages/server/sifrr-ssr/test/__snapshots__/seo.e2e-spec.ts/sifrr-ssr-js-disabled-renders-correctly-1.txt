@@ -1,0 +1,26 @@
+<head>
+    <meta charset="utf-8">
+    <title>Sifrr seo</title>
+  </head>
+
+  <body>
+    <sifrr-test><template shadowrootmode="open" shadowrootserializable=""><style media="screen">
+      p {
+        color: blue;
+      }
+    </style><p>Simple element</p><p>2</p></template></sifrr-test>
+    <sifrr-nosr><style media="screen">
+    sifrr-nosr p {
+      color: red;
+    }
+    </style><p>No shadow root</p><p>1</p></sifrr-nosr>
+    <p>Normal P</p>
+    <img width="100" src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Estelle_2100px.gif" alt="">
+    <script src="/dom/index.iife.js" charset="utf-8"></script>
+    <script module="" charset="utf-8">
+      import('./elements/nosr.js');
+      import('./elements/test.js');
+    </script>
+  
+
+</body>

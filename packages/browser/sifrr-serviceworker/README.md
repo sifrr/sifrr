@@ -4,10 +4,10 @@ Customizable Service Worker.
 
 ## Size
 
-| Type                                                   |                               Size                               |
-| :----------------------------------------------------- | :--------------------------------------------------------------: |
-| Minified (`dist/sifrr.serviceworker.min.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/serviceworker)   |
-| Minified + Gzipped (`dist/sifrr.serviceworker.min.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/serviceworker) |
+| Type                                      |                               Size                               |
+| :---------------------------------------- | :--------------------------------------------------------------: |
+| Minified (`dist/index.iife.js`)           |  ![](https://badgen.net/bundlephobia/min/@sifrr/serviceworker)   |
+| Minified + Gzipped (`dist/index.iife.js`) | ![](https://badgen.net/bundlephobia/minzip/@sifrr/serviceworker) |
 
 ## How to use
 
@@ -60,13 +60,13 @@ then in your main js file add:
 
 ```js
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
+  window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.bundled.js').then(
-      function(registration) {
+      function (registration) {
         // Registration was successful
         console.log('ServiceWorker registration successful with scope: ', registration.scope);
       },
-      function(err) {
+      function (err) {
         // registration failed :(
         console.log('ServiceWorker registration failed: ', err);
       }
@@ -134,9 +134,9 @@ When a request is sent, if the url matches the regex string then it will be fetc
 
 ```js
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
+  window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.bundled.js').then(
-      function(registration) {
+      function (registration) {
         // `registration` is serviceWorkerRegistration object
         // SW registration was successful
         console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -145,16 +145,16 @@ if ('serviceWorker' in navigator) {
             userVisibleOnly: true,
             applicationServerKey: Uint8ArrayFromPushNotificationServerPublicKey
           })
-          .then(function(subscription) {
+          .then(function (subscription) {
             // Subscription was successful
             console.log('User is subscribed.');
           })
-          .catch(function(err) {
+          .catch(function (err) {
             // Subscription failed
             console.log('Failed to subscribe the user: ', err);
           });
       },
-      function(err) {
+      function (err) {
         // SW registration failed
         console.log('ServiceWorker registration failed: ', err);
       }

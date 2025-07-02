@@ -1,0 +1,13 @@
+{
+  "name": "@sifrr/release-it-config",
+  "version": "1.0.0",
+  "description": "Release it shared config - internal only",
+  "main": ".release-it.js",
+  "repository": "https://github.com/sifrr/sifrr",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@release-it/conventional-changelog": "8.0.1",
+    "release-it": "17.4.0"
+  }
+}

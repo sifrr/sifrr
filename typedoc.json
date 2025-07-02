@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "out": "./docs",
+  "name": "Sifrr",
+  "entryPoints": ["packages/browser/*", "packages/server/*"],
+  "entryPointStrategy": "packages",
+  "plugin": ["typedoc-plugin-missing-exports"],
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"],
+    "exclude": ["**/test/**"]
+  },
+  "highlightLanguages": [
+    "graphql",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "typescript",
+    "shellscript"
+  ],
+  "githubPages": false
+}
