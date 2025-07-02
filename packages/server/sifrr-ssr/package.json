@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "keyv": "^5.3.4",
-    "puppeteer": "^24.10.1"
+    "puppeteer": "^24.11.2"
   },
   "peerDependencies": {},
   "devDependencies": {},
