@@ -8,6 +8,6 @@
   "private": true,
   "devDependencies": {
     "@release-it/conventional-changelog": "8.0.1",
-    "release-it": "17.4.0"
+    "release-it": "19.0.3"
   }
 }
