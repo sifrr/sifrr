@@ -27,7 +27,7 @@
     "eslint": "^8.0.0",
     "eslint-plugin-import-x": "^3.1.0",
     "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-typescript": "^4.4.3",
     "prettier": "^3.5.3",
     "typescript": "^5.5.0"
