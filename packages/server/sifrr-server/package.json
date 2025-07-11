@@ -1,6 +1,6 @@
 {
   "name": "@sifrr/server",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Server Side Redering for any js based app as a express middleware.",
   "license": "MIT",
   "repository": {
