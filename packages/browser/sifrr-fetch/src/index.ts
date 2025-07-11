@@ -19,21 +19,21 @@ class SifrrFetch {
     let opts: BeforeOpts = { url: u, options: o };
     if (typeof o.before === 'function') {
       opts = (await o.before(opts)) ?? opts;
-      delete o.before;
     }
 
     if (typeof o.use === 'function') {
       try {
-        const r = o.use?.(opts);
-        delete o.use;
-        return {
-          data: await r,
-          ok: true,
-          response: undefined,
-          headers: new Headers(),
-          status: 200,
-          errorData: undefined
-        };
+        const r = await o.use(opts);
+        if (r) {
+          return {
+            data: await r,
+            ok: true,
+            response: undefined,
+            headers: new Headers(),
+            status: 200,
+            errorData: undefined
+          };
+        }
       } catch (e) {
         window.console.error(e);
       }
