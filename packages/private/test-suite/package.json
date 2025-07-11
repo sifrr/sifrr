@@ -26,7 +26,7 @@
     "@storybook/blocks": "^8.6.12",
     "@storybook/html": "^8.6.12",
     "@storybook/html-vite": "^8.6.12",
-    "@storybook/test": "^8.6.12",
+    "@storybook/test": "^8.6.14",
     "@storybook/test-runner": "^0.22.0",
     "@types/jest": "^29.3.3",
     "eslint-plugin-storybook": "^0.12.0",
