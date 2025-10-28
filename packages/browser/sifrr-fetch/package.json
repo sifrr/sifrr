@@ -56,7 +56,7 @@
     "@sifrr/test-suite": "*",
     "@sifrr/typescript-config": "*",
     "@sifrr/vite-config": "*",
-    "axios": "^1.9.0",
+    "axios": "^1.13.0",
     "isomorphic-ws": "^5.0.0",
     "typescript": "^5.8.3",
     "yarn": "^1.22.22"
