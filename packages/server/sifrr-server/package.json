@@ -74,7 +74,7 @@
     "compression": "^1.8.0",
     "graphql": "^16.11.0",
     "loadtest": "^8.2.0",
-    "node-forge": "^1.3.1"
+    "node-forge": "^1.3.2"
   },
   "peerDependenciesMeta": {
     "@nestjs/core": {
