@@ -30,7 +30,7 @@ sw.setupPushNotification(defaultTitle, defaultOptions); // to setup push event l
 
 ### Using npm
 
-Do `npm i @sifrr/serviceworker` or `yarn add @sifrr/serviceworker` or add the package to your `package.json` file.
+Do `npm i @sifrr/serviceworker` or `pnpm add @sifrr/serviceworker` or add the package to your `package.json` file.
 
 example of `sw.js` to be bundled (compatible with webpack/rollup/etc):
 

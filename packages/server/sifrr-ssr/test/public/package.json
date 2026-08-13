@@ -5,7 +5,7 @@
   "description": "Sifrr-Api Example",
   "main": "index.js",
   "scripts": {
-    "build": "yarn rollup -c"
+    "build": "pnpm rollup -c"
   },
   "repository": {
     "type": "git",

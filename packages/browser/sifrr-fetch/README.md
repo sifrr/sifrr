@@ -28,7 +28,7 @@ Add script tag in your website.
 
 ### Using npm
 
-Do `npm i @sifrr/fetch` or `yarn add @sifrr/fetch` or add the package to your `package.json` file.
+Do `npm i @sifrr/fetch` or `pnpm add @sifrr/fetch` or add the package to your `package.json` file.
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
 

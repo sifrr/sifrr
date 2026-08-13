@@ -26,7 +26,7 @@ const maxReq = 10000;
 test.describe.serial('speed test - sifrr & sifrr-cluster', function () {
   let server: ChildProcess | undefined;
   test.beforeAll(async () => {
-    server = exec(`yarn test:cluster`);
+    server = exec(`pnpm test:cluster`);
     server.stdout?.on('data', (m) => {
       console.log(m);
     });

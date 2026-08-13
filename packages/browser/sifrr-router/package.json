@@ -40,7 +40,7 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:playwright",
+    "test": "pnpm test:jest && pnpm test:playwright",
     "test:jest": "jest",
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
@@ -49,19 +49,20 @@
     "test:server:watch": "tsx watch --include test/public test/server",
     "storybook:dev": "storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build",
-    "release-it": "release-it --ci"
+    "release-it": "release-it --ci",
+    "publish-package": "pnpm publish"
   },
   "dependencies": {},
   "peerDependencies": {
-    "@sifrr/dom": "*"
+    "@sifrr/dom": "workspace:*"
   },
   "devDependencies": {
-    "@sifrr/dom": "*",
-    "@sifrr/eslint-config": "*",
-    "@sifrr/release-it-config": "*",
-    "@sifrr/test-suite": "*",
-    "@sifrr/typescript-config": "*",
-    "@sifrr/vite-config": "*",
+    "@sifrr/dom": "workspace:*",
+    "@sifrr/eslint-config": "workspace:*",
+    "@sifrr/release-it-config": "workspace:*",
+    "@sifrr/test-suite": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
+    "@sifrr/vite-config": "workspace:*",
     "typescript": "^5.8.3"
   },
   "files": [

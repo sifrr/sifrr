@@ -2,7 +2,7 @@
 
 const { execSync } = require('child_process');
 
-const output = execSync('yarn turbo release-it -- --log-order=grouped -- -s --changelog', {
+const output = execSync('pnpm turbo release-it -- --log-order=grouped -- -s --changelog', {
   encoding: 'utf-8'
 });
 

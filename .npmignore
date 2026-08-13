@@ -15,7 +15,6 @@ typings/
 .eslintcache
 .node_repl_history
 *.tgz
-.yarn-integrity
 .env
 .next
 .DS_Store

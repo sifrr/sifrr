@@ -49,7 +49,7 @@ If custom elements v1 API is supported by browsers, it is very likely that other
 
 ### Using npm
 
-Do `npm i @sifrr/template @sifrr/dom` or `yarn add @sifrr/template @sifrr/dom` or add the package to your `package.json` file.
+Do `npm i @sifrr/template @sifrr/dom` or `pnpm add @sifrr/template @sifrr/dom` or add the package to your `package.json` file.
 
 Put in your frontend js module (compatible with webpack/rollup/etc).
 

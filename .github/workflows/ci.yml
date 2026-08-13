@@ -42,8 +42,8 @@ jobs:
       - name: Run Lint, Build and Test
         run: |
           if [[ ! -z $base_branch ]]; then
-            yarn turbo run build --filter="[origin/$base_branch]..."
-            yarn turbo run lint test --filter="[origin/$base_branch]"
+            pnpm turbo run build --filter="[origin/$base_branch]..."
+            pnpm turbo run lint test --filter="[origin/$base_branch]"
           else
-            yarn turbo run lint build test
+            pnpm turbo run lint build test
           fi

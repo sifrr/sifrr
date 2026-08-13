@@ -20,10 +20,10 @@ runs:
         TAG: ${{ inputs.tag }}
         PREID: ${{ inputs.preid || inputs.tag }}
       run: |
-        yarn build
+        pnpm build
 
         if [[ ! -z $TAG ]]; then
-          yarn turbo pre-release -- --filter="[origin/main]" --continue -- --preid $PREID
+          pnpm turbo pre-release -- --filter="[origin/main]" --continue -- --preid $PREID
           echo "Releasing packages with tag - $TAG and preid - $PREID"
         fi
 
@@ -31,10 +31,10 @@ runs:
         # Needed for multiple arguments
         FILTER_ARGS=($(echo $PKG_TO_PUBLISH | tr "," " "))
         if [[ ! -z $PKG_TO_PUBLISH ]]; then
-          yarn turbo publish-package "${FILTER_ARGS[@]}" --continue
+          pnpm turbo publish-package "${FILTER_ARGS[@]}" --continue
           echo "Released $PKG_TO_PUBLISH"
         fi
-        yarn docs
+        pnpm docs
 
     - name: Deploy Docs
       uses: peaceiris/actions-gh-pages@v4

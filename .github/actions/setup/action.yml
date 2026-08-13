@@ -1,4 +1,5 @@
 name: Setup workspace
+description: This action is used to setup workspace for running tests and publishing packages.
 inputs:
   node-version:
     required: true
@@ -12,23 +13,23 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
+        cache: 'pnpm'
         cache-dependency-path: |
-          **/yarn.lock
+          **/pnpm-lock.yaml
 
-    - name: Setup yarn
+    - name: Setup pnpm
       shell: bash
-      run: npm i -g yarn@1
+      run: npm i -g pnpm
 
     - name: Install dependencies
       shell: bash
       run: |
-        yarn install --frozen-lockfile
+        pnpm install --frozen-lockfile
 
     - name: Store Playwright's Version
       shell: bash
       run: |
-        PLAYWRIGHT_VERSION=$(yarn list playwright | grep playwright | sed 's/.*@//')
+        PLAYWRIGHT_VERSION=$(pnpm list playwright | grep playwright | sed 's/.*@//')
         echo "Playwright's Version: $PLAYWRIGHT_VERSION"
         echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 

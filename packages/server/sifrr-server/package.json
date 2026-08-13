@@ -35,7 +35,7 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:playwright",
+    "test": "pnpm test:jest && pnpm test:playwright",
     "test:jest": "jest",
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
@@ -43,7 +43,8 @@
     "test:server": "tsx ./test/server",
     "test:server:watch": "tsx watch --include ./test/public ./test/server",
     "test:cluster": "tsx watch --include ./test/public ./test/server-cluster",
-    "release-it": "release-it --ci"
+    "release-it": "release-it --ci",
+    "publish-package": "pnpm publish"
   },
   "dependencies": {
     "busboy": "^1.6.0",
@@ -60,12 +61,12 @@
   "devDependencies": {
     "@nestjs/common": "^11.1.3",
     "@nestjs/core": "^11.1.3",
-    "@sifrr/eslint-config": "*",
-    "@sifrr/fetch": "*",
-    "@sifrr/release-it-config": "*",
-    "@sifrr/test-suite": "*",
-    "@sifrr/typescript-config": "*",
-    "@sifrr/vite-config": "*",
+    "@sifrr/eslint-config": "workspace:*",
+    "@sifrr/fetch": "workspace:*",
+    "@sifrr/release-it-config": "workspace:*",
+    "@sifrr/test-suite": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
+    "@sifrr/vite-config": "workspace:*",
     "@types/busboy": "^1.5.4",
     "@types/compression": "^1.8.1",
     "@types/node": "^22.15.30",

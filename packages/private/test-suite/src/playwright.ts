@@ -40,7 +40,7 @@ export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig =
     ],
     // Run your local dev server before starting the tests.
     webServer: {
-      command: `set -ex; PORT=${port} yarn test:server`,
+      command: `set -ex; PORT=${port} pnpm test:server`,
       url: `http://localhost:${port}`,
       reuseExistingServer: !process.env.CI
     }
