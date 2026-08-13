@@ -1,3 +1,12 @@
+# Changelog (@sifrr/router)
+
+## 0.1.0 (2025-07-11)
+
+
+### Features
+
+* sifrr revamp ([#464](https://github.com/sifrr/sifrr/issues/464)) ([0d00bdb](https://github.com/sifrr/sifrr/commit/0d00bdbe83d3911fd67143d48e203659379ea70a))
+
 ## [0.0.9](https://github.com/sifrr/sifrr/compare/v0.0.8...v0.0.9) (2020-12-21)
 
 ## [0.0.8](https://github.com/sifrr/sifrr/compare/v0.0.7...v0.0.8) (2020-11-12 15:25:53 +0000)
