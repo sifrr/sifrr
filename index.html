@@ -1,0 +1,176 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Sifrr</title><meta name="description" content="Documentation for Sifrr"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">Sifrr</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>Sifrr</h1></div><div class="tsd-panel tsd-typography"><h1 align="center"> <img src="media/sifrr-logo.svg" width="256" alt="sifrr" name="sifrr"> </h1>
+<p align="center">
+  <a href="https://github.com/sifrr/sifrr/blob/master/LICENSE"><a href="https://opencollective.com/sifrr-oc" alt="Financial Contributors on Open Collective"><img src="https://opencollective.com/sifrr-oc/all/badge.svg?label=financial+contributors" /></a> <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="GitHub license" /></a>
+  <a href="https://circleci.com/gh/sifrr/sifrr"><img alt="CircleCI (all branches)" src="https://img.shields.io/circleci/project/github/sifrr/sifrr/master.svg?logo=circleci&style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@sifrr/dom"><img src="https://img.shields.io/npm/v/@sifrr/dom.svg?style=flat-square" alt="npm version" /></a>
+  <a href="media/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Welcome-green.svg?style=flat-square" alt="PRs Welcome" /></a>
+  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_small" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=small"/></a>
+  <a href="https://coveralls.io/github/sifrr/sifrr?branch=master"><img src="https://img.shields.io/coveralls/github/sifrr/sifrr.svg?style=flat-square" alt="Coverage Status" /></a>
+  <a href="https://dependabot.com/"><img src="https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot" alt="Dependabot badge" /></a>
+  <a href="https://lgtm.com/projects/g/sifrr/sifrr/alerts/"><img alt="LGTM" src="https://img.shields.io/lgtm/grade/javascript/g/sifrr/sifrr.svg?logo=lgtm&style=flat-square&logoWidth=18" /></a>
+</p>
+<p align="center">
+  <a href="https://sifrr.github.io/sifrr/">Documentation</a> | <a href="media/CHANGELOG.md">Changelog</a> | <a href="media/CONTRIBUTORS">Contributors</a> | <a href="media/CONTRIBUTING.md">Contributing guidelines</a> | <a href="media/CODE_OF_CONDUCT.md">Code of Conduct</a>
+</p>
+<hr>
+<blockquote>
+<p>sifrr is a set of tiny, customizable, independent libraries for creating modern and fast webapps using JavaScript.</p>
+</blockquote>
+<h2 id="repository-info" class="tsd-anchor-link">Repository Info<a href="#repository-info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>This repository is a monorepo managed using yarn workspaces. This means there are <a href="#packages">multiple packages</a> managed in this codebase, even though they are published to NPM as separate packages. They will always have same latest version and are released together.</p>
+<p>Note that for 0.x releases of this library, the API is not considered stable yet and may break between minor releases. After 1.0, Semantic Versioning will be followed.</p>
+<h2 id="packages" class="tsd-anchor-link">Packages<a href="#packages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="browser-vanillajs" class="tsd-anchor-link">Browser (VanillaJS)<a href="#browser-vanillajs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Package</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">NPM</th>
+<th style="text-align:left">Documentation</th>
+<th style="text-align:center">Tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-dom/">sifrr-dom</a></td>
+<td style="text-align:left">Small Library to build UIs with custom elements</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/dom"><img src="https://img.shields.io/npm/v/@sifrr/dom.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-dom/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-dom/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-template/">sifrr-template</a></td>
+<td style="text-align:left">:zap: Fast HTML-JS Templating engine used in sifrr-dom</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/template"><img src="https://img.shields.io/npm/v/@sifrr/template.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-template/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-template/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-fetch/">sifrr-fetch</a></td>
+<td style="text-align:left">Wrapper library for Browser fetch API can be used in node too</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/fetch"><img src="https://img.shields.io/npm/v/@sifrr/fetch.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-fetch/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-fetch/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-route/">sifrr-route</a></td>
+<td style="text-align:left">Routing for sifrr-dom</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/route"><img src="https://img.shields.io/npm/v/@sifrr/route.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-route/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-route/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-serviceworker/">sifrr-serviceworker</a></td>
+<td style="text-align:left">Service worker wrapper library</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/serviceworker"><img src="https://img.shields.io/npm/v/@sifrr/serviceworker.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-serviceworker/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-serviceworker/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/browser/sifrr-storage/">sifrr-storage</a></td>
+<td style="text-align:left">Browser persisted storage library (2kb alternate to <a href="https://github.com/localForage/localForage">localforage</a>)</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/storage"><img src="https://img.shields.io/npm/v/@sifrr/storage.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/browser/sifrr-storage/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/browser/sifrr-storage/test">OK</a></td>
+</tr>
+</tbody>
+</table>
+<p><code>sifrr-dom</code>, <code>sifrr-template</code>, <code>sifrr-fetch</code>, <code>sifrr-serviceworker</code>, <code>sifrr-storage</code> can be used independently. <code>sifrr-route</code> is a <code>sifrr-dom</code> element, hence it should be used with <code>sifrr-dom</code>.</p>
+<h3 id="server-nodejs" class="tsd-anchor-link">Server (NodeJS)<a href="#server-nodejs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Package</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">NPM</th>
+<th style="text-align:left">Documentation</th>
+<th style="text-align:center">Tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="./packages/server/sifrr-ssr/">sifrr-ssr</a></td>
+<td style="text-align:left">Server side pre-rendering using puppeteer with caching</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/ssr"><img src="https://img.shields.io/npm/v/@sifrr/ssr.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/server/sifrr-ssr/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/server/sifrr-ssr/test">OK</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="./packages/server/sifrr-server/">sifrr-server</a></td>
+<td style="text-align:left">Fast HTTP + WebSockets server</td>
+<td style="text-align:left"><a href="https://www.npmjs.com/package/@sifrr/server"><img src="https://img.shields.io/npm/v/@sifrr/server.svg" alt="npm version"></a></td>
+<td style="text-align:left"><a href="https://sifrr.github.io/sifrr/#/./packages/server/sifrr-server/"><img src="https://img.shields.io/badge/API%20docs-Docsify-red.svg" alt="Doscify"></a></td>
+<td style="text-align:center"><a href="./packages/server/sifrr-server/test">OK</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>All the packages can be used with node, es6 modules, and are compatible with bundler of your choice (rollup, webpack, browserify)</p>
+<h3 id="commonjs-node" class="tsd-anchor-link">commonJS (node)<a href="#commonjs-node" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="js"><span class="hl-0">const</span><span class="hl-1"> { </span><span class="hl-2">Element</span><span class="hl-1"> } = </span><span class="hl-3">require</span><span class="hl-1">(</span><span class="hl-4">&#39;@sifrr/dom&#39;</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="es6-modules-import" class="tsd-anchor-link">ES6 modules (<code>import</code>)<a href="#es6-modules-import" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="js"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-6">Element</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-4">&#39;@sifrr/dom&#39;</span><span class="hl-1">;</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="browser-distributions-browser-packages-only" class="tsd-anchor-link">Browser distributions (browser packages only)<a href="#browser-distributions-browser-packages-only" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>For eg.</p>
+<pre><code class="html"><span class="hl-7">&lt;</span><span class="hl-8">script</span><span class="hl-9"> </span><span class="hl-10">src</span><span class="hl-9">=</span><span class="hl-11">&quot;https://unpkg.com/@sifrr/dom@{version}/dist/index.iife.js&quot;</span><span class="hl-7">&gt;&lt;/</span><span class="hl-8">script</span><span class="hl-7">&gt;</span><br/><span class="hl-1">// for v0.0.9</span><br/><span class="hl-7">&lt;</span><span class="hl-8">script</span><span class="hl-9"> </span><span class="hl-10">src</span><span class="hl-9">=</span><span class="hl-11">&quot;https://unpkg.com/@sifrr/dom@0.0.9/dist/index.iife.js&quot;</span><span class="hl-7">&gt;&lt;/</span><span class="hl-8">script</span><span class="hl-7">&gt;</span><br/><span class="hl-1">// this sets window.Sifrr.Dom as sifrr-dom, same for other packages</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="packages-that-have-tests-have-a-working-example-of-that-package-in-testpublic-folder" class="tsd-anchor-link">Packages that have tests have a working example of that package in <code>test/public</code> folder<a href="#packages-that-have-tests-have-a-working-example-of-that-package-in-testpublic-folder" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><h2 id="node-support-server-packages-and-development" class="tsd-anchor-link">Node support (server packages and development)<a href="#node-support-server-packages-and-development" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Sifrr officially supports node v20, v22 (LTS), v24. Other versions might work.</p>
+<h2 id="browser-support-browser-packages" class="tsd-anchor-link">Browser Support (browser packages)<a href="#browser-support-browser-packages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Sifrr browser packages officially supports these browser versions (for dist files):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Browser</th>
+<th style="text-align:left">Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Chrome</td>
+<td style="text-align:left">&gt;= 55</td>
+</tr>
+<tr>
+<td style="text-align:left">Android Chrome</td>
+<td style="text-align:left">&gt;= 55</td>
+</tr>
+<tr>
+<td style="text-align:left">Firefox</td>
+<td style="text-align:left">&gt;= 63</td>
+</tr>
+<tr>
+<td style="text-align:left">Android Firefox</td>
+<td style="text-align:left">&gt;= 63</td>
+</tr>
+<tr>
+<td style="text-align:left">Opera</td>
+<td style="text-align:left">&gt;= 42</td>
+</tr>
+<tr>
+<td style="text-align:left">Safari</td>
+<td style="text-align:left">&gt;= 10.1</td>
+</tr>
+<tr>
+<td style="text-align:left">Safari (iOS browsers)</td>
+<td style="text-align:left">&gt;= 10.1</td>
+</tr>
+</tbody>
+</table>
+<p>Individual libraries may support older versions too with polyfills listed in docs, or by bundling it with polyfills using babel etc.</p>
+<p>Approximately amounts to ~90% of total worldwide browser usage.</p>
+<p>To support mini browsers (opera mini, uc browser etc.), You can use sifrr-ssr to provide server side rendering.</p>
+<h2 id="contributors" class="tsd-anchor-link">Contributors<a href="#contributors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="code-contributors" class="tsd-anchor-link">Code Contributors<a href="#code-contributors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This project exists thanks to all the people who contribute. [<a href="media/CONTRIBUTING.md">Contribute</a>].
+<a href="https://github.com/sifrr/sifrr/graphs/contributors"><img src="https://opencollective.com/sifrr-oc/contributors.svg?width=890&button=false" /></a></p>
+<h3 id="financial-contributors" class="tsd-anchor-link">Financial Contributors<a href="#financial-contributors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Become a financial contributor and help us sustain our community. [<a href="https://opencollective.com/sifrr-oc/contribute">Contribute</a>]</p>
+<h4 id="individuals" class="tsd-anchor-link">Individuals<a href="#individuals" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="https://opencollective.com/sifrr-oc"><img src="https://opencollective.com/sifrr-oc/individuals.svg?width=890"></a></p>
+<h4 id="organizations" class="tsd-anchor-link">Organizations<a href="#organizations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Support this project with your organization. Your logo will show up here with a link to your website. [<a href="https://opencollective.com/sifrr-oc/contribute">Contribute</a>]</p>
+<p><a href="https://opencollective.com/sifrr-oc/organization/0/website"><img src="https://opencollective.com/sifrr-oc/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/1/website"><img src="https://opencollective.com/sifrr-oc/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/2/website"><img src="https://opencollective.com/sifrr-oc/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/3/website"><img src="https://opencollective.com/sifrr-oc/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/4/website"><img src="https://opencollective.com/sifrr-oc/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/5/website"><img src="https://opencollective.com/sifrr-oc/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/6/website"><img src="https://opencollective.com/sifrr-oc/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/7/website"><img src="https://opencollective.com/sifrr-oc/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/8/website"><img src="https://opencollective.com/sifrr-oc/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/sifrr-oc/organization/9/website"><img src="https://opencollective.com/sifrr-oc/organization/9/avatar.svg"></a></p>
+<h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Sifrr is <a href="media/LICENSE">MIT Licensed</a>.</p>
+<p><a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr?ref=badge_large"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsifrr%2Fsifrr.svg?type=large" alt="FOSSA Status"></a></p>
+<p>(c) <a href="https://github.com/aadityataparia">@aadityataparia</a></p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#repository-info"><span>Repository <wbr/>Info</span></a><a href="#packages"><span>Packages</span></a><ul><li><a href="#browser-vanillajs"><span>Browser (<wbr/>Vanilla<wbr/>JS)</span></a></li><li><a href="#server-nodejs"><span>Server (<wbr/>Node<wbr/>JS)</span></a></li></ul><a href="#usage"><span>Usage</span></a><ul><li><a href="#commonjs-node"><span>common<wbr/>JS (node)</span></a></li><li><a href="#es6-modules-import"><span>ES6 modules (import)</span></a></li><li><a href="#browser-distributions-browser-packages-only"><span>Browser distributions (browser packages only)</span></a></li><li><a href="#packages-that-have-tests-have-a-working-example-of-that-package-in-testpublic-folder"><span>Packages that have tests have a working example of that package in test/public folder</span></a></li></ul><a href="#node-support-server-packages-and-development"><span>Node support (server packages and development)</span></a><a href="#browser-support-browser-packages"><span>Browser <wbr/>Support (browser packages)</span></a><a href="#contributors"><span>Contributors</span></a><ul><li><a href="#code-contributors"><span>Code <wbr/>Contributors</span></a></li><li><a href="#financial-contributors"><span>Financial <wbr/>Contributors</span></a></li><li><ul><li><a href="#individuals"><span>Individuals</span></a></li><li><a href="#organizations"><span>Organizations</span></a></li></ul></li></ul><a href="#license"><span>License</span></a></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">Sifrr</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
