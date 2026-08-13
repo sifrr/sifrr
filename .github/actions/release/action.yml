@@ -1,4 +1,5 @@
 name: Release packages
+description: This action is used to release stable packages and deploy docs to gh-pages branch.
 inputs:
   tag:
     required: false
