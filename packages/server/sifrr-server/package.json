@@ -43,7 +43,8 @@
     "test:server": "tsx ./test/server",
     "test:server:watch": "tsx watch --include ./test/public ./test/server",
     "test:cluster": "tsx watch --include ./test/public ./test/server-cluster",
-    "release-it": "release-it --ci"
+    "release-it": "release-it --ci",
+    "publish-package": "yarn publish"
   },
   "dependencies": {
     "busboy": "^1.6.0",

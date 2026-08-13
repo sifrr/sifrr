@@ -52,7 +52,8 @@
     "test:server": "yarn storybook:build && npx http-server storybook-static --port ${PORT:-6006} --silent",
     "storybook:dev": "storybook dev -p ${PORT:-6006} --no-open",
     "storybook:build": "storybook build --quiet",
-    "release-it": "release-it --ci"
+    "release-it": "release-it --ci",
+    "publish-package": "yarn publish"
   },
   "dependencies": {
     "@sifrr/template": "*"
