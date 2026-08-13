@@ -50,7 +50,8 @@
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "release-it": "release-it --ci"
+    "release-it": "release-it --ci",
+    "publish-package": "yarn publish"
   },
   "dependencies": {},
   "peerDependencies": {},
