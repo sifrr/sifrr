@@ -1,5 +1,7 @@
 # Changelog (@sifrr/fetch)
 
+## [0.1.2](https://github.com/sifrr/sifrr/compare/@sifrr/fetch-v0.1.0...@sifrr/fetch-v0.1.2) (2026-08-14)
+
 ## [0.1.0](https://github.com/sifrr/sifrr/compare/@sifrr/fetch-v0.1.0...@sifrr/fetch-vnull) (2026-08-14)
 
 ## 0.1.0 (2025-07-11)
