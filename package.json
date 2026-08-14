@@ -16,8 +16,7 @@
     "dev": "turbo dev",
     "test:e2e": "turbo test:e2e",
     "prepare": "husky",
-    "format": "prettier --write .",
-    "postinstall": "pnpm playwright install --with-deps"
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
