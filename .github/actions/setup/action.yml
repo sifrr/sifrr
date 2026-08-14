@@ -27,7 +27,7 @@ runs:
     - name: Store Playwright's Version
       shell: bash
       run: |
-        PLAYWRIGHT_VERSION=$(pnpm list playwright | grep playwright | sed 's/.*@//')
+        PLAYWRIGHT_VERSION=$(pnpm list @playwright/test | grep playwright | sed 's/.*@//' | head -1)
         echo "Playwright's Version: $PLAYWRIGHT_VERSION"
         echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 
