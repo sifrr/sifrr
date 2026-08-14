@@ -28,7 +28,7 @@ jobs:
       - name: Setup Workspace
         uses: ./.github/actions/setup
         with:
-          node-version: 20.x
+          node-version: 24.x
 
       - name: Get Tag
         id: get-tag

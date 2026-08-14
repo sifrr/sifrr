@@ -10,12 +10,11 @@ runs:
 
   steps:
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: pnpm/setup@v1
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'pnpm'
-        cache-dependency-path: |
-          **/pnpm-lock.yaml
+        version: 11
+        runtime: node@${{ inputs.node-version }}
+        cache: true
 
     - name: Setup pnpm
       shell: bash
