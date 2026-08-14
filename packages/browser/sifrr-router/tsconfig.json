@@ -3,10 +3,10 @@
   "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts", "playwright.config.ts"],
   "compilerOptions": {
     "lib": ["esnext", "es2019", "dom"],
-    "baseUrl": ".",
+    "types": ["jest"],
     "removeComments": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "experimentalDecorators": true
   }

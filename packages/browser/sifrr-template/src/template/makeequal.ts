@@ -17,8 +17,8 @@ export function makeChildrenEqual<T>(
   parent = lastChild.parentNode ?? parent;
 
   if (!parent) {
-    console.error(oldChildren);
-    throw Error(
+    window.console.error(oldChildren);
+    throw new Error(
       '^ Parent should be present for old children given. Open an issue on sifrr if this is a bug.'
     );
   }

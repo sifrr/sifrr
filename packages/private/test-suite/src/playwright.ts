@@ -1,4 +1,4 @@
-import { devices, PlaywrightTestConfig } from '@playwright/test';
+import { devices, type PlaywrightTestConfig } from '@playwright/test';
 
 export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig => {
   console.log('Playwright test server using port: ', port);

@@ -9,19 +9,21 @@ export function register(
   Element: SifrrElementKlass<any>,
   silent = false,
   name = Element.elementName
-) {
+): boolean {
   if (!name) {
-    throw Error('Error creating Custom Element: No name given.');
+    throw new Error('Error creating Custom Element: No name given.');
   } else if (window.customElements.get(name)) {
     if (!silent)
-      console.warn(
+      window.console.warn(
         `Error creating Element: ${name} - Custom Element with this name is already defined.`,
         Element
       );
     return false;
   } else if (name.indexOf('-') < 1) {
-    console.error(Element);
-    throw Error(`Error creating Element: ${name} - Custom Element name must have one hyphen '-'`);
+    throw new Error(
+      `Error creating Element: ${name} - Custom Element name must have one hyphen '-'`
+    );
+    window.console.error(Element);
   } else {
     Element.dependencies?.forEach((c) => register(c));
     window.customElements.define(name, Element);
@@ -34,7 +36,7 @@ export function createElement<T>(
   elementClass: SifrrElementKlass<any> | string,
   props: SifrrProps<T>,
   oldElement?: ISifrrElement | HTMLElement
-) {
+): HTMLElement {
   if (typeof elementClass === 'string') {
     if (oldElement?.tagName?.toLowerCase() === elementClass) {
       (oldElement as ISifrrElement).setProps?.(props);

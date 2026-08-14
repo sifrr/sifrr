@@ -4,7 +4,7 @@ const stores = new Map<string, Ref<any>>();
 
 export const store = <T>(name: string, value: T | (() => MaybePromise<T>), deep = true): Ref<T> => {
   if (stores.has(name)) {
-    throw Error(`Store with name ${name} is already defined`);
+    throw new Error(`Store with name ${name} is already defined`);
   }
   const v = typeof value === 'function' ? ({} as T) : value;
   const st = ref(v, deep);
@@ -14,7 +14,7 @@ export const store = <T>(name: string, value: T | (() => MaybePromise<T>), deep 
   }
 
   stores.set(name, st);
-  console.log(`Store: ${name} created`);
+  window.console.log(`Store: ${name} created`);
   return st;
 };
 

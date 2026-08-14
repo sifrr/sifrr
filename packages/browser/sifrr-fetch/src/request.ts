@@ -19,7 +19,7 @@ import { SifrrFetchOptions, SifrrFetchResponse } from './types';
 function responseProgress(
   resp: Response,
   onProgress: Exclude<SifrrFetchOptions['onProgress'], undefined>
-) {
+): Response {
   const total = Number(resp.headers.get('content-length') ?? 0);
   if (!total || !resp.body || !ReadableStream) {
     onProgress({

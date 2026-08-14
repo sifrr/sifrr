@@ -34,7 +34,7 @@ class SifrrRouter extends SifrrElement {
   setup() {
     const router = useRouter();
     if (!router) {
-      throw Error('No router was registered before creating sifrr-route element.');
+      throw new Error('No router was registered before creating sifrr-route element.');
     }
     this.watchStore(router);
 
@@ -69,7 +69,7 @@ class SifrrRoute extends SifrrElement {
   setup() {
     const router = getStore<Router>(STORE_NAME);
     if (!router) {
-      throw Error('No router was registered before creating sifrr-route element.');
+      throw new Error('No router was registered before creating sifrr-route element.');
     }
     router.value.after(() => this.refresh());
 
