@@ -7,7 +7,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@typescript/typescript6": "^6.0.2",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }
