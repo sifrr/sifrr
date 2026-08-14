@@ -23,21 +23,3 @@ runs:
       shell: bash
       run: |
         pnpm install --frozen-lockfile
-
-    - name: Store Playwright's Version
-      shell: bash
-      run: |
-        PLAYWRIGHT_VERSION=$(pnpm list @playwright/test | grep playwright | sed 's/.*@//' | head -1)
-        echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-        echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-
-    - name: Cache playwright binaries
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-        path: |
-          ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-v1-${{ env.PLAYWRIGHT_VERSION }}
-        restore-keys: |
-          ${{ runner.os }}-playwright-v1-${{ env.PLAYWRIGHT_VERSION }}
-          ${{ runner.os }}-playwright-v1-
