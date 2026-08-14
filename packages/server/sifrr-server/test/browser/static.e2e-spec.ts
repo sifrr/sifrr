@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { okTest } from 'test/browser/utils';
-import fs from 'fs';
-import path from 'path';
-import { randomUUID } from 'crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { okTest } from './utils';
 
 test.describe('static test', function () {
   test.beforeEach(async ({ page }) => {
