@@ -12,7 +12,6 @@ runs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: pnpm/setup@v1
       with:
-        version: 11
         runtime: node@${{ inputs.node-version }}
         cache: true
 
