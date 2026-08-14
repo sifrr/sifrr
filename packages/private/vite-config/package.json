@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "glob": "^11.0.2",
+    "unplugin-dts": "^1.0.3",
     "vite": "^6.3.5",
-    "vite-plugin-dts": "^5.0.2",
     "vite-plugin-lib-inject-css": "^2.2.2"
   }
 }
