@@ -1,5 +1,9 @@
 # Changelog (@sifrr/template)
 
+## [0.1.2](https://github.com/sifrr/sifrr/compare/@sifrr/template-v0.1.0...@sifrr/template-v0.1.2) (2026-08-14)
+
+## [0.1.0](https://github.com/sifrr/sifrr/compare/@sifrr/template-v0.1.0...@sifrr/template-vnull) (2026-08-14)
+
 ## 0.1.0 (2025-07-11)
 
 
