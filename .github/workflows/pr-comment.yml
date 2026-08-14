@@ -28,7 +28,7 @@ jobs:
       - name: Setup Workspace
         uses: ./.github/actions/setup
         with:
-          node-version: 20.x
+          node-version: 24.x
 
       - name: Get Tag
         id: get-tag
@@ -91,7 +91,7 @@ jobs:
               \`\`\`json
               ${{ steps.versions.outputs.packages }}
               \`\`\`
-              Install by running \`yarn add <package-name>@<version>\` or \`yarn add <package-name>@${{ steps.get-tag.outputs.tag }}\`
+              Install by running \`pnpm add <package-name>@<version>\` or \`pnpm add <package-name>@${{ steps.get-tag.outputs.tag }}\`
 
 
               You can also view docs for deployed versions [here](https://sifrr.github.io/sifrr) if available.
@@ -118,7 +118,7 @@ jobs:
               \`\`\`json
               ${{ steps.versions.outputs.packages }}
               \`\`\`
-              Install by running \`yarn add <package-name>@<version>\`
+              Install by running \`pnpm add <package-name>@<version>\`
               
               There were failures during publishing one or more packages, please check in actions for more details.`
             })
@@ -156,8 +156,8 @@ jobs:
 
       - name: Update snapshots
         run: |
-          yarn build
-          yarn test:e2e -u
+          pnpm build
+          pnpm test:e2e -u
 
       - name: Commit snapshots
         run: |

@@ -22,7 +22,7 @@ jobs:
       - name: Setup Workspace
         uses: ./.github/actions/setup
         with:
-          node-version: 20.x
+          node-version: 24.x
 
       - name: Get release notes
         id: releasenotes
@@ -35,7 +35,7 @@ jobs:
         run: |
           git config --global user.name "aadityataparia"
           git config --global user.email "aadityataparia@gmail.com"
-          yarn turbo release-it --concurrency=1
+          pnpm turbo release-it --concurrency=1
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6

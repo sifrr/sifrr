@@ -37,7 +37,7 @@ function deepProxy<X>(obj: X, handler: () => void): X {
   return p;
 }
 
-export const ref = <T>(value: T, deep = true) => {
+export const ref = <T>(value: T, deep = true): Ref<T> => {
   const __sifrrWatchers: Ref<T>['__sifrrWatchers'] = new Set();
   const handler = () => {
     if (__sifrrWatchers.size <= 0) return;

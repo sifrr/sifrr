@@ -1,4 +1,4 @@
-import { devices, PlaywrightTestConfig } from '@playwright/test';
+import { devices, type PlaywrightTestConfig } from '@playwright/test';
 
 export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig => {
   console.log('Playwright test server using port: ', port);
@@ -40,7 +40,7 @@ export const getPlaywrightConfigOptions = (port: number): PlaywrightTestConfig =
     ],
     // Run your local dev server before starting the tests.
     webServer: {
-      command: `set -ex; PORT=${port} yarn test:server`,
+      command: `set -ex; PORT=${port} pnpm test:server`,
       url: `http://localhost:${port}`,
       reuseExistingServer: !process.env.CI
     }

@@ -38,7 +38,7 @@ Add script tag in your website.
 
 ### Using npm
 
-Do `npm i @sifrr/storage` or `yarn add @sifrr/storage` or add the package to your `package.json` file.
+Do `npm i @sifrr/storage` or `pnpm add @sifrr/storage` or add the package to your `package.json` file.
 
 example, put in your frontend js module (compatible with webpack/rollup/etc):
 

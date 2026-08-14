@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
-import { resolve, relative } from 'path';
-import dts from 'vite-plugin-dts';
+import { resolve, relative } from 'node:path';
+import dts from 'unplugin-dts/vite';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import { globSync } from 'glob';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 
 const nameToGlobal = (name) =>
   name

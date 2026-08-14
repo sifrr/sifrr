@@ -1,12 +1,11 @@
 {
   "extends": "@sifrr/typescript-config/base.json",
-  "include": ["src/**/*.ts", "test/**/*.ts", "jest.config.ts", "playwright.config.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "playwright.config.ts"],
   "compilerOptions": {
     "lib": ["esnext", "es2019", "dom"],
-    "baseUrl": ".",
     "removeComments": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   }
 }

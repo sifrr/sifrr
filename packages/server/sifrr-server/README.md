@@ -11,7 +11,7 @@ NodeJS Server based on [uWebSocket.js](https://github.com/uNetworking/uWebSocket
 
 ## How to use
 
-Do `npm i @sifrr/server` or `yarn add @sifrr/server` or add the package to your `package.json` file.
+Do `npm i @sifrr/server` or `pnpm add @sifrr/server` or add the package to your `package.json` file.
 
 ## Api
 

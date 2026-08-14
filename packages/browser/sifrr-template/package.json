@@ -35,26 +35,25 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:storybook:ci",
+    "test": "pnpm test:jest && pnpm test:storybook:ci",
     "test:jest": "jest",
     "test:storybook": "wait-on tcp:${PORT:-6006} && test-storybook --url http://localhost:${PORT:-6006}",
-    "test:storybook:ci": "PORT=8112 npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"yarn test:server\" \"yarn test:storybook\"",
+    "test:storybook:ci": "PORT=8112 npx concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"pnpm test:server\" \"pnpm test:storybook\"",
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
     "dev": "vite build --watch",
-    "test:server": "yarn storybook:build && npx http-server storybook-static --port ${PORT:-6006} --silent",
+    "test:server": "pnpm storybook:build && npx http-server storybook-static --port ${PORT:-6006} --silent",
     "storybook:dev": "storybook dev -p ${PORT:-6006} --no-open",
     "storybook:build": "storybook build --quiet",
     "release-it": "release-it --ci",
-    "publish-package": "yarn publish"
+    "publish-package": "pnpm publish"
   },
   "devDependencies": {
-    "@sifrr/eslint-config": "*",
-    "@sifrr/release-it-config": "*",
-    "@sifrr/test-suite": "*",
-    "@sifrr/typescript-config": "*",
-    "@sifrr/vite-config": "*",
-    "typescript": "^5.8.3"
+    "@sifrr/eslint-config": "workspace:*",
+    "@sifrr/release-it-config": "workspace:*",
+    "@sifrr/test-suite": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
+    "@sifrr/vite-config": "workspace:*"
   },
   "files": [
     "bin",

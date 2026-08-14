@@ -2,10 +2,9 @@
   "extends": "@sifrr/typescript-config/base.json",
   "compilerOptions": {
     "lib": ["esnext", "es2019"],
-    "baseUrl": ".",
     "removeComments": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "experimentalDecorators": true
   }

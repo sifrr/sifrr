@@ -18,22 +18,22 @@
 
 - Install dependencies
 
-        yarn install
+        pnpm install
 
 - Build libraries (and watch for updates), works in every package folder as well
 
-        yarn build -w
+        pnpm build -w
 
 - Now any change you make will update the `dist` files
 - Run tests with (works in every package folder as well)
 
-        yarn test
+        pnpm test
 
 - Start test server with (works in only package folders)
 
-        yarn test-server
+        pnpm test-server
 
 ### Guidelines
 
 - Build dist files before opening PR
-- Run `yarn install` if you update dependencies
+- Run `pnpm install` if you update dependencies

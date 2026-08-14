@@ -39,7 +39,7 @@
   "scripts": {
     "lint": "eslint src/.",
     "lint:fix": "eslint --fix .",
-    "test": "yarn test:jest && yarn test:playwright",
+    "test": "pnpm test:jest && pnpm test:playwright",
     "test:jest": "jest",
     "test:playwright": "playwright test --pass-with-no-tests",
     "build": "rm -rf dist && vite build",
@@ -47,20 +47,18 @@
     "test:server": "tsx ./test/server",
     "test:server:watch": "tsx watch --include ./test/public ./test/server",
     "release-it": "release-it --ci",
-    "publish-package": "yarn publish"
+    "publish-package": "pnpm publish"
   },
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
-    "@sifrr/eslint-config": "*",
-    "@sifrr/release-it-config": "*",
-    "@sifrr/test-suite": "*",
-    "@sifrr/typescript-config": "*",
-    "@sifrr/vite-config": "*",
+    "@sifrr/eslint-config": "workspace:*",
+    "@sifrr/release-it-config": "workspace:*",
+    "@sifrr/test-suite": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
+    "@sifrr/vite-config": "workspace:*",
     "axios": "^1.9.0",
-    "isomorphic-ws": "^5.0.0",
-    "typescript": "^5.8.3",
-    "yarn": "^1.22.22"
+    "isomorphic-ws": "^5.0.0"
   },
   "files": [
     "bin",

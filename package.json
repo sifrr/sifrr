@@ -1,10 +1,6 @@
 {
   "name": "sifrr",
   "private": true,
-  "workspaces": [
-    "packages/*/*",
-    "apps/*"
-  ],
   "version": "0.0.0",
   "description": "a fullstack nodeJS/vanillaJS framework",
   "license": "MIT",
@@ -21,7 +17,7 @@
     "test:e2e": "turbo test:e2e",
     "prepare": "husky",
     "format": "prettier --write .",
-    "postinstall": "yarn playwright install --with-deps"
+    "postinstall": "pnpm exec playwright install"
   },
   "repository": {
     "type": "git",
@@ -49,12 +45,12 @@
     "url": "https://github.com/sifrr/sifrr/issues"
   },
   "homepage": "https://github.com/sifrr/sifrr",
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "pnpm@11.21.0",
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@sifrr/eslint-config": "*",
-    "@sifrr/typescript-config": "*",
+    "@sifrr/eslint-config": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
     "prettier": "^3.5.3",

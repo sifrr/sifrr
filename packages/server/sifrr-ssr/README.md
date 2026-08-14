@@ -10,7 +10,7 @@ Server Side Pre-Redering for any js based app using puppeteer (headless chrome) 
 
 ## How to use
 
-Do `npm i @sifrr/ssr` or `yarn add @sifrr/ssr` or add the package to your `package.json` file.
+Do `npm i @sifrr/ssr` or `pnpm add @sifrr/ssr` or add the package to your `package.json` file.
 
 ## Api
 

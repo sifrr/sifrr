@@ -38,7 +38,7 @@ class Socket implements EventTarget {
     this.ws.addEventListener('close', this._onerror.bind(this));
   }
 
-  send(payload: object | string | ArrayBufferLike | Blob | ArrayBufferView) {
+  send(payload: object | string | Blob | BufferSource) {
     if (isObject(payload)) {
       this.sendRaw(JSON.stringify(payload), undefined, payload);
     } else {
@@ -75,7 +75,7 @@ class Socket implements EventTarget {
   }
 
   private async sendRaw<T = any>(
-    message: string | ArrayBufferLike | Blob | ArrayBufferView,
+    message: string | Blob | BufferSource,
     id?: number,
     original: typeof message | object = message,
     timeout = 5000
