@@ -58,8 +58,7 @@
     "@sifrr/typescript-config": "workspace:*",
     "@sifrr/vite-config": "workspace:*",
     "axios": "^1.9.0",
-    "isomorphic-ws": "^5.0.0",
-    "typescript": "^5.8.3"
+    "isomorphic-ws": "^5.0.0"
   },
   "files": [
     "bin",

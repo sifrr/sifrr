@@ -60,8 +60,7 @@
     "@sifrr/release-it-config": "workspace:*",
     "@sifrr/test-suite": "workspace:*",
     "@sifrr/typescript-config": "workspace:*",
-    "@sifrr/vite-config": "workspace:*",
-    "typescript": "^5.8.3"
+    "@sifrr/vite-config": "workspace:*"
   },
   "files": [
     "bin",

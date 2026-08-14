@@ -37,11 +37,11 @@
     "storybook": "^8.6.12",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.1",
-    "typescript": "^7.0.2"
+    "tsx": "^4.20.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.2",
-    "vite": "^6.4.3"
+    "@sifrr/vite-config": "workspace:*",
+    "@sifrr/typescript-config": "workspace:*",
+    "@types/express": "^5.0.2"
   }
 }
