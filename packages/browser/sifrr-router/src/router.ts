@@ -102,12 +102,7 @@ const getClickEventListener =
       }
     }
 
-    if (
-      !target ||
-      target.host !== window.location.host ||
-      (target.target && target.target !== '_self')
-    )
-      return false;
+    if (target?.host !== window.location.host || target?.target !== '_self') return false;
 
     e.preventDefault();
     // replace title with First title if there's no attribute
